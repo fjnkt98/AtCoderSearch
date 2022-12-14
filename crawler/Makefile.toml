@@ -1,0 +1,12 @@
+[tasks.migrate]
+args = [
+  "--user=${PGUSER}",
+  "--password=${PGPASSWORD}",
+  "--host=${PGHOST}",
+  "--port=${PGPORT}",
+  "--file=schema.sql",
+]
+command = "pslqdef"
+env_files = [
+  ".env",
+]
