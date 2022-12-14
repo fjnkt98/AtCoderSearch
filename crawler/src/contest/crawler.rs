@@ -1,4 +1,4 @@
-use crate::contest::models::ContestJson;
+use crate::contest::models::{Contest, ContestJson};
 use anyhow::{Context, Result};
 use reqwest::header::ACCEPT_ENCODING;
 
@@ -13,7 +13,7 @@ impl ContestCrawler {
         }
     }
 
-    pub fn get(self) -> Result<Vec<ContestJson>> {
+    pub fn get_contest_list(&self) -> Result<Vec<ContestJson>> {
         let client = reqwest::blocking::Client::new();
 
         let response = client
@@ -28,6 +28,23 @@ impl ContestCrawler {
 
         let contests: Vec<ContestJson> =
             serde_json::from_str(&json).context("Failed to parse JSON body.")?;
+
+        Ok(contests)
+    }
+
+    pub fn crawl(&self) -> Result<Vec<Contest>> {
+        let contests: Vec<Contest> = self
+            .get_contest_list()?
+            .iter()
+            .map(|contest| Contest {
+                id: contest.id.clone(),
+                start_epoch_second: contest.start_epoch_second.clone(),
+                duration_second: contest.duration_second.clone(),
+                title: contest.title.clone(),
+                rate_change: contest.rate_change.clone(),
+                category: contest.categorize(),
+            })
+            .collect();
 
         Ok(contests)
     }

@@ -21,7 +21,7 @@ pub struct ContestJson {
     pub rate_change: String,
 }
 
-#[derive(FromRow, Type)]
+#[derive(FromRow, Type, Debug)]
 pub struct Contest {
     pub id: String,
     pub start_epoch_second: i64,
