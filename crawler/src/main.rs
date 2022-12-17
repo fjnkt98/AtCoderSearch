@@ -1,10 +1,13 @@
 mod contest;
+mod problem;
 
 use anyhow::Result;
-use contest::crawler;
+use contest::crawler::ContestCrawler;
 use contest::inserter;
 use contest::models::Contest;
 use dotenvy::dotenv;
+use problem::crawler::ProblemCrawler;
+use problem::models::Problem;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -18,13 +21,18 @@ async fn main() -> Result<()> {
         .connect(&database_url)
         .await?;
 
-    let contest_crawler = crawler::ContestCrawler::new();
+    let contest_crawler = ContestCrawler::new();
     let contests: Vec<Contest> = contest_crawler
         .crawl()
         .await
         .expect("Failed to get contests.");
 
     inserter::insert(&pool, &contests).await?;
+
+    let crawler = ProblemCrawler::new(&pool);
+    let problems: Vec<Problem> = crawler.crawl(true).await.expect("Failed to get problems");
+
+    crawler.save(&problems).await?;
 
     Ok(())
 }
