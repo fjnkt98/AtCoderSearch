@@ -7,7 +7,7 @@ use contest::inserter;
 use contest::models::Contest;
 use dotenvy::dotenv;
 use problem::crawler::ProblemCrawler;
-use problem::models::Problem;
+use problem::models::{Problem, ProblemJson};
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -30,7 +30,11 @@ async fn main() -> Result<()> {
     inserter::insert(&pool, &contests).await?;
 
     let crawler = ProblemCrawler::new(&pool);
-    let problems: Vec<Problem> = crawler.crawl(true).await.expect("Failed to get problems");
+    let target: Vec<ProblemJson> = crawler.get_problem_list().await?[..5].to_vec();
+    let problems: Vec<Problem> = crawler
+        .crawl(&target)
+        .await
+        .expect("Failed to get problems");
 
     crawler.save(&problems).await?;
 

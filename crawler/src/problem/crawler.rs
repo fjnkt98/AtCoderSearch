@@ -6,7 +6,6 @@ use reqwest::header::ACCEPT_ENCODING;
 use serde_json;
 use sqlx::postgres::{PgRow, Postgres};
 use sqlx::{Pool, Row};
-
 use std::collections::HashSet;
 use tokio::time::{sleep, Duration};
 
@@ -23,6 +22,7 @@ impl<'a> ProblemCrawler<'a> {
         }
     }
 
+    /// AtCoder Problemsから問題情報の一覧を取得するメソッド
     pub async fn get_problem_list(&self) -> Result<Vec<ProblemJson>> {
         let client = reqwest::Client::new();
 
@@ -44,7 +44,12 @@ impl<'a> ProblemCrawler<'a> {
         Ok(problems)
     }
 
-    pub async fn crawl(&self, all: bool) -> Result<Vec<Problem>> {
+    /// 問題ページをクロールしてHTML情報を取得するメソッド
+    ///
+    /// クロール間隔は300msにしてある。
+    ///
+    /// - target: クロール対象の問題のリスト
+    pub async fn crawl(&self, target: &Vec<ProblemJson>) -> Result<Vec<Problem>> {
         let client = reqwest::Client::new();
 
         let config = Cfg {
@@ -58,12 +63,6 @@ impl<'a> ProblemCrawler<'a> {
             minify_js: true,
             remove_bangs: false,
             remove_processing_instructions: false,
-        };
-
-        let target: Vec<ProblemJson> = if all {
-            self.get_problem_list().await?
-        } else {
-            self.detect_diff().await?
         };
 
         let mut problems: Vec<Problem> = Vec::new();
@@ -86,6 +85,7 @@ impl<'a> ProblemCrawler<'a> {
                 html: html,
             });
 
+            // TODO: ちゃんとしたロギングクレートを使う
             println!("Contest {} is collected.", problem.id);
 
             sleep(Duration::from_millis(200)).await;
@@ -94,6 +94,8 @@ impl<'a> ProblemCrawler<'a> {
         Ok(problems)
     }
 
+    /// AtCoder Problemsから得た一覧情報とデータベースにある情報を比較し、
+    /// 未取得の問題を検出するメソッド
     pub async fn detect_diff(&self) -> Result<Vec<ProblemJson>> {
         let exists_problems: HashSet<String> = HashSet::from_iter(
             sqlx::query(
@@ -118,6 +120,7 @@ impl<'a> ProblemCrawler<'a> {
         Ok(target)
     }
 
+    /// 問題データをデータベースに格納するメソッド
     pub async fn save(&self, problems: &Vec<Problem>) -> Result<()> {
         let mut tx = self.pool.begin().await?;
 
