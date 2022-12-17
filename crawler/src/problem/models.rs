@@ -1,6 +1,13 @@
 use serde::Deserialize;
 use sqlx::{FromRow, Type};
 
+/// AtCoderProblemsから取得できる問題情報のJSONスキーマ
+///
+/// - id: 問題ID。URIに使用されている文字列
+/// - contest_id: 問題が所属するコンテストのID
+/// - problem_index: 問題番号。e.g. A, B, Ex
+/// - name: 問題名
+/// - title: 問題番号と問題名をつなげた文字列。
 #[derive(Deserialize, Clone)]
 pub struct ProblemJson {
     pub id: String,
@@ -10,6 +17,10 @@ pub struct ProblemJson {
     pub title: String,
 }
 
+/// データベースに格納する問題情報のモデル
+///
+/// - url: 問題のページのURL
+/// - html: 問題のページのHTML
 #[derive(FromRow, Type, Clone)]
 pub struct Problem {
     pub id: String,
