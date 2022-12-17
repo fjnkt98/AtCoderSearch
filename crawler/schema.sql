@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS contest (
+CREATE TABLE IF NOT EXISTS contests (
     id VARCHAR(255) PRIMARY KEY,
     start_epoch_second BIGINT NOT NULL,
     duration_second BIGINT NOT NULL,
@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS contest (
     category VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS problem (
+CREATE TABLE IF NOT EXISTS problems (
     id VARCHAR(255) PRIMARY KEY,
     contest_id VARCHAR(255) NOT NULL,
     problem_index VARCHAR(20) NOT NULL,
