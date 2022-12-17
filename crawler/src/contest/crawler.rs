@@ -13,17 +13,19 @@ impl ContestCrawler {
         }
     }
 
-    pub fn get_contest_list(&self) -> Result<Vec<ContestJson>> {
-        let client = reqwest::blocking::Client::new();
+    pub async fn get_contest_list(&self) -> Result<Vec<ContestJson>> {
+        let client = reqwest::Client::new();
 
         let response = client
             .get(&self.url)
             .header(ACCEPT_ENCODING, "gzip")
             .send()
+            .await
             .context("Failed to get contest information from AtCoder Problems.")?;
 
         let json = response
             .text()
+            .await
             .context("Failed to get JSON body from response.")?;
 
         let contests: Vec<ContestJson> =
@@ -32,9 +34,10 @@ impl ContestCrawler {
         Ok(contests)
     }
 
-    pub fn crawl(&self) -> Result<Vec<Contest>> {
+    pub async fn crawl(&self) -> Result<Vec<Contest>> {
         let contests: Vec<Contest> = self
-            .get_contest_list()?
+            .get_contest_list()
+            .await?
             .iter()
             .map(|contest| Contest {
                 id: contest.id.clone(),
