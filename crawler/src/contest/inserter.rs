@@ -3,6 +3,7 @@ use anyhow::{Error, Result};
 use sqlx::postgres::Postgres;
 use sqlx::Pool;
 
+/// コンテスト情報をデータベースに格納する関数
 pub async fn insert(pool: &Pool<Postgres>, contests: &Vec<Contest>) -> Result<()> {
     let mut tx = pool.begin().await?;
 

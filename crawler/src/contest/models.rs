@@ -2,6 +2,13 @@ use regex::Regex;
 use serde::Deserialize;
 use sqlx::{FromRow, Type};
 
+/// コンテストのレーティング対象の種類の列挙型
+///
+/// - ALL: すべてのレート帯がレーティング対象であるコンテスト
+/// - UNRATED: すべてのレート帯がレーティング対象外であるコンテスト
+/// - UPPERBOUND: あるレート以下のユーザがレーティング対象であるコンテスト(e.g. ~ 1999)
+/// - LOWERBOUND: あるレート以上のユーザがレーティング対象であるコンテスト(e.g. 2000 ~)
+///
 #[derive(PartialEq, Debug)]
 pub enum RatedTargetType {
     ALL,
@@ -10,8 +17,17 @@ pub enum RatedTargetType {
     LOWERBOUND(i64),
 }
 
+/// AGC001が開始された日時のUnix Epoch Time。
+/// AtCoderのレーティングはこの大会以降から開始されたので、これより前のコンテストは無条件にUnratedコンテストであると言える。
 const AGC001_STARTED_AT: i64 = 1468670400;
 
+/// AtCoderProblemsから取得できるコンテスト情報のJSONスキーマ
+///
+/// - id: コンテストのID。コンテストのURIに使用されている文字列
+/// - start_epoch_second: コンテストが開始された日時のUnix Epoch Time
+/// - duration_second: コンテストの開催時間(秒)
+/// - title: コンテストのタイトル
+/// - rate_change: レーティング対象の種類
 #[derive(Deserialize)]
 pub struct ContestJson {
     pub id: String,
@@ -21,6 +37,9 @@ pub struct ContestJson {
     pub rate_change: String,
 }
 
+/// データベースに格納するコンテスト情報のモデル
+///
+/// - category: コンテストのカテゴリ。e.g. ABC, ARG
 #[derive(FromRow, Type, Debug)]
 pub struct Contest {
     pub id: String,
@@ -32,7 +51,10 @@ pub struct Contest {
 }
 
 impl ContestJson {
+    /// コンテストの情報からレーティング対象の種別を求めるメソッド
+    /// 識別アルゴリズムは`https://github.com/kenkoooo/AtCoderProblems/blob/master/atcoder-problems-frontend/src/utils/ContestClassifier.ts`に倣う
     fn rated_target(&self) -> RatedTargetType {
+        // AGC001より前のコンテストは無条件でUnrated判定
         if self.start_epoch_second < AGC001_STARTED_AT {
             return RatedTargetType::UNRATED;
         }
@@ -62,6 +84,8 @@ impl ContestJson {
         }
     }
 
+    /// コンテストの種類を識別するメソッド
+    /// 識別アルゴリズムは`https://github.com/kenkoooo/AtCoderProblems/blob/master/atcoder-problems-frontend/src/utils/ContestClassifier.ts`に倣う
     pub fn categorize(&self) -> String {
         if self.id.starts_with("abc") {
             return String::from("ABC");

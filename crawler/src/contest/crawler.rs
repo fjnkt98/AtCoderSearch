@@ -13,11 +13,13 @@ impl ContestCrawler {
         }
     }
 
+    /// AtCoderProblemsからコンテスト情報を取得するメソッド
     pub async fn get_contest_list(&self) -> Result<Vec<ContestJson>> {
         let client = reqwest::Client::new();
 
         let response = client
             .get(&self.url)
+            // AtCoderProblemsはAccept-Encodingにgzipを指定しないとダウンロードできない(https://twitter.com/kenkoooo/status/1147352545133645824)
             .header(ACCEPT_ENCODING, "gzip")
             .send()
             .await
@@ -34,6 +36,7 @@ impl ContestCrawler {
         Ok(contests)
     }
 
+    /// AtCoderProblemsから取得したコンテスト情報からデータベースへ格納する用のモデルを作って返すメソッド
     pub async fn crawl(&self) -> Result<Vec<Contest>> {
         let contests: Vec<Contest> = self
             .get_contest_list()
