@@ -5,8 +5,9 @@ args = [
   "--host=${PGHOST}",
   "--port=${PGPORT}",
   "--file=schema.sql",
+  "${PGDATABASE}",
 ]
-command = "pslqdef"
+command = "psqldef"
 env_files = [
   ".env",
 ]
