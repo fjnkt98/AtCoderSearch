@@ -88,6 +88,8 @@ impl<'a> ContestCrawler<'a> {
                 tx.rollback().await?;
                 return Err(Error::new(e));
             }
+
+            tracing::debug!("Contest {} was saved.", contest.id);
         }
 
         tx.commit().await?;

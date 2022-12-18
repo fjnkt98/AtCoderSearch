@@ -85,8 +85,7 @@ impl<'a> ProblemCrawler<'a> {
                 html: html,
             });
 
-            // TODO: ちゃんとしたロギングクレートを使う
-            println!("Contest {} is collected.", problem.id);
+            tracing::debug!("Problem {} is collected.", problem.id);
 
             sleep(Duration::from_millis(200)).await;
         }
@@ -151,6 +150,8 @@ impl<'a> ProblemCrawler<'a> {
                 tx.rollback().await?;
                 return Err(Error::new(e));
             }
+
+            tracing::debug!("Problem {} was saved.", problem.id);
         }
 
         tx.commit().await?;

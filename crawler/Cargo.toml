@@ -19,3 +19,5 @@ serde_qs = "0.10.1"
 serde_urlencoded = "0.7.1"
 sqlx = {version = "^0.6", features = ["postgres", "chrono", "runtime-actix-rustls"]}
 tokio = {version = "1.23", features = ["full"]}
+tracing = "0.1.37"
+tracing-subscriber = "0.3.16"
