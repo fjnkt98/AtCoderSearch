@@ -1,4 +1,4 @@
-use crate::problem::models::{Problem, ProblemJson};
+use crate::problem::models::{Problem, ProblemDifficulty, ProblemJson};
 use anyhow::{Context, Error, Result};
 use minify_html::{minify, Cfg};
 use reqwest;
@@ -6,7 +6,7 @@ use reqwest::header::ACCEPT_ENCODING;
 use serde_json;
 use sqlx::postgres::{PgRow, Postgres};
 use sqlx::{Pool, Row};
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use tokio::time::{sleep, Duration};
 
 pub struct ProblemCrawler<'a> {
@@ -85,7 +85,7 @@ impl<'a> ProblemCrawler<'a> {
                 html: html,
             });
 
-            tracing::debug!("Problem {} is collected.", problem.id);
+            tracing::info!("Problem {} is collected.", problem.id);
 
             sleep(Duration::from_millis(200)).await;
         }
@@ -119,22 +119,54 @@ impl<'a> ProblemCrawler<'a> {
         Ok(target)
     }
 
+    async fn get_difficulties(&self) -> Result<HashMap<String, ProblemDifficulty>> {
+        let client = reqwest::Client::new();
+
+        let response = client
+            .get("https://kenkoooo.com/atcoder/resources/problem-models.json")
+            .header(ACCEPT_ENCODING, "gzip")
+            .send()
+            .await
+            .context("Failed to get contest information from AtCoder Problems.")?;
+
+        let json = response
+            .text()
+            .await
+            .context("Failed to get JSON body from response.")?;
+
+        let difficulties: HashMap<String, ProblemDifficulty> =
+            serde_json::from_str(&json).context("Failed to parse JSON body")?;
+
+        Ok(difficulties)
+    }
+
     /// 問題データをデータベースに格納するメソッド
     pub async fn save(&self, problems: &Vec<Problem>) -> Result<()> {
         let mut tx = self.pool.begin().await?;
 
+        let difficulties = self.get_difficulties().await?;
+
         for problem in problems.iter() {
+            let difficulty = if difficulties.contains_key(&problem.id) {
+                match difficulties.get(&problem.id).unwrap().difficulty {
+                    Some(difficulty) => difficulty,
+                    None => 0,
+                }
+            } else {
+                0
+            };
+
             let result = sqlx::query(r"
                 MERGE INTO problems
                 USING
-                    (VALUES($1, $2, $3, $4, $5, $6, $7)) AS problem(id, contest_id, problem_index, name, title, url, html)
+                    (VALUES($1, $2, $3, $4, $5, $6, $7, $8)) AS problem(id, contest_id, problem_index, name, title, url, html, difficulty)
                 ON
                     problems.id = problem.id
                 WHEN MATCHED THEN
-                    UPDATE SET (id, contest_id, problem_index, name, title, url, html) = (problem.id, problem.contest_id, problem.problem_index, problem.name, problem.title, problem.url, problem.html)
+                    UPDATE SET (id, contest_id, problem_index, name, title, url, html, difficulty) = (problem.id, problem.contest_id, problem.problem_index, problem.name, problem.title, problem.url, problem.html, problem.difficulty)
                 WHEN NOT MATCHED THEN
-                    INSERT (id, contest_id, problem_index, name, title, url, html)
-                    VALUES (problem.id, problem.contest_id, problem.problem_index, problem.name, problem.title, problem.url, problem.html);
+                    INSERT (id, contest_id, problem_index, name, title, url, html, difficulty)
+                    VALUES (problem.id, problem.contest_id, problem.problem_index, problem.name, problem.title, problem.url, problem.html, problem.difficulty);
                 ")
                 .bind(&problem.id)
                 .bind(&problem.contest_id)
@@ -143,6 +175,7 @@ impl<'a> ProblemCrawler<'a> {
                 .bind(&problem.title)
                 .bind(&problem.url)
                 .bind(&problem.html)
+                .bind(difficulty)
                 .execute(&mut tx)
                 .await;
 
@@ -151,7 +184,7 @@ impl<'a> ProblemCrawler<'a> {
                 return Err(Error::new(e));
             }
 
-            tracing::debug!("Problem {} was saved.", problem.id);
+            tracing::info!("Problem {} was saved.", problem.id);
         }
 
         tx.commit().await?;

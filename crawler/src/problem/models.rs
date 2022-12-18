@@ -31,3 +31,15 @@ pub struct Problem {
     pub url: String,
     pub html: String,
 }
+
+#[derive(Deserialize)]
+pub struct ProblemDifficulty {
+    pub slope: Option<f64>,
+    pub intercept: Option<f64>,
+    pub variance: Option<f64>,
+    pub difficulty: Option<i64>,
+    pub discrimination: Option<f64>,
+    pub irt_loglikelihood: Option<f64>,
+    pub irt_users: Option<i64>,
+    pub is_experimental: Option<bool>,
+}
