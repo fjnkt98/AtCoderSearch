@@ -26,6 +26,7 @@ impl<'a> ProblemCrawler<'a> {
     pub async fn get_problem_list(&self) -> Result<Vec<ProblemJson>> {
         let client = reqwest::Client::new();
 
+        tracing::info!("Attempting to get problem list from AtCoder Problems...");
         let response = client
             .get(&self.url)
             .header(ACCEPT_ENCODING, "gzip")
@@ -40,6 +41,8 @@ impl<'a> ProblemCrawler<'a> {
 
         let problems: Vec<ProblemJson> =
             serde_json::from_str(&json).context("Failed to parse JSON body.")?;
+
+        tracing::info!("{} problems collected.", problems.len());
 
         Ok(problems)
     }
@@ -116,11 +119,15 @@ impl<'a> ProblemCrawler<'a> {
             .filter(|problem| !exists_problems.contains(&problem.id))
             .collect();
 
+        tracing::info!("{} problems are now target for collection.", target.len());
+
         Ok(target)
     }
 
     async fn get_difficulties(&self) -> Result<HashMap<String, ProblemDifficulty>> {
         let client = reqwest::Client::new();
+
+        tracing::info!("Attempting to get difficulties from AtCoder Problems...");
 
         let response = client
             .get("https://kenkoooo.com/atcoder/resources/problem-models.json")
