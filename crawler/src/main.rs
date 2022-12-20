@@ -1,12 +1,9 @@
-mod contest;
-mod problem;
-
 use anyhow::Result;
-use contest::crawler::ContestCrawler;
-use contest::models::Contest;
+use crawler::contest::crawler::ContestCrawler;
+use crawler::contest::models::Contest;
+use crawler::problem::crawler::ProblemCrawler;
+use crawler::problem::models::{Problem, ProblemJson};
 use dotenvy::dotenv;
-use problem::crawler::ProblemCrawler;
-use problem::models::{Problem, ProblemJson};
 
 #[tokio::main]
 async fn main() -> Result<()> {
