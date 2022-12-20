@@ -17,7 +17,7 @@ serde = "1.0.148"
 serde_json = "1.0.89"
 serde_qs = "0.10.1"
 serde_urlencoded = "0.7.1"
-sqlx = {version = "^0.6", features = ["postgres", "chrono", "runtime-actix-rustls"]}
+sqlx = {version = "^0.6", features = ["postgres", "chrono", "runtime-tokio-rustls"]}
 tokio = {version = "1.23", features = ["full"]}
 tracing = "0.1.37"
 tracing-subscriber = "0.3.16"
