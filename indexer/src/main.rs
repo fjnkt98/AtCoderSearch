@@ -1,7 +1,8 @@
-use anyhow::Result;
-use chrono::{DateTime, NaiveDateTime, Utc};
+use anyhow::{Context, Result};
+use chrono::{DateTime, NaiveDateTime, TimeZone, Utc};
 use dotenvy::dotenv;
 use ego_tree::NodeRef;
+use indexer::solr;
 use regex::Regex;
 use scraper::node::Node;
 use scraper::{Html, Selector};
@@ -153,8 +154,14 @@ async fn main() -> Result<()> {
         text_en: full_text_en,
     };
 
-    println!("{}", serde_json::to_string(&document).unwrap());
+    // println!("{}", serde_json::to_string(&document).unwrap());
     // println!("{}, {}", document.problem_id, document.start_at);
+
+    let solr = solr::client::SolrClient::new("http://localhost", 8983)
+        .context("Failed to create solr client.")?;
+
+    let cores = solr.cores().await?;
+    println!("{:?}", cores);
 
     Ok(())
 }
