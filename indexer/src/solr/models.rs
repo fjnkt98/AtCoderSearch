@@ -35,7 +35,7 @@ pub struct SolrSystemInfo {
     pub system: Value,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct IndexInfo {
     #[serde(alias = "numDocs")]
     pub num_docs: u64,
@@ -61,7 +61,7 @@ pub struct IndexInfo {
     pub size: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct CoreStatus {
     pub name: String,
     #[serde(alias = "instanceDir")]
@@ -83,4 +83,10 @@ pub struct SolrCoreList {
     #[serde(alias = "initFailures")]
     pub init_failures: Value,
     pub status: Option<HashMap<String, CoreStatus>>,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct SolrSimpleResponse {
+    #[serde(alias = "responseHeader")]
+    pub header: ResponseHeader,
 }

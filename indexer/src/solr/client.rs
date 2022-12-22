@@ -26,10 +26,6 @@ impl SolrClient {
         })
     }
 
-    // pub async fn info(&self) -> Value {
-    //     todo!();
-    // }
-
     pub async fn status(&self) -> Result<SolrSystemInfo> {
         let path = "solr/admin/info/system";
 
@@ -77,8 +73,6 @@ impl SolrClient {
 
         ensure!(cores.contains_key(name), "Specified core does not exists.");
 
-        Ok(SolrCore {
-            name: String::from(name),
-        })
+        Ok(SolrCore::new(name, &self.url))
     }
 }
