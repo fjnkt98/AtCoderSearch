@@ -1,4 +1,6 @@
-use anyhow::{anyhow, Result};
+use crate::utils::extractor::FullTextExtractor;
+use anyhow::{anyhow, Context, Result};
+use chrono::{DateTime, NaiveDateTime, Utc};
 use serde::{Deserialize, Serialize};
 
 #[derive(sqlx::FromRow)]
@@ -9,11 +11,49 @@ pub struct Record {
     pub contest_id: String,
     pub contest_title: String,
     pub difficulty: i32,
-    pub start_at: i32,
-    pub duration: i32,
+    pub start_at: i64,
+    pub duration: i64,
     pub rate_change: String,
     pub category: String,
     pub html: String,
+}
+
+impl Record {
+    pub fn to_document(self) -> Result<Document> {
+        let start_at: String = DateTime::<Utc>::from_utc(
+            NaiveDateTime::from_timestamp_opt(self.start_at, 0).unwrap(),
+            Utc,
+        )
+        .to_rfc3339()
+        .replace("+00:00", "Z");
+
+        let extractor = FullTextExtractor::new(&self.html);
+        let (text_ja, text_en) = extractor
+            .extract()
+            .context("Couldn't extract text from html.")?;
+
+        let contest_url: String = format!("https://atcoder.jp/contests/{}", self.contest_id);
+
+        let document = Document {
+            problem_id: self.problem_id,
+            problem_title: self.problem_title,
+            problem_url: self.problem_url,
+            contest_id: self.contest_id,
+            contest_title: self.contest_title,
+            contest_url: contest_url,
+            difficulty: self.difficulty,
+            start_at: start_at,
+            duration: self.duration,
+            rate_change: self.rate_change,
+            category: self.category,
+            text_ja: text_ja,
+            text_en: text_en,
+        };
+
+        Ok(document)
+
+        // todo!();
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -26,7 +66,7 @@ pub struct Document {
     pub contest_url: String,
     pub difficulty: i32,
     pub start_at: String,
-    pub duration: i32,
+    pub duration: i64,
     pub rate_change: String,
     pub category: String,
     pub text_ja: Vec<String>,
@@ -42,7 +82,7 @@ pub struct DocumentBuilder {
     contest_url: Option<String>,
     difficulty: Option<i32>,
     start_at: Option<String>,
-    duration: Option<i32>,
+    duration: Option<i64>,
     rate_change: Option<String>,
     category: Option<String>,
     text_ja: Option<Vec<String>>,
@@ -166,7 +206,7 @@ impl DocumentBuilder {
         self
     }
 
-    pub fn duration(mut self, duration: i32) -> Self {
+    pub fn duration(mut self, duration: i64) -> Self {
         self.duration = Some(duration);
         self
     }
