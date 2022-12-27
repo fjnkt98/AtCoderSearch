@@ -1,5 +1,6 @@
 use crate::solr::models::*;
 use anyhow::{ensure, Context, Result};
+use reqwest::header::CONTENT_TYPE;
 use reqwest::Client;
 
 pub struct SolrCore {
@@ -65,7 +66,7 @@ impl SolrCore {
     }
 
     pub async fn select(&self, params: &Vec<(String, String)>) -> Result<()> {
-        let response = self
+        let _response = self
             .client
             .get(format!("{}/select", self.core_url))
             .query(params)
@@ -87,6 +88,7 @@ impl SolrCore {
         let response = self
             .client
             .post(format!("{}/update", self.core_url))
+            .header(CONTENT_TYPE, "application/json")
             .body(body)
             .send()
             .await?;
