@@ -11,7 +11,7 @@ pub struct SolrCore {
 
 impl SolrCore {
     pub fn new(name: &str, base_url: &str) -> Self {
-        let core_url = format!("{}/{}", base_url, name);
+        let core_url = format!("{}/solr/{}", base_url, name);
 
         SolrCore {
             name: String::from(name),
@@ -64,11 +64,82 @@ impl SolrCore {
         Ok(result.header.status)
     }
 
-    pub async fn select(&self) -> Result<()> {
+    pub async fn select(&self, params: &Vec<(String, String)>) -> Result<()> {
+        let response = self
+            .client
+            .get(format!("{}/select", self.core_url))
+            .query(params)
+            .send()
+            .await
+            .context("Failed to get response.")?
+            .text()
+            .await
+            .context("Failed to get JSON body from response.")?;
+
         todo!();
     }
 
     pub async fn analyze(&self) -> Result<()> {
         todo!();
     }
+
+    pub async fn post(&self, body: String) -> Result<()> {
+        let response = self
+            .client
+            .post(format!("{}/update", self.core_url))
+            .body(body)
+            .send()
+            .await?;
+
+        ensure!(response.status().as_u16() == 200);
+
+        Ok(())
+    }
+
+    pub async fn commit(&self, optimize: bool) -> Result<()> {
+        if optimize {
+            self.post(String::from(r#"{"optimize": {}}"#)).await?;
+        } else {
+            self.post(String::from(r#"{"commit": {}}"#)).await?;
+        }
+
+        Ok(())
+    }
+
+    pub async fn rollback(&self) -> Result<()> {
+        self.post(String::from(r#"{"rollback": {}}"#)).await?;
+
+        Ok(())
+    }
 }
+
+// #[derive(Default)]
+// pub struct ParameterBuilder {
+//     pub q: Option<String>,
+//     pub start: Option<u32>,
+//     pub rows: Option<u32>,
+//     pub fq: Option<String>,
+//     pub fl: Option<String>,
+//     pub sort: Option<String>,
+// }
+
+// impl ParameterBuilder {
+//     pub fn new() -> Self {
+//         ParameterBuilder {
+//             q: None,
+//             start: None,
+//             rows: None,
+//             fq: None,
+//             fl: None,
+//             sort: None,
+//         }
+//     }
+
+//     pub fn q(self) -> Self {
+//         self
+//     }
+
+//     pub fn build(&self) -> Vec<(String, String)> {
+//         todo!();
+//     }
+// }
