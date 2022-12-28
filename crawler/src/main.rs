@@ -1,8 +1,6 @@
 use anyhow::Result;
-use crawler::contest::crawler::ContestCrawler;
-use crawler::contest::models::Contest;
-use crawler::problem::crawler::ProblemCrawler;
-use crawler::problem::models::{Problem, ProblemJson};
+use crawler::crawler::{ContestCrawler, ProblemCrawler};
+use crawler::models::*;
 use dotenvy::dotenv;
 
 #[tokio::main]
