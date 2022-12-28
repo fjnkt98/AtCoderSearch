@@ -2,10 +2,12 @@ use crate::solr::client::SolrClient;
 use crate::utils::models::Document;
 use crate::utils::models::*;
 use crate::utils::reader::RecordReader;
+use futures::future::try_join_all;
 use futures::TryStreamExt;
 use serde_json;
 use sqlx::postgres::Postgres;
 use sqlx::Pool;
+use tokio::fs;
 use tokio::fs::File;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 
@@ -26,19 +28,38 @@ impl<'a> IndexingManager<'a> {
         let mut stream = self.reader.read_rows().await?;
 
         let mut buffer: Vec<Document> = Vec::new();
+        let mut suffix = 0;
         while let Some(record) = stream.try_next().await? {
             let document = record.to_document()?;
             buffer.push(document);
+
+            if buffer.len() == 1000 {
+                suffix += 1000;
+                let filename = format!("doc-{}.json", suffix.to_string());
+                tracing::info!("Saving {}", filename);
+
+                let mut file = File::create(format!("/var/tmp/atcoder/{}", filename)).await?;
+                let contents = serde_json::to_string_pretty(&buffer)
+                    .map_err(|e| IndexingError::SerializeError(e))?;
+
+                file.write_all(contents.as_bytes()).await?;
+
+                buffer.clear();
+            }
         }
 
-        tracing::info!("{} documents available.", buffer.len());
+        if !buffer.is_empty() {
+            suffix += buffer.len() as i32;
+            let filename = format!("doc-{}.json", suffix.to_string());
 
-        let mut file = File::create("/var/tmp/documents.json").await?;
-        let contents =
-            serde_json::to_string_pretty(&buffer).map_err(|e| IndexingError::SerializeError(e))?;
-        tracing::info!("Serialized JSON length is: {}", contents.len());
+            tracing::info!("Saving {}", filename);
 
-        file.write_all(contents.as_bytes()).await?;
+            let mut file = File::create(format!("/var/tmp/{}", filename)).await?;
+            let contents = serde_json::to_string_pretty(&buffer)
+                .map_err(|e| IndexingError::SerializeError(e))?;
+
+            file.write_all(contents.as_bytes()).await?;
+        }
 
         Ok(())
     }
@@ -46,13 +67,32 @@ impl<'a> IndexingManager<'a> {
         let client = SolrClient::new("http://localhost", 8983).unwrap();
         let core = client.core("atcoder").await?;
 
-        let mut file = File::open("/var/tmp/documents.json").await?;
-        let mut buffer = Vec::new();
-        let size = file.read_to_end(&mut buffer).await?;
+        let mut files = fs::read_dir("/var/tmp/atcoder").await?;
+        let mut target = Vec::new();
+        while let Some(file) = files.next_entry().await? {
+            let path = file.path();
+            if let Some(extension) = path.extension() {
+                if extension == "json" {
+                    target.push(path)
+                }
+            }
+        }
 
-        tracing::info!("Document size is: {}", size);
+        let files: Vec<_> = target.iter().map(|file| File::open(file)).collect();
+        let files = try_join_all(files).await?;
+        let mut buffers = Vec::new();
+        for mut file in files {
+            let mut buffer = Vec::new();
+            file.read_to_end(&mut buffer).await?;
+            buffers.push(buffer);
+        }
 
-        core.post(buffer).await?;
+        let tasks: Vec<_> = buffers
+            .into_iter()
+            .map(|buffer| core.post(buffer))
+            .collect();
+
+        try_join_all(tasks).await?;
         core.commit(true).await?;
 
         Ok(())

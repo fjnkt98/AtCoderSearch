@@ -35,9 +35,7 @@ impl<'a> RecordReader<'a> {
                 problems.html AS html
             FROM
                 problems
-                LEFT JOIN contests ON problems.contest_id = contests.id
-            LIMIT
-                10;
+                LEFT JOIN contests ON problems.contest_id = contests.id;
             ",
         )
         .fetch(self.pool);
