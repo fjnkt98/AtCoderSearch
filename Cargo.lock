@@ -235,6 +235,7 @@ dependencies = [
  "serde_qs",
  "serde_urlencoded",
  "sqlx",
+ "thiserror",
  "tokio",
  "tracing",
  "tracing-subscriber",
