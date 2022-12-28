@@ -1,2 +1,2 @@
-pub mod crawler;
+pub mod crawlers;
 pub mod models;

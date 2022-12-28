@@ -1,5 +1,5 @@
 use anyhow::Result;
-use crawler::crawler::{ContestCrawler, ProblemCrawler};
+use crawler::crawlers::{ContestCrawler, ProblemCrawler};
 use crawler::models::*;
 use dotenvy::dotenv;
 
