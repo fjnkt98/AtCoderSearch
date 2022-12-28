@@ -1,8 +1,10 @@
-use anyhow::Result;
+use crate::utils::models::*;
 use ego_tree::NodeRef;
 use regex::Regex;
 use scraper::node::Node;
 use scraper::{Html, Selector};
+
+type Result<T> = std::result::Result<T, IndexingError>;
 
 pub struct FullTextExtractor<'a> {
     html: &'a str,
@@ -39,18 +41,19 @@ impl<'a> FullTextExtractor<'a> {
     pub fn extract(&self) -> Result<(Vec<String>, Vec<String>)> {
         let html = Html::parse_document(self.html);
 
-        let div_part = Selector::parse("div.part").unwrap();
-        let section = Selector::parse("section").unwrap();
-        let h3 = Selector::parse("h3").unwrap();
+        let div_part = Selector::parse("div.part").map_err(|e| IndexingError::SelectorError(e))?;
+        let section = Selector::parse("section").map_err(|e| IndexingError::SelectorError(e))?;
+        let h3 = Selector::parse("h3").map_err(|e| IndexingError::SelectorError(e))?;
 
-        let ascii = Regex::new("^[\x20-\x7E].*$").unwrap();
+        let ascii = Regex::new("^[\x20-\x7E].*$").map_err(|e| IndexingError::RegexError(e))?;
 
         let mut text_ja: Vec<String> = Vec::new();
         let mut text_en: Vec<String> = Vec::new();
         for part in html.select(&div_part) {
-            let section = part.select(&section).next().unwrap();
+            let Some(section) = part.select(&section).next() else {continue};
 
-            let title = section.select(&h3).next().unwrap().text().next().unwrap();
+            let Some(title) = section.select(&h3).next() else {continue};
+            let Some(title) = title.text().next() else {continue};
 
             let mut full_text: Vec<String> = Vec::new();
             for e in section.children() {

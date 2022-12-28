@@ -1,8 +1,10 @@
-use crate::utils::models;
+use crate::utils::models::*;
 use sqlx::postgres::Postgres;
 use sqlx::Pool;
 use tokio::macros::support::Pin;
 use tokio_stream::Stream;
+
+type Result<T> = std::result::Result<T, IndexingError>;
 
 pub struct RecordReader<'a> {
     pool: &'a Pool<Postgres>,
@@ -15,9 +17,9 @@ impl<'a> RecordReader<'a> {
 
     pub async fn read_rows(
         &self,
-    ) -> anyhow::Result<Pin<Box<dyn Stream<Item = Result<models::Record, sqlx::Error>> + Send + 'a>>>
+    ) -> Result<Pin<Box<dyn Stream<Item = std::result::Result<Record, sqlx::Error>> + Send + 'a>>>
     {
-        let stream = sqlx::query_as::<_, models::Record>(
+        let stream = sqlx::query_as::<_, Record>(
             "
             SELECT
                 problems.id AS problem_id,

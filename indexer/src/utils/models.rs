@@ -1,7 +1,28 @@
+use crate::solr::models::SolrError;
 use crate::utils::extractor::FullTextExtractor;
-use anyhow::{anyhow, Context, Result};
 use chrono::{DateTime, NaiveDateTime, Utc};
 use serde::{Deserialize, Serialize};
+use thiserror::Error;
+
+type Result<T> = std::result::Result<T, IndexingError>;
+
+#[derive(Debug, Error)]
+pub enum IndexingError {
+    #[error("Failed to execute SQL query")]
+    SqlExecutionError(#[from] sqlx::Error),
+    #[error("Failed to create selector")]
+    SelectorError(#[from] scraper::error::SelectorErrorKind<'static>),
+    #[error("Failed to create regular expression pattern")]
+    RegexError(#[from] regex::Error),
+    #[error("Field value is mandatory")]
+    FieldValueNotConfiguredError,
+    #[error("Failed to serialize JSON data")]
+    SerializeError(#[from] serde_json::Error),
+    #[error("Failed to operate file")]
+    FileOperationError(#[from] std::io::Error),
+    #[error("Failed to post JSON data to Solr")]
+    SolrPostError(#[from] SolrError),
+}
 
 #[derive(sqlx::FromRow)]
 pub struct Record {
@@ -28,9 +49,7 @@ impl Record {
         .replace("+00:00", "Z");
 
         let extractor = FullTextExtractor::new(&self.html);
-        let (text_ja, text_en) = extractor
-            .extract()
-            .context("Couldn't extract text from html.")?;
+        let (text_ja, text_en) = extractor.extract()?;
 
         let contest_url: String = format!("https://atcoder.jp/contests/{}", self.contest_id);
 
@@ -111,43 +130,43 @@ impl DocumentBuilder {
     pub fn build(self) -> Result<Document> {
         let problem_id = self
             .problem_id
-            .ok_or_else(|| anyhow!("problem_id is mandatory."))?;
+            .ok_or_else(|| IndexingError::FieldValueNotConfiguredError)?;
         let problem_title = self
             .problem_title
-            .ok_or_else(|| anyhow!("problem_title is mandatory."))?;
+            .ok_or_else(|| IndexingError::FieldValueNotConfiguredError)?;
         let problem_url = self
             .problem_url
-            .ok_or_else(|| anyhow!("problem_url is mandatory."))?;
+            .ok_or_else(|| IndexingError::FieldValueNotConfiguredError)?;
         let contest_id = self
             .contest_id
-            .ok_or_else(|| anyhow!("contest_id is mandatory."))?;
+            .ok_or_else(|| IndexingError::FieldValueNotConfiguredError)?;
         let contest_title = self
             .contest_title
-            .ok_or_else(|| anyhow!("contest_title is mandatory."))?;
+            .ok_or_else(|| IndexingError::FieldValueNotConfiguredError)?;
         let contest_url = self
             .contest_url
-            .ok_or_else(|| anyhow!("contest_url is mandatory."))?;
+            .ok_or_else(|| IndexingError::FieldValueNotConfiguredError)?;
         let difficulty = self
             .difficulty
-            .ok_or_else(|| anyhow!("difficulty is mandatory."))?;
+            .ok_or_else(|| IndexingError::FieldValueNotConfiguredError)?;
         let start_at = self
             .start_at
-            .ok_or_else(|| anyhow!("start_at is mandatory."))?;
+            .ok_or_else(|| IndexingError::FieldValueNotConfiguredError)?;
         let duration = self
             .duration
-            .ok_or_else(|| anyhow!("duration is mandatory."))?;
+            .ok_or_else(|| IndexingError::FieldValueNotConfiguredError)?;
         let rate_change = self
             .rate_change
-            .ok_or_else(|| anyhow!("rate_change is mandatory."))?;
+            .ok_or_else(|| IndexingError::FieldValueNotConfiguredError)?;
         let category = self
             .category
-            .ok_or_else(|| anyhow!("category is mandatory."))?;
+            .ok_or_else(|| IndexingError::FieldValueNotConfiguredError)?;
         let text_ja = self
             .text_ja
-            .ok_or_else(|| anyhow!("text_ja is mandatory."))?;
+            .ok_or_else(|| IndexingError::FieldValueNotConfiguredError)?;
         let text_en = self
             .text_en
-            .ok_or_else(|| anyhow!("text_en is mandatory."))?;
+            .ok_or_else(|| IndexingError::FieldValueNotConfiguredError)?;
 
         Ok(Document {
             problem_id: problem_id,

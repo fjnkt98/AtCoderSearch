@@ -1,13 +1,15 @@
 use crate::solr::client::SolrClient;
 use crate::utils::models::Document;
+use crate::utils::models::*;
 use crate::utils::reader::RecordReader;
-use anyhow::{Context, Result};
 use futures::TryStreamExt;
 use serde_json;
 use sqlx::postgres::Postgres;
 use sqlx::Pool;
 use tokio::fs::File;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
+
+type Result<T> = std::result::Result<T, IndexingError>;
 
 pub struct IndexingManager<'a> {
     reader: RecordReader<'a>,
@@ -25,9 +27,7 @@ impl<'a> IndexingManager<'a> {
 
         let mut buffer: Vec<Document> = Vec::new();
         while let Some(record) = stream.try_next().await? {
-            let document = record
-                .to_document()
-                .context("Couldn't convert record to document.")?;
+            let document = record.to_document()?;
             buffer.push(document);
         }
 
@@ -35,7 +35,7 @@ impl<'a> IndexingManager<'a> {
 
         let mut file = File::create("/var/tmp/documents.json").await?;
         let contents =
-            serde_json::to_string_pretty(&buffer).context("Couldn't serialize documents.")?;
+            serde_json::to_string_pretty(&buffer).map_err(|e| IndexingError::SerializeError(e))?;
         tracing::info!("Serialized JSON length is: {}", contents.len());
 
         file.write_all(contents.as_bytes()).await?;
