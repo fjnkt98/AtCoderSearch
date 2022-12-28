@@ -118,4 +118,11 @@ impl SolrCore {
 
         Ok(())
     }
+
+    pub async fn truncate(&self) -> Result<()> {
+        self.post(br#"{"delete":{"query": "*:*"}}"#.to_vec())
+            .await?;
+
+        Ok(())
+    }
 }
