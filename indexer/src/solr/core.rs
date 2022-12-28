@@ -1,7 +1,8 @@
 use crate::solr::models::*;
-use anyhow::{ensure, Context, Result};
 use reqwest::header::CONTENT_TYPE;
 use reqwest::Client;
+
+type Result<T> = std::result::Result<T, SolrError>;
 
 pub struct SolrCore {
     pub name: String,
@@ -30,13 +31,13 @@ impl SolrCore {
             .query(&[("action", "status"), ("core", &self.name)])
             .send()
             .await
-            .context("Failed to get response.")?
+            .map_err(|e| SolrError::RequestError(e))?
             .text()
             .await
-            .context("Failed to get JSON body from response.")?;
+            .map_err(|e| SolrError::RequestError(e))?;
 
         let result: SolrCoreList =
-            serde_json::from_str(&response).context("Failed to parse JSON body")?;
+            serde_json::from_str(&response).map_err(|e| SolrError::DeserializeError(e))?;
 
         let status = result.status.unwrap().get(&self.name).unwrap().clone();
 
@@ -52,15 +53,17 @@ impl SolrCore {
             .query(&[("action", "status"), ("core", &self.name)])
             .send()
             .await
-            .context("Failed to get response.")?
+            .map_err(|e| SolrError::RequestError(e))?
             .text()
             .await
-            .context("Failed to get JSON body from response.")?;
+            .map_err(|e| SolrError::RequestError(e))?;
 
         let result: SolrSimpleResponse =
-            serde_json::from_str(&response).context("Failed to parse JSON body")?;
+            serde_json::from_str(&response).map_err(|e| SolrError::DeserializeError(e))?;
 
-        ensure!(result.header.status == 0);
+        if result.header.status != 0 {
+            return Err(SolrError::CoreReloadError);
+        }
 
         Ok(result.header.status)
     }
@@ -72,10 +75,10 @@ impl SolrCore {
             .query(params)
             .send()
             .await
-            .context("Failed to get response.")?
+            .map_err(|e| SolrError::RequestError(e))?
             .text()
             .await
-            .context("Failed to get JSON body from response.")?;
+            .map_err(|e| SolrError::RequestError(e))?;
 
         todo!();
     }
@@ -84,7 +87,7 @@ impl SolrCore {
         todo!();
     }
 
-    pub async fn post(&self, body: String) -> Result<()> {
+    pub async fn post(&self, body: Vec<u8>) -> Result<()> {
         let response = self
             .client
             .post(format!("{}/update", self.core_url))
@@ -93,55 +96,26 @@ impl SolrCore {
             .send()
             .await?;
 
-        ensure!(response.status().as_u16() == 200);
+        if response.status().as_u16() != 200 {
+            return Err(SolrError::CorePostError);
+        }
 
         Ok(())
     }
 
     pub async fn commit(&self, optimize: bool) -> Result<()> {
         if optimize {
-            self.post(String::from(r#"{"optimize": {}}"#)).await?;
+            self.post(br#"{"optimize": {}}"#.to_vec()).await?;
         } else {
-            self.post(String::from(r#"{"commit": {}}"#)).await?;
+            self.post(br#"{"commit": {}}"#.to_vec()).await?;
         }
 
         Ok(())
     }
 
     pub async fn rollback(&self) -> Result<()> {
-        self.post(String::from(r#"{"rollback": {}}"#)).await?;
+        self.post(br#"{"rollback": {}}"#.to_vec()).await?;
 
         Ok(())
     }
 }
-
-// #[derive(Default)]
-// pub struct ParameterBuilder {
-//     pub q: Option<String>,
-//     pub start: Option<u32>,
-//     pub rows: Option<u32>,
-//     pub fq: Option<String>,
-//     pub fl: Option<String>,
-//     pub sort: Option<String>,
-// }
-
-// impl ParameterBuilder {
-//     pub fn new() -> Self {
-//         ParameterBuilder {
-//             q: None,
-//             start: None,
-//             rows: None,
-//             fq: None,
-//             fl: None,
-//             sort: None,
-//         }
-//     }
-
-//     pub fn q(self) -> Self {
-//         self
-//     }
-
-//     pub fn build(&self) -> Vec<(String, String)> {
-//         todo!();
-//     }
-// }

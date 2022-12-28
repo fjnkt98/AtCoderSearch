@@ -1,9 +1,9 @@
 use crate::solr::core::SolrCore;
 use crate::solr::models::*;
-use anyhow::{anyhow, ensure, Context, Result};
 use reqwest::Client;
-// use serde_json::Value;
 use url::Url;
+
+type Result<T> = std::result::Result<T, SolrError>;
 
 #[derive(Debug)]
 pub struct SolrClient {
@@ -13,12 +13,10 @@ pub struct SolrClient {
 
 impl SolrClient {
     pub fn new(url: &str, port: u32) -> Result<Self> {
-        let url = Url::parse(url)?;
+        let url = Url::parse(url).map_err(|e| SolrError::UrlParseError(e))?;
 
         let scheme = url.scheme();
-        let host = url
-            .host_str()
-            .ok_or_else(|| anyhow!("Failed to parse URL host."))?;
+        let host = url.host_str().ok_or_else(|| SolrError::InvalidHostError)?;
 
         Ok(SolrClient {
             url: format!("{}://{}:{}", scheme, host, port),
@@ -34,13 +32,13 @@ impl SolrClient {
             .get(format!("{}/{}", self.url, path))
             .send()
             .await
-            .context("Failed to get response.")?
+            .map_err(|e| SolrError::RequestError(e))?
             .text()
             .await
-            .context("Failed to get JSON body from response.")?;
+            .map_err(|e| SolrError::RequestError(e))?;
 
         let result: SolrSystemInfo =
-            serde_json::from_str(&response).context("Failed to parse JSON body")?;
+            serde_json::from_str(&response).map_err(|e| SolrError::DeserializeError(e))?;
 
         Ok(result)
     }
@@ -53,13 +51,13 @@ impl SolrClient {
             .get(format!("{}/{}", self.url, path))
             .send()
             .await
-            .context("Failed to get response.")?
+            .map_err(|e| SolrError::RequestError(e))?
             .text()
             .await
-            .context("Failed to get JSON body from response.")?;
+            .map_err(|e| SolrError::RequestError(e))?;
 
         let result: SolrCoreList =
-            serde_json::from_str(&response).context("Failed to parse JSON body")?;
+            serde_json::from_str(&response).map_err(|e| SolrError::DeserializeError(e))?;
 
         Ok(result)
     }
@@ -69,9 +67,11 @@ impl SolrClient {
             .cores()
             .await?
             .status
-            .ok_or_else(|| anyhow!("Any cores does not exists."))?;
+            .ok_or_else(|| SolrError::SpecifiedCoreNotFoundError)?;
 
-        ensure!(cores.contains_key(name), "Specified core does not exists.");
+        if !cores.contains_key(name) {
+            return Err(SolrError::SpecifiedCoreNotFoundError);
+        }
 
         Ok(SolrCore::new(name, &self.url))
     }

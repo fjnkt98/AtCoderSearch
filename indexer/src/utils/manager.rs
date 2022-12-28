@@ -52,7 +52,7 @@ impl<'a> IndexingManager<'a> {
 
         tracing::info!("Document size is: {}", size);
 
-        core.post(String::from_utf8(buffer)?).await?;
+        core.post(buffer).await?;
         core.commit(true).await?;
 
         Ok(())

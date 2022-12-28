@@ -949,6 +949,7 @@ dependencies = [
  "serde_qs",
  "serde_urlencoded",
  "sqlx",
+ "thiserror",
  "tokio",
  "tokio-stream",
  "tracing",

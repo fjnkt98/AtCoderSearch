@@ -1,6 +1,25 @@
 use serde::Deserialize;
 use serde_json::Value;
 use std::collections::HashMap;
+use thiserror::Error;
+
+#[derive(Debug, Error)]
+pub enum SolrError {
+    #[error("Failed to request to solr")]
+    RequestError(#[from] reqwest::Error),
+    #[error("Failed to parse URL")]
+    UrlParseError(#[from] url::ParseError),
+    #[error("Given URL host is invalid")]
+    InvalidHostError,
+    #[error("Failed to deserialize JSON data")]
+    DeserializeError(#[from] serde_json::Error),
+    #[error("Specified core name does not exist")]
+    SpecifiedCoreNotFoundError,
+    #[error("Failed to reload core")]
+    CoreReloadError,
+    #[error("Failed to post data")]
+    CorePostError,
+}
 
 #[derive(Deserialize, Debug)]
 pub struct ResponseHeader {
