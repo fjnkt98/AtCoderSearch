@@ -71,6 +71,9 @@ impl<'a> IndexingManager<'a> {
         let client = SolrClient::new("http://localhost", 8983).unwrap();
         let core = client.core("atcoder").await?;
 
+        core.reload().await?;
+        core.truncate().await?;
+
         let mut files = fs::read_dir("/var/tmp/atcoder").await?;
         let mut target = Vec::new();
         while let Some(file) = files.next_entry().await? {
