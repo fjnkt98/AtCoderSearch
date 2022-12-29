@@ -19,6 +19,8 @@ pub enum SolrError {
     CoreReloadError,
     #[error("Failed to post data")]
     CorePostError,
+    #[error("Invalid argument has given")]
+    InvalidValueError,
 }
 
 #[derive(Deserialize, Debug)]
@@ -108,4 +110,30 @@ pub struct SolrCoreList {
 pub struct SolrSimpleResponse {
     #[serde(alias = "responseHeader")]
     pub header: ResponseHeader,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct SolrSelectResponse {
+    #[serde(alias = "responseHeader")]
+    pub header: ResponseHeader,
+    pub response: Value,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct SolrAnalysisBody {
+    pub field_types: HashMap<String, SolrAnalysisField>,
+    pub field_names: HashMap<String, SolrAnalysisField>,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct SolrAnalysisField {
+    pub index: Option<Vec<Value>>,
+    pub query: Option<Vec<Value>>,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct SolrAnalysisResponse {
+    #[serde(alias = "responseHeader")]
+    pub header: ResponseHeader,
+    pub analysis: SolrAnalysisBody,
 }

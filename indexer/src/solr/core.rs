@@ -1,6 +1,7 @@
 use crate::solr::models::*;
 use reqwest::header::CONTENT_TYPE;
 use reqwest::Client;
+use serde_json::Value;
 
 type Result<T> = std::result::Result<T, SolrError>;
 
@@ -68,8 +69,8 @@ impl SolrCore {
         Ok(result.header.status)
     }
 
-    pub async fn select(&self, params: &Vec<(String, String)>) -> Result<()> {
-        let _response = self
+    pub async fn select(&self, params: &Vec<(String, String)>) -> Result<SolrSelectResponse> {
+        let response = self
             .client
             .get(format!("{}/select", self.core_url))
             .query(params)
@@ -80,11 +81,46 @@ impl SolrCore {
             .await
             .map_err(|e| SolrError::RequestError(e))?;
 
-        todo!();
+        let result: SolrSelectResponse =
+            serde_json::from_str(&response).map_err(|e| SolrError::DeserializeError(e))?;
+
+        Ok(result)
     }
 
-    pub async fn analyze(&self) -> Result<()> {
-        todo!();
+    pub async fn analyze(&self, word: &str, field: &str, analyzer: &str) -> Result<Vec<String>> {
+        let params = [("analysis.fieldvalue", word), ("analysis.fieldtype", field)];
+
+        let response = self
+            .client
+            .get(format!("{}/analysis/field", self.core_url))
+            .query(&params)
+            .send()
+            .await
+            .map_err(|e| SolrError::RequestError(e))?
+            .text()
+            .await
+            .map_err(|e| SolrError::RequestError(e))?;
+
+        let result: SolrAnalysisResponse =
+            serde_json::from_str(&response).map_err(|e| SolrError::DeserializeError(e))?;
+
+        let result = result.analysis.field_types.get(field).unwrap();
+        let result = match analyzer {
+            "index" => result.index.as_ref().unwrap(),
+            "query" => result.query.as_ref().unwrap(),
+            _ => return Err(SolrError::InvalidValueError),
+        };
+        let result = result.last().unwrap().clone();
+
+        let result = match result {
+            Value::Array(array) => array
+                .iter()
+                .map(|e| e["text"].to_string().trim_matches('"').to_string())
+                .collect::<Vec<String>>(),
+            _ => Vec::new(),
+        };
+
+        Ok(result)
     }
 
     pub async fn post(&self, body: Vec<u8>) -> Result<()> {
