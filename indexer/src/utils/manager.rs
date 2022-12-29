@@ -1,4 +1,5 @@
 use crate::solr::client::SolrClient;
+use crate::utils::extractor::FullTextExtractor;
 use crate::utils::models::Document;
 use crate::utils::models::*;
 use crate::utils::reader::RecordReader;
@@ -30,7 +31,10 @@ impl<'a> IndexingManager<'a> {
         let mut buffer: Vec<Document> = Vec::new();
         let mut suffix = 0;
         while let Some(record) = stream.try_next().await? {
-            let document = record.to_document()?;
+            tracing::info!("Processing {}...", record.problem_id);
+
+            let extractor = FullTextExtractor::new()?;
+            let document = record.to_document(&extractor)?;
             buffer.push(document);
 
             if buffer.len() == 1000 {

@@ -40,7 +40,7 @@ pub struct Record {
 }
 
 impl Record {
-    pub fn to_document(self) -> Result<Document> {
+    pub fn to_document(self, extractor: &FullTextExtractor) -> Result<Document> {
         let start_at: String = DateTime::<Utc>::from_utc(
             NaiveDateTime::from_timestamp_opt(self.start_at, 0).unwrap(),
             Utc,
@@ -48,8 +48,7 @@ impl Record {
         .to_rfc3339()
         .replace("+00:00", "Z");
 
-        let extractor = FullTextExtractor::new(&self.html);
-        let (text_ja, text_en) = extractor.extract()?;
+        let (text_ja, text_en) = extractor.extract(&self.html)?;
 
         let contest_url: String = format!("https://atcoder.jp/contests/{}", self.contest_id);
 
