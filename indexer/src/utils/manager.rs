@@ -58,7 +58,7 @@ impl<'a> IndexingManager<'a> {
 
             tracing::info!("Saving {}", filename);
 
-            let mut file = File::create(format!("/var/tmp/{}", filename)).await?;
+            let mut file = File::create(format!("/var/tmp/atcoder/{}", filename)).await?;
             let contents = serde_json::to_string_pretty(&buffer)
                 .map_err(|e| IndexingError::SerializeError(e))?;
 
