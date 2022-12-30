@@ -19,7 +19,8 @@ impl<'a> RecordReader<'a> {
         &self,
     ) -> Result<Pin<Box<dyn Stream<Item = std::result::Result<Record, sqlx::Error>> + Send + 'a>>>
     {
-        let stream = sqlx::query_as::<_, Record>(
+        let stream = sqlx::query_as!(
+            Record,
             "
             SELECT
                 problems.id AS problem_id,
@@ -35,8 +36,8 @@ impl<'a> RecordReader<'a> {
                 problems.html AS html
             FROM
                 problems
-                LEFT JOIN contests ON problems.contest_id = contests.id;
-            ",
+                JOIN contests ON problems.contest_id = contests.id;
+            "
         )
         .fetch(self.pool);
 
