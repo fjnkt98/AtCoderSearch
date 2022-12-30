@@ -4,13 +4,19 @@ use indexer::utils::manager::IndexingManager;
 use sqlx::postgres::Postgres;
 use sqlx::Pool;
 
+use tracing_subscriber::filter::EnvFilter;
+use tracing_subscriber::fmt;
+
 #[tokio::main]
 async fn main() -> Result<()> {
     dotenv().ok();
 
     let log_level = std::env::var("RUST_LOG").unwrap_or(String::from("info"));
-    std::env::set_var("RUST_LOG", log_level);
-    tracing_subscriber::fmt::init();
+    std::env::set_var("RUST_LOG", "info");
+
+    let filter =
+        EnvFilter::try_from_default_env()?.add_directive(format!("indexer={}", log_level).parse()?);
+    fmt().with_env_filter(filter).init();
 
     let database_url: String =
         std::env::var("DATABASE_URL").expect("DATABASE_URL must be configured.");

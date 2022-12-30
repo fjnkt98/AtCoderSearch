@@ -31,7 +31,7 @@ impl<'a> IndexingManager<'a> {
         let mut buffer: Vec<Document> = Vec::new();
         let mut suffix = 0;
         while let Some(record) = stream.try_next().await? {
-            tracing::info!("Processing {}...", record.problem_id);
+            tracing::debug!("Processing {}...", record.problem_id);
 
             let extractor = FullTextExtractor::new()?;
             let document = record.to_document(&extractor)?;
