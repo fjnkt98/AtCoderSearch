@@ -89,14 +89,16 @@ impl SolrClient {
 mod tests {
     use super::*;
 
-    /// 通常系テスト
+    /// Solrクライアント作成の通常系テスト
     #[test]
     fn test_create_solr_client() {
         let client = SolrClient::new("http://localhost", 8983).unwrap();
         assert_eq!(client.url, "http://localhost:8983");
     }
 
-    /// 冗長なURLを与えられたときのテスト
+    /// Solrクライアント作成の通常系テスト
+    ///
+    /// 冗長なURLを与えられたときの動作を確認する。
     /// 与えられたURLのスキーマとホストのみを読み取る仕様なので、冗長なURLを与えられても
     /// スキーマとホスト以外の情報は無視される。
     #[test]
@@ -105,14 +107,14 @@ mod tests {
         assert_eq!(client.url, "http://localhost:8983");
     }
 
-    /// 異常系テスト
+    /// Solrクライアント作成の異常系テスト
     #[test]
     fn test_create_solr_client_with_invalid_url() {
         let client = SolrClient::new("hogehoge", 3000);
         assert!(client.is_err());
     }
 
-    /// 正常系テスト
+    /// Solrクライアントのステータス取得の正常系テスト
     ///
     /// 以下のコマンドでDockerコンテナを起動してからテストを実行すること。
     ///
@@ -128,7 +130,7 @@ mod tests {
         assert_eq!(response.header.status, 0);
     }
 
-    /// 正常系テスト
+    /// コア一覧取得の正常系テスト
     ///
     /// 以下のコマンドでDockerコンテナを起動してからテストを実行すること。
     ///
@@ -144,7 +146,24 @@ mod tests {
         assert!(response.status.unwrap().contains_key("example"));
     }
 
-    /// 正常系テスト
+    /// コア一覧を文字列のベクタとして取得する機能の正常系テスト
+    ///
+    /// 以下のコマンドでDockerコンテナを起動してからテストを実行すること。
+    ///
+    /// ```ignore
+    /// docker run --rm -d -p 8983:8983 solr:9.1.0 solr-precreate example
+    /// ```
+    #[tokio::test]
+    #[ignore]
+    async fn test_get_cores_as_vec() {
+        let client = SolrClient::new("http://localhost", 8983).unwrap();
+
+        let response = client.cores().await.unwrap();
+        let cores = response.as_vec().unwrap();
+        assert_eq!(cores, vec![String::from("example")]);
+    }
+
+    /// コアオブジェクト取得メソッドの正常系テスト
     ///
     /// 以下のコマンドでDockerコンテナを起動してからテストを実行すること。
     ///

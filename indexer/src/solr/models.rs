@@ -106,6 +106,16 @@ pub struct SolrCoreList {
     pub status: Option<HashMap<String, CoreStatus>>,
 }
 
+impl SolrCoreList {
+    pub fn as_vec(&self) -> Option<Vec<String>> {
+        if let Some(cores) = &self.status {
+            Some(cores.keys().cloned().collect())
+        } else {
+            return None;
+        }
+    }
+}
+
 #[derive(Deserialize, Debug)]
 pub struct SolrSimpleResponse {
     #[serde(alias = "responseHeader")]
