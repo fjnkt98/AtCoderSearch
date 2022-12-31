@@ -7,11 +7,16 @@ type Result<T> = std::result::Result<T, SolrError>;
 
 #[derive(Debug)]
 pub struct SolrClient {
+    /// SolrインスタンスのルートURL。e.g.) http://localhost:8983
     url: String,
+    /// reqwest HTTPクライアント
     client: Client,
 }
 
 impl SolrClient {
+    /// コンストラクタ
+    /// 引数で与えられたURLはスキーマ(http)とホスト名しか使わない。
+    /// 冗長なURL(e.g.) http://localhost:8983/solr)が与えられても、ポート番号やパスはすべて無視される
     pub fn new(url: &str, port: u32) -> Result<Self> {
         let url = Url::parse(url).map_err(|e| SolrError::UrlParseError(e))?;
 
@@ -24,6 +29,7 @@ impl SolrClient {
         })
     }
 
+    /// Solrインスタンスのステータスを取得するメソッド
     pub async fn status(&self) -> Result<SolrSystemInfo> {
         let path = "solr/admin/info/system";
 
@@ -43,6 +49,7 @@ impl SolrClient {
         Ok(result)
     }
 
+    /// Solrインスタンスに存在するコアの一覧を取得するメソッド
     pub async fn cores(&self) -> Result<SolrCoreList> {
         let path = "solr/admin/cores";
 
@@ -62,6 +69,7 @@ impl SolrClient {
         Ok(result)
     }
 
+    /// Solrコアオブジェクトを取得するメソッド
     pub async fn core(&self, name: &str) -> Result<SolrCore> {
         let cores = self
             .cores()
