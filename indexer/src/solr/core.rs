@@ -40,6 +40,12 @@ impl SolrCore {
         let result: SolrCoreList =
             serde_json::from_str(&response).map_err(|e| SolrError::DeserializeError(e))?;
 
+        // コアオブジェクトが作成できた時点で
+        //
+        // 1. レスポンスのJSONに`status`フィールドが存在すること
+        // 2. `status`フィールドのキーにこのコアが含まれていること
+        //
+        // が保証されているので、`unwrap()`を使用している。
         let status = result.status.unwrap().get(&self.name).unwrap().clone();
 
         Ok(status)
@@ -160,5 +166,56 @@ impl SolrCore {
             .await?;
 
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use chrono::{DateTime, Utc};
+
+    /// コアのステータス取得メソッドの正常系テスト
+    ///
+    /// 以下のコマンドでDockerコンテナを起動してからテストを実行すること。
+    ///
+    /// ```ignore
+    /// docker run --rm -d -p 8983:8983 solr:9.1.0 solr-precreate example
+    /// ```
+    #[tokio::test]
+    #[ignore]
+    async fn test_get_status() {
+        let core = SolrCore::new("example", "http://localhost:8983");
+        let status = core.status().await.unwrap();
+
+        assert_eq!(status.name, String::from("example"));
+    }
+
+    /// コアのリロードメソッドの正常系テスト
+    ///
+    /// コアのリロード実行時の時刻と、リロード後のコアのスタートタイムの差が1秒以内なら
+    /// リロードが実行されたと判断する。
+    ///
+    /// 以下のコマンドでDockerコンテナを起動してからテストを実行すること。
+    ///
+    /// ```ignore
+    /// docker run --rm -d -p 8983:8983 solr:9.1.0 solr-precreate example
+    /// ```
+    #[tokio::test]
+    #[ignore]
+    async fn test_reload() {
+        let core = SolrCore::new("example", "http://localhost:8983");
+
+        let before = Utc::now();
+
+        core.reload().await.unwrap();
+
+        let status = core.status().await.unwrap();
+        let after = status.start_time.replace("Z", "+00:00");
+        let after = DateTime::parse_from_rfc3339(&after)
+            .unwrap()
+            .with_timezone(&Utc);
+
+        let duration = (after - before).num_milliseconds();
+        assert!(duration < 1000);
     }
 }
