@@ -3,5 +3,6 @@
 members = [
   "crawler",
   "indexer",
-  "server"
+  "server",
+  "solr_client",
 ]
