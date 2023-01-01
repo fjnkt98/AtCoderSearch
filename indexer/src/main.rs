@@ -1,7 +1,12 @@
+mod extractor;
+mod manager;
+mod models;
+mod reader;
+
 use anyhow::Result;
 use dotenvy::dotenv;
-use indexer::solr::client::SolrClient;
-use indexer::utils::manager::IndexingManager;
+use manager::IndexingManager;
+use solr_client::client::SolrClient;
 use sqlx::postgres::Postgres;
 use sqlx::Pool;
 use std::env;

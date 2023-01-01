@@ -1,4 +1,4 @@
-use crate::utils::models::*;
+use crate::models::*;
 use sqlx::postgres::Postgres;
 use sqlx::Pool;
 use tokio::macros::support::Pin;

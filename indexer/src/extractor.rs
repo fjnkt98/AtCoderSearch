@@ -1,4 +1,4 @@
-use crate::utils::models::*;
+use crate::models::*;
 use ego_tree::NodeRef;
 use regex::Regex;
 use scraper::node::Node;

@@ -1,7 +1,7 @@
-use crate::solr::models::SolrError;
-use crate::utils::extractor::FullTextExtractor;
+use crate::extractor::FullTextExtractor;
 use chrono::{DateTime, NaiveDateTime, Utc};
 use serde::{Deserialize, Serialize};
+use solr_client::models::SolrError;
 use thiserror::Error;
 
 type Result<T> = std::result::Result<T, IndexingError>;

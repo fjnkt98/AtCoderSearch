@@ -1,11 +1,11 @@
-use crate::solr::core::SolrCore;
-use crate::utils::extractor::FullTextExtractor;
-use crate::utils::models::Document;
-use crate::utils::models::*;
-use crate::utils::reader::RecordReader;
+use crate::extractor::FullTextExtractor;
+use crate::models::Document;
+use crate::models::*;
+use crate::reader::RecordReader;
 use futures::future::try_join_all;
 use futures::TryStreamExt;
 use serde_json;
+use solr_client::core::SolrCore;
 use sqlx::postgres::Postgres;
 use sqlx::Pool;
 use tokio::fs;
