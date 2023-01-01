@@ -1,4 +1,5 @@
 mod handlers;
+mod models;
 
 use crate::handlers::search;
 use anyhow::Result;
