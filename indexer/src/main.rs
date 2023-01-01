@@ -39,7 +39,7 @@ async fn main() -> Result<()> {
         .await
         .expect("Failed to create core client");
 
-    let manager = IndexingManager::new(&pool, solr, core);
+    let manager = IndexingManager::new(&pool, core);
     manager
         .write()
         .await

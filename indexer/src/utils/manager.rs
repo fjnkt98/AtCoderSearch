@@ -1,4 +1,3 @@
-use crate::solr::client::SolrClient;
 use crate::solr::core::SolrCore;
 use crate::utils::extractor::FullTextExtractor;
 use crate::utils::models::Document;
@@ -17,15 +16,13 @@ type Result<T> = std::result::Result<T, IndexingError>;
 
 pub struct IndexingManager<'a> {
     reader: RecordReader<'a>,
-    solr: SolrClient,
     core: SolrCore,
 }
 
 impl<'a> IndexingManager<'a> {
-    pub fn new(pool: &'a Pool<Postgres>, solr: SolrClient, core: SolrCore) -> Self {
+    pub fn new(pool: &'a Pool<Postgres>, core: SolrCore) -> Self {
         IndexingManager {
             reader: RecordReader::new(pool),
-            solr: solr,
             core: core,
         }
     }
