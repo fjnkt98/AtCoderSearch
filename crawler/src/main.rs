@@ -1,16 +1,38 @@
 use anyhow::Result;
+use clap::Parser;
 use crawler::crawlers::{ContestCrawler, ProblemCrawler};
 use crawler::models::*;
 use dotenvy::dotenv;
 use tracing_subscriber::filter::EnvFilter;
 use tracing_subscriber::fmt;
 
+#[derive(Parser)]
+#[clap(
+    name = "AtCoder Search Crawler",
+    author = "fjnkt98",
+    version = "0.1.0",
+    about = "Crawl contest and problem information",
+    long_about = "Crawl contest information and problem data from AtCoder and AtCoder Problems."
+)]
+struct Args {
+    #[clap(short, long)]
+    all: bool,
+    #[clap(short, long)]
+    verbose: bool,
+}
+
 #[tokio::main]
 async fn main() -> Result<()> {
     dotenv().ok();
 
-    let log_level = std::env::var("RUST_LOG").unwrap_or(String::from("info"));
+    let args = Args::parse();
+
     std::env::set_var("RUST_LOG", "info");
+
+    let log_level = match args.verbose {
+        true => "debug",
+        false => "info",
+    };
 
     let filter =
         EnvFilter::try_from_default_env()?.add_directive(format!("crawler={}", log_level).parse()?);
@@ -39,7 +61,10 @@ async fn main() -> Result<()> {
 
     tracing::info!("Start to crawl problem information.");
     let crawler = ProblemCrawler::new(&pool);
-    let target: Vec<ProblemJson> = crawler.detect_diff().await?;
+    let target: Vec<ProblemJson> = match args.all {
+        true => crawler.get_problem_list().await?,
+        false => crawler.detect_diff().await?,
+    };
     tracing::debug!("{} problems are now target for collection.", target.len());
 
     let problems: Vec<Problem> = crawler
