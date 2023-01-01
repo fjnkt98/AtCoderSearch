@@ -1,4 +1,5 @@
 use crate::solr::client::SolrClient;
+use crate::solr::core::SolrCore;
 use crate::utils::extractor::FullTextExtractor;
 use crate::utils::models::Document;
 use crate::utils::models::*;
@@ -16,12 +17,16 @@ type Result<T> = std::result::Result<T, IndexingError>;
 
 pub struct IndexingManager<'a> {
     reader: RecordReader<'a>,
+    solr: SolrClient,
+    core: SolrCore,
 }
 
 impl<'a> IndexingManager<'a> {
-    pub fn new(pool: &'a Pool<Postgres>) -> Self {
+    pub fn new(pool: &'a Pool<Postgres>, solr: SolrClient, core: SolrCore) -> Self {
         IndexingManager {
             reader: RecordReader::new(pool),
+            solr: solr,
+            core: core,
         }
     }
 
@@ -67,12 +72,10 @@ impl<'a> IndexingManager<'a> {
 
         Ok(())
     }
-    pub async fn post(&self) -> Result<()> {
-        let client = SolrClient::new("http://localhost", 8983).unwrap();
-        let core = client.core("atcoder").await?;
 
-        core.reload().await?;
-        core.truncate().await?;
+    pub async fn post(&self) -> Result<()> {
+        self.core.reload().await?;
+        self.core.truncate().await?;
 
         let mut files = fs::read_dir("/var/tmp/atcoder").await?;
         let mut target = Vec::new();
@@ -96,11 +99,11 @@ impl<'a> IndexingManager<'a> {
 
         let tasks: Vec<_> = buffers
             .into_iter()
-            .map(|buffer| core.post(buffer))
+            .map(|buffer| self.core.post(buffer))
             .collect();
 
         try_join_all(tasks).await?;
-        core.commit(true).await?;
+        self.core.commit(true).await?;
 
         Ok(())
     }

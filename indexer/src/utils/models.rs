@@ -20,8 +20,8 @@ pub enum IndexingError {
     SerializeError(#[from] serde_json::Error),
     #[error("Failed to operate file")]
     FileOperationError(#[from] std::io::Error),
-    #[error("Failed to post JSON data to Solr")]
-    SolrPostError(#[from] SolrError),
+    #[error("Failed to operate Solr")]
+    SolrError(#[from] SolrError),
 }
 
 #[derive(sqlx::FromRow)]
