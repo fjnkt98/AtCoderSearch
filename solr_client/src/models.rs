@@ -1,4 +1,4 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::collections::HashMap;
 use thiserror::Error;
@@ -23,7 +23,7 @@ pub enum SolrError {
     InvalidValueError,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct ResponseHeader {
     pub status: u32,
     #[serde(alias = "QTime")]
@@ -31,7 +31,7 @@ pub struct ResponseHeader {
     pub params: Option<HashMap<String, String>>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct LuceneInfo {
     #[serde(alias = "solr-spec-version")]
     pub solr_spec_version: String,
@@ -43,7 +43,7 @@ pub struct LuceneInfo {
     pub lucene_impl_version: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct SolrSystemInfo {
     #[serde(alias = "responseHeader")]
     pub header: ResponseHeader,
@@ -56,7 +56,7 @@ pub struct SolrSystemInfo {
     pub system: Value,
 }
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct IndexInfo {
     #[serde(alias = "numDocs")]
     pub num_docs: u64,
@@ -82,7 +82,7 @@ pub struct IndexInfo {
     pub size: String,
 }
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct CoreStatus {
     pub name: String,
     #[serde(alias = "instanceDir")]
@@ -97,7 +97,7 @@ pub struct CoreStatus {
     pub index: IndexInfo,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct SolrCoreList {
     #[serde(alias = "responseHeader")]
     pub header: ResponseHeader,
@@ -116,32 +116,32 @@ impl SolrCoreList {
     }
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct SolrSimpleResponse {
     #[serde(alias = "responseHeader")]
     pub header: ResponseHeader,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct SolrSelectResponse {
     #[serde(alias = "responseHeader")]
     pub header: ResponseHeader,
     pub response: Value,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct SolrAnalysisBody {
     pub field_types: HashMap<String, SolrAnalysisField>,
     pub field_names: HashMap<String, SolrAnalysisField>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct SolrAnalysisField {
     pub index: Option<Vec<Value>>,
     pub query: Option<Vec<Value>>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct SolrAnalysisResponse {
     #[serde(alias = "responseHeader")]
     pub header: ResponseHeader,
