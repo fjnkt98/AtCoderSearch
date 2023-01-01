@@ -1,3 +1,6 @@
+mod handlers;
+
+use crate::handlers::search;
 use anyhow::Result;
 use axum::extract::Extension;
 use axum::http::StatusCode;
@@ -18,12 +21,13 @@ async fn main() {
 
     let log_level = env::var("RUST_LOG").unwrap_or(String::from("debug"));
     env::set_var("RUST_LOG", log_level);
-    fmt().init();
+    fmt::init();
 
     let solr = SolrClient::new("http://localhost", 8983).unwrap();
     let core = solr.core("atcoder").await.unwrap();
     let app = Router::new()
         .route("/", get(index))
+        .route("/api/search", get(search))
         .layer(Extension(Arc::new(core)));
 
     let addr = SocketAddr::from(([0, 0, 0, 0], 8000));
