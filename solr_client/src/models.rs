@@ -126,7 +126,17 @@ pub struct SolrSimpleResponse {
 pub struct SolrSelectResponse {
     #[serde(alias = "responseHeader")]
     pub header: ResponseHeader,
-    pub response: Value,
+    pub response: SolrSelectResponseBody,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct SolrSelectResponseBody {
+    #[serde(alias = "numFound")]
+    pub num_found: u32,
+    pub start: u32,
+    #[serde(alias = "numFoundExact")]
+    pub num_found_exact: bool,
+    pub docs: Value,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
