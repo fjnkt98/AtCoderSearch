@@ -72,7 +72,7 @@ impl<'a> IndexingManager<'a> {
 
     pub async fn post(&self) -> Result<()> {
         self.core.reload().await?;
-        self.core.truncate().await?;
+        // self.core.truncate().await?;
 
         let mut files = fs::read_dir("/var/tmp/atcoder").await?;
         let mut target = Vec::new();
@@ -104,5 +104,4 @@ impl<'a> IndexingManager<'a> {
 
         Ok(())
     }
-    pub async fn run(&self) {}
 }
