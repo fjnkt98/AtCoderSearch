@@ -57,7 +57,7 @@ impl SolrCore {
         let response = self
             .client
             .get(format!("{}/{}", self.base_url, path))
-            .query(&[("action", "status"), ("core", &self.name)])
+            .query(&[("action", "reload"), ("core", &self.name)])
             .send()
             .await
             .map_err(|e| SolrError::RequestError(e))?
@@ -215,7 +215,9 @@ mod test {
             .unwrap()
             .with_timezone(&Utc);
 
+        assert!(before < after);
+
         let duration = (after - before).num_milliseconds();
-        assert!(duration < 1000);
+        assert!(duration.abs() < 1000);
     }
 }
