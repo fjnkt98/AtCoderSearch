@@ -1,7 +1,7 @@
 mod handlers;
 mod models;
 
-use crate::handlers::search;
+use crate::handlers::{search_with_form, search_with_qs};
 use anyhow::Result;
 use axum::extract::Extension;
 use axum::http::StatusCode;
@@ -28,7 +28,7 @@ async fn main() {
     let core = solr.core("atcoder").await.unwrap();
     let app = Router::new()
         .route("/", get(index))
-        .route("/api/search", get(search))
+        .route("/api/search", get(search_with_qs).post(search_with_form))
         .layer(Extension(Arc::new(core)));
 
     let addr = SocketAddr::from(([0, 0, 0, 0], 8000));

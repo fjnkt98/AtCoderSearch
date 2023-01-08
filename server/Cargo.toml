@@ -5,7 +5,7 @@ version = "0.1.0"
 
 [dependencies]
 anyhow = "1.0.68"
-axum = "0.6.1"
+axum = {version = "0.6.1", features = ["query"]}
 dotenvy = "0.15.6"
 http-body = "0.4.5"
 hyper = {version = "0.14.23", features = ["full"]}
