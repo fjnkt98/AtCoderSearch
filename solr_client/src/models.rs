@@ -1,4 +1,5 @@
-use serde::{Deserialize, Serialize};
+use itertools::Itertools;
+use serde::{Deserialize, Deserializer, Serialize};
 use serde_json::Value;
 use std::collections::HashMap;
 use thiserror::Error;
@@ -127,6 +128,7 @@ pub struct SolrSelectResponse {
     #[serde(alias = "responseHeader")]
     pub header: ResponseHeader,
     pub response: SolrSelectResponseBody,
+    pub facet_counts: Option<FacetResult>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -137,6 +139,75 @@ pub struct SolrSelectResponseBody {
     #[serde(alias = "numFoundExact")]
     pub num_found_exact: bool,
     pub docs: Value,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct FacetResult {
+    pub facet_queries: Value,
+    #[serde(deserialize_with = "deserialize_facet_fields")]
+    pub facet_fields: HashMap<String, Vec<(String, u32)>>,
+    pub facet_ranges: HashMap<String, RangeFacet>,
+    pub facet_intervals: Value,
+    pub facet_heatmaps: Value,
+}
+
+fn deserialize_facet_fields<'de, D>(
+    deserializer: D,
+) -> Result<HashMap<String, Vec<(String, u32)>>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let value: HashMap<String, Vec<Value>> = Deserialize::deserialize(deserializer)?;
+    let value: HashMap<String, Vec<(String, u32)>> = value
+        .iter()
+        .map(|(k, v)| {
+            (
+                k.to_string(),
+                v.iter()
+                    .tuples()
+                    .map(|(v1, v2)| {
+                        (
+                            v1.as_str().unwrap_or("").to_string(),
+                            v2.as_u64().unwrap_or(0) as u32,
+                        )
+                    })
+                    .collect::<Vec<(String, u32)>>(),
+            )
+        })
+        .collect();
+
+    Ok(value)
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct RangeFacet {
+    #[serde(deserialize_with = "deserialize_range_facet_counts")]
+    pub counts: Vec<(String, u32)>,
+    pub gap: i32,
+    pub start: i32,
+    pub end: i32,
+    pub before: Option<i32>,
+    pub after: Option<i32>,
+    pub between: Option<i32>,
+}
+
+fn deserialize_range_facet_counts<'de, D>(deserializer: D) -> Result<Vec<(String, u32)>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let value: Vec<Value> = Deserialize::deserialize(deserializer)?;
+    let value: Vec<(String, u32)> = value
+        .iter()
+        .tuples()
+        .map(|(v1, v2)| {
+            (
+                v1.as_str().unwrap_or("").to_string(),
+                v2.as_u64().unwrap_or(0) as u32,
+            )
+        })
+        .collect();
+
+    Ok(value)
 }
 
 #[derive(Serialize, Deserialize, Debug)]

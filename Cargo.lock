@@ -2297,6 +2297,7 @@ dependencies = [
  "chrono",
  "chrono-tz",
  "futures",
+ "itertools",
  "regex",
  "reqwest",
  "serde",
