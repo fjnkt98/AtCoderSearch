@@ -1,10 +1,11 @@
-use crate::models::{SearchParams, ValidatedSearchForm, ValidatedSearchQueryParams};
+use crate::models::*;
 use anyhow::Result;
 use axum::extract::Extension;
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::Json;
 use solr_client::core::SolrCore;
+use solr_client::models::*;
 use std::sync::Arc;
 use tracing::instrument;
 
@@ -20,6 +21,10 @@ pub async fn search_with_qs(
         .select(&params)
         .await
         .or(Err(StatusCode::BAD_REQUEST))?;
+
+    let response = generate_response(response)
+        .await
+        .or(Err(StatusCode::INTERNAL_SERVER_ERROR))?;
 
     Ok((StatusCode::OK, Json(response)))
 }
@@ -37,5 +42,27 @@ pub async fn search_with_form(
         .await
         .or(Err(StatusCode::BAD_REQUEST))?;
 
+    let response = generate_response(response)
+        .await
+        .or(Err(StatusCode::INTERNAL_SERVER_ERROR))?;
+
     Ok((StatusCode::OK, Json(response)))
+}
+
+async fn generate_response(response: SolrSelectResponse) -> Result<SearchResultResponse> {
+    let docs: Vec<Document> = serde_json::from_value(response.response.docs)?;
+
+    let stats = SearchResultStats {
+        total: response.response.num_found,
+        start: response.response.start,
+        amount: docs.len() as u32,
+        facet: None,
+    };
+
+    let items = SearchResultBody { docs: docs };
+
+    Ok(SearchResultResponse {
+        stats: stats,
+        items: items,
+    })
 }

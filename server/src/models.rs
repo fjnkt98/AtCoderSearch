@@ -2,11 +2,12 @@ use axum::async_trait;
 use axum::extract::{FromRequest, FromRequestParts};
 use axum::http::StatusCode;
 use axum::{BoxError, Form, Json};
+use chrono::{DateTime, Local};
 use http::request::Parts;
 use http_body::Body;
 use hyper::Request;
-use serde::de::DeserializeOwned;
-use serde::{Deserialize, Serialize};
+use serde::de::{DeserializeOwned, Error, Unexpected};
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use validator::Validate;
 
 #[derive(Debug, Serialize, Deserialize, Clone, Validate)]
@@ -121,16 +122,51 @@ pub struct SearchResultStats {
     pub total: u32,
     pub start: u32,
     pub amount: u32,
-    pub facet: FacetResult,
+    pub facet: Option<FacetResult>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SearchResultBody {
-    docs: Vec<Document>,
+    pub docs: Vec<Document>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct FacetResult {}
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct Document {}
+pub struct Document {
+    pub problem_id: String,
+    pub problem_title: String,
+    pub problem_url: String,
+    pub contest_id: String,
+    pub contest_title: String,
+    pub contest_url: String,
+    pub difficulty: i32,
+    #[serde(serialize_with = "serialize", deserialize_with = "deserialize")]
+    pub start_at: DateTime<Local>,
+    pub duration: i64,
+    pub rate_change: String,
+    pub category: String,
+}
+
+fn serialize<S>(value: &DateTime<Local>, serializer: S) -> Result<S::Ok, S::Error>
+where
+    S: Serializer,
+{
+    serializer.serialize_str(&value.to_rfc3339())
+}
+
+fn deserialize<'de, D>(deserializer: D) -> Result<DateTime<Local>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let value = String::deserialize(deserializer)?;
+    if let Ok(timestamp) = DateTime::parse_from_rfc3339(&value) {
+        return Ok(timestamp.with_timezone(&Local));
+    } else {
+        return Err(Error::invalid_value(
+            Unexpected::Str(&value),
+            &"Invalid timestamp string",
+        ));
+    }
+}

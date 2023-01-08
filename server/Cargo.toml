@@ -6,6 +6,8 @@ version = "0.1.0"
 [dependencies]
 anyhow = "1.0.68"
 axum = {version = "0.6.1", features = ["query"]}
+chrono = {version = "0.4.23", features = ["serde", "std"]}
+chrono-tz = "0.8.1"
 dotenvy = "0.15.6"
 http = "0.2.8"
 http-body = "0.4.5"
