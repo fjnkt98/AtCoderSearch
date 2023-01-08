@@ -8,6 +8,7 @@ use http_body::Body;
 use hyper::Request;
 use serde::de::{DeserializeOwned, Error, Unexpected};
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
+use solr_client::query::{QueryBuilder, StandardQueryBuilder};
 use validator::Validate;
 
 #[derive(Debug, Serialize, Deserialize, Clone, Validate)]
@@ -17,6 +18,23 @@ pub struct SearchParams {
     pub o: Option<u32>,
     #[validate(range(max = 200))]
     pub l: Option<u32>,
+}
+
+impl SearchParams {
+    pub fn as_qs(&self) -> Vec<(String, String)> {
+        let mut builder = StandardQueryBuilder::new();
+        if let Some(q) = &self.q {
+            builder = builder.q(format!("text_ja:{}", q));
+        };
+        if let Some(l) = self.l {
+            builder = builder.rows(l);
+        };
+        if let Some(o) = self.o {
+            builder = builder.start(o);
+        }
+
+        builder.build()
+    }
 }
 
 pub struct ValidatedSearchJson<T>(pub T);

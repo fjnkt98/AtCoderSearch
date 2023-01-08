@@ -14,8 +14,7 @@ pub async fn search_with_qs(
     ValidatedSearchQueryParams(params): ValidatedSearchQueryParams<SearchParams>,
     Extension(core): Extension<Arc<SolrCore>>,
 ) -> Result<impl IntoResponse, StatusCode> {
-    let q = params.q.unwrap_or(String::from("*"));
-    let params = vec![(String::from("q"), format!("text_ja:{}", q))];
+    let params = params.as_qs();
 
     let response = core
         .select(&params)
@@ -34,8 +33,7 @@ pub async fn search_with_form(
     Extension(core): Extension<Arc<SolrCore>>,
     ValidatedSearchForm(params): ValidatedSearchForm<SearchParams>,
 ) -> Result<impl IntoResponse, StatusCode> {
-    let q = params.q.unwrap_or(String::from("*"));
-    let params = vec![(String::from("q"), format!("text_ja:{}", q))];
+    let params = params.as_qs();
 
     let response = core
         .select(&params)
