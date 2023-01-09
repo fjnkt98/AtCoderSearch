@@ -1,6 +1,7 @@
 use crate::models::*;
 use reqwest::header::CONTENT_TYPE;
 use reqwest::Client;
+use serde::Serialize;
 use serde_json::Value;
 
 type Result<T> = std::result::Result<T, SolrError>;
@@ -37,8 +38,12 @@ impl SolrCore {
             .await
             .map_err(|e| SolrError::RequestError(e))?;
 
-        let result: SolrCoreList =
+        let response: SolrCoreList =
             serde_json::from_str(&response).map_err(|e| SolrError::DeserializeError(e))?;
+
+        if let Some(error) = response.error {
+            return Err(SolrError::UnexpectedError((error.code, error.msg)));
+        }
 
         // コアオブジェクトが作成できた時点で
         //
@@ -46,7 +51,7 @@ impl SolrCore {
         // 2. `status`フィールドのキーにこのコアが含まれていること
         //
         // が保証されているので、`unwrap()`を使用している。
-        let status = result.status.unwrap().get(&self.name).unwrap().clone();
+        let status = response.status.unwrap().get(&self.name).unwrap().clone();
 
         Ok(status)
     }
@@ -65,17 +70,21 @@ impl SolrCore {
             .await
             .map_err(|e| SolrError::RequestError(e))?;
 
-        let result: SolrSimpleResponse =
+        let response: SolrSimpleResponse =
             serde_json::from_str(&response).map_err(|e| SolrError::DeserializeError(e))?;
 
-        if result.header.status != 0 {
-            return Err(SolrError::CoreReloadError);
+        if let Some(error) = response.error {
+            return Err(SolrError::UnexpectedError((error.code, error.msg)));
         }
 
-        Ok(result.header.status)
+        Ok(response.header.status)
     }
 
-    pub async fn select(&self, params: &Vec<(String, String)>) -> Result<SolrSelectResponse> {
+    pub async fn select<S, T>(&self, params: &Vec<(S, T)>) -> Result<SolrSelectResponse>
+    where
+        S: Serialize,
+        T: Serialize,
+    {
         let response = self
             .client
             .get(format!("{}/select", self.core_url))
@@ -87,10 +96,14 @@ impl SolrCore {
             .await
             .map_err(|e| SolrError::RequestError(e))?;
 
-        let result: SolrSelectResponse =
+        let response: SolrSelectResponse =
             serde_json::from_str(&response).map_err(|e| SolrError::DeserializeError(e))?;
 
-        Ok(result)
+        if let Some(error) = response.error {
+            return Err(SolrError::UnexpectedError((error.code, error.msg)));
+        }
+
+        Ok(response)
     }
 
     pub async fn analyze(&self, word: &str, field: &str, analyzer: &str) -> Result<Vec<String>> {
@@ -219,5 +232,49 @@ mod test {
 
         let duration = (after - before).num_milliseconds();
         assert!(duration.abs() < 1000);
+    }
+
+    #[tokio::test]
+    #[ignore]
+    async fn test_select_in_normal() {
+        let core = SolrCore::new("example", "http://localhost:8983");
+
+        let params = vec![("q", "*:*")];
+        let response = core.select(&params).await.unwrap();
+
+        assert_eq!(response.header.status, 0);
+    }
+
+    #[tokio::test]
+    #[ignore]
+    async fn test_select_in_non_normal() {
+        let core = SolrCore::new("example", "http://localhost:8983");
+
+        let params = vec![("q", "text_hoge:*")];
+        let response = core.select(&params).await;
+
+        assert!(response.is_err());
+    }
+
+    /// 単語の解析メソッドの正常系テスト
+    ///
+    /// とりあえずエラーが出ないことを確認する。
+    ///
+    /// 以下のコマンドでDockerコンテナを起動してからテストを実行すること。
+    ///
+    /// ```ignore
+    /// docker run --rm -d -p 8983:8983 solr:9.1.0 solr-precreate example
+    /// ```
+    #[tokio::test]
+    #[ignore]
+    async fn test_analyze() {
+        let core = SolrCore::new("example", "http://localhost:8983");
+
+        let word = "solr-client";
+        let expected = vec![String::from("solr"), String::from("client")];
+
+        let actual = core.analyze(word, "text_en", "index").await.unwrap();
+
+        assert_eq!(expected, actual);
     }
 }
