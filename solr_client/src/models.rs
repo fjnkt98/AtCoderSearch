@@ -22,6 +22,8 @@ pub enum SolrError {
     CorePostError,
     #[error("Invalid argument has given")]
     InvalidValueError,
+    #[error("Unexpected error")]
+    UnexpectedError((u32, String)),
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -30,6 +32,13 @@ pub struct ResponseHeader {
     #[serde(alias = "QTime")]
     pub qtime: u32,
     pub params: Option<HashMap<String, String>>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct SolrErrorInfo {
+    pub metadata: Vec<String>,
+    pub msg: String,
+    pub code: u32,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -55,6 +64,7 @@ pub struct SolrSystemInfo {
     pub jvm: Value,
     pub security: Value,
     pub system: Value,
+    pub error: Option<SolrErrorInfo>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -105,6 +115,7 @@ pub struct SolrCoreList {
     #[serde(alias = "initFailures")]
     pub init_failures: Value,
     pub status: Option<HashMap<String, CoreStatus>>,
+    pub error: Option<SolrErrorInfo>,
 }
 
 impl SolrCoreList {
@@ -121,6 +132,7 @@ impl SolrCoreList {
 pub struct SolrSimpleResponse {
     #[serde(alias = "responseHeader")]
     pub header: ResponseHeader,
+    pub error: Option<SolrErrorInfo>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -129,6 +141,7 @@ pub struct SolrSelectResponse {
     pub header: ResponseHeader,
     pub response: SolrSelectResponseBody,
     pub facet_counts: Option<FacetResult>,
+    pub error: Option<SolrErrorInfo>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -227,4 +240,5 @@ pub struct SolrAnalysisResponse {
     #[serde(alias = "responseHeader")]
     pub header: ResponseHeader,
     pub analysis: SolrAnalysisBody,
+    pub error: Option<SolrErrorInfo>,
 }
