@@ -43,10 +43,14 @@ impl SolrClient {
             .await
             .map_err(|e| SolrError::RequestError(e))?;
 
-        let result: SolrSystemInfo =
+        let response: SolrSystemInfo =
             serde_json::from_str(&response).map_err(|e| SolrError::DeserializeError(e))?;
 
-        Ok(result)
+        if let Some(error) = response.error {
+            return Err(SolrError::UnexpectedError((error.code, error.msg)));
+        } else {
+            Ok(response)
+        }
     }
 
     /// Solrインスタンスに存在するコアの一覧を取得するメソッド
@@ -63,10 +67,14 @@ impl SolrClient {
             .await
             .map_err(|e| SolrError::RequestError(e))?;
 
-        let result: SolrCoreList =
+        let response: SolrCoreList =
             serde_json::from_str(&response).map_err(|e| SolrError::DeserializeError(e))?;
 
-        Ok(result)
+        if let Some(error) = response.error {
+            return Err(SolrError::UnexpectedError((error.code, error.msg)));
+        } else {
+            Ok(response)
+        }
     }
 
     /// Solrコアオブジェクトを取得するメソッド
