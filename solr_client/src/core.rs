@@ -186,6 +186,7 @@ impl SolrCore {
 mod test {
     use super::*;
     use chrono::{DateTime, Utc};
+    use serde_json;
 
     /// コアのステータス取得メソッドの正常系テスト
     ///
@@ -276,5 +277,110 @@ mod test {
         let actual = core.analyze(word, "text_en", "index").await.unwrap();
 
         assert_eq!(expected, actual);
+    }
+
+    //// コアへのドキュメントのポスト・コアのリロード・ドキュメントの検索・ドキュメントの削除の一連の処理の動作をテストするテストシナリオ
+    ///
+    /// 以下のコマンドでDockerコンテナを起動してからテストを実行すること。
+    ///
+    /// ```ignore
+    /// docker run --rm -d -p 8983:8983 solr:9.1.0 solr-precreate example
+    /// ```
+    #[tokio::test]
+    #[ignore]
+    async fn test_scenario() {
+        let core = SolrCore::new("example", "http://localhost:8983");
+
+        // Schema APIを使ってテスト用のスキーマを定義
+        let client = reqwest::Client::new();
+        client
+            .post(format!("{}/schema", core.core_url))
+            .body(
+                serde_json::json!(
+                    {
+                        "add-field": {
+                            "name": "name",
+                            "type": "string",
+                            "indexed": true,
+                            "stored": true,
+                            "multiValued": false
+                        },
+                    }
+                )
+                .to_string(),
+            )
+            .send()
+            .await
+            .unwrap();
+        client
+            .post(format!("{}/schema", core.core_url))
+            .body(
+                serde_json::json!(
+                    {
+                        "add-field": {
+                            "name": "gender",
+                            "type": "string",
+                            "indexed": true,
+                            "stored": true,
+                            "multiValued": false
+                        }
+                    }
+                )
+                .to_string(),
+            )
+            .send()
+            .await
+            .unwrap();
+
+        // テスト用のドキュメント
+        let documents = serde_json::json!(
+            [
+                {
+                    "id": "001",
+                    "name": "alice",
+                    "gender": "female"
+                },
+                {
+                    "id": "002",
+                    "name": "bob",
+                    "gender": "male"
+                },
+                {
+                    "id": "003",
+                    "name": "charles",
+                    "gender": "male"
+                }
+            ]
+        )
+        .to_string()
+        .as_bytes()
+        .to_vec();
+
+        // リロード(Schema APIを使っているので不要だけど動作テストなので)
+        core.reload().await.unwrap();
+
+        // ドキュメントをポスト
+        core.post(documents).await.unwrap();
+        // コミット
+        core.commit(true).await.unwrap();
+        let status = core.status().await.unwrap();
+
+        // 3件のドキュメントが登録されていることを確認
+        assert_eq!(status.index.num_docs, 3);
+
+        // 検索のテスト
+        let params = vec![("q", "name:alice"), ("fl", "id,name,gender")];
+        let result = core.select(&params).await.unwrap();
+        assert_eq!(result.response.num_found, 1);
+        assert_eq!(
+            result.response.docs,
+            serde_json::json!([{"id": "001", "name": "alice", "gender": "female"}])
+        );
+
+        // ドキュメントをすべて削除
+        core.truncate().await.unwrap();
+        core.commit(true).await.unwrap();
+        let status = core.status().await.unwrap();
+        assert_eq!(status.index.num_docs, 0);
     }
 }
