@@ -1,4 +1,5 @@
 use serde::Serialize;
+use std::ascii::AsciiExt;
 use std::fmt::{Display, Formatter};
 use std::ops;
 
@@ -63,6 +64,11 @@ impl StandardQueryBuilder {
         self.sort = Some(sort.build());
         self
     }
+
+    pub fn op(mut self, op: &str) -> Self {
+        self.op = Some(op.to_string());
+        self
+    }
 }
 
 impl QueryBuilder for StandardQueryBuilder {
@@ -93,6 +99,10 @@ impl QueryBuilder for StandardQueryBuilder {
 
         if let Some(sort) = self.sort {
             result.push(("sort", sort));
+        }
+
+        if let Some(op) = self.op {
+            result.push(("q.op", op));
         }
 
         result
@@ -480,6 +490,16 @@ mod test {
         let sort = SortOrderBuilder::new().desc("score").asc("name").build();
 
         assert_eq!(String::from("score desc,name asc"), sort);
+    }
+
+    #[test]
+    fn test_q_op() {
+        let builder = StandardQueryBuilder::new().op("AND");
+
+        assert_eq!(
+            vec![("q", String::from("*:*")), ("q.op", String::from("AND")),],
+            builder.build()
+        )
     }
 
     #[test]
