@@ -1,5 +1,4 @@
 use serde::Serialize;
-use std::ascii::AsciiExt;
 use std::fmt::{Display, Formatter};
 use std::ops;
 
@@ -159,19 +158,19 @@ impl Display for StandardQueryOperand {
                 write!(f, "{}:{}", self.field, self.word)?;
             }
             TermModifiers::Fuzzy(fuzzy) => {
-                todo!();
+                write!(f, "{}:{}~{}", self.field, self.word, fuzzy)?;
             }
             TermModifiers::Proximity(proximity) => {
-                todo!();
+                write!(f, r#"{}:"{}"~{}"#, self.field, self.word, proximity)?;
             }
             TermModifiers::Boost(boost) => {
-                todo!();
+                write!(f, "{}:{}^{}", self.field, self.word, boost)?;
             }
             TermModifiers::Constant(constant) => {
-                todo!();
+                write!(f, "{}:{}^={}", self.field, self.word, constant)?;
             }
             TermModifiers::Phrase => {
-                todo!();
+                write!(f, r#"{}:"{}""#, self.field, self.word)?;
             }
         }
 
@@ -233,7 +232,23 @@ impl RangeQueryOperand {
 
 impl Display for RangeQueryOperand {
     fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
-        todo!();
+        let left_parenthesis = match self.left_open {
+            false => '{',
+            true => '[',
+        };
+
+        let right_parenthesis = match self.right_open {
+            false => '}',
+            true => ']',
+        };
+
+        write!(
+            f,
+            "{}:{}{} TO {}{}",
+            self.field, left_parenthesis, self.start, self.end, right_parenthesis
+        )?;
+
+        Ok(())
     }
 }
 
