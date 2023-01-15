@@ -18,6 +18,7 @@ pub struct StandardQueryBuilder {
     fq: Option<String>,
     fl: Option<String>,
     sort: Option<String>,
+    op: Option<String>,
 }
 
 impl StandardQueryBuilder {
@@ -29,6 +30,7 @@ impl StandardQueryBuilder {
             fq: None,
             fl: None,
             sort: None,
+            op: None,
         }
     }
 
@@ -73,15 +75,13 @@ impl QueryBuilder for StandardQueryBuilder {
             None => result.push(("q", String::from("*:*"))),
         };
 
-        match self.start {
-            Some(start) => result.push(("start", start.to_string())),
-            None => result.push(("start", String::from("0"))),
-        };
+        if let Some(start) = self.start {
+            result.push(("start", start.to_string()));
+        }
 
-        match self.rows {
-            Some(rows) => result.push(("rows", rows.to_string())),
-            None => result.push(("rows", 10.to_string())),
-        };
+        if let Some(rows) = self.rows {
+            result.push(("rows", rows.to_string()));
+        }
 
         if let Some(fq) = self.fq {
             result.push(("fq", fq));
@@ -91,10 +91,9 @@ impl QueryBuilder for StandardQueryBuilder {
             result.push(("fl", fl));
         }
 
-        match self.sort {
-            Some(sort) => result.push(("sort", sort)),
-            None => result.push(("sort", String::from("score desc"))),
-        };
+        if let Some(sort) = self.sort {
+            result.push(("sort", sort));
+        }
 
         result
     }
