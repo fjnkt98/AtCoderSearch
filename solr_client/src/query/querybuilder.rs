@@ -6,7 +6,7 @@ pub trait QueryBuilder {
     type Key: Serialize;
     type Value: Serialize;
 
-    fn build(self) -> Vec<(Self::Key, Self::Value)>;
+    fn build(&self) -> Vec<(Self::Key, Self::Value)>;
 }
 
 pub struct StandardQueryBuilder {
@@ -17,7 +17,7 @@ pub struct StandardQueryBuilder {
     fl: Option<String>,
     sort: Option<String>,
     op: Option<String>,
-    facet: Option<String>,
+    facet: Vec<(String, String)>,
 }
 
 impl StandardQueryBuilder {
@@ -30,7 +30,7 @@ impl StandardQueryBuilder {
             fl: None,
             sort: None,
             op: None,
-            facet: None,
+            facet: Vec::new(),
         }
     }
 
@@ -69,18 +69,19 @@ impl StandardQueryBuilder {
         self
     }
 
-    pub fn facet(mut self, facet: &FieldFacetBuilder) -> Self {
-        todo!();
+    pub fn facet(mut self, facet: &impl FacetBuilder) -> Self {
+        self.facet.extend(facet.build());
+        self
     }
 }
 
 impl QueryBuilder for StandardQueryBuilder {
     type Key = String;
     type Value = String;
-    fn build(self) -> Vec<(String, String)> {
+    fn build(&self) -> Vec<(String, String)> {
         let mut result: Vec<(String, String)> = Vec::new();
-        match self.q {
-            Some(q) => result.push((String::from("q"), q)),
+        match &self.q {
+            Some(q) => result.push((String::from("q"), q.clone())),
             None => result.push((String::from("q"), String::from("*:*"))),
         };
 
@@ -93,21 +94,26 @@ impl QueryBuilder for StandardQueryBuilder {
         }
 
         if !self.fq.is_empty() {
-            for fq in self.fq {
-                result.push((String::from("fq"), fq));
+            for fq in &self.fq {
+                result.push((String::from("fq"), fq.clone()));
             }
         }
 
-        if let Some(fl) = self.fl {
-            result.push((String::from("fl"), fl));
+        if let Some(fl) = &self.fl {
+            result.push((String::from("fl"), fl.clone()));
         }
 
-        if let Some(sort) = self.sort {
-            result.push((String::from("sort"), sort));
+        if let Some(sort) = &self.sort {
+            result.push((String::from("sort"), sort.clone()));
         }
 
-        if let Some(op) = self.op {
-            result.push((String::from("q.op"), op));
+        if let Some(op) = &self.op {
+            result.push((String::from("q.op"), op.clone()));
+        }
+
+        if !self.facet.is_empty() {
+            result.push((String::from("facet"), String::from("true")));
+            result.extend(self.facet.clone());
         }
 
         result
@@ -218,5 +224,22 @@ mod test {
             ],
             builder.build()
         )
+    }
+
+    #[test]
+    fn test_facet() {
+        let q = StandardQueryOperand::new("name", "alice");
+        let facet = FieldFacetBuilder::new("gender").sort(FieldFacetSortOrder::Count);
+        let builder = StandardQueryBuilder::new().q(&q).facet(&facet);
+
+        assert_eq!(
+            vec![
+                (String::from("q"), String::from("name:alice")),
+                (String::from("facet"), String::from("true")),
+                (String::from("facet.field"), String::from("gender")),
+                (String::from("f.gender.facet.sort"), String::from("count")),
+            ],
+            builder.build()
+        );
     }
 }
