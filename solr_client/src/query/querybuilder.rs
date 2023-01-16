@@ -75,39 +75,39 @@ impl StandardQueryBuilder {
 }
 
 impl QueryBuilder for StandardQueryBuilder {
-    type Key = &'static str;
+    type Key = String;
     type Value = String;
-    fn build(self) -> Vec<(&'static str, String)> {
-        let mut result: Vec<(&'static str, String)> = Vec::new();
+    fn build(self) -> Vec<(String, String)> {
+        let mut result: Vec<(String, String)> = Vec::new();
         match self.q {
-            Some(q) => result.push(("q", q)),
-            None => result.push(("q", String::from("*:*"))),
+            Some(q) => result.push((String::from("q"), q)),
+            None => result.push((String::from("q"), String::from("*:*"))),
         };
 
         if let Some(start) = self.start {
-            result.push(("start", start.to_string()));
+            result.push((String::from("start"), start.to_string()));
         }
 
         if let Some(rows) = self.rows {
-            result.push(("rows", rows.to_string()));
+            result.push((String::from("rows"), rows.to_string()));
         }
 
         if !self.fq.is_empty() {
             for fq in self.fq {
-                result.push(("fq", fq));
+                result.push((String::from("fq"), fq));
             }
         }
 
         if let Some(fl) = self.fl {
-            result.push(("fl", fl));
+            result.push((String::from("fl"), fl));
         }
 
         if let Some(sort) = self.sort {
-            result.push(("sort", sort));
+            result.push((String::from("sort"), sort));
         }
 
         if let Some(op) = self.op {
-            result.push(("q.op", op));
+            result.push((String::from("q.op"), op));
         }
 
         result
@@ -122,7 +122,10 @@ mod test {
     fn test_with_no_params() {
         let builder = StandardQueryBuilder::new();
 
-        assert_eq!(vec![("q", String::from("*:*"))], builder.build());
+        assert_eq!(
+            vec![(String::from("q"), String::from("*:*"))],
+            builder.build()
+        );
     }
 
     #[test]
@@ -130,7 +133,10 @@ mod test {
         let q = StandardQueryOperand::new("text_ja", "hoge");
         let builder = StandardQueryBuilder::new().q(&q);
 
-        assert_eq!(vec![("q", String::from("text_ja:hoge"))], builder.build());
+        assert_eq!(
+            vec![(String::from("q"), String::from("text_ja:hoge"))],
+            builder.build()
+        );
     }
 
     #[test]
@@ -138,7 +144,10 @@ mod test {
         let builder = StandardQueryBuilder::new().start(10);
 
         assert_eq!(
-            vec![("q", String::from("*:*")), ("start", 10.to_string())],
+            vec![
+                (String::from("q"), String::from("*:*")),
+                (String::from("start"), 10.to_string())
+            ],
             builder.build()
         );
     }
@@ -148,7 +157,10 @@ mod test {
         let builder = StandardQueryBuilder::new().rows(20);
 
         assert_eq!(
-            vec![("q", String::from("*:*")), ("rows", 20.to_string())],
+            vec![
+                (String::from("q"), String::from("*:*")),
+                (String::from("rows"), 20.to_string())
+            ],
             builder.build()
         );
     }
@@ -159,8 +171,8 @@ mod test {
 
         assert_eq!(
             vec![
-                ("q", String::from("*:*")),
-                ("fq", String::from("name:alice"))
+                (String::from("q"), String::from("*:*")),
+                (String::from("fq"), String::from("name:alice"))
             ],
             builder.build()
         );
@@ -174,9 +186,9 @@ mod test {
 
         assert_eq!(
             vec![
-                ("q", String::from("*:*")),
-                ("fq", String::from("name:alice")),
-                ("fq", String::from("age:24"))
+                (String::from("q"), String::from("*:*")),
+                (String::from("fq"), String::from("name:alice")),
+                (String::from("fq"), String::from("age:24"))
             ],
             builder.build()
         );
@@ -187,7 +199,10 @@ mod test {
         let builder = StandardQueryBuilder::new().fl(String::from("id,name"));
 
         assert_eq!(
-            vec![("q", String::from("*:*")), ("fl", String::from("id,name")),],
+            vec![
+                (String::from("q"), String::from("*:*")),
+                (String::from("fl"), String::from("id,name")),
+            ],
             builder.build()
         );
     }
@@ -197,7 +212,10 @@ mod test {
         let builder = StandardQueryBuilder::new().op("AND");
 
         assert_eq!(
-            vec![("q", String::from("*:*")), ("q.op", String::from("AND")),],
+            vec![
+                (String::from("q"), String::from("*:*")),
+                (String::from("q.op"), String::from("AND")),
+            ],
             builder.build()
         )
     }
