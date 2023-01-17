@@ -34,7 +34,7 @@ impl StandardQueryBuilder {
         }
     }
 
-    pub fn q(mut self, q: &impl SolrQueryOperand) -> Self {
+    pub fn q(mut self, q: &impl SolrQueryExpression) -> Self {
         self.q = Some(q.to_string());
         self
     }
@@ -49,7 +49,7 @@ impl StandardQueryBuilder {
         self
     }
 
-    pub fn fq(mut self, fq: &impl SolrQueryOperand) -> Self {
+    pub fn fq(mut self, fq: &impl SolrQueryExpression) -> Self {
         self.fq.push(fq.to_string());
         self
     }
@@ -136,7 +136,7 @@ mod test {
 
     #[test]
     fn test_with_q() {
-        let q = StandardQueryOperand::new("text_ja", "hoge");
+        let q = QueryOperand::from("text_ja:hoge");
         let builder = StandardQueryBuilder::new().q(&q);
 
         assert_eq!(
@@ -173,7 +173,7 @@ mod test {
 
     #[test]
     fn test_with_fq() {
-        let builder = StandardQueryBuilder::new().fq(&StandardQueryOperand::new("name", "alice"));
+        let builder = StandardQueryBuilder::new().fq(&QueryOperand::from("name:alice"));
 
         assert_eq!(
             vec![
@@ -187,8 +187,8 @@ mod test {
     #[test]
     fn test_with_multiple_fq() {
         let builder = StandardQueryBuilder::new()
-            .fq(&StandardQueryOperand::new("name", "alice"))
-            .fq(&StandardQueryOperand::new("age", "24"));
+            .fq(&QueryOperand::from("name:alice"))
+            .fq(&QueryOperand::from("age:24"));
 
         assert_eq!(
             vec![
@@ -228,7 +228,7 @@ mod test {
 
     #[test]
     fn test_facet() {
-        let q = StandardQueryOperand::new("name", "alice");
+        let q = QueryOperand::from("name:alice");
         let facet = FieldFacetBuilder::new("gender").sort(FieldFacetSortOrder::Count);
         let builder = StandardQueryBuilder::new().q(&q).facet(&facet);
 
