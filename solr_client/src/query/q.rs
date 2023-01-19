@@ -3,7 +3,7 @@ use regex::Regex;
 use std::fmt::{Display, Formatter};
 use std::ops;
 
-static re: Lazy<Regex> = Lazy::new(|| {
+static RE: Lazy<Regex> = Lazy::new(|| {
     Regex::new(r#"(\+|\-|&&|\|\||!|\(|\)|\{|\}|\[|\]|\^|"|\~|\*|\?|:|/|AND|OR)"#).unwrap()
 });
 
@@ -255,8 +255,8 @@ impl SolrQueryOperandModel for StandardQueryOperand {}
 
 impl StandardQueryOperand {
     pub fn new(field: &str, word: &str) -> Self {
-        let field = re.replace_all(field, r"\$0");
-        let word = re.replace_all(word, r"\$0");
+        let field = RE.replace_all(field, r"\$0");
+        let word = RE.replace_all(word, r"\$0");
         Self {
             field: String::from(field),
             word: String::from(word),
