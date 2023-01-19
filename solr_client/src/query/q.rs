@@ -12,7 +12,7 @@ pub enum QueryExpressionKind {
 /// クエリ検索式を表すタプル構造体
 /// 検索式をラップする役割を持つ。この構造体にAddトレイトとMulトレイトを実装することで検索式の加算・乗算を実装する
 /// 検索式は文字列の形式で取るので、任意の検索式を入れることができるが、構文が正しいことを保証することはできない。
-pub struct QueryOperand(String);
+pub struct QueryOperand(pub String);
 
 impl SolrQueryExpression for QueryOperand {}
 

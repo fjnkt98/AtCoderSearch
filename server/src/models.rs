@@ -8,7 +8,7 @@ use http_body::Body;
 use hyper::Request;
 use serde::de::{DeserializeOwned, Error, Unexpected};
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
-use solr_client::query::{QueryBuilder, StandardQueryBuilder, StandardQueryOperand};
+use solr_client::query::{QueryBuilder, QueryOperand, StandardQueryBuilder};
 use validator::Validate;
 
 #[derive(Debug, Serialize, Deserialize, Clone, Validate)]
@@ -24,7 +24,7 @@ impl SearchParams {
     pub fn as_qs(&self) -> Vec<(String, String)> {
         let mut builder = StandardQueryBuilder::new();
         if let Some(q) = &self.q {
-            let op = StandardQueryOperand::new("text_ja", q);
+            let op = QueryOperand(format!("text_ja: {}", q));
             builder = builder.q(&op);
         };
         if let Some(l) = self.l {
