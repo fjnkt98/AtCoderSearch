@@ -1,358 +1,110 @@
 use std::fmt::{Display, Formatter};
 use std::ops;
 
-pub trait SolrQueryOperand: Display {}
+pub trait SolrQueryExpression: Display {}
+pub trait SolrQueryOperandModel {}
 
-#[derive(Clone)]
-pub enum QueryOperandKind {
-    Standard(StandardQueryOperand),
-    Range(RangeQueryOperand),
+pub enum QueryExpressionKind {
+    Operand(QueryOperand),
     Expression(QueryExpression),
 }
 
-#[derive(Clone)]
-pub enum TermModifiers {
-    Normal,
-    Fuzzy(u32),
-    Proximity(u32),
-    Boost(f64),
-    Constant(f64),
-    Phrase,
-}
+/// クエリ検索式を表すタプル構造体
+/// 検索式をラップする役割を持つ。この構造体にAddトレイトとMulトレイトを実装することで検索式の加算・乗算を実装する
+/// 検索式は文字列の形式で取るので、任意の検索式を入れることができるが、構文が正しいことを保証することはできない。
+pub struct QueryOperand(pub String);
 
-#[derive(Clone)]
-pub struct StandardQueryOperand {
-    field: String,
-    word: String,
-    modifier: TermModifiers,
-}
+impl SolrQueryExpression for QueryOperand {}
 
-impl SolrQueryOperand for StandardQueryOperand {}
-
-impl StandardQueryOperand {
-    pub fn new(field: &str, word: &str) -> Self {
-        Self {
-            field: field.to_string(),
-            word: word.to_string(),
-            modifier: TermModifiers::Normal,
-        }
-    }
-
-    pub fn option(mut self, option: TermModifiers) -> Self {
-        self.modifier = option;
-        self
-    }
-}
-
-impl Display for StandardQueryOperand {
+impl Display for QueryOperand {
     fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
-        match self.modifier {
-            TermModifiers::Normal => {
-                write!(f, "{}:{}", self.field, self.word)?;
-            }
-            TermModifiers::Fuzzy(fuzzy) => {
-                write!(f, "{}:{}~{}", self.field, self.word, fuzzy)?;
-            }
-            TermModifiers::Proximity(proximity) => {
-                write!(f, r#"{}:"{}"~{}"#, self.field, self.word, proximity)?;
-            }
-            TermModifiers::Boost(boost) => {
-                write!(f, "{}:{}^{}", self.field, self.word, boost)?;
-            }
-            TermModifiers::Constant(constant) => {
-                write!(f, "{}:{}^={}", self.field, self.word, constant)?;
-            }
-            TermModifiers::Phrase => {
-                write!(f, r#"{}:"{}""#, self.field, self.word)?;
-            }
-        }
-
+        write!(f, "{}", self.0)?;
         Ok(())
     }
 }
 
-#[derive(Clone)]
-pub struct RangeQueryOperand {
-    field: String,
-    start: String,
-    end: String,
-    left_open: bool,
-    right_open: bool,
+impl From<&str> for QueryOperand {
+    fn from(expr: &str) -> Self {
+        Self(expr.to_string())
+    }
 }
 
-impl SolrQueryOperand for RangeQueryOperand {}
+/// QueryOperand同士の加算の定義
+impl ops::Add<QueryOperand> for QueryOperand {
+    type Output = QueryExpression;
 
-impl RangeQueryOperand {
-    pub fn new(field: &str) -> Self {
-        Self {
-            field: field.to_string(),
-            start: "*".to_string(),
-            end: "*".to_string(),
-            left_open: false,
-            right_open: true,
+    fn add(self, rhs: QueryOperand) -> QueryExpression {
+        QueryExpression {
+            operator: Operator::OR,
+            operands: vec![
+                QueryExpressionKind::Operand(self),
+                QueryExpressionKind::Operand(rhs),
+            ],
         }
     }
-
-    pub fn start(mut self, start: &str) -> Self {
-        self.start = start.to_string();
-        self
-    }
-
-    pub fn end(mut self, end: &str) -> Self {
-        self.end = end.to_string();
-        self
-    }
-
-    pub fn left_open(mut self) -> Self {
-        self.left_open = true;
-        self
-    }
-
-    pub fn left_close(mut self) -> Self {
-        self.left_open = false;
-        self
-    }
-
-    pub fn right_open(mut self) -> Self {
-        self.right_open = true;
-        self
-    }
-
-    pub fn right_close(mut self) -> Self {
-        self.right_open = false;
-        self
-    }
 }
 
-impl Display for RangeQueryOperand {
-    fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
-        let left_parenthesis = match self.left_open {
-            false => '[',
-            true => '{',
-        };
-
-        let right_parenthesis = match self.right_open {
-            false => ']',
-            true => '}',
-        };
-
-        write!(
-            f,
-            "{}:{}{} TO {}{}",
-            self.field, left_parenthesis, self.start, self.end, right_parenthesis
-        )?;
-
-        Ok(())
-    }
-}
-
-impl ops::Add<StandardQueryOperand> for StandardQueryOperand {
+/// QueryOperand同士の乗算の定義
+impl ops::Mul<QueryOperand> for QueryOperand {
     type Output = QueryExpression;
 
-    fn add(self, rhs: StandardQueryOperand) -> QueryExpression {
-        QueryExpression::new(
-            Operator::OR,
-            vec![
-                QueryOperandKind::Standard(self),
-                QueryOperandKind::Standard(rhs),
+    fn mul(self, rhs: QueryOperand) -> QueryExpression {
+        QueryExpression {
+            operator: Operator::AND,
+            operands: vec![
+                QueryExpressionKind::Operand(self),
+                QueryExpressionKind::Operand(rhs),
             ],
-        )
+        }
     }
 }
 
-impl ops::Mul<StandardQueryOperand> for StandardQueryOperand {
-    type Output = QueryExpression;
-
-    fn mul(self, rhs: StandardQueryOperand) -> QueryExpression {
-        QueryExpression::new(
-            Operator::AND,
-            vec![
-                QueryOperandKind::Standard(self),
-                QueryOperandKind::Standard(rhs),
-            ],
-        )
-    }
-}
-
-impl ops::Add<RangeQueryOperand> for StandardQueryOperand {
-    type Output = QueryExpression;
-
-    fn add(self, rhs: RangeQueryOperand) -> QueryExpression {
-        QueryExpression::new(
-            Operator::OR,
-            vec![
-                QueryOperandKind::Standard(self),
-                QueryOperandKind::Range(rhs),
-            ],
-        )
-    }
-}
-
-impl ops::Mul<RangeQueryOperand> for StandardQueryOperand {
-    type Output = QueryExpression;
-
-    fn mul(self, rhs: RangeQueryOperand) -> QueryExpression {
-        QueryExpression::new(
-            Operator::AND,
-            vec![
-                QueryOperandKind::Standard(self),
-                QueryOperandKind::Range(rhs),
-            ],
-        )
-    }
-}
-
-impl ops::Add<QueryExpression> for StandardQueryOperand {
+/// QueryOperand + QueryExpressionの定義
+impl ops::Add<QueryExpression> for QueryOperand {
     type Output = QueryExpression;
 
     fn add(self, rhs: QueryExpression) -> QueryExpression {
-        let operands = match rhs.operator {
-            Operator::AND => {
-                let operands = vec![
-                    QueryOperandKind::Standard(self),
-                    QueryOperandKind::Expression(rhs),
-                ];
-                operands
-            }
+        match rhs.operator {
             Operator::OR => {
-                let mut operands = vec![QueryOperandKind::Standard(self)];
-                operands.extend(rhs.operands);
-                operands
+                let mut operands = vec![QueryExpressionKind::Operand(self)];
+                operands.extend(rhs.operands.into_iter());
+                QueryExpression {
+                    operator: Operator::OR,
+                    operands: operands,
+                }
             }
-        };
-
-        QueryExpression {
-            operator: Operator::OR,
-            operands: operands,
+            Operator::AND => QueryExpression {
+                operator: Operator::OR,
+                operands: vec![
+                    QueryExpressionKind::Operand(self),
+                    QueryExpressionKind::Expression(rhs),
+                ],
+            },
         }
     }
 }
 
-impl ops::Mul<QueryExpression> for StandardQueryOperand {
+/// QueryOperand * QueryExpressionの定義
+impl ops::Mul<QueryExpression> for QueryOperand {
     type Output = QueryExpression;
 
     fn mul(self, rhs: QueryExpression) -> QueryExpression {
-        let operands = match rhs.operator {
-            Operator::OR => {
-                let operands = vec![
-                    QueryOperandKind::Standard(self),
-                    QueryOperandKind::Expression(rhs),
-                ];
-                operands
-            }
+        match rhs.operator {
             Operator::AND => {
-                let mut operands = vec![QueryOperandKind::Standard(self)];
-                operands.extend(rhs.operands);
-                operands
+                let mut operands = vec![QueryExpressionKind::Operand(self)];
+                operands.extend(rhs.operands.into_iter());
+                QueryExpression {
+                    operator: Operator::AND,
+                    operands: operands,
+                }
             }
-        };
-
-        QueryExpression {
-            operator: Operator::AND,
-            operands: operands,
-        }
-    }
-}
-
-impl ops::Add<RangeQueryOperand> for RangeQueryOperand {
-    type Output = QueryExpression;
-
-    fn add(self, rhs: RangeQueryOperand) -> QueryExpression {
-        QueryExpression::new(
-            Operator::OR,
-            vec![QueryOperandKind::Range(self), QueryOperandKind::Range(rhs)],
-        )
-    }
-}
-
-/// RangeQueryOperandを左辺に取るクエリ演算子同士の乗算演算子のオーバーロードの定義
-impl ops::Mul<RangeQueryOperand> for RangeQueryOperand {
-    type Output = QueryExpression;
-
-    fn mul(self, rhs: RangeQueryOperand) -> QueryExpression {
-        QueryExpression::new(
-            Operator::AND,
-            vec![QueryOperandKind::Range(self), QueryOperandKind::Range(rhs)],
-        )
-    }
-}
-
-impl ops::Add<StandardQueryOperand> for RangeQueryOperand {
-    type Output = QueryExpression;
-
-    fn add(self, rhs: StandardQueryOperand) -> QueryExpression {
-        QueryExpression::new(
-            Operator::OR,
-            vec![
-                QueryOperandKind::Range(self),
-                QueryOperandKind::Standard(rhs),
-            ],
-        )
-    }
-}
-
-impl ops::Mul<StandardQueryOperand> for RangeQueryOperand {
-    type Output = QueryExpression;
-
-    fn mul(self, rhs: StandardQueryOperand) -> QueryExpression {
-        QueryExpression::new(
-            Operator::AND,
-            vec![
-                QueryOperandKind::Range(self),
-                QueryOperandKind::Standard(rhs),
-            ],
-        )
-    }
-}
-
-impl ops::Add<QueryExpression> for RangeQueryOperand {
-    type Output = QueryExpression;
-
-    fn add(self, rhs: QueryExpression) -> QueryExpression {
-        let operands = match rhs.operator {
-            Operator::OR => {
-                let operands = vec![
-                    QueryOperandKind::Range(self),
-                    QueryOperandKind::Expression(rhs),
-                ];
-                operands
-            }
-            Operator::AND => {
-                let mut operands = vec![QueryOperandKind::Range(self)];
-                operands.extend(rhs.operands);
-                operands
-            }
-        };
-
-        QueryExpression {
-            operator: Operator::OR,
-            operands: operands,
-        }
-    }
-}
-
-impl ops::Mul<QueryExpression> for RangeQueryOperand {
-    type Output = QueryExpression;
-
-    fn mul(self, rhs: QueryExpression) -> QueryExpression {
-        let operands = match rhs.operator {
-            Operator::OR => {
-                let operands = vec![
-                    QueryOperandKind::Range(self),
-                    QueryOperandKind::Expression(rhs),
-                ];
-                operands
-            }
-            Operator::AND => {
-                let mut operands = vec![QueryOperandKind::Range(self)];
-                operands.extend(rhs.operands);
-                operands
-            }
-        };
-
-        QueryExpression {
-            operator: Operator::AND,
-            operands: operands,
+            Operator::OR => QueryExpression {
+                operator: Operator::AND,
+                operands: vec![
+                    QueryExpressionKind::Operand(self),
+                    QueryExpressionKind::Expression(rhs),
+                ],
+            },
         }
     }
 }
@@ -363,17 +115,13 @@ pub enum Operator {
     OR,
 }
 
-#[derive(Clone)]
+/// 複数のクエリ検索式を論理演算子で結合したクエリを表す構造体
 pub struct QueryExpression {
     pub operator: Operator,
-    pub operands: Vec<QueryOperandKind>,
+    pub operands: Vec<QueryExpressionKind>,
 }
 
-impl QueryExpression {
-    pub fn new(operator: Operator, operands: Vec<QueryOperandKind>) -> Self {
-        Self { operator, operands }
-    }
-}
+impl SolrQueryExpression for QueryExpression {}
 
 impl Display for QueryExpression {
     fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
@@ -385,158 +133,139 @@ impl Display for QueryExpression {
         let s = self
             .operands
             .iter()
-            .map(|op| match op {
-                QueryOperandKind::Standard(op) => op.to_string(),
-                QueryOperandKind::Range(op) => op.to_string(),
-                QueryOperandKind::Expression(e) => e.to_string(),
+            .map(|expr| match expr {
+                QueryExpressionKind::Operand(op) => op.to_string(),
+                QueryExpressionKind::Expression(expr) => format!("({})", expr.to_string()),
             })
             .collect::<Vec<String>>()
             .join(operator);
-        write!(f, "({})", s)?;
+        write!(f, "{}", s)?;
 
         Ok(())
     }
 }
 
+/// QueryExpression同士の加算の定義
 impl ops::Add<QueryExpression> for QueryExpression {
     type Output = QueryExpression;
 
     fn add(self, rhs: QueryExpression) -> QueryExpression {
-        let operands = if self.operator == Operator::OR && rhs.operator == Operator::OR {
-            let mut operands = Vec::new();
-            operands.extend(self.operands);
-            operands.extend(rhs.operands);
-            operands
+        if self.operator == Operator::OR && rhs.operator == Operator::OR {
+            let operands = Vec::from_iter(itertools::chain(
+                self.operands.into_iter(),
+                rhs.operands.into_iter(),
+            ));
+            return QueryExpression {
+                operator: Operator::OR,
+                operands,
+            };
         } else {
-            vec![
-                QueryOperandKind::Expression(self),
-                QueryOperandKind::Expression(rhs),
-            ]
-        };
-
-        QueryExpression {
-            operator: Operator::OR,
-            operands: operands,
+            return QueryExpression {
+                operator: Operator::OR,
+                operands: vec![
+                    QueryExpressionKind::Expression(self),
+                    QueryExpressionKind::Expression(rhs),
+                ],
+            };
         }
     }
 }
 
+/// QueryExpression同士の乗算の定義
 impl ops::Mul<QueryExpression> for QueryExpression {
     type Output = QueryExpression;
 
     fn mul(self, rhs: QueryExpression) -> QueryExpression {
-        let operands = if self.operator == Operator::AND && rhs.operator == Operator::AND {
-            let mut operands = Vec::new();
-            operands.extend(self.operands);
-            operands.extend(rhs.operands);
-            operands
+        if self.operator == Operator::AND && rhs.operator == Operator::AND {
+            let operands = Vec::from_iter(itertools::chain(
+                self.operands.into_iter(),
+                rhs.operands.into_iter(),
+            ));
+            return QueryExpression {
+                operator: Operator::AND,
+                operands,
+            };
         } else {
-            vec![
-                QueryOperandKind::Expression(self),
-                QueryOperandKind::Expression(rhs),
-            ]
-        };
-
-        QueryExpression {
-            operator: Operator::AND,
-            operands: operands,
+            return QueryExpression {
+                operator: Operator::AND,
+                operands: vec![
+                    QueryExpressionKind::Expression(self),
+                    QueryExpressionKind::Expression(rhs),
+                ],
+            };
         }
     }
 }
 
-impl ops::Add<StandardQueryOperand> for QueryExpression {
+/// QueryExpression + QueryOperandの定義
+impl ops::Add<QueryOperand> for QueryExpression {
     type Output = QueryExpression;
 
-    fn add(self, rhs: StandardQueryOperand) -> QueryExpression {
+    fn add(mut self, rhs: QueryOperand) -> QueryExpression {
         match self.operator {
             Operator::OR => {
-                let mut operands = self.operands.clone();
-                operands.push(QueryOperandKind::Standard(rhs));
-                QueryExpression {
-                    operator: Operator::OR,
-                    operands: operands,
-                }
+                self.operands.push(QueryExpressionKind::Operand(rhs));
+                self
             }
             Operator::AND => QueryExpression {
                 operator: Operator::OR,
                 operands: vec![
-                    QueryOperandKind::Expression(self),
-                    QueryOperandKind::Standard(rhs),
+                    QueryExpressionKind::Expression(self),
+                    QueryExpressionKind::Operand(rhs),
                 ],
             },
         }
     }
 }
 
-impl ops::Mul<StandardQueryOperand> for QueryExpression {
+/// QueryExpression * QueryOperandの定義
+impl ops::Mul<QueryOperand> for QueryExpression {
     type Output = QueryExpression;
 
-    fn mul(self, rhs: StandardQueryOperand) -> QueryExpression {
+    fn mul(mut self, rhs: QueryOperand) -> QueryExpression {
         match self.operator {
             Operator::AND => {
-                let mut operands = self.operands.clone();
-                operands.push(QueryOperandKind::Standard(rhs));
-                QueryExpression {
-                    operator: Operator::AND,
-                    operands: operands,
-                }
+                self.operands.push(QueryExpressionKind::Operand(rhs));
+                self
             }
             Operator::OR => QueryExpression {
                 operator: Operator::AND,
                 operands: vec![
-                    QueryOperandKind::Expression(self),
-                    QueryOperandKind::Standard(rhs),
+                    QueryExpressionKind::Expression(self),
+                    QueryExpressionKind::Operand(rhs),
                 ],
             },
         }
     }
 }
 
-impl ops::Add<RangeQueryOperand> for QueryExpression {
-    type Output = QueryExpression;
+/// プレーンな検索式を構築するためのヘルパー構造体
+pub struct StandardQueryOperand {
+    field: String,
+    word: String,
+}
 
-    fn add(self, rhs: RangeQueryOperand) -> QueryExpression {
-        match self.operator {
-            Operator::OR => {
-                let mut operands = self.operands.clone();
-                operands.push(QueryOperandKind::Range(rhs));
-                QueryExpression {
-                    operator: Operator::OR,
-                    operands: operands,
-                }
-            }
-            Operator::AND => QueryExpression {
-                operator: Operator::OR,
-                operands: vec![
-                    QueryOperandKind::Expression(self),
-                    QueryOperandKind::Range(rhs),
-                ],
-            },
+impl SolrQueryOperandModel for StandardQueryOperand {}
+
+impl StandardQueryOperand {
+    pub fn new(field: &str, word: &str) -> Self {
+        Self {
+            field: String::from(field),
+            word: String::from(word),
         }
     }
 }
 
-impl ops::Mul<RangeQueryOperand> for QueryExpression {
-    type Output = QueryExpression;
+impl Display for StandardQueryOperand {
+    fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
+        write!(f, "{}:{}", self.field, self.word)?;
+        Ok(())
+    }
+}
 
-    fn mul(self, rhs: RangeQueryOperand) -> QueryExpression {
-        match self.operator {
-            Operator::AND => {
-                let mut operands = self.operands.clone();
-                operands.push(QueryOperandKind::Range(rhs));
-                QueryExpression {
-                    operator: Operator::AND,
-                    operands: operands,
-                }
-            }
-            Operator::OR => QueryExpression {
-                operator: Operator::AND,
-                operands: vec![
-                    QueryOperandKind::Expression(self),
-                    QueryOperandKind::Range(rhs),
-                ],
-            },
-        }
+impl From<StandardQueryOperand> for QueryOperand {
+    fn from(op: StandardQueryOperand) -> QueryOperand {
+        QueryOperand(op.to_string())
     }
 }
 
@@ -550,157 +279,157 @@ mod test {
         assert_eq!(String::from("name:alice"), q.to_string());
     }
 
-    #[test]
-    fn test_fuzzy_query_operand() {
-        let q = StandardQueryOperand::new("name", "alice").option(TermModifiers::Fuzzy(1));
-        assert_eq!(String::from("name:alice~1"), q.to_string());
-    }
+    // #[test]
+    // fn test_fuzzy_query_operand() {
+    //     let q = StandardQueryOperand::new("name", "alice").option(TermModifiers::Fuzzy(1));
+    //     assert_eq!(String::from("name:alice~1"), q.to_string());
+    // }
 
-    #[test]
-    fn test_proximity_query_operand() {
-        let q =
-            StandardQueryOperand::new("name", "alice wonder").option(TermModifiers::Proximity(2));
-        assert_eq!(String::from(r#"name:"alice wonder"~2"#), q.to_string());
-    }
+    // #[test]
+    // fn test_proximity_query_operand() {
+    //     let q =
+    //         StandardQueryOperand::new("name", "alice wonder").option(TermModifiers::Proximity(2));
+    //     assert_eq!(String::from(r#"name:"alice wonder"~2"#), q.to_string());
+    // }
 
-    #[test]
-    fn test_boost_query_operand() {
-        let q = StandardQueryOperand::new("name", "alice").option(TermModifiers::Boost(10.0));
-        assert_eq!(String::from("name:alice^10"), q.to_string());
-    }
+    // #[test]
+    // fn test_boost_query_operand() {
+    //     let q = StandardQueryOperand::new("name", "alice").option(TermModifiers::Boost(10.0));
+    //     assert_eq!(String::from("name:alice^10"), q.to_string());
+    // }
 
-    #[test]
-    fn test_constant_query_operand() {
-        let q = StandardQueryOperand::new("name", "alice").option(TermModifiers::Constant(0.0));
-        assert_eq!(String::from("name:alice^=0"), q.to_string());
-    }
+    // #[test]
+    // fn test_constant_query_operand() {
+    //     let q = StandardQueryOperand::new("name", "alice").option(TermModifiers::Constant(0.0));
+    //     assert_eq!(String::from("name:alice^=0"), q.to_string());
+    // }
 
-    #[test]
-    fn test_phrase_query_operand() {
-        let q = StandardQueryOperand::new("name", "alice").option(TermModifiers::Phrase);
-        assert_eq!(String::from(r#"name:"alice""#), q.to_string());
-    }
+    // #[test]
+    // fn test_phrase_query_operand() {
+    //     let q = StandardQueryOperand::new("name", "alice").option(TermModifiers::Phrase);
+    //     assert_eq!(String::from(r#"name:"alice""#), q.to_string());
+    // }
 
-    #[test]
-    fn test_default_range_query() {
-        let q = RangeQueryOperand::new("age");
+    // #[test]
+    // fn test_default_range_query() {
+    //     let q = RangeQueryOperand::new("age");
 
-        assert_eq!(String::from("age:[* TO *}"), q.to_string())
-    }
+    //     assert_eq!(String::from("age:[* TO *}"), q.to_string())
+    // }
 
-    #[test]
-    fn test_left_close_right_close_range_query() {
-        let q = RangeQueryOperand::new("age")
-            .start("10")
-            .end("20")
-            .left_close()
-            .right_close();
+    // #[test]
+    // fn test_left_close_right_close_range_query() {
+    //     let q = RangeQueryOperand::new("age")
+    //         .start("10")
+    //         .end("20")
+    //         .left_close()
+    //         .right_close();
 
-        assert_eq!(String::from("age:[10 TO 20]"), q.to_string())
-    }
+    //     assert_eq!(String::from("age:[10 TO 20]"), q.to_string())
+    // }
 
     #[test]
     fn test_add_operands() {
-        let op1 = StandardQueryOperand::new("name", "alice");
-        let op2 = StandardQueryOperand::new("age", "24");
+        let op1 = QueryOperand::from("name:alice");
+        let op2 = QueryOperand::from("age:24");
 
         let q = op1 + op2;
 
-        assert_eq!(String::from("(name:alice OR age:24)"), q.to_string())
+        assert_eq!(String::from("name:alice OR age:24"), q.to_string())
     }
 
     #[test]
     fn test_mul_operands() {
-        let op1 = StandardQueryOperand::new("name", "alice");
-        let op2 = StandardQueryOperand::new("age", "24");
+        let op1 = QueryOperand::from("name:alice");
+        let op2 = QueryOperand::from("age:24");
 
         let q = op1 * op2;
 
-        assert_eq!(String::from("(name:alice AND age:24)"), q.to_string())
+        assert_eq!(String::from("name:alice AND age:24"), q.to_string())
     }
 
     #[test]
     fn test_add_operand_to_expression() {
-        let op1 = StandardQueryOperand::new("name", "alice");
-        let op2 = StandardQueryOperand::new("name", "bob");
-        let op3 = StandardQueryOperand::new("age", "24");
+        let op1 = QueryOperand::from("name:alice");
+        let op2 = QueryOperand::from("name:bob");
+        let op3 = QueryOperand::from("age:24");
 
         let q = (op1 * op2) + op3;
 
         assert_eq!(
-            String::from("((name:alice AND name:bob) OR age:24)"),
+            String::from("(name:alice AND name:bob) OR age:24"),
             q.to_string()
         )
     }
 
     #[test]
     fn test_add_expression_to_operand() {
-        let op1 = StandardQueryOperand::new("name", "alice");
-        let op2 = StandardQueryOperand::new("name", "bob");
-        let op3 = StandardQueryOperand::new("age", "24");
+        let op1 = QueryOperand::from("name:alice");
+        let op2 = QueryOperand::from("name:bob");
+        let op3 = QueryOperand::from("age:24");
 
         let q = op1 * (op2 + op3);
 
         assert_eq!(
-            String::from("(name:alice AND (name:bob OR age:24))"),
+            String::from("name:alice AND (name:bob OR age:24)"),
             q.to_string()
         )
     }
 
     #[test]
     fn test_add_expression_to_expression() {
-        let op1 = StandardQueryOperand::new("name", "alice");
-        let op2 = StandardQueryOperand::new("age", "24");
-        let op3 = StandardQueryOperand::new("name", "bob");
-        let op4 = StandardQueryOperand::new("age", "32");
+        let op1 = QueryOperand::from("name:alice");
+        let op2 = QueryOperand::from("age:24");
+        let op3 = QueryOperand::from("name:bob");
+        let op4 = QueryOperand::from("age:32");
 
         let q = (op1 * op2) + (op3 * op4);
 
         assert_eq!(
-            String::from("((name:alice AND age:24) OR (name:bob AND age:32))"),
+            String::from("(name:alice AND age:24) OR (name:bob AND age:32)"),
             q.to_string()
         )
     }
 
     #[test]
     fn test_mul_expression_to_expression() {
-        let op1 = StandardQueryOperand::new("name", "alice");
-        let op2 = StandardQueryOperand::new("name", "bob");
-        let op3 = StandardQueryOperand::new("age", "24");
-        let op4 = StandardQueryOperand::new("age", "32");
+        let op1 = QueryOperand::from("name:alice");
+        let op2 = QueryOperand::from("name:bob");
+        let op3 = QueryOperand::from("age:24");
+        let op4 = QueryOperand::from("age:32");
 
         let q = (op1 + op2) * (op3 + op4);
 
         assert_eq!(
-            String::from("((name:alice OR name:bob) AND (age:24 OR age:32))"),
+            String::from("(name:alice OR name:bob) AND (age:24 OR age:32)"),
             q.to_string()
         )
     }
 
     #[test]
     fn test_extend_expression_with_add() {
-        let op1 = StandardQueryOperand::new("name", "alice");
-        let op2 = StandardQueryOperand::new("name", "bob");
-        let op3 = StandardQueryOperand::new("name", "charles");
+        let op1 = QueryOperand::from("name:alice");
+        let op2 = QueryOperand::from("name:bob");
+        let op3 = QueryOperand::from("name:charles");
 
         let q = op1 + op2 + op3;
 
         assert_eq!(
-            String::from("(name:alice OR name:bob OR name:charles)"),
+            String::from("name:alice OR name:bob OR name:charles"),
             q.to_string()
         )
     }
 
     #[test]
     fn test_extend_expression_with_mul() {
-        let op1 = StandardQueryOperand::new("name", "alice");
-        let op2 = StandardQueryOperand::new("name", "bob");
-        let op3 = StandardQueryOperand::new("name", "charles");
+        let op1 = QueryOperand::from("name:alice");
+        let op2 = QueryOperand::from("name:bob");
+        let op3 = QueryOperand::from("name:charles");
 
         let q = op1 * op2 * op3;
 
         assert_eq!(
-            String::from("(name:alice AND name:bob AND name:charles)"),
+            String::from("name:alice AND name:bob AND name:charles"),
             q.to_string()
         )
     }
