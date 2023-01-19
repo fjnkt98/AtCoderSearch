@@ -34,13 +34,13 @@ impl ops::Add<QueryOperand> for QueryOperand {
     type Output = QueryExpression;
 
     fn add(self, rhs: QueryOperand) -> QueryExpression {
-        QueryExpression::new(
-            Operator::OR,
-            vec![
+        QueryExpression {
+            operator: Operator::OR,
+            operands: vec![
                 QueryExpressionKind::Operand(self),
                 QueryExpressionKind::Operand(rhs),
             ],
-        )
+        }
     }
 }
 
@@ -49,13 +49,13 @@ impl ops::Mul<QueryOperand> for QueryOperand {
     type Output = QueryExpression;
 
     fn mul(self, rhs: QueryOperand) -> QueryExpression {
-        QueryExpression::new(
-            Operator::AND,
-            vec![
+        QueryExpression {
+            operator: Operator::AND,
+            operands: vec![
                 QueryExpressionKind::Operand(self),
                 QueryExpressionKind::Operand(rhs),
             ],
-        )
+        }
     }
 }
 
@@ -90,16 +90,16 @@ impl ops::Mul<QueryExpression> for QueryOperand {
 
     fn mul(self, rhs: QueryExpression) -> QueryExpression {
         match rhs.operator {
-            Operator::OR => {
+            Operator::AND => {
                 let mut operands = vec![QueryExpressionKind::Operand(self)];
                 operands.extend(rhs.operands.into_iter());
                 QueryExpression {
-                    operator: Operator::OR,
+                    operator: Operator::AND,
                     operands: operands,
                 }
             }
-            Operator::AND => QueryExpression {
-                operator: Operator::OR,
+            Operator::OR => QueryExpression {
+                operator: Operator::AND,
                 operands: vec![
                     QueryExpressionKind::Operand(self),
                     QueryExpressionKind::Expression(rhs),
@@ -123,12 +123,6 @@ pub struct QueryExpression {
 
 impl SolrQueryExpression for QueryExpression {}
 
-impl QueryExpression {
-    pub fn new(operator: Operator, operands: Vec<QueryExpressionKind>) -> Self {
-        Self { operator, operands }
-    }
-}
-
 impl Display for QueryExpression {
     fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
         let operator = match self.operator {
@@ -145,7 +139,7 @@ impl Display for QueryExpression {
             })
             .collect::<Vec<String>>()
             .join(operator);
-        write!(f, "({})", s)?;
+        write!(f, "{}", s)?;
 
         Ok(())
     }
@@ -156,14 +150,24 @@ impl ops::Add<QueryExpression> for QueryExpression {
     type Output = QueryExpression;
 
     fn add(self, rhs: QueryExpression) -> QueryExpression {
-        // QueryExpression::new(
-        //     Operator::OR,
-        //     vec![
-        //         QueryExpressionKind::Operand(self),
-        //         QueryExpressionKind::Operand(rhs),
-        //     ],
-        // )
-        todo!();
+        if self.operator == Operator::OR && rhs.operator == Operator::OR {
+            let operands = Vec::from_iter(itertools::chain(
+                self.operands.into_iter(),
+                rhs.operands.into_iter(),
+            ));
+            return QueryExpression {
+                operator: Operator::OR,
+                operands,
+            };
+        } else {
+            return QueryExpression {
+                operator: Operator::OR,
+                operands: vec![
+                    QueryExpressionKind::Expression(self),
+                    QueryExpressionKind::Expression(rhs),
+                ],
+            };
+        }
     }
 }
 
@@ -172,14 +176,24 @@ impl ops::Mul<QueryExpression> for QueryExpression {
     type Output = QueryExpression;
 
     fn mul(self, rhs: QueryExpression) -> QueryExpression {
-        // QueryExpression::new(
-        //     Operator::AND,
-        //     vec![
-        //         QueryExpressionKind::Operand(self),
-        //         QueryExpressionKind::Operand(rhs),
-        //     ],
-        // )
-        todo!();
+        if self.operator == Operator::AND && rhs.operator == Operator::AND {
+            let operands = Vec::from_iter(itertools::chain(
+                self.operands.into_iter(),
+                rhs.operands.into_iter(),
+            ));
+            return QueryExpression {
+                operator: Operator::AND,
+                operands,
+            };
+        } else {
+            return QueryExpression {
+                operator: Operator::AND,
+                operands: vec![
+                    QueryExpressionKind::Expression(self),
+                    QueryExpressionKind::Expression(rhs),
+                ],
+            };
+        }
     }
 }
 
@@ -187,25 +201,20 @@ impl ops::Mul<QueryExpression> for QueryExpression {
 impl ops::Add<QueryOperand> for QueryExpression {
     type Output = QueryExpression;
 
-    fn add(self, rhs: QueryOperand) -> QueryExpression {
-        todo!();
-        // match rhs.operator {
-        //     Operator::OR => {
-        //         let mut operands = vec![QueryExpressionKind::Operand(self)];
-        //         operands.extend(rhs.operands.into_iter());
-        //         QueryExpression {
-        //             operator: Operator::OR,
-        //             operands: operands,
-        //         }
-        //     }
-        //     Operator::AND => QueryExpression {
-        //         operator: Operator::OR,
-        //         operands: vec![
-        //             QueryExpressionKind::Operand(self),
-        //             QueryExpressionKind::Expression(rhs),
-        //         ],
-        //     },
-        // }
+    fn add(mut self, rhs: QueryOperand) -> QueryExpression {
+        match self.operator {
+            Operator::OR => {
+                self.operands.push(QueryExpressionKind::Operand(rhs));
+                self
+            }
+            Operator::AND => QueryExpression {
+                operator: Operator::OR,
+                operands: vec![
+                    QueryExpressionKind::Expression(self),
+                    QueryExpressionKind::Operand(rhs),
+                ],
+            },
+        }
     }
 }
 
@@ -213,25 +222,20 @@ impl ops::Add<QueryOperand> for QueryExpression {
 impl ops::Mul<QueryOperand> for QueryExpression {
     type Output = QueryExpression;
 
-    fn mul(self, rhs: QueryOperand) -> QueryExpression {
-        todo!();
-        // match rhs.operator {
-        //     Operator::OR => {
-        //         let mut operands = vec![QueryExpressionKind::Operand(self)];
-        //         operands.extend(rhs.operands.into_iter());
-        //         QueryExpression {
-        //             operator: Operator::OR,
-        //             operands: operands,
-        //         }
-        //     }
-        //     Operator::AND => QueryExpression {
-        //         operator: Operator::OR,
-        //         operands: vec![
-        //             QueryExpressionKind::Operand(self),
-        //             QueryExpressionKind::Expression(rhs),
-        //         ],
-        //     },
-        // }
+    fn mul(mut self, rhs: QueryOperand) -> QueryExpression {
+        match self.operator {
+            Operator::AND => {
+                self.operands.push(QueryExpressionKind::Operand(rhs));
+                self
+            }
+            Operator::OR => QueryExpression {
+                operator: Operator::AND,
+                operands: vec![
+                    QueryExpressionKind::Expression(self),
+                    QueryExpressionKind::Operand(rhs),
+                ],
+            },
+        }
     }
 }
 
@@ -331,7 +335,7 @@ mod test {
 
         let q = op1 + op2;
 
-        assert_eq!(String::from("(name:alice OR age:24)"), q.to_string())
+        assert_eq!(String::from("name:alice OR age:24"), q.to_string())
     }
 
     #[test]
@@ -341,7 +345,7 @@ mod test {
 
         let q = op1 * op2;
 
-        assert_eq!(String::from("(name:alice AND age:24)"), q.to_string())
+        assert_eq!(String::from("name:alice AND age:24"), q.to_string())
     }
 
     #[test]
@@ -353,7 +357,7 @@ mod test {
         let q = (op1 * op2) + op3;
 
         assert_eq!(
-            String::from("((name:alice AND name:bob) OR age:24)"),
+            String::from("(name:alice AND name:bob) OR age:24"),
             q.to_string()
         )
     }
@@ -367,7 +371,7 @@ mod test {
         let q = op1 * (op2 + op3);
 
         assert_eq!(
-            String::from("(name:alice AND (name:bob OR age:24))"),
+            String::from("name:alice AND (name:bob OR age:24)"),
             q.to_string()
         )
     }
@@ -382,7 +386,7 @@ mod test {
         let q = (op1 * op2) + (op3 * op4);
 
         assert_eq!(
-            String::from("((name:alice AND age:24) OR (name:bob AND age:32))"),
+            String::from("(name:alice AND age:24) OR (name:bob AND age:32)"),
             q.to_string()
         )
     }
@@ -397,7 +401,7 @@ mod test {
         let q = (op1 + op2) * (op3 + op4);
 
         assert_eq!(
-            String::from("((name:alice OR name:bob) AND (age:24 OR age:32))"),
+            String::from("(name:alice OR name:bob) AND (age:24 OR age:32)"),
             q.to_string()
         )
     }
@@ -411,7 +415,7 @@ mod test {
         let q = op1 + op2 + op3;
 
         assert_eq!(
-            String::from("(name:alice OR name:bob OR name:charles)"),
+            String::from("name:alice OR name:bob OR name:charles"),
             q.to_string()
         )
     }
@@ -425,7 +429,7 @@ mod test {
         let q = op1 * op2 * op3;
 
         assert_eq!(
-            String::from("(name:alice AND name:bob AND name:charles)"),
+            String::from("name:alice AND name:bob AND name:charles"),
             q.to_string()
         )
     }
