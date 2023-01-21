@@ -2,10 +2,7 @@ mod handlers;
 mod models;
 
 use crate::handlers::{search_with_form, search_with_qs};
-use anyhow::Result;
 use axum::extract::Extension;
-use axum::http::StatusCode;
-use axum::response::IntoResponse;
 use axum::routing::get;
 use axum::{Router, Server};
 use dotenvy::dotenv;
@@ -26,10 +23,7 @@ async fn main() {
 
     let solr = SolrClient::new("http://localhost", 8983).unwrap();
     let core = solr.core("atcoder").await.unwrap();
-    let app = Router::new()
-        .route("/", get(index))
-        .route("/api/search", get(search_with_qs).post(search_with_form))
-        .layer(Extension(Arc::new(core)));
+    let app = create_router(core);
 
     let addr = SocketAddr::from(([0, 0, 0, 0], 8000));
     Server::bind(&addr)
@@ -38,11 +32,8 @@ async fn main() {
         .unwrap();
 }
 
-async fn index(Extension(core): Extension<Arc<SolrCore>>) -> Result<impl IntoResponse, StatusCode> {
-    let status = core
-        .status()
-        .await
-        .or(Err(StatusCode::INTERNAL_SERVER_ERROR))?;
-
-    Ok((StatusCode::OK, status.name))
+fn create_router(core: SolrCore) -> Router {
+    Router::new()
+        .route("/api/search", get(search_with_qs))
+        .layer(Extension(Arc::new(core)))
 }
