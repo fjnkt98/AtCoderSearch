@@ -1,18 +1,29 @@
+/// ファセット検索のためのクエリパラメータを生成するビルダのトレイト
 pub trait FacetBuilder {
     fn build(&self) -> Vec<(String, String)>;
 }
 
+/// フィールドファセットのソート順
+///
+/// - Index: ファセット結果を辞書順で返す
+/// - Count: ファセット結果をカウント数順で返す
+///
+/// https://solr.apache.org/guide/solr/latest/query-guide/faceting.html#field-value-faceting-parameters:~:text=a%20regular%20expression.-,facet.sort,-Optional
 pub enum FieldFacetSortOrder {
     Index,
     Count,
 }
 
+/// フィールドファセット時にSolrが使用するアルゴリズム
+///
+/// https://solr.apache.org/guide/solr/latest/query-guide/faceting.html#field-value-faceting-parameters:~:text=in%20the%20response.-,facet.method,-Optional
 pub enum FieldFacetMethod {
     Enum,
     Fc,
     Fcs,
 }
 
+/// フィールドファセットのためのパラメータを生成するビルダ
 pub struct FieldFacetBuilder {
     field: String,
     prefix: Option<String>,
@@ -171,6 +182,13 @@ pub enum RangeFacetOtherOptions {
     All,
 }
 
+/// レンジの境界値の扱いを制御するパラメータ
+///
+/// - Lower: レンジを右半開区間で扱う
+/// - Upper: レンジを左半開区間で扱う
+/// - Edge: 一番最初の区間の下限境界値と、一番最後の区間の上限境界値を含む
+/// - Outer: 境界値はどちらの区間にも含まれる？
+/// - All: すべてのオプションを適用する
 pub enum RangeFacetIncludeOptions {
     Lower,
     Upper,
@@ -179,6 +197,7 @@ pub enum RangeFacetIncludeOptions {
     All,
 }
 
+/// レンジファセットのためのパラメータを生成するビルダ
 pub struct RangeFacetBuilder {
     field: String,
     start: String,
@@ -223,9 +242,18 @@ impl FacetBuilder for RangeFacetBuilder {
         let mut result = Vec::new();
 
         result.push((String::from("facet.range"), self.field.clone()));
-        result.push((format!("f.{}.facet.start", self.field), self.start.clone()));
-        result.push((format!("f.{}.facet.end", self.field), self.end.clone()));
-        result.push((format!("f.{}.facet.gap", self.field), self.gap.clone()));
+        result.push((
+            format!("f.{}.facet.range.start", self.field),
+            self.start.clone(),
+        ));
+        result.push((
+            format!("f.{}.facet.range.end", self.field),
+            self.end.clone(),
+        ));
+        result.push((
+            format!("f.{}.facet.range.gap", self.field),
+            self.gap.clone(),
+        ));
 
         if let Some(hardend) = self.hardend {
             result.push((
@@ -235,7 +263,7 @@ impl FacetBuilder for RangeFacetBuilder {
         }
 
         result.push((
-            format!("f.{}.facet.other", self.field),
+            format!("f.{}.facet.range.other", self.field),
             match self.other {
                 None => String::from("none"),
                 Some(RangeFacetOtherOptions::Before) => String::from("before"),
@@ -247,7 +275,7 @@ impl FacetBuilder for RangeFacetBuilder {
 
         if let Some(include) = &self.include {
             result.push((
-                format!("f.{}.facet.include", self.field),
+                format!("f.{}.facet.range.include", self.field),
                 match include {
                     RangeFacetIncludeOptions::Lower => String::from("lower"),
                     RangeFacetIncludeOptions::Upper => String::from("upper"),
@@ -314,6 +342,45 @@ mod test {
                 (
                     String::from("f.category.facet.exists"),
                     String::from("false")
+                ),
+            ],
+            builder.build()
+        )
+    }
+
+    #[test]
+    fn test_range_facet() {
+        let builder = RangeFacetBuilder::new(
+            "difficulty",
+            0.to_string(),
+            2000.to_string(),
+            400.to_string(),
+        )
+        .include(RangeFacetIncludeOptions::Lower)
+        .other(RangeFacetOtherOptions::All);
+
+        assert_eq!(
+            vec![
+                (String::from("facet.range"), String::from("difficulty")),
+                (
+                    String::from("f.difficulty.facet.range.start"),
+                    String::from("0")
+                ),
+                (
+                    String::from("f.difficulty.facet.range.end"),
+                    String::from("2000")
+                ),
+                (
+                    String::from("f.difficulty.facet.range.gap"),
+                    String::from("400")
+                ),
+                (
+                    String::from("f.difficulty.facet.range.other"),
+                    String::from("all")
+                ),
+                (
+                    String::from("f.difficulty.facet.range.include"),
+                    String::from("lower")
                 ),
             ],
             builder.build()
