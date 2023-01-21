@@ -8,16 +8,33 @@ use http_body::Body;
 use hyper::Request;
 use serde::de::{DeserializeOwned, Error, Unexpected};
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
-use solr_client::query::{QueryBuilder, QueryOperand, StandardQueryBuilder};
-use validator::Validate;
+use solr_client::query::SortOrderBuilder;
+use solr_client::query::{
+    QueryBuilder, QueryExpression, QueryOperand, StandardQueryBuilder, StandardQueryOperand,
+};
+use validator::{Validate, ValidationError};
 
 #[derive(Debug, Serialize, Deserialize, Clone, Validate)]
 pub struct SearchParams {
     pub q: Option<String>,
-    #[validate(range(max = 1000))]
-    pub o: Option<u32>,
     #[validate(range(max = 200))]
-    pub l: Option<u32>,
+    pub p: Option<u32>,
+    pub o: Option<u32>,
+    pub category: Option<Vec<String>>,
+    #[serde(alias = "difficulty.from")]
+    pub difficulty_from: Option<u32>,
+    #[serde(alias = "difficulty.to")]
+    pub difficulty_to: Option<u32>,
+    #[validate(custom = "validate_sort_option")]
+    pub s: Option<String>,
+}
+
+fn validate_sort_option(value: &str) -> Result<(), ValidationError> {
+    match value {
+        "start_at" | "-start_at" | "difficulty" | "-difficulty" | "score" | "-score" => {}
+        _ => return Err(ValidationError::new("Invalid sort field option.")),
+    }
+    Ok(())
 }
 
 impl SearchParams {
@@ -27,12 +44,33 @@ impl SearchParams {
             let op = QueryOperand(format!("text_ja: {}", q));
             builder = builder.q(&op);
         };
-        if let Some(l) = self.l {
-            builder = builder.rows(l);
+        if let Some(p) = self.p {
+            builder = builder.rows(p);
         };
         if let Some(o) = self.o {
             builder = builder.start(o);
         }
+        if let Some(s) = &self.s {
+            let sort = if s.starts_with("-") {
+                SortOrderBuilder::new().desc(s)
+            } else {
+                SortOrderBuilder::new().asc(s)
+            };
+            builder = builder.sort(&sort);
+        }
+        if let Some(category) = &self.category {
+            let fq = QueryExpression::sum(
+                category
+                    .iter()
+                    .map(|c| QueryOperand::from(StandardQueryOperand::new("category", c)))
+                    .collect(),
+            );
+            builder = builder.fq(&fq);
+        }
+
+        // if let Some(difficulty_from) = self.difficulty_from {
+
+        // }
 
         builder.build()
     }
