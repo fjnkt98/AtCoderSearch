@@ -32,6 +32,15 @@ paths:
             default: 0
           description: Offset position from which to start returning search result
           required: false
+        - in: query
+          name: s
+          schema:
+            type: string
+            enum:
+              - "start_at"
+              - "difficulty"
+              - score
+            default: score
       responses:
         200:
           description: "Search result"
@@ -98,9 +107,29 @@ components:
     Item:
       type: object
       properties:
-        id:
+        problem_id:
           type: string
-
+        problem_title:
+          type: string
+        problem_url:
+          type: string
+          format: uri
+        contest_id:
+          type: string
+        contest_title:
+          type: string
+        contest_url:
+          type: string
+          format: uri
+        difficulty:
+          type: integer
+        start_at:
+          type: string
+          format: date-time
+        duration:
+          type: integer
+        rate_change:
+          type: string
     # ----------------------------
     # 検索結果のレスポンス(正常時)
     # ----------------------------
