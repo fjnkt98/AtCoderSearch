@@ -25,23 +25,23 @@ impl SolrCore {
         }
     }
     pub async fn status(&self) -> Result<CoreStatus> {
-        let path = "solr/admin/cores";
-
         let response = self
             .client
-            .get(format!("{}/{}", self.base_url, path))
+            .get(format!("{}/solr/admin/cores", self.base_url))
             .query(&[("action", "status"), ("core", &self.name)])
             .send()
             .await
-            .map_err(|e| SolrError::RequestError(e))?
+            .map_err(|e| SolrError::RequestError(e))?;
+
+        let content = response
             .text()
             .await
             .map_err(|e| SolrError::RequestError(e))?;
 
-        let response: SolrCoreList =
-            serde_json::from_str(&response).map_err(|e| SolrError::DeserializeError(e))?;
+        let core_list: SolrCoreList =
+            serde_json::from_str(&content).map_err(|e| SolrError::DeserializeError(e))?;
 
-        if let Some(error) = response.error {
+        if let Some(error) = core_list.error {
             return Err(SolrError::UnexpectedError((error.code, error.msg)));
         }
 
@@ -51,27 +51,27 @@ impl SolrCore {
         // 2. `status`フィールドのキーにこのコアが含まれていること
         //
         // が保証されているので、`unwrap()`を使用している。
-        let status = response.status.unwrap().get(&self.name).unwrap().clone();
+        let status = core_list.status.unwrap().get(&self.name).unwrap().clone();
 
         Ok(status)
     }
 
     pub async fn reload(&self) -> Result<u32> {
-        let path = "solr/admin/cores";
-
         let response = self
             .client
-            .get(format!("{}/{}", self.base_url, path))
+            .get(format!("{}/solr/admin/cores", self.base_url))
             .query(&[("action", "reload"), ("core", &self.name)])
             .send()
             .await
-            .map_err(|e| SolrError::RequestError(e))?
+            .map_err(|e| SolrError::RequestError(e))?;
+
+        let content = response
             .text()
             .await
             .map_err(|e| SolrError::RequestError(e))?;
 
         let response: SolrSimpleResponse =
-            serde_json::from_str(&response).map_err(|e| SolrError::DeserializeError(e))?;
+            serde_json::from_str(&content).map_err(|e| SolrError::DeserializeError(e))?;
 
         if let Some(error) = response.error {
             return Err(SolrError::UnexpectedError((error.code, error.msg)));
@@ -91,19 +91,21 @@ impl SolrCore {
             .query(params)
             .send()
             .await
-            .map_err(|e| SolrError::RequestError(e))?
+            .map_err(|e| SolrError::RequestError(e))?;
+
+        let content = response
             .text()
             .await
             .map_err(|e| SolrError::RequestError(e))?;
 
-        let response: SolrSelectResponse =
-            serde_json::from_str(&response).map_err(|e| SolrError::DeserializeError(e))?;
+        let selection: SolrSelectResponse =
+            serde_json::from_str(&content).map_err(|e| SolrError::DeserializeError(e))?;
 
-        if let Some(error) = response.error {
+        if let Some(error) = selection.error {
             return Err(SolrError::UnexpectedError((error.code, error.msg)));
         }
 
-        Ok(response)
+        Ok(selection)
     }
 
     pub async fn analyze(&self, word: &str, field: &str, analyzer: &str) -> Result<Vec<String>> {
