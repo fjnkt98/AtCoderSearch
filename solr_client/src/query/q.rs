@@ -1,5 +1,11 @@
+use once_cell::sync::Lazy;
+use regex::Regex;
 use std::fmt::{Display, Formatter};
 use std::ops;
+
+static RE: Lazy<Regex> = Lazy::new(|| {
+    Regex::new(r#"(\+|\-|&&|\|\||!|\(|\)|\{|\}|\[|\]|\^|"|\~|\*|\?|:|/|AND|OR)"#).unwrap()
+});
 
 pub trait SolrQueryExpression: Display {}
 pub trait SolrQueryOperandModel {}
@@ -249,6 +255,8 @@ impl SolrQueryOperandModel for StandardQueryOperand {}
 
 impl StandardQueryOperand {
     pub fn new(field: &str, word: &str) -> Self {
+        let field = RE.replace_all(field, r"\$0");
+        let word = RE.replace_all(word, r"\$0");
         Self {
             field: String::from(field),
             word: String::from(word),
@@ -277,6 +285,18 @@ mod test {
     fn test_query_operand_representation() {
         let q = StandardQueryOperand::new("name", "alice");
         assert_eq!(String::from("name:alice"), q.to_string());
+    }
+
+    #[test]
+    fn test_special_characters_should_escaped() {
+        let q =
+            StandardQueryOperand::new("text", r#"+ - && || ! ( ) { } [ ] ^ " ~ * ? : / AND OR"#);
+        assert_eq!(
+            String::from(
+                r#"text:\+ \- \&& \|| \! \( \) \{ \} \[ \] \^ \" \~ \* \? \: \/ \AND \OR"#
+            ),
+            q.to_string()
+        );
     }
 
     // #[test]
