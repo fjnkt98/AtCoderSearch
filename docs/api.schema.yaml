@@ -1,0 +1,120 @@
+openapi: 3.0.0
+info:
+  title: AtCoder Search Backend API
+  description: AtCoder Search backend API
+  version: 0.1.0
+paths:
+  /api/search:
+    get:
+      summary: Search problems with query parameter
+      description: Search problems
+      parameters:
+        - in: query
+          name: q
+          schema:
+            type: string
+          description: Search keyword
+          required: false
+        - in: query
+          name: p
+          schema:
+            type: integer
+            minimum: 0
+            maximum: 200
+            default: 20
+          description: Number of search results which returned
+          required: false
+        - in: query
+          name: o
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          description: Offset position from which to start returning search result
+          required: false
+      responses:
+        200:
+          description: "Search result"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchResponse"
+        400:
+          description: "Bad request"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchResponse"
+    post:
+      summary: Search problems with json request
+      description: Search problems with json request
+      responses:
+        200:
+          description: "Search result"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchResponse"
+        400:
+          description: "Bad request"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchResponse"
+components:
+  schemas:
+    # ------------------
+    # 検索結果の統計情報
+    # ------------------
+    Stats:
+      type: object
+      properties:
+        # 検索処理時間
+        time:
+          type: integer
+        # メッセージ(エラー時に使用)
+        message:
+          type: string
+        # 総検索ヒット数
+        total:
+          type: integer
+        # 返却開始位置
+        offset:
+          type: integer
+        # 返却数
+        amount:
+          type: integer
+        # ファセット情報
+        facet:
+          type: object
+      required:
+        - time
+        - total
+        - offset
+        - amount
+    # -----------------------
+    # ドキュメント
+    # -----------------------
+    Item:
+      type: object
+      properties:
+        id:
+          type: string
+
+    # ----------------------------
+    # 検索結果のレスポンス(正常時)
+    # ----------------------------
+    SearchResponse:
+      type: object
+      properties:
+        stats:
+          type: object
+          $ref: "#/components/schemas/Stats"
+        items:
+          type: array
+          items:
+            type: object
+            $ref: "#/components/schemas/Item"
+      required:
+        - stats
+        - items
