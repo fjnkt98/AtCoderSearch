@@ -127,6 +127,28 @@ pub struct QueryExpression {
     pub operands: Vec<QueryExpressionKind>,
 }
 
+impl QueryExpression {
+    pub fn sum(operands: Vec<QueryOperand>) -> Self {
+        Self {
+            operator: Operator::OR,
+            operands: operands
+                .into_iter()
+                .map(|op| QueryExpressionKind::Operand(op))
+                .collect(),
+        }
+    }
+
+    pub fn prod(operands: Vec<QueryOperand>) -> Self {
+        Self {
+            operator: Operator::AND,
+            operands: operands
+                .into_iter()
+                .map(|op| QueryExpressionKind::Operand(op))
+                .collect(),
+        }
+    }
+}
+
 impl SolrQueryExpression for QueryExpression {}
 
 impl Display for QueryExpression {
