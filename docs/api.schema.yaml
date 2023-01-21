@@ -33,7 +33,7 @@ paths:
           description: Offset position from which to start returning search result
           required: false
         - in: query
-          name: category
+          name: category[]
           schema:
             type: array
             items:
@@ -53,8 +53,11 @@ paths:
             type: string
             enum:
               - "start_at"
+              - "-start_at"
               - "difficulty"
-              - score
+              - "-difficulty"
+              - "score"
+              - "-score"
             default: score
       responses:
         200:
@@ -144,6 +147,8 @@ components:
         duration:
           type: integer
         rate_change:
+          type: string
+        category:
           type: string
     # ----------------------------
     # 検索結果のレスポンス(正常時)
