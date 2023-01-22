@@ -277,8 +277,6 @@ impl SolrQueryOperandModel for StandardQueryOperand {}
 
 impl StandardQueryOperand {
     pub fn new(field: &str, word: &str) -> Self {
-        let field = RE.replace_all(field, r"\$0");
-        let word = RE.replace_all(word, r"\$0");
         Self {
             field: String::from(field),
             word: String::from(word),
@@ -288,7 +286,9 @@ impl StandardQueryOperand {
 
 impl Display for StandardQueryOperand {
     fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
-        write!(f, "{}:{}", self.field, self.word)?;
+        let field = RE.replace_all(&self.field, r"\$0");
+        let word = RE.replace_all(&self.word, r"\$0");
+        write!(f, "{}:{}", field, word)?;
         Ok(())
     }
 }
@@ -425,7 +425,7 @@ mod test {
 
     // #[test]
     // fn test_phrase_query_operand() {
-    //     let q = StandardQueryOperand::new("name", "alice").option(TermModifiers::Phrase);
+    //     let q = PhraseQueryOperand::new("name", "alice");
     //     assert_eq!(String::from(r#"name:"alice""#), q.to_string());
     // }
 
