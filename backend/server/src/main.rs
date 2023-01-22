@@ -1,7 +1,7 @@
 mod handlers;
 mod models;
 
-use crate::handlers::{search_with_form, search_with_qs};
+use crate::handlers::{search_with_json, search_with_qs};
 use axum::extract::Extension;
 use axum::routing::get;
 use axum::{Router, Server};
@@ -34,6 +34,6 @@ async fn main() {
 
 fn create_router(core: SolrCore) -> Router {
     Router::new()
-        .route("/api/search", get(search_with_qs))
+        .route("/api/search", get(search_with_qs).post(search_with_json))
         .layer(Extension(Arc::new(core)))
 }

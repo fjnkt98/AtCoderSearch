@@ -42,9 +42,9 @@ pub async fn search_with_qs(
 }
 
 #[instrument(skip(core))]
-pub async fn search_with_form(
+pub async fn search_with_json(
     Extension(core): Extension<Arc<SolrCore>>,
-    ValidatedSearchForm(params): ValidatedSearchForm<SearchParams>,
+    ValidatedSearchJson(params): ValidatedSearchJson<SearchParams>,
 ) -> Result<impl IntoResponse, StatusCode> {
     let params = params.as_qs();
 
