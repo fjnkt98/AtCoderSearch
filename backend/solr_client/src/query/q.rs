@@ -293,8 +293,85 @@ impl Display for StandardQueryOperand {
     }
 }
 
+/// QueryOperand型への変換の実装
 impl From<StandardQueryOperand> for QueryOperand {
     fn from(op: StandardQueryOperand) -> QueryOperand {
+        QueryOperand(op.to_string())
+    }
+}
+
+/// 範囲検索式を構築するためのヘルパー構造体
+pub struct RangeQueryOperand {
+    field: String,
+    start: Option<String>,
+    end: Option<String>,
+    left_open: bool,
+    right_open: bool,
+}
+
+impl SolrQueryOperandModel for RangeQueryOperand {}
+
+impl RangeQueryOperand {
+    pub fn new(field: &str) -> Self {
+        let field = RE.replace_all(field, r"\$0");
+        Self {
+            field: String::from(field),
+            start: None,
+            end: None,
+            left_open: false,
+            right_open: true,
+        }
+    }
+
+    pub fn gt(mut self, start: String) -> Self {
+        self.start = Some(start);
+        self.left_open = true;
+        self
+    }
+
+    pub fn ge(mut self, start: String) -> Self {
+        self.start = Some(start);
+        self.left_open = false;
+        self
+    }
+
+    pub fn lt(mut self, end: String) -> Self {
+        self.end = Some(end);
+        self.right_open = true;
+        self
+    }
+    pub fn le(mut self, end: String) -> Self {
+        self.end = Some(end);
+        self.right_open = false;
+        self
+    }
+}
+
+impl Display for RangeQueryOperand {
+    fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
+        let left_parenthesis = if self.left_open { '{' } else { '[' };
+        let right_parenthesis = if self.right_open { '}' } else { ']' };
+        let start = match &self.start {
+            Some(start) => String::from(RE.replace_all(start, r"\$0")),
+            None => String::from("*"),
+        };
+        let end = match &self.end {
+            Some(end) => String::from(RE.replace_all(end, r"\$0")),
+            None => String::from("*"),
+        };
+
+        write!(
+            f,
+            "{}:{}{} TO {}{}",
+            self.field, left_parenthesis, start, end, right_parenthesis
+        )?;
+        Ok(())
+    }
+}
+
+/// QueryOperand型への変換の実装
+impl From<RangeQueryOperand> for QueryOperand {
+    fn from(op: RangeQueryOperand) -> QueryOperand {
         QueryOperand(op.to_string())
     }
 }
@@ -352,12 +429,49 @@ mod test {
     //     assert_eq!(String::from(r#"name:"alice""#), q.to_string());
     // }
 
-    // #[test]
-    // fn test_default_range_query() {
-    //     let q = RangeQueryOperand::new("age");
+    #[test]
+    fn test_range_query_with_default_parameter() {
+        let q = RangeQueryOperand::new("age");
 
-    //     assert_eq!(String::from("age:[* TO *}"), q.to_string())
-    // }
+        assert_eq!(String::from("age:[* TO *}"), q.to_string())
+    }
+
+    #[test]
+    fn test_range_query_with_gt_parameter() {
+        let q = RangeQueryOperand::new("age").gt(10.to_string());
+
+        assert_eq!(String::from("age:{10 TO *}"), q.to_string())
+    }
+
+    #[test]
+    fn test_range_query_with_ge_parameter() {
+        let q = RangeQueryOperand::new("age").ge(10.to_string());
+
+        assert_eq!(String::from("age:[10 TO *}"), q.to_string())
+    }
+
+    #[test]
+    fn test_range_query_with_lt_parameter() {
+        let q = RangeQueryOperand::new("age").lt(20.to_string());
+
+        assert_eq!(String::from("age:[* TO 20}"), q.to_string())
+    }
+
+    #[test]
+    fn test_range_query_with_le_parameter() {
+        let q = RangeQueryOperand::new("age").le(20.to_string());
+
+        assert_eq!(String::from("age:[* TO 20]"), q.to_string())
+    }
+
+    #[test]
+    fn test_range_query() {
+        let q = RangeQueryOperand::new("age")
+            .ge(10.to_string())
+            .lt(20.to_string());
+
+        assert_eq!(String::from("age:[10 TO 20}"), q.to_string())
+    }
 
     // #[test]
     // fn test_left_close_right_close_range_query() {
