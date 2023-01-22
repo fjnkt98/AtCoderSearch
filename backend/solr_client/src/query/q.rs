@@ -127,9 +127,19 @@ pub struct QueryExpression {
     pub operands: Vec<QueryExpressionKind>,
 }
 
-impl QueryExpression {
-    pub fn sum(operands: Vec<QueryOperand>) -> Self {
-        Self {
+/// ベクタからQueryExpressionを生成するためのヘルパートレイト
+///
+/// - sum: text_ja:foo OR text_ja:bar OR text_ja:baz ...のような検索式をベクタから作るメソッド
+/// - prod: text_ja:foo AND text_ja:bar AND text_ja:baz ...のような検索式をベクタから作るメソッド
+pub trait Aggregation<T: SolrQueryExpression> {
+    fn sum(operands: Vec<T>) -> QueryExpression;
+    fn prod(operands: Vec<T>) -> QueryExpression;
+}
+
+/// QueryOperandのベクタからQueryExpressionを生成するメソッドの実装
+impl Aggregation<QueryOperand> for QueryExpression {
+    fn sum(operands: Vec<QueryOperand>) -> QueryExpression {
+        QueryExpression {
             operator: Operator::OR,
             operands: operands
                 .into_iter()
@@ -138,12 +148,35 @@ impl QueryExpression {
         }
     }
 
-    pub fn prod(operands: Vec<QueryOperand>) -> Self {
-        Self {
+    fn prod(operands: Vec<QueryOperand>) -> QueryExpression {
+        QueryExpression {
             operator: Operator::AND,
             operands: operands
                 .into_iter()
                 .map(|op| QueryExpressionKind::Operand(op))
+                .collect(),
+        }
+    }
+}
+
+/// QueryOperandのベクタからQueryExpressionを生成するメソッドの実装
+impl Aggregation<QueryExpression> for QueryExpression {
+    fn sum(operands: Vec<QueryExpression>) -> QueryExpression {
+        QueryExpression {
+            operator: Operator::OR,
+            operands: operands
+                .into_iter()
+                .map(|op| QueryExpressionKind::Expression(op))
+                .collect(),
+        }
+    }
+
+    fn prod(operands: Vec<QueryExpression>) -> QueryExpression {
+        QueryExpression {
+            operator: Operator::AND,
+            operands: operands
+                .into_iter()
+                .map(|op| QueryExpressionKind::Expression(op))
                 .collect(),
         }
     }
