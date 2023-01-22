@@ -7,6 +7,7 @@ use axum::Json;
 use solr_client::core::{SolrCore, SolrCoreError};
 use solr_client::models::*;
 use std::sync::Arc;
+use tokio::time::Instant;
 use tracing::instrument;
 
 #[instrument(skip(core))]
@@ -14,6 +15,8 @@ pub async fn search_with_qs(
     ValidatedSearchQueryParams(params): ValidatedSearchQueryParams<SearchParams>,
     Extension(core): Extension<Arc<SolrCore>>,
 ) -> Result<impl IntoResponse, StatusCode> {
+    let start = Instant::now();
+
     let params = params.as_qs();
 
     let response = match core.select(&params).await {
@@ -34,7 +37,7 @@ pub async fn search_with_qs(
         },
     };
 
-    let response = generate_response(response)
+    let response = generate_response(response, start)
         .await
         .or(Err(StatusCode::INTERNAL_SERVER_ERROR))?;
 
@@ -46,6 +49,8 @@ pub async fn search_with_json(
     Extension(core): Extension<Arc<SolrCore>>,
     ValidatedSearchJson(params): ValidatedSearchJson<SearchParams>,
 ) -> Result<impl IntoResponse, StatusCode> {
+    let start = Instant::now();
+
     let params = params.as_qs();
 
     let response = core
@@ -53,19 +58,26 @@ pub async fn search_with_json(
         .await
         .or(Err(StatusCode::BAD_REQUEST))?;
 
-    let response = generate_response(response)
+    let response = generate_response(response, start)
         .await
         .or(Err(StatusCode::INTERNAL_SERVER_ERROR))?;
 
     Ok((StatusCode::OK, Json(response)))
 }
 
-async fn generate_response(response: SolrSelectResponse) -> Result<SearchResultResponse> {
+async fn generate_response(
+    response: SolrSelectResponse,
+    start: Instant,
+) -> Result<SearchResultResponse> {
     let docs: Vec<Document> = serde_json::from_value(response.response.docs)?;
 
+    let now = Instant::now();
+
     let stats = SearchResultStats {
+        time: now.duration_since(start).as_millis() as u32,
+        message: None,
         total: response.response.num_found,
-        start: response.response.start,
+        offset: response.response.start,
         amount: docs.len() as u32,
         facet: None,
     };

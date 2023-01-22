@@ -202,8 +202,10 @@ pub struct SearchResultResponse {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SearchResultStats {
+    pub time: u32,
+    pub message: Option<String>,
     pub total: u32,
-    pub start: u32,
+    pub offset: u32,
     pub amount: u32,
     pub facet: Option<FacetResult>,
 }
