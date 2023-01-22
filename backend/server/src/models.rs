@@ -96,6 +96,8 @@ impl SearchParams {
             builder = builder.fq(&fq);
         }
 
+        builder = builder.op("AND");
+
         builder.build()
     }
 }
