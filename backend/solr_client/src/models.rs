@@ -31,7 +31,7 @@ pub struct ResponseHeader {
     pub status: u32,
     #[serde(alias = "QTime")]
     pub qtime: u32,
-    pub params: Option<HashMap<String, String>>,
+    pub params: Option<HashMap<String, Value>>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
