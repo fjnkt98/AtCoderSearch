@@ -4,7 +4,7 @@ use axum::extract::Extension;
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::Json;
-use solr_client::core::SolrCore;
+use solr_client::core::{SolrCore, SolrCoreError};
 use solr_client::models::*;
 use std::sync::Arc;
 use tracing::instrument;
@@ -19,24 +19,15 @@ pub async fn search_with_qs(
     let response = match core.select(&params).await {
         Ok(response) => response,
         Err(e) => match e {
-            SolrError::RequestError(e) => {
+            SolrCoreError::RequestError(e) => {
                 tracing::error!("{}", e.to_string());
                 return Err(StatusCode::INTERNAL_SERVER_ERROR);
             }
-            SolrError::UrlParseError(e) => {
-                tracing::error!("{}", e.to_string());
-                return Err(StatusCode::BAD_REQUEST);
-            }
-            SolrError::InvalidHostError => return Err(StatusCode::BAD_REQUEST),
-            SolrError::DeserializeError(e) => {
+            SolrCoreError::DeserializeError(e) => {
                 tracing::error!("{}", e.to_string());
                 return Err(StatusCode::INTERNAL_SERVER_ERROR);
             }
-            SolrError::SpecifiedCoreNotFoundError => return Err(StatusCode::BAD_REQUEST),
-            SolrError::CoreReloadError => return Err(StatusCode::BAD_REQUEST),
-            SolrError::CorePostError => return Err(StatusCode::BAD_REQUEST),
-            SolrError::InvalidValueError => return Err(StatusCode::BAD_REQUEST),
-            SolrError::UnexpectedError((code, msg)) => {
+            SolrCoreError::UnexpectedError((code, msg)) => {
                 tracing::error!("{}:{}", code, msg);
                 return Err(StatusCode::BAD_REQUEST);
             }

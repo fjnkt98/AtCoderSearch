@@ -1,7 +1,8 @@
 use crate::extractor::FullTextExtractor;
 use chrono::{DateTime, NaiveDateTime, Utc};
 use serde::{Deserialize, Serialize};
-use solr_client::models::SolrError;
+use solr_client::client::SolrClientError;
+use solr_client::core::SolrCoreError;
 use thiserror::Error;
 
 type Result<T> = std::result::Result<T, IndexingError>;
@@ -20,8 +21,10 @@ pub enum IndexingError {
     SerializeError(#[from] serde_json::Error),
     #[error("Failed to operate file")]
     FileOperationError(#[from] std::io::Error),
-    #[error("Failed to operate Solr")]
-    SolrError(#[from] SolrError),
+    #[error("Failed to operate solr client")]
+    SolrClientError(#[from] SolrClientError),
+    #[error("Failed to operate solr core")]
+    SolrCoreError(#[from] SolrCoreError),
 }
 
 #[derive(sqlx::FromRow)]
