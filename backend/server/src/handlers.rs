@@ -16,10 +16,32 @@ pub async fn search_with_qs(
 ) -> Result<impl IntoResponse, StatusCode> {
     let params = params.as_qs();
 
-    let response = core
-        .select(&params)
-        .await
-        .or(Err(StatusCode::BAD_REQUEST))?;
+    let response = match core.select(&params).await {
+        Ok(response) => response,
+        Err(e) => match e {
+            SolrError::RequestError(e) => {
+                tracing::error!("{}", e.to_string());
+                return Err(StatusCode::INTERNAL_SERVER_ERROR);
+            }
+            SolrError::UrlParseError(e) => {
+                tracing::error!("{}", e.to_string());
+                return Err(StatusCode::BAD_REQUEST);
+            }
+            SolrError::InvalidHostError => return Err(StatusCode::BAD_REQUEST),
+            SolrError::DeserializeError(e) => {
+                tracing::error!("{}", e.to_string());
+                return Err(StatusCode::INTERNAL_SERVER_ERROR);
+            }
+            SolrError::SpecifiedCoreNotFoundError => return Err(StatusCode::BAD_REQUEST),
+            SolrError::CoreReloadError => return Err(StatusCode::BAD_REQUEST),
+            SolrError::CorePostError => return Err(StatusCode::BAD_REQUEST),
+            SolrError::InvalidValueError => return Err(StatusCode::BAD_REQUEST),
+            SolrError::UnexpectedError((code, msg)) => {
+                tracing::error!("{}:{}", code, msg);
+                return Err(StatusCode::BAD_REQUEST);
+            }
+        },
+    };
 
     let response = generate_response(response)
         .await
