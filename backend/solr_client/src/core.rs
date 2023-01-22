@@ -2,9 +2,19 @@ use crate::models::*;
 use reqwest::header::CONTENT_TYPE;
 use reqwest::Client;
 use serde::Serialize;
-use serde_json::Value;
+use thiserror::Error;
 
-type Result<T> = std::result::Result<T, SolrError>;
+type Result<T> = std::result::Result<T, SolrCoreError>;
+
+#[derive(Debug, Error)]
+pub enum SolrCoreError {
+    #[error("Failed to request to solr core")]
+    RequestError(#[from] reqwest::Error),
+    #[error("Failed to deserialize JSON data")]
+    DeserializeError(#[from] serde_json::Error),
+    #[error("Unexpected error")]
+    UnexpectedError((u32, String)),
+}
 
 pub struct SolrCore {
     pub name: String,
@@ -31,18 +41,18 @@ impl SolrCore {
             .query(&[("action", "status"), ("core", &self.name)])
             .send()
             .await
-            .map_err(|e| SolrError::RequestError(e))?;
+            .map_err(|e| SolrCoreError::RequestError(e))?;
 
         let content = response
             .text()
             .await
-            .map_err(|e| SolrError::RequestError(e))?;
+            .map_err(|e| SolrCoreError::RequestError(e))?;
 
         let core_list: SolrCoreList =
-            serde_json::from_str(&content).map_err(|e| SolrError::DeserializeError(e))?;
+            serde_json::from_str(&content).map_err(|e| SolrCoreError::DeserializeError(e))?;
 
         if let Some(error) = core_list.error {
-            return Err(SolrError::UnexpectedError((error.code, error.msg)));
+            return Err(SolrCoreError::UnexpectedError((error.code, error.msg)));
         }
 
         // コアオブジェクトが作成できた時点で
@@ -63,18 +73,18 @@ impl SolrCore {
             .query(&[("action", "reload"), ("core", &self.name)])
             .send()
             .await
-            .map_err(|e| SolrError::RequestError(e))?;
+            .map_err(|e| SolrCoreError::RequestError(e))?;
 
         let content = response
             .text()
             .await
-            .map_err(|e| SolrError::RequestError(e))?;
+            .map_err(|e| SolrCoreError::RequestError(e))?;
 
         let response: SolrSimpleResponse =
-            serde_json::from_str(&content).map_err(|e| SolrError::DeserializeError(e))?;
+            serde_json::from_str(&content).map_err(|e| SolrCoreError::DeserializeError(e))?;
 
         if let Some(error) = response.error {
-            return Err(SolrError::UnexpectedError((error.code, error.msg)));
+            return Err(SolrCoreError::UnexpectedError((error.code, error.msg)));
         }
 
         Ok(response.header.status)
@@ -91,73 +101,79 @@ impl SolrCore {
             .query(params)
             .send()
             .await
-            .map_err(|e| SolrError::RequestError(e))?;
+            .map_err(|e| SolrCoreError::RequestError(e))?;
 
         let content = response
             .text()
             .await
-            .map_err(|e| SolrError::RequestError(e))?;
+            .map_err(|e| SolrCoreError::RequestError(e))?;
 
         let selection: SolrSelectResponse =
-            serde_json::from_str(&content).map_err(|e| SolrError::DeserializeError(e))?;
+            serde_json::from_str(&content).map_err(|e| SolrCoreError::DeserializeError(e))?;
 
         if let Some(error) = selection.error {
-            return Err(SolrError::UnexpectedError((error.code, error.msg)));
+            return Err(SolrCoreError::UnexpectedError((error.code, error.msg)));
         }
 
         Ok(selection)
     }
 
     pub async fn analyze(&self, word: &str, field: &str, analyzer: &str) -> Result<Vec<String>> {
-        let params = [("analysis.fieldvalue", word), ("analysis.fieldtype", field)];
+        todo!();
+        // let params = [("analysis.fieldvalue", word), ("analysis.fieldtype", field)];
 
-        let response = self
-            .client
-            .get(format!("{}/analysis/field", self.core_url))
-            .query(&params)
-            .send()
-            .await
-            .map_err(|e| SolrError::RequestError(e))?
-            .text()
-            .await
-            .map_err(|e| SolrError::RequestError(e))?;
+        // let response = self
+        //     .client
+        //     .get(format!("{}/analysis/field", self.core_url))
+        //     .query(&params)
+        //     .send()
+        //     .await
+        //     .map_err(|e| SolrCoreError::RequestError(e))?
+        //     .text()
+        //     .await
+        //     .map_err(|e| SolrCoreError::RequestError(e))?;
 
-        let result: SolrAnalysisResponse =
-            serde_json::from_str(&response).map_err(|e| SolrError::DeserializeError(e))?;
+        // let result: SolrAnalysisResponse =
+        //     serde_json::from_str(&response).map_err(|e| SolrCoreError::DeserializeError(e))?;
 
-        let result = result.analysis.field_types.get(field).unwrap();
-        let result = match analyzer {
-            "index" => result.index.as_ref().unwrap(),
-            "query" => result.query.as_ref().unwrap(),
-            _ => return Err(SolrError::InvalidValueError),
-        };
-        let result = result.last().unwrap().clone();
+        // let result = result.analysis.field_types.get(field).unwrap();
+        // let result = match analyzer {
+        //     "index" => result.index.as_ref().unwrap(),
+        //     "query" => result.query.as_ref().unwrap(),
+        //     _ => return Err(SolrCoreError::InvalidValueError),
+        // };
+        // let result = result.last().unwrap().clone();
 
-        let result = match result {
-            Value::Array(array) => array
-                .iter()
-                .map(|e| e["text"].to_string().trim_matches('"').to_string())
-                .collect::<Vec<String>>(),
-            _ => Vec::new(),
-        };
+        // let result = match result {
+        //     Value::Array(array) => array
+        //         .iter()
+        //         .map(|e| e["text"].to_string().trim_matches('"').to_string())
+        //         .collect::<Vec<String>>(),
+        //     _ => Vec::new(),
+        // };
 
-        Ok(result)
+        // Ok(result)
     }
 
-    pub async fn post(&self, body: Vec<u8>) -> Result<()> {
+    pub async fn post(&self, body: Vec<u8>) -> Result<SolrSimpleResponse> {
         let response = self
             .client
             .post(format!("{}/update", self.core_url))
             .header(CONTENT_TYPE, "application/json")
             .body(body)
             .send()
-            .await?;
+            .await
+            .map_err(|e| SolrCoreError::RequestError(e))?;
 
-        if response.status().as_u16() != 200 {
-            return Err(SolrError::CorePostError);
-        }
+        let content = response
+            .text()
+            .await
+            .map_err(|e| SolrCoreError::RequestError(e))?;
 
-        Ok(())
+        let post_result: SolrSimpleResponse =
+            serde_json::from_str(&content).map_err(|e| SolrCoreError::DeserializeError(e))?;
+
+        Ok(post_result)
     }
 
     pub async fn commit(&self, optimize: bool) -> Result<()> {

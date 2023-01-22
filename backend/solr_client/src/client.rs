@@ -1,9 +1,26 @@
 use crate::core::SolrCore;
 use crate::models::*;
 use reqwest::Client;
+use thiserror::Error;
 use url::Url;
 
-type Result<T> = std::result::Result<T, SolrError>;
+type Result<T> = std::result::Result<T, SolrClientError>;
+
+#[derive(Debug, Error)]
+pub enum SolrClientError {
+    #[error("Failed to request to solr")]
+    RequestError(#[from] reqwest::Error),
+    #[error("Failed to parse given URL")]
+    UrlParseError(#[from] url::ParseError),
+    #[error("Given URL host is invalid")]
+    InvalidHostError,
+    #[error("Specified core name does not exist")]
+    SpecifiedCoreNotFoundError,
+    #[error("Failed to deserialize JSON data")]
+    DeserializeError(#[from] serde_json::Error),
+    #[error("Unexpected error")]
+    UnexpectedError((u32, String)),
+}
 
 #[derive(Debug)]
 pub struct SolrClient {
@@ -18,10 +35,12 @@ impl SolrClient {
     /// 引数で与えられたURLはスキーマ(http)とホスト名しか使わない。
     /// 冗長なURL(e.g.) http://localhost:8983/solr)が与えられても、ポート番号やパスはすべて無視される
     pub fn new(url: &str, port: u32) -> Result<Self> {
-        let url = Url::parse(url).map_err(|e| SolrError::UrlParseError(e))?;
+        let url = Url::parse(url).map_err(|e| SolrClientError::UrlParseError(e))?;
 
         let scheme = url.scheme();
-        let host = url.host_str().ok_or_else(|| SolrError::InvalidHostError)?;
+        let host = url
+            .host_str()
+            .ok_or_else(|| SolrClientError::InvalidHostError)?;
 
         Ok(SolrClient {
             url: format!("{}://{}:{}", scheme, host, port),
@@ -38,16 +57,16 @@ impl SolrClient {
             .get(format!("{}/{}", self.url, path))
             .send()
             .await
-            .map_err(|e| SolrError::RequestError(e))?
+            .map_err(|e| SolrClientError::RequestError(e))?
             .text()
             .await
-            .map_err(|e| SolrError::RequestError(e))?;
+            .map_err(|e| SolrClientError::RequestError(e))?;
 
         let response: SolrSystemInfo =
-            serde_json::from_str(&response).map_err(|e| SolrError::DeserializeError(e))?;
+            serde_json::from_str(&response).map_err(|e| SolrClientError::DeserializeError(e))?;
 
         if let Some(error) = response.error {
-            return Err(SolrError::UnexpectedError((error.code, error.msg)));
+            return Err(SolrClientError::UnexpectedError((error.code, error.msg)));
         } else {
             Ok(response)
         }
@@ -62,16 +81,16 @@ impl SolrClient {
             .get(format!("{}/{}", self.url, path))
             .send()
             .await
-            .map_err(|e| SolrError::RequestError(e))?
+            .map_err(|e| SolrClientError::RequestError(e))?
             .text()
             .await
-            .map_err(|e| SolrError::RequestError(e))?;
+            .map_err(|e| SolrClientError::RequestError(e))?;
 
         let response: SolrCoreList =
-            serde_json::from_str(&response).map_err(|e| SolrError::DeserializeError(e))?;
+            serde_json::from_str(&response).map_err(|e| SolrClientError::DeserializeError(e))?;
 
         if let Some(error) = response.error {
-            return Err(SolrError::UnexpectedError((error.code, error.msg)));
+            return Err(SolrClientError::UnexpectedError((error.code, error.msg)));
         } else {
             Ok(response)
         }
@@ -83,10 +102,10 @@ impl SolrClient {
             .cores()
             .await?
             .status
-            .ok_or_else(|| SolrError::SpecifiedCoreNotFoundError)?;
+            .ok_or_else(|| SolrClientError::SpecifiedCoreNotFoundError)?;
 
         if !cores.contains_key(name) {
-            return Err(SolrError::SpecifiedCoreNotFoundError);
+            return Err(SolrClientError::SpecifiedCoreNotFoundError);
         }
 
         Ok(SolrCore::new(name, &self.url))
