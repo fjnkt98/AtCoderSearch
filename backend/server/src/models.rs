@@ -8,10 +8,11 @@ use http_body::Body;
 use hyper::Request;
 use serde::de::{DeserializeOwned, Error, Unexpected};
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
-use solr_client::query::SortOrderBuilder;
 use solr_client::query::{
-    QueryBuilder, QueryExpression, QueryOperand, StandardQueryBuilder, StandardQueryOperand,
+    Aggregation, QueryBuilder, QueryExpression, QueryOperand, StandardQueryBuilder,
+    StandardQueryOperand,
 };
+use solr_client::query::{RangeQueryOperand, SortOrderBuilder};
 use validator::{Validate, ValidationError};
 
 #[derive(Debug, Serialize, Deserialize, Clone, Validate)]
@@ -40,37 +41,60 @@ fn validate_sort_option(value: &str) -> Result<(), ValidationError> {
 impl SearchParams {
     pub fn as_qs(&self) -> Vec<(String, String)> {
         let mut builder = StandardQueryBuilder::new();
+
         if let Some(q) = &self.q {
-            let op = QueryOperand(format!("text_ja: {}", q));
+            let op = QueryExpression::prod(
+                q.split_whitespace()
+                    .map(|word| {
+                        let text_ja =
+                            QueryOperand::from(StandardQueryOperand::new("text_ja", word));
+                        let text_en =
+                            QueryOperand::from(StandardQueryOperand::new("text_en", word));
+                        text_ja + text_en
+                    })
+                    .collect::<Vec<QueryExpression>>(),
+            );
             builder = builder.q(&op);
         };
+
         if let Some(p) = self.p {
             builder = builder.rows(p);
         };
+
         if let Some(o) = self.o {
             builder = builder.start(o);
         }
+
         if let Some(s) = &self.s {
             let sort = if s.starts_with("-") {
-                SortOrderBuilder::new().desc(s)
+                SortOrderBuilder::new().desc(&s[1..])
             } else {
                 SortOrderBuilder::new().asc(s)
             };
             builder = builder.sort(&sort);
         }
+
         if let Some(category) = &self.category {
             let fq = QueryExpression::sum(
                 category
                     .iter()
                     .map(|c| QueryOperand::from(StandardQueryOperand::new("category", c)))
-                    .collect(),
+                    .collect::<Vec<QueryOperand>>(),
             );
             builder = builder.fq(&fq);
         }
 
-        // if let Some(difficulty_from) = self.difficulty_from {
-
-        // }
+        if self.difficulty_from.is_some() || self.difficulty_to.is_some() {
+            let mut range = RangeQueryOperand::new("difficulty");
+            if let Some(from) = self.difficulty_from {
+                range = range.ge(from.to_string());
+            }
+            if let Some(to) = self.difficulty_to {
+                range = range.lt(to.to_string());
+            }
+            let fq = QueryOperand::from(range);
+            builder = builder.fq(&fq);
+        }
 
         builder.build()
     }
@@ -225,5 +249,56 @@ where
             Unexpected::Str(&value),
             &"Invalid timestamp string",
         ));
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_single_q() {
+        let params = SearchParams {
+            q: Some(String::from("hoge")),
+            p: None,
+            o: None,
+            category: None,
+            difficulty_from: None,
+            difficulty_to: None,
+            s: None,
+        };
+
+        let qs = params.as_qs();
+
+        assert_eq!(
+            vec![(
+                String::from("q"),
+                String::from("(text_ja:hoge OR text_en:hoge OR text_phrase:hoge)")
+            )],
+            qs
+        )
+    }
+
+    #[test]
+    fn test_multiple_q() {
+        let params = SearchParams {
+            q: Some(String::from("hoge moge")),
+            p: None,
+            o: None,
+            category: None,
+            difficulty_from: None,
+            difficulty_to: None,
+            s: None,
+        };
+
+        let qs = params.as_qs();
+
+        assert_eq!(
+            vec![(
+                String::from("q"),
+                String::from("(text_ja:hoge OR text_en:hoge OR text_phrase:hoge) AND (text_ja:moge OR text_en:moge OR text_phrase:moge)")
+            )],
+            qs
+        )
     }
 }
