@@ -75,6 +75,42 @@ paths:
     post:
       summary: Search problems with json request
       description: Search problems with json request
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                q:
+                  type: string
+                p:
+                  type: integer
+                  minimum: 0
+                  maximum: 200
+                  default: 20
+                o:
+                  type: integer
+                  minimum: 0
+                  default: 0
+                s:
+                  type: string
+                  enum:
+                    - "start_at"
+                    - "-start_at"
+                    - "difficulty"
+                    - "-difficulty"
+                    - "score"
+                    - "-score"
+                  default: score
+                category:
+                  type: array
+                  items:
+                    type: string
+                difficulty.from:
+                  type: integer
+                difficulty.to:
+                  type: integer
       responses:
         200:
           description: "Search result"
