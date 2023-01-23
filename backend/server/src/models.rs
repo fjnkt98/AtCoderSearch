@@ -9,10 +9,11 @@ use hyper::Request;
 use serde::de::{DeserializeOwned, Error, Unexpected};
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use solr_client::query::{
-    Aggregation, QueryBuilder, QueryExpression, QueryOperand, StandardQueryBuilder,
-    StandardQueryOperand,
+    Aggregation, FieldFacetBuilder, QueryBuilder, QueryExpression, QueryOperand, RangeFacetBuilder,
+    RangeFacetOtherOptions, StandardQueryBuilder, StandardQueryOperand,
 };
 use solr_client::query::{RangeQueryOperand, SortOrderBuilder};
+use std::collections::HashMap;
 use validator::{Validate, ValidationError};
 
 #[derive(Debug, Serialize, Deserialize, Clone, Validate)]
@@ -109,6 +110,17 @@ impl SearchParams {
         }
 
         builder = builder.op("AND");
+
+        let category_facet = FieldFacetBuilder::new("category").min_count(1);
+        let difficulty_facet = RangeFacetBuilder::new(
+            "difficulty",
+            0.to_string(),
+            2000.to_string(),
+            400.to_string(),
+        )
+        .other(RangeFacetOtherOptions::All);
+
+        builder = builder.facet(&category_facet).facet(&difficulty_facet);
 
         builder.build()
     }
@@ -219,7 +231,7 @@ pub struct SearchResultStats {
     pub total: u32,
     pub offset: u32,
     pub amount: u32,
-    pub facet: Option<FacetResult>,
+    pub facet: Option<HashMap<String, FacetResult>>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -228,7 +240,21 @@ pub struct SearchResultBody {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct FacetResult {}
+pub struct FacetResult {
+    pub counts: Vec<FacetCount>,
+    pub start: Option<String>,
+    pub end: Option<String>,
+    pub gap: Option<String>,
+    pub before: Option<String>,
+    pub after: Option<String>,
+    pub between: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct FacetCount {
+    pub key: String,
+    pub count: u32,
+}
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Document {

@@ -5,7 +5,8 @@ use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::Json;
 use solr_client::core::{SolrCore, SolrCoreError};
-use solr_client::models::*;
+use solr_client::models::SolrSelectResponse;
+use std::collections::HashMap;
 use std::sync::Arc;
 use tokio::time::Instant;
 use tracing::instrument;
@@ -71,6 +72,51 @@ async fn generate_response(
 ) -> Result<SearchResultResponse> {
     let docs: Vec<Document> = serde_json::from_value(response.response.docs)?;
 
+    let mut facet: HashMap<String, FacetResult> = HashMap::new();
+    if let Some(facet_counts) = response.facet_counts {
+        for (key, value) in facet_counts.facet_fields.iter() {
+            facet.insert(
+                key.clone(),
+                FacetResult {
+                    counts: value
+                        .iter()
+                        .map(|(key, count)| FacetCount {
+                            key: key.clone(),
+                            count: count.clone(),
+                        })
+                        .collect(),
+                    start: None,
+                    end: None,
+                    gap: None,
+                    before: None,
+                    after: None,
+                    between: None,
+                },
+            );
+        }
+        for (key, value) in facet_counts.facet_ranges.iter() {
+            facet.insert(
+                key.clone(),
+                FacetResult {
+                    counts: value
+                        .counts
+                        .iter()
+                        .map(|(key, count)| FacetCount {
+                            key: key.clone(),
+                            count: count.clone(),
+                        })
+                        .collect(),
+                    start: Some(value.start.to_string()),
+                    end: Some(value.end.to_string()),
+                    gap: Some(value.gap.to_string()),
+                    before: None,
+                    after: None,
+                    between: None,
+                },
+            );
+        }
+    }
+
     let now = Instant::now();
 
     let stats = SearchResultStats {
@@ -79,7 +125,7 @@ async fn generate_response(
         total: response.response.num_found,
         offset: response.response.start,
         amount: docs.len() as u32,
-        facet: None,
+        facet: if facet.is_empty() { None } else { Some(facet) },
     };
 
     let items = SearchResultBody { docs: docs };
