@@ -21,13 +21,21 @@ pub struct SearchParams {
     #[validate(range(max = 200))]
     pub p: Option<u32>,
     pub o: Option<u32>,
-    pub category: Option<Vec<String>>,
-    #[serde(alias = "difficulty.from")]
-    pub difficulty_from: Option<u32>,
-    #[serde(alias = "difficulty.to")]
-    pub difficulty_to: Option<u32>,
+    pub f: Option<FilteringParameters>,
     #[validate(custom = "validate_sort_option")]
     pub s: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, Validate)]
+pub struct FilteringParameters {
+    pub category: Option<Vec<String>>,
+    pub difficulty: Option<RangeFilteringParameter<u32>>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, Validate)]
+pub struct RangeFilteringParameter<T> {
+    pub from: Option<T>,
+    pub to: Option<T>,
 }
 
 fn validate_sort_option(value: &str) -> Result<(), ValidationError> {
@@ -74,26 +82,30 @@ impl SearchParams {
             builder = builder.sort(&sort);
         }
 
-        if let Some(category) = &self.category {
-            let fq = QueryExpression::sum(
-                category
-                    .iter()
-                    .map(|c| QueryOperand::from(StandardQueryOperand::new("category", c)))
-                    .collect::<Vec<QueryOperand>>(),
-            );
-            builder = builder.fq(&fq);
-        }
+        if let Some(f) = &self.f {
+            if let Some(category) = &f.category {
+                let fq = QueryExpression::sum(
+                    category
+                        .iter()
+                        .map(|c| QueryOperand::from(StandardQueryOperand::new("category", c)))
+                        .collect::<Vec<QueryOperand>>(),
+                );
+                builder = builder.fq(&fq);
+            }
 
-        if self.difficulty_from.is_some() || self.difficulty_to.is_some() {
-            let mut range = RangeQueryOperand::new("difficulty");
-            if let Some(from) = self.difficulty_from {
-                range = range.ge(from.to_string());
+            if let Some(difficulty) = &f.difficulty {
+                if difficulty.from.is_some() || difficulty.to.is_some() {
+                    let mut range = RangeQueryOperand::new("difficulty");
+                    if let Some(from) = difficulty.from {
+                        range = range.ge(from.to_string());
+                    }
+                    if let Some(to) = difficulty.to {
+                        range = range.lt(to.to_string());
+                    }
+                    let fq = QueryOperand::from(range);
+                    builder = builder.fq(&fq);
+                }
             }
-            if let Some(to) = self.difficulty_to {
-                range = range.lt(to.to_string());
-            }
-            let fq = QueryOperand::from(range);
-            builder = builder.fq(&fq);
         }
 
         builder = builder.op("AND");
@@ -266,19 +278,20 @@ mod test {
             q: Some(String::from("hoge")),
             p: None,
             o: None,
-            category: None,
-            difficulty_from: None,
-            difficulty_to: None,
+            f: None,
             s: None,
         };
 
         let qs = params.as_qs();
 
         assert_eq!(
-            vec![(
-                String::from("q"),
-                String::from("(text_ja:hoge OR text_en:hoge OR text_phrase:hoge)")
-            )],
+            vec![
+                (
+                    String::from("q"),
+                    String::from("(text_ja:hoge OR text_en:hoge)")
+                ),
+                (String::from("q.op"), String::from("AND"),)
+            ],
             qs
         )
     }
@@ -289,19 +302,22 @@ mod test {
             q: Some(String::from("hoge moge")),
             p: None,
             o: None,
-            category: None,
-            difficulty_from: None,
-            difficulty_to: None,
+            f: None,
             s: None,
         };
 
         let qs = params.as_qs();
 
         assert_eq!(
-            vec![(
-                String::from("q"),
-                String::from("(text_ja:hoge OR text_en:hoge OR text_phrase:hoge) AND (text_ja:moge OR text_en:moge OR text_phrase:moge)")
-            )],
+            vec![
+                (
+                    String::from("q"),
+                    String::from(
+                        "(text_ja:hoge OR text_en:hoge) AND (text_ja:moge OR text_en:moge)"
+                    )
+                ),
+                (String::from("q.op"), String::from("AND"),)
+            ],
             qs
         )
     }
