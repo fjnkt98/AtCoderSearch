@@ -33,20 +33,24 @@ paths:
           description: Offset position from which to start returning search result
           required: false
         - in: query
-          name: category[]
+          name: f[category][]
           schema:
             type: array
             items:
               type: string
+          example: "ABC"
+          description: Multiple values are accepted. Set the value in the f[category][] key for each value.
           explode: true
         - in: query
-          name: difficulty.from
+          name: f[difficulty][from]
           schema:
             type: integer
+          example: 1000
         - in: query
-          name: difficulty.to
+          name: f[difficulty][to]
           schema:
             type: integer
+          example: 2000
         - in: query
           name: s
           schema:
@@ -103,14 +107,20 @@ paths:
                     - "score"
                     - "-score"
                   default: score
-                category:
-                  type: array
-                  items:
-                    type: string
-                difficulty.from:
-                  type: integer
-                difficulty.to:
-                  type: integer
+                f:
+                  type: object
+                  properties:
+                    category:
+                      type: array
+                      items:
+                        type: string
+                    difficulty:
+                      type: object
+                      properties:
+                        from:
+                          type: integer
+                        to:
+                          type: integer
       responses:
         200:
           description: "Search result"
