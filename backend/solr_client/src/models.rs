@@ -171,15 +171,14 @@ where
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct RangeFacet {
-    // TODO: ジェネリクスを使用して型毎の構造体を作る
     #[serde(deserialize_with = "deserialize_range_facet_counts")]
     pub counts: Vec<(String, u32)>,
-    pub gap: u32,
-    pub start: u32,
-    pub end: u32,
-    pub before: Option<u32>,
-    pub after: Option<u32>,
-    pub between: Option<u32>,
+    pub gap: Value,
+    pub start: Value,
+    pub end: Value,
+    pub before: Option<Value>,
+    pub after: Option<Value>,
+    pub between: Option<Value>,
 }
 
 fn deserialize_range_facet_counts<'de, D>(deserializer: D) -> Result<Vec<(String, u32)>, D::Error>
