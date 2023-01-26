@@ -34,7 +34,7 @@ impl SolrCore {
             client: reqwest::Client::new(),
         }
     }
-    pub async fn status(&self) -> Result<CoreStatus> {
+    pub async fn status(&self) -> Result<SolrCoreStatus> {
         let response = self
             .client
             .get(format!("{}/solr/admin/cores", self.base_url))

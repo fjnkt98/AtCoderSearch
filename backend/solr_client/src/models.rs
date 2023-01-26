@@ -52,7 +52,7 @@ pub struct SolrSystemInfo {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct IndexInfo {
+pub struct SolrIndexInfo {
     #[serde(alias = "numDocs")]
     pub num_docs: u64,
     #[serde(alias = "maxDoc")]
@@ -89,7 +89,7 @@ pub struct SolrCoreStatus {
     #[serde(alias = "startTime")]
     pub start_time: String,
     pub uptime: u64,
-    pub index: IndexInfo,
+    pub index: SolrIndexInfo,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -413,4 +413,244 @@ pub struct SolrAnalysisResponse {
 mod test {
     use super::*;
     // TODO: テスト書く
+
+    #[test]
+    fn test_deserialize_response_header() {
+        let raw = r#"
+        {
+            "status": 400,
+            "QTime": 7,
+            "params": {
+                "facet.range": "difficulty",
+                "q": "text_ja:高橋",
+                "facet.field": "category",
+                "f.difficulty.facet.end": "2000",
+                "f.category.facet.mincount": "1",
+                "f.difficulty.facet.start": "0",
+                "facet": "true",
+                "f.difficulty.gap": "800"
+            }
+        }
+        "#;
+        let header: SolrResponseHeader = serde_json::from_str(raw).unwrap();
+        assert_eq!(header.status, 400);
+        assert_eq!(header.qtime, 7);
+    }
+
+    #[test]
+    fn test_deserialize_error_info() {
+        let raw = r#"
+        {
+            "metadata": [
+                "error-class",
+                "org.apache.solr.common.SolrException",
+                "root-error-class",
+                "org.apache.solr.common.SolrException"
+            ],
+            "msg": "Missing required parameter: f.difficulty.facet.range.start (or default: facet.range.start)",
+            "code": 400
+        }
+        "#;
+
+        let error: SolrErrorInfo = serde_json::from_str(raw).unwrap();
+        assert_eq!(error.msg, "Missing required parameter: f.difficulty.facet.range.start (or default: facet.range.start)".to_string());
+        assert_eq!(error.code, 400);
+    }
+
+    #[test]
+    fn test_deserialize_lucene_info() {
+        let raw = r#"
+        {
+            "solr-spec-version": "9.1.0",
+            "solr-impl-version": "9.1.0 aa4f3d98ab19c201e7f3c74cd14c99174148616d - ishan - 2022-11-11 13:00:47",
+            "lucene-spec-version": "9.3.0",
+            "lucene-impl-version": "9.3.0 d25cebcef7a80369f4dfb9285ca7360a810b75dc - ivera - 2022-07-25 12:30:23"
+        }
+        "#;
+
+        let info: LuceneInfo = serde_json::from_str(raw).unwrap();
+        assert_eq!(info.solr_spec_version, "9.1.0".to_string());
+    }
+
+    #[test]
+    fn test_deserialize_solr_system_info() {
+        let raw = r#"
+        {
+            "responseHeader": {
+                "status": 0,
+                "QTime": 17
+            },
+            "mode": "std",
+            "solr_home": "/var/solr/data",
+            "core_root": "/var/solr/data",
+            "lucene": {
+                "solr-spec-version": "9.1.0",
+                "solr-impl-version": "9.1.0 aa4f3d98ab19c201e7f3c74cd14c99174148616d - ishan - 2022-11-11 13:00:47",
+                "lucene-spec-version": "9.3.0",
+                "lucene-impl-version": "9.3.0 d25cebcef7a80369f4dfb9285ca7360a810b75dc - ivera - 2022-07-25 12:30:23"
+            },
+            "jvm": {
+                "version": "17.0.5 17.0.5+8",
+                "name": "Eclipse Adoptium OpenJDK 64-Bit Server VM",
+                "spec": {
+                "vendor": "Oracle Corporation",
+                "name": "Java Platform API Specification",
+                "version": "17"
+                },
+                "jre": {
+                "vendor": "Eclipse Adoptium",
+                "version": "17.0.5"
+                },
+                "vm": {
+                "vendor": "Eclipse Adoptium",
+                "name": "OpenJDK 64-Bit Server VM",
+                "version": "17.0.5+8"
+                },
+                "processors": 16,
+                "memory": {
+                "free": "410.9 MB",
+                "total": "512 MB",
+                "max": "512 MB",
+                "used": "101.1 MB (%19.7)",
+                "raw": {
+                    "free": 430868656,
+                    "total": 536870912,
+                    "max": 536870912,
+                    "used": 106002256,
+                    "used%": 19.74445879459381
+                }
+                },
+                "jmx": {
+                "classpath": "start.jar",
+                "commandLineArgs": [
+                    "-Xms512m",
+                    "-Xmx512m",
+                    "-XX:+UseG1GC",
+                    "-XX:+PerfDisableSharedMem",
+                    "-XX:+ParallelRefProcEnabled",
+                    "-XX:MaxGCPauseMillis=250",
+                    "-XX:+UseLargePages",
+                    "-XX:+AlwaysPreTouch",
+                    "-XX:+ExplicitGCInvokesConcurrent",
+                    "-Xlog:gc*:file=/var/solr/logs/solr_gc.log:time,uptime:filecount=9,filesize=20M",
+                    "-Dsolr.jetty.inetaccess.includes=",
+                    "-Dsolr.jetty.inetaccess.excludes=",
+                    "-Dsolr.log.dir=/var/solr/logs",
+                    "-Djetty.port=8983",
+                    "-DSTOP.PORT=7983",
+                    "-DSTOP.KEY=solrrocks",
+                    "-Duser.timezone=UTC",
+                    "-XX:-OmitStackTraceInFastThrow",
+                    "-XX:OnOutOfMemoryError=/opt/solr/bin/oom_solr.sh 8983 /var/solr/logs",
+                    "-Djetty.home=/opt/solr/server",
+                    "-Dsolr.solr.home=/var/solr/data",
+                    "-Dsolr.data.home=",
+                    "-Dsolr.install.dir=/opt/solr",
+                    "-Dsolr.default.confdir=/opt/solr/server/solr/configsets/_default/conf",
+                    "-Dlog4j.configurationFile=/var/solr/log4j2.xml",
+                    "-Dsolr.jetty.host=0.0.0.0",
+                    "-Xss256k",
+                    "-XX:CompileCommand=exclude,com.github.benmanes.caffeine.cache.BoundedLocalCache::put",
+                    "-Djava.security.manager",
+                    "-Djava.security.policy=/opt/solr/server/etc/security.policy",
+                    "-Djava.security.properties=/opt/solr/server/etc/security.properties",
+                    "-Dsolr.internal.network.permission=*",
+                    "-DdisableAdminUI=false"
+                ],
+                "startTime": "2023-01-26T14:06:26.026Z",
+                "upTimeMS": 47574
+                }
+            },
+            "security": {},
+            "system": {
+                "name": "Linux",
+                "arch": "amd64",
+                "availableProcessors": 16,
+                "systemLoadAverage": 1.88,
+                "version": "5.15.0-58-generic",
+                "committedVirtualMemorySize": 6041583616,
+                "cpuLoad": 0.0625,
+                "freeMemorySize": 153268224,
+                "freePhysicalMemorySize": 153268224,
+                "freeSwapSpaceSize": 8422940672,
+                "processCpuLoad": 0.5,
+                "processCpuTime": 11970000000,
+                "systemCpuLoad": 0,
+                "totalMemorySize": 7512129536,
+                "totalPhysicalMemorySize": 7512129536,
+                "totalSwapSpaceSize": 10737410048,
+                "maxFileDescriptorCount": 1048576,
+                "openFileDescriptorCount": 156
+            }
+            }
+        "#;
+
+        let info: SolrSystemInfo = serde_json::from_str(raw).unwrap();
+        assert_eq!(info.header.qtime, 17);
+    }
+
+    #[test]
+    fn test_deserialize_index_info() {
+        let raw = r#"
+        {
+            "numDocs": 0,
+            "maxDoc": 0,
+            "deletedDocs": 0,
+            "version": 2,
+            "segmentCount": 0,
+            "current": true,
+            "hasDeletions": false,
+            "directory": "org.apache.lucene.store.NRTCachingDirectory:NRTCachingDirectory(MMapDirectory@/var/solr/data/atcoder/data/index lockFactory=org.apache.lucene.store.NativeFSLockFactory@404f935c; maxCacheMB=48.0 maxMergeSizeMB=4.0)",
+            "segmentsFile": "segments_1",
+            "segmentsFileSizeInBytes": 69,
+            "userData": {},
+            "sizeInBytes": 69,
+            "size": "69 bytes"
+        }
+        "#;
+        let info: SolrIndexInfo = serde_json::from_str(raw).unwrap();
+        assert_eq!(info.num_docs, 0);
+    }
+
+    #[test]
+    fn test_deserialize_core_list() {
+        let raw = r#"
+        {
+            "responseHeader": {
+                "status": 0,
+                "QTime": 1
+            },
+            "initFailures": {},
+            "status": {
+                "atcoder": {
+                "name": "atcoder",
+                "instanceDir": "/var/solr/data/atcoder",
+                "dataDir": "/var/solr/data/atcoder/data/",
+                "config": "solrconfig.xml",
+                "schema": "schema.xml",
+                "startTime": "2023-01-26T14:06:28.956Z",
+                "uptime": 321775,
+                "index": {
+                    "numDocs": 0,
+                    "maxDoc": 0,
+                    "deletedDocs": 0,
+                    "version": 2,
+                    "segmentCount": 0,
+                    "current": true,
+                    "hasDeletions": false,
+                    "directory": "org.apache.lucene.store.NRTCachingDirectory:NRTCachingDirectory(MMapDirectory@/var/solr/data/atcoder/data/index lockFactory=org.apache.lucene.store.NativeFSLockFactory@404f935c; maxCacheMB=48.0 maxMergeSizeMB=4.0)",
+                    "segmentsFile": "segments_1",
+                    "segmentsFileSizeInBytes": 69,
+                    "userData": {},
+                    "sizeInBytes": 69,
+                    "size": "69 bytes"
+                }
+                }
+            }
+        }
+        "#;
+        let info: SolrCoreList = serde_json::from_str(raw).unwrap();
+
+        assert_eq!(info.as_vec().unwrap(), vec![String::from("atcoder")]);
+    }
 }
