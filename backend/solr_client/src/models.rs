@@ -270,11 +270,7 @@ pub struct FloatRangeFacet {
 pub struct DateTimeRangeFacet {
     #[serde(deserialize_with = "deserialize_range_facet_counts")]
     pub counts: Vec<(String, u32)>,
-    #[serde(
-        serialize_with = "serialize_datetime",
-        deserialize_with = "deserialize_datetime"
-    )]
-    pub gap: DateTime<FixedOffset>,
+    pub gap: String,
     #[serde(
         serialize_with = "serialize_datetime",
         deserialize_with = "deserialize_datetime"
@@ -285,16 +281,19 @@ pub struct DateTimeRangeFacet {
         deserialize_with = "deserialize_datetime"
     )]
     pub end: DateTime<FixedOffset>,
+    #[serde(default)]
     #[serde(
         serialize_with = "serialize_optional_datetime",
         deserialize_with = "deserialize_optional_datetime"
     )]
     pub before: Option<DateTime<FixedOffset>>,
+    #[serde(default)]
     #[serde(
         serialize_with = "serialize_optional_datetime",
         deserialize_with = "deserialize_optional_datetime"
     )]
     pub after: Option<DateTime<FixedOffset>>,
+    #[serde(default)]
     #[serde(
         serialize_with = "serialize_optional_datetime",
         deserialize_with = "deserialize_optional_datetime"
@@ -652,5 +651,177 @@ mod test {
         let info: SolrCoreList = serde_json::from_str(raw).unwrap();
 
         assert_eq!(info.as_vec().unwrap(), vec![String::from("atcoder")]);
+    }
+
+    #[test]
+    fn test_deserialize_simple_response() {
+        let raw = r#"
+        {
+            "responseHeader": {
+                "status": 0,
+                "QTime": 181
+            }
+        }
+        "#;
+
+        let response: SolrSimpleResponse = serde_json::from_str(raw).unwrap();
+        assert_eq!(response.header.qtime, 181);
+    }
+
+    #[test]
+    fn test_deserialize_simple_response_with_error() {
+        let raw = r#"
+        {
+            "responseHeader": {
+                "status": 400,
+                "QTime": 0
+            },
+            "error": {
+                "metadata": [
+                "error-class",
+                "org.apache.solr.common.SolrException",
+                "root-error-class",
+                "org.apache.solr.common.SolrException"
+                ],
+                "msg": "No such core: hoge",
+                "code": 400
+            }
+        }
+        "#;
+
+        let response: SolrSimpleResponse = serde_json::from_str(raw).unwrap();
+        assert_eq!(response.error.unwrap().code, 400);
+    }
+
+    #[test]
+    fn test_deserialize_select_body() {
+        let raw = r#"
+        {
+            "numFound": 5650,
+            "start": 0,
+            "numFoundExact": true,
+            "docs": [
+                {
+                    "problem_id": "APG4b_a",
+                    "problem_title": "A. 1.00.はじめに",
+                    "problem_url": "https://atcoder.jp/contests/APG4b/tasks/APG4b_a",
+                    "contest_id": "APG4b",
+                    "contest_title": "C++入門 AtCoder Programming Guide for beginners (APG4b)",
+                    "contest_url": "https://atcoder.jp/contests/APG4b",
+                    "difficulty": 0,
+                    "start_at": "1970-01-01T00:00:00Z",
+                    "duration": -1141367296,
+                    "rate_change": "-",
+                    "category": "Other Contests",
+                    "_version_": 1756245857733181400
+                }
+            ]
+        }
+        "#;
+
+        let body: SolrSelectBody = serde_json::from_str(raw).unwrap();
+        assert_eq!(body.num_found, 5650);
+    }
+
+    #[test]
+    fn test_deserialize_facet_counts() {
+        let raw = r#"
+        {
+            "facet_queries": {},
+            "facet_fields": {
+                "category": [
+                    "ABC",
+                    400,
+                    "ARC",
+                    123,
+                    "Other Sponsored",
+                    95,
+                    "AGC",
+                    67,
+                    "Other Contests",
+                    41,
+                    "ABC-Like",
+                    38,
+                    "PAST",
+                    25,
+                    "AGC-Like",
+                    19,
+                    "AHC",
+                    12,
+                    "Marathon",
+                    5,
+                    "ARC-Like",
+                    1
+                ]
+            },
+            "facet_ranges": {
+                "difficulty": {
+                    "counts": [
+                        "0",
+                        210,
+                        "400",
+                        69,
+                        "800",
+                        56,
+                        "1200",
+                        77,
+                        "1600",
+                        74
+                    ],
+                    "gap": 400,
+                    "before": 140,
+                    "after": 200,
+                    "between": 486,
+                    "start": 0,
+                    "end": 2000
+                },
+                "start_at": {
+                    "counts": [
+                        "2021-10-10T00:00:00Z",
+                        19,
+                        "2021-12-10T00:00:00Z",
+                        26,
+                        "2022-02-10T00:00:00Z",
+                        30,
+                        "2022-04-10T00:00:00Z",
+                        15,
+                        "2022-06-10T00:00:00Z",
+                        23,
+                        "2022-08-10T00:00:00Z",
+                        18
+                    ],
+                    "gap": "+2MONTHS",
+                    "start": "2021-10-10T00:00:00Z",
+                    "end": "2022-10-10T00:00:00Z"
+                }
+            },
+            "facet_intervals": {},
+            "facet_heatmaps": {}
+        }
+        "#;
+
+        let facet: SolrFacetBody = serde_json::from_str(raw).unwrap();
+        assert!(facet.facet_fields.contains_key("category"));
+    }
+
+    #[test]
+    fn test_deserialize_select_response() {
+        let raw = r#"
+        {
+            "responseHeader": {
+                "status": 0,
+                "QTime": 27,
+                "params": {}
+            },
+            "response": {
+                "numFound": 0,
+                "start": 0,
+                "numFoundExact": true,
+                "docs": []
+            }
+        }
+        "#;
+        let select: SolrSelectResponse = serde_json::from_str(raw).unwrap();
+        assert_eq!(select.response.num_found, 0);
     }
 }
