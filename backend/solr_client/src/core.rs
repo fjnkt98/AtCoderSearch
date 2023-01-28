@@ -118,42 +118,42 @@ impl SolrCore {
         Ok(selection)
     }
 
-    pub async fn analyze(&self, word: &str, field: &str, analyzer: &str) -> Result<Vec<String>> {
-        todo!();
-        // let params = [("analysis.fieldvalue", word), ("analysis.fieldtype", field)];
+    // pub async fn analyze(&self, word: &str, field: &str, analyzer: &str) -> Result<Vec<String>> {
+    //     todo!();
+    // let params = [("analysis.fieldvalue", word), ("analysis.fieldtype", field)];
 
-        // let response = self
-        //     .client
-        //     .get(format!("{}/analysis/field", self.core_url))
-        //     .query(&params)
-        //     .send()
-        //     .await
-        //     .map_err(|e| SolrCoreError::RequestError(e))?
-        //     .text()
-        //     .await
-        //     .map_err(|e| SolrCoreError::RequestError(e))?;
+    // let response = self
+    //     .client
+    //     .get(format!("{}/analysis/field", self.core_url))
+    //     .query(&params)
+    //     .send()
+    //     .await
+    //     .map_err(|e| SolrCoreError::RequestError(e))?
+    //     .text()
+    //     .await
+    //     .map_err(|e| SolrCoreError::RequestError(e))?;
 
-        // let result: SolrAnalysisResponse =
-        //     serde_json::from_str(&response).map_err(|e| SolrCoreError::DeserializeError(e))?;
+    // let result: SolrAnalysisResponse =
+    //     serde_json::from_str(&response).map_err(|e| SolrCoreError::DeserializeError(e))?;
 
-        // let result = result.analysis.field_types.get(field).unwrap();
-        // let result = match analyzer {
-        //     "index" => result.index.as_ref().unwrap(),
-        //     "query" => result.query.as_ref().unwrap(),
-        //     _ => return Err(SolrCoreError::InvalidValueError),
-        // };
-        // let result = result.last().unwrap().clone();
+    // let result = result.analysis.field_types.get(field).unwrap();
+    // let result = match analyzer {
+    //     "index" => result.index.as_ref().unwrap(),
+    //     "query" => result.query.as_ref().unwrap(),
+    //     _ => return Err(SolrCoreError::InvalidValueError),
+    // };
+    // let result = result.last().unwrap().clone();
 
-        // let result = match result {
-        //     Value::Array(array) => array
-        //         .iter()
-        //         .map(|e| e["text"].to_string().trim_matches('"').to_string())
-        //         .collect::<Vec<String>>(),
-        //     _ => Vec::new(),
-        // };
+    // let result = match result {
+    //     Value::Array(array) => array
+    //         .iter()
+    //         .map(|e| e["text"].to_string().trim_matches('"').to_string())
+    //         .collect::<Vec<String>>(),
+    //     _ => Vec::new(),
+    // };
 
-        // Ok(result)
-    }
+    // Ok(result)
+    // }
 
     pub async fn post(&self, body: Vec<u8>) -> Result<SolrSimpleResponse> {
         let response = self
@@ -290,18 +290,18 @@ mod test {
     /// ```ignore
     /// docker run --rm -d -p 8983:8983 solr:9.1.0 solr-precreate example
     /// ```
-    #[tokio::test]
-    #[ignore]
-    async fn test_analyze() {
-        let core = SolrCore::new("example", "http://localhost:8983");
+    // #[tokio::test]
+    // #[ignore]
+    // async fn test_analyze() {
+    //     let core = SolrCore::new("example", "http://localhost:8983");
 
-        let word = "solr-client";
-        let expected = vec![String::from("solr"), String::from("client")];
+    //     let word = "solr-client";
+    //     let expected = vec![String::from("solr"), String::from("client")];
 
-        let actual = core.analyze(word, "text_en", "index").await.unwrap();
+    //     let actual = core.analyze(word, "text_en", "index").await.unwrap();
 
-        assert_eq!(expected, actual);
-    }
+    //     assert_eq!(expected, actual);
+    // }
 
     //// コアへのドキュメントのポスト・コアのリロード・ドキュメントの検索・ドキュメントの削除の一連の処理の動作をテストするテストシナリオ
     ///
