@@ -180,6 +180,7 @@ pub enum RangeFacetOtherOptions {
     After,
     Between,
     All,
+    None,
 }
 
 /// レンジの境界値の扱いを制御するパラメータ
@@ -262,16 +263,18 @@ impl FacetBuilder for RangeFacetBuilder {
             ))
         }
 
-        result.push((
-            format!("f.{}.facet.range.other", self.field),
-            match self.other {
-                None => String::from("none"),
-                Some(RangeFacetOtherOptions::Before) => String::from("before"),
-                Some(RangeFacetOtherOptions::After) => String::from("after"),
-                Some(RangeFacetOtherOptions::Between) => String::from("between"),
-                Some(RangeFacetOtherOptions::All) => String::from("all"),
-            },
-        ));
+        if let Some(other) = &self.other {
+            result.push((
+                format!("f.{}.facet.range.other", self.field),
+                match other {
+                    RangeFacetOtherOptions::None => String::from("none"),
+                    RangeFacetOtherOptions::Before => String::from("before"),
+                    RangeFacetOtherOptions::After => String::from("after"),
+                    RangeFacetOtherOptions::Between => String::from("between"),
+                    RangeFacetOtherOptions::All => String::from("all"),
+                },
+            ));
+        }
 
         if let Some(include) = &self.include {
             result.push((

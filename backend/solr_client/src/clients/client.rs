@@ -1,4 +1,4 @@
-use crate::core::SolrCore;
+use crate::clients::core::SolrCore;
 use crate::models::*;
 use reqwest::Client;
 use thiserror::Error;

@@ -1,4 +1,3 @@
-pub mod client;
-pub mod core;
+pub mod clients;
 pub mod models;
-pub mod query;
+pub mod querybuilders;
