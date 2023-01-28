@@ -1,6 +1,7 @@
 use crate::models::*;
 use reqwest::header::CONTENT_TYPE;
 use reqwest::Client;
+use serde::de::DeserializeOwned;
 use serde::Serialize;
 use thiserror::Error;
 
@@ -90,10 +91,9 @@ impl SolrCore {
         Ok(response.header.status)
     }
 
-    pub async fn select<S, T>(&self, params: &Vec<(S, T)>) -> Result<SolrSelectResponse>
+    pub async fn select<D>(&self, params: &Vec<(String, String)>) -> Result<SolrSelectResponse<D>>
     where
-        S: Serialize,
-        T: Serialize,
+        D: Serialize + DeserializeOwned,
     {
         let response = self
             .client
@@ -108,7 +108,7 @@ impl SolrCore {
             .await
             .map_err(|e| SolrCoreError::RequestError(e))?;
 
-        let selection: SolrSelectResponse =
+        let selection: SolrSelectResponse<D> =
             serde_json::from_str(&content).map_err(|e| SolrCoreError::DeserializeError(e))?;
 
         if let Some(error) = selection.error {
@@ -204,7 +204,8 @@ impl SolrCore {
 mod test {
     use super::*;
     use chrono::{DateTime, Utc};
-    use serde_json;
+    use serde::Deserialize;
+    use serde_json::{self, Value};
 
     /// コアのステータス取得メソッドの正常系テスト
     ///
@@ -253,13 +254,18 @@ mod test {
         assert!(duration.abs() < 1000);
     }
 
+    #[derive(Serialize, Deserialize)]
+    struct Document {
+        id: i64,
+    }
+
     #[tokio::test]
     #[ignore]
     async fn test_select_in_normal() {
         let core = SolrCore::new("example", "http://localhost:8983");
 
-        let params = vec![("q", "*:*")];
-        let response = core.select(&params).await.unwrap();
+        let params = vec![("q".to_string(), "*:*".to_string())];
+        let response = core.select::<Document>(&params).await.unwrap();
 
         assert_eq!(response.header.status, 0);
     }
@@ -269,8 +275,8 @@ mod test {
     async fn test_select_in_non_normal() {
         let core = SolrCore::new("example", "http://localhost:8983");
 
-        let params = vec![("q", "text_hoge:*")];
-        let response = core.select(&params).await;
+        let params = vec![("q".to_string(), "text_hoge:*".to_string())];
+        let response = core.select::<Document>(&params).await;
 
         assert!(response.is_err());
     }
@@ -387,12 +393,15 @@ mod test {
         assert_eq!(status.index.num_docs, 3);
 
         // 検索のテスト
-        let params = vec![("q", "name:alice"), ("fl", "id,name,gender")];
-        let result = core.select(&params).await.unwrap();
+        let params = vec![
+            ("q".to_string(), "name:alice".to_string()),
+            ("fl".to_string(), "id,name,gender".to_string()),
+        ];
+        let result = core.select::<Value>(&params).await.unwrap();
         assert_eq!(result.response.num_found, 1);
         assert_eq!(
             result.response.docs,
-            serde_json::json!([{"id": "001", "name": "alice", "gender": "female"}])
+            vec![serde_json::json!({"id": "001", "name": "alice", "gender": "female"})]
         );
 
         // ドキュメントをすべて削除

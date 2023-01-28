@@ -120,23 +120,23 @@ pub struct SolrSimpleResponse {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct SolrSelectResponse {
+pub struct SolrSelectResponse<T> {
     #[serde(alias = "responseHeader")]
     pub header: SolrResponseHeader,
-    pub response: SolrSelectBody,
+    pub response: SolrSelectBody<T>,
     pub facet_counts: Option<SolrFacetBody>,
     pub error: Option<SolrErrorInfo>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct SolrSelectBody {
+pub struct SolrSelectBody<T> {
     #[serde(alias = "numFound")]
     pub num_found: u32,
     pub start: u32,
     #[serde(alias = "numFoundExact")]
     pub num_found_exact: bool,
     // TODO: ジェネリクス化
-    pub docs: Value,
+    pub docs: Vec<T>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -693,6 +693,23 @@ mod test {
         assert_eq!(response.error.unwrap().code, 400);
     }
 
+    #[allow(dead_code)]
+    #[derive(Deserialize)]
+    struct Document {
+        problem_id: String,
+        problem_title: String,
+        problem_url: String,
+        contest_id: String,
+        contest_title: String,
+        contest_url: String,
+        difficulty: i64,
+        #[serde(deserialize_with = "deserialize_datetime")]
+        start_at: DateTime<FixedOffset>,
+        duration: i64,
+        rate_change: String,
+        category: String,
+    }
+
     #[test]
     fn test_deserialize_select_body() {
         let raw = r#"
@@ -719,7 +736,7 @@ mod test {
         }
         "#;
 
-        let body: SolrSelectBody = serde_json::from_str(raw).unwrap();
+        let body: SolrSelectBody<Document> = serde_json::from_str(raw).unwrap();
         assert_eq!(body.num_found, 5650);
     }
 
@@ -821,7 +838,7 @@ mod test {
             }
         }
         "#;
-        let select: SolrSelectResponse = serde_json::from_str(raw).unwrap();
+        let select: SolrSelectResponse<Document> = serde_json::from_str(raw).unwrap();
         assert_eq!(select.response.num_found, 0);
     }
 }
