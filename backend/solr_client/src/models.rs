@@ -145,7 +145,7 @@ pub struct SolrFacetBody {
     #[serde(deserialize_with = "deserialize_facet_fields")]
     pub facet_fields: HashMap<String, Vec<(String, u32)>>,
     #[serde(deserialize_with = "deserialize_facet_ranges")]
-    pub facet_ranges: HashMap<String, RangeFacetKind>,
+    pub facet_ranges: HashMap<String, SolrRangeFacetKind>,
     pub facet_intervals: Value,
     pub facet_heatmaps: Value,
 }
@@ -183,45 +183,45 @@ where
 /// レンジファセットの結果の型はフィールドの型依存なのでアドホックに場合分けする必要があった
 fn deserialize_facet_ranges<'de, D>(
     deserializer: D,
-) -> Result<HashMap<String, RangeFacetKind>, D::Error>
+) -> Result<HashMap<String, SolrRangeFacetKind>, D::Error>
 where
     D: Deserializer<'de>,
 {
     let value: HashMap<String, Value> = Deserialize::deserialize(deserializer)?;
-    let mut result: HashMap<String, RangeFacetKind> = HashMap::new();
+    let mut result: HashMap<String, SolrRangeFacetKind> = HashMap::new();
     for (field, value) in value.iter() {
         match &value["start"] {
             Value::Number(start) => {
                 if start.is_i64() {
-                    let value: IntegerRangeFacet =
-                        serde_json::from_value(value.clone()).map_err(|e| {
+                    let value: SolrIntegerRangeFacet = serde_json::from_value(value.clone())
+                        .map_err(|e| {
                             D::Error::custom(format!(
                                 "Failed to parse integer range facet result. [{}]",
                                 e.to_string()
                             ))
                         })?;
-                    result.insert(field.to_string(), RangeFacetKind::Integer(value));
+                    result.insert(field.to_string(), SolrRangeFacetKind::Integer(value));
                 } else {
-                    let value: FloatRangeFacet =
-                        serde_json::from_value(value.clone()).map_err(|e| {
+                    let value: SolrFloatRangeFacet = serde_json::from_value(value.clone())
+                        .map_err(|e| {
                             D::Error::custom(format!(
                                 "Failed to parse float range facet result. [{}]",
                                 e.to_string()
                             ))
                         })?;
-                    result.insert(field.to_string(), RangeFacetKind::Float(value));
+                    result.insert(field.to_string(), SolrRangeFacetKind::Float(value));
                 }
             }
             Value::String(start) => {
                 if DateTime::parse_from_rfc3339(&start.replace("Z", "+00:00")).is_ok() {
-                    let value: DateTimeRangeFacet =
-                        serde_json::from_value(value.clone()).map_err(|e| {
+                    let value: SolrDateTimeRangeFacet = serde_json::from_value(value.clone())
+                        .map_err(|e| {
                             D::Error::custom(format!(
                                 "Failed to parse datetime range facet result. [{}]",
                                 e.to_string()
                             ))
                         })?;
-                    result.insert(field.to_string(), RangeFacetKind::DateTime(value));
+                    result.insert(field.to_string(), SolrRangeFacetKind::DateTime(value));
                 } else {
                     // TODO; 数値、日付型以外のレンジファセットがあったら処理を追加する
                     return Err(D::Error::custom("Unexpected range facet value type."));
@@ -236,14 +236,14 @@ where
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub enum RangeFacetKind {
-    Integer(IntegerRangeFacet),
-    Float(FloatRangeFacet),
-    DateTime(DateTimeRangeFacet),
+pub enum SolrRangeFacetKind {
+    Integer(SolrIntegerRangeFacet),
+    Float(SolrFloatRangeFacet),
+    DateTime(SolrDateTimeRangeFacet),
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct IntegerRangeFacet {
+pub struct SolrIntegerRangeFacet {
     #[serde(deserialize_with = "deserialize_range_facet_counts")]
     pub counts: Vec<(String, u32)>,
     pub gap: i64,
@@ -255,7 +255,7 @@ pub struct IntegerRangeFacet {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct FloatRangeFacet {
+pub struct SolrFloatRangeFacet {
     #[serde(deserialize_with = "deserialize_range_facet_counts")]
     pub counts: Vec<(String, u32)>,
     pub gap: f64,
@@ -267,7 +267,7 @@ pub struct FloatRangeFacet {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct DateTimeRangeFacet {
+pub struct SolrDateTimeRangeFacet {
     #[serde(deserialize_with = "deserialize_range_facet_counts")]
     pub counts: Vec<(String, u32)>,
     pub gap: String,
