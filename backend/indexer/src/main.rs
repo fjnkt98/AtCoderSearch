@@ -1,15 +1,16 @@
-// mod utils;
-// mod models;
+mod models;
+mod utils;
 
 use std::ffi::OsString;
 
-use anyhow::Result;
+use crate::utils::crawlers::{ContestCrawler, ProblemCrawler};
+use anyhow::{anyhow, Result};
 use clap::{Args, Parser, Subcommand};
 use dotenvy::dotenv;
 // use manager::IndexingManager;
-// use sqlx::postgres::Postgres;
-// use sqlx::Pool;
-// use std::env;
+use sqlx::postgres::Postgres;
+use sqlx::Pool;
+use std::env;
 // use tracing_subscriber::filter::EnvFilter;
 // use tracing_subscriber::fmt;
 
@@ -51,13 +52,32 @@ struct PostArgs {
 async fn main() -> Result<()> {
     dotenv().ok();
 
+    let database_url: String = env::var("DATABASE_URL").expect("DATABASE_URL must be configured.");
+
+    let pool: Pool<Postgres> = sqlx::postgres::PgPoolOptions::new()
+        .max_connections(5)
+        .connect(&database_url)
+        .await?;
+
     let args = Cli::parse();
     match args.command {
         Commands::Crawl(args) => {
-            if args.all {
-                println!("crawl all!");
-            } else {
-                println!("crawl diff!");
+            let crawler = ContestCrawler::new(&pool);
+            if let Err(e) = crawler.run().await {
+                tracing::error!(
+                    "Failed to crawl and save contest information [{}]",
+                    e.to_string()
+                );
+                anyhow!(e);
+            }
+
+            let crawler = ProblemCrawler::new(&pool);
+            if let Err(e) = crawler.run(args.all).await {
+                tracing::error!(
+                    "Failed to crawl and save problem information [{}]",
+                    e.to_string()
+                );
+                anyhow!(e);
             }
         }
         Commands::Generate(args) => match args.path {

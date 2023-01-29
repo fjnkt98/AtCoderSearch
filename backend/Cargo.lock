@@ -1043,6 +1043,7 @@ dependencies = [
  "dotenvy",
  "ego-tree",
  "futures",
+ "minify-html",
  "regex",
  "reqwest",
  "scraper",
