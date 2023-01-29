@@ -1,7 +1,5 @@
-// mod extractor;
-// mod manager;
+// mod utils;
 // mod models;
-// mod reader;
 
 use std::ffi::OsString;
 

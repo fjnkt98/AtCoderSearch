@@ -1,0 +1,13 @@
+[tasks.migrate]
+args = [
+  "--user=${PGUSER}",
+  "--password=${PGPASSWORD}",
+  "--host=${PGHOST}",
+  "--port=${PGPORT}",
+  "--file=schema.sql",
+  "${PGDATABASE}",
+]
+command = "psqldef"
+env_files = [
+  ".env",
+]
