@@ -9,6 +9,7 @@ use std::io::Write;
 use std::path::{Path, PathBuf};
 // use tokio::fs::File;
 // use tokio::io::{AsyncReadExt, AsyncWriteExt};
+use std::fs;
 use std::fs::File;
 
 use super::extractor::FullTextExtractor;
@@ -26,6 +27,23 @@ impl<'a> DocumentGenerator<'a> {
             reader: RecordReader::new(pool),
             savedir: savedir.to_path_buf(),
         }
+    }
+
+    pub async fn truncate(&self) -> Result<()> {
+        let files =
+            fs::read_dir(&self.savedir).map_err(|e| GeneratingError::FileOperationError(e))?;
+
+        for file in files.into_iter() {
+            let file = file.map_err(|e| GeneratingError::FileOperationError(e))?;
+            let path = file.path();
+            if let Some(extension) = path.extension() {
+                if extension == "json" {
+                    fs::remove_file(path).map_err(|e| GeneratingError::FileOperationError(e))?;
+                }
+            }
+        }
+
+        Ok(())
     }
 
     pub async fn generate(&self, chunk_size: usize) -> Result<()> {

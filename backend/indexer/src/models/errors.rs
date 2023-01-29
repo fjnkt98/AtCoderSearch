@@ -27,6 +27,8 @@ pub enum GeneratingError {
     // FieldValueNotConfiguredError,
     #[error("Failed to serialize JSON data")]
     SerializeError(#[from] serde_json::Error),
+    #[error("Failed to operate file")]
+    FileOperationError(#[from] std::io::Error),
 }
 
 #[derive(Debug, Error)]

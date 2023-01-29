@@ -114,6 +114,14 @@ async fn main() -> Result<()> {
                 }
             };
             let generator = DocumentGenerator::new(&pool, &savedir);
+            tracing::info!("Delete existing documents");
+            if let Err(e) = generator.truncate().await {
+                tracing::error!(
+                    "Failed to delete existing json documents [{}]",
+                    e.to_string()
+                );
+                bail!(e.to_string());
+            }
             match generator.generate(1000).await {
                 Ok(()) => {
                     tracing::info!("Successfully generate documents");
