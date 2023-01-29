@@ -1038,6 +1038,7 @@ dependencies = [
  "anyhow",
  "chrono",
  "chrono-tz",
+ "clap",
  "crawler",
  "dotenvy",
  "ego-tree",
