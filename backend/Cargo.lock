@@ -318,27 +318,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "crawler"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "chrono",
- "clap",
- "dotenvy",
- "minify-html",
- "regex",
- "reqwest",
- "serde",
- "serde_json",
- "serde_urlencoded",
- "sqlx",
- "thiserror",
- "tokio",
- "tracing",
- "tracing-subscriber",
-]
-
-[[package]]
 name = "crc"
 version = "3.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1039,7 +1018,6 @@ dependencies = [
  "chrono",
  "chrono-tz",
  "clap",
- "crawler",
  "dotenvy",
  "ego-tree",
  "futures",
