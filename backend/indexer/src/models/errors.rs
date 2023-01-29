@@ -2,6 +2,7 @@ use solr_client::clients::client::SolrClientError;
 use solr_client::clients::core::SolrCoreError;
 use std::string::FromUtf8Error;
 use thiserror::Error;
+use tokio::task::JoinError;
 
 #[derive(Debug, Error)]
 pub enum CrawlingError {
@@ -39,4 +40,6 @@ pub enum UploadingError {
     SolrCoreError(#[from] SolrCoreError),
     #[error("Failed to operate file")]
     FileOperationError(#[from] std::io::Error),
+    #[error("Unexpected error occurred")]
+    UnexpectedError(JoinError),
 }

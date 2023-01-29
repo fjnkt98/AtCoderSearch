@@ -142,6 +142,7 @@ async fn main() -> Result<()> {
                 }
             };
             let uploader = DocumentUploader::new(&savedir, &core);
+            tracing::info!("Start to post documents");
             match uploader.upload(args.optimize).await {
                 Ok(()) => {
                     tracing::info!("Successfully post documents")

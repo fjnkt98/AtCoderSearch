@@ -1,22 +1,22 @@
 use crate::models::errors::UploadingError;
+use futures::stream::FuturesUnordered;
+use futures::StreamExt;
 use solr_client::clients::core::SolrCore;
 use std::path::{Path, PathBuf};
 use tokio::fs;
-use tokio::fs::File;
-use tokio::io::AsyncReadExt;
 
 type Result<T> = std::result::Result<T, UploadingError>;
 
-pub struct DocumentUploader<'a> {
+pub struct DocumentUploader {
     savedir: PathBuf,
-    core: &'a SolrCore,
+    core: SolrCore,
 }
 
-impl<'a> DocumentUploader<'a> {
-    pub fn new(savedir: &Path, core: &'a SolrCore) -> Self {
+impl DocumentUploader {
+    pub fn new(savedir: &Path, core: &SolrCore) -> Self {
         Self {
             savedir: savedir.to_path_buf(),
-            core: core,
+            core: core.clone(),
         }
     }
 
@@ -26,26 +26,31 @@ impl<'a> DocumentUploader<'a> {
         let mut files = fs::read_dir(&self.savedir)
             .await
             .map_err(|e| UploadingError::FileOperationError(e))?;
-        let mut target = Vec::new();
+
+        let mut tasks = FuturesUnordered::new();
         while let Some(file) = files
             .next_entry()
             .await
             .map_err(|e| UploadingError::FileOperationError(e))?
         {
             let path = file.path();
+            tracing::debug!("Loading file: {}", path.display());
+            let core = self.core.clone();
             if let Some(extension) = path.extension() {
                 if extension == "json" {
-                    target.push(path);
+                    let task = tokio::spawn(async move {
+                        let content = fs::read(path).await.unwrap();
+                        core.post(content).await.unwrap();
+                    });
+                    tasks.push(task);
                 }
             }
         }
-
-        for filepath in target.into_iter() {
-            let mut file = File::open(filepath).await?;
-            let mut buffer: Vec<u8> = Vec::new();
-            file.read_to_end(&mut buffer).await?;
-
-            self.core.post(buffer).await?;
+        while let Some(task) = tasks.next().await {
+            if let Err(e) = task {
+                self.core.rollback().await?;
+                return Err(UploadingError::UnexpectedError(e));
+            }
         }
 
         self.core.commit(optimize).await?;
