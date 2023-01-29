@@ -1,7 +1,6 @@
 [workspace]
 
 members = [
-  "crawler",
   "indexer",
   "server",
   "solr_client",

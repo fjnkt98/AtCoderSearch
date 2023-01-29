@@ -1,27 +1,16 @@
-use crate::models::*;
+use crate::models::contest::ContestJson;
+use crate::models::errors::CrawlingError;
+use crate::models::problem::{ProblemDifficulty, ProblemJson};
+use crate::models::tables::{Contest, Problem};
 use minify_html::{minify, Cfg};
 use reqwest::header::ACCEPT_ENCODING;
 use sqlx::postgres::{PgRow, Postgres};
 use sqlx::{Pool, Row};
 use std::collections::{HashMap, HashSet};
-use std::string::FromUtf8Error;
-use thiserror::Error;
 use tokio::time;
 use tokio::time::Duration;
 
-type Result<T> = std::result::Result<T, CrawlError>;
-
-#[derive(Debug, Error)]
-pub enum CrawlError {
-    #[error("Failed to get information from AtCoder Problems")]
-    RequestError(#[from] reqwest::Error),
-    #[error("Failed to deserialize JSON data")]
-    DeserializeError(#[from] serde_json::error::Error),
-    #[error("Failed to execute SQL query")]
-    SqlExecutionError(#[from] sqlx::Error),
-    #[error("Failed to parse HTML")]
-    ParseError(#[from] FromUtf8Error),
-}
+type Result<T> = std::result::Result<T, CrawlingError>;
 
 pub struct ContestCrawler<'a> {
     url: String,
@@ -46,15 +35,15 @@ impl<'a> ContestCrawler<'a> {
             .header(ACCEPT_ENCODING, "gzip")
             .send()
             .await
-            .map_err(|e| CrawlError::RequestError(e))?;
+            .map_err(|e| CrawlingError::RequestError(e))?;
 
         let json = response
             .text()
             .await
-            .map_err(|e| CrawlError::RequestError(e))?;
+            .map_err(|e| CrawlingError::RequestError(e))?;
 
         let contests: Vec<ContestJson> =
-            serde_json::from_str(&json).map_err(|e| CrawlError::DeserializeError(e))?;
+            serde_json::from_str(&json).map_err(|e| CrawlingError::DeserializeError(e))?;
 
         Ok(contests)
     }
@@ -113,13 +102,21 @@ impl<'a> ContestCrawler<'a> {
             // エラーが発生したらトランザクションをロールバックしてエラーを早期リターンする
             if let Err(e) = result {
                 tx.rollback().await?;
-                return Err(CrawlError::SqlExecutionError(e));
+                return Err(CrawlingError::SqlExecutionError(e));
             }
 
             tracing::debug!("Contest {} was saved.", contest.id);
         }
 
         tx.commit().await?;
+
+        Ok(())
+    }
+
+    /// コンテスト情報の取得からデータベースへの保存までの一連の処理を行うメソッド
+    pub async fn run(&self) -> Result<()> {
+        let contests = self.crawl().await?;
+        self.save(&contests).await?;
 
         Ok(())
     }
@@ -147,15 +144,15 @@ impl<'a> ProblemCrawler<'a> {
             .header(ACCEPT_ENCODING, "gzip")
             .send()
             .await
-            .map_err(|e| CrawlError::RequestError(e))?;
+            .map_err(|e| CrawlingError::RequestError(e))?;
 
         let json = response
             .text()
             .await
-            .map_err(|e| CrawlError::RequestError(e))?;
+            .map_err(|e| CrawlingError::RequestError(e))?;
 
         let problems: Vec<ProblemJson> =
-            serde_json::from_str(&json).map_err(|e| CrawlError::DeserializeError(e))?;
+            serde_json::from_str(&json).map_err(|e| CrawlingError::DeserializeError(e))?;
 
         tracing::info!("{} problems collected.", problems.len());
 
@@ -167,7 +164,11 @@ impl<'a> ProblemCrawler<'a> {
     /// クロール間隔は300msにしてある。
     ///
     /// - target: クロール対象の問題のリスト
-    pub async fn crawl(&self, target: &Vec<ProblemJson>) -> Result<Vec<Problem>> {
+    pub async fn crawl(
+        &self,
+        target: &Vec<ProblemJson>,
+        crawl_interval: u64,
+    ) -> Result<Vec<Problem>> {
         let client = reqwest::Client::new();
 
         let config = Cfg {
@@ -193,12 +194,12 @@ impl<'a> ProblemCrawler<'a> {
                 .get(&url)
                 .send()
                 .await
-                .map_err(|e| CrawlError::RequestError(e))?
+                .map_err(|e| CrawlingError::RequestError(e))?
                 .bytes()
                 .await
-                .map_err(|e| CrawlError::RequestError(e))?;
-            let html =
-                String::from_utf8(minify(&html, &config)).map_err(|e| CrawlError::ParseError(e))?;
+                .map_err(|e| CrawlingError::RequestError(e))?;
+            let html = String::from_utf8(minify(&html, &config))
+                .map_err(|e| CrawlingError::ParseError(e))?;
 
             problems.push(Problem {
                 id: problem.id.clone(),
@@ -212,7 +213,7 @@ impl<'a> ProblemCrawler<'a> {
 
             tracing::info!("Problem {} is collected.", problem.id);
 
-            time::sleep(Duration::from_millis(200)).await;
+            time::sleep(Duration::from_millis(crawl_interval)).await;
         }
 
         Ok(problems)
@@ -230,7 +231,7 @@ impl<'a> ProblemCrawler<'a> {
             .map(|row: PgRow| row.get(0))
             .fetch_all(self.pool)
             .await
-            .map_err(|e| CrawlError::SqlExecutionError(e))?
+            .map_err(|e| CrawlingError::SqlExecutionError(e))?
             .iter()
             .cloned(),
         );
@@ -258,15 +259,15 @@ impl<'a> ProblemCrawler<'a> {
             .header(ACCEPT_ENCODING, "gzip")
             .send()
             .await
-            .map_err(|e| CrawlError::RequestError(e))?;
+            .map_err(|e| CrawlingError::RequestError(e))?;
 
         let json = response
             .text()
             .await
-            .map_err(|e| CrawlError::RequestError(e))?;
+            .map_err(|e| CrawlingError::RequestError(e))?;
 
         let difficulties: HashMap<String, ProblemDifficulty> =
-            serde_json::from_str(&json).map_err(|e| CrawlError::DeserializeError(e))?;
+            serde_json::from_str(&json).map_err(|e| CrawlingError::DeserializeError(e))?;
 
         Ok(difficulties)
     }
@@ -313,13 +314,31 @@ impl<'a> ProblemCrawler<'a> {
 
             if let Err(e) = result {
                 tx.rollback().await?;
-                return Err(CrawlError::SqlExecutionError(e));
+                return Err(CrawlingError::SqlExecutionError(e));
             }
 
             tracing::info!("Problem {} was saved.", problem.id);
         }
 
         tx.commit().await?;
+
+        Ok(())
+    }
+
+    /// 問題情報の取得からデータベースへの保存までの一連の処理を行うメソッド
+    ///
+    /// - allがtrueのときはすべての問題を対象にクロールを行う
+    /// - allがfalseのときは差分取得のみを行う
+    pub async fn run(&self, all: bool) -> Result<()> {
+        let target = if all {
+            self.get_problem_list().await?
+        } else {
+            self.detect_diff().await?
+        };
+
+        let problems = self.crawl(&target, 1000).await?;
+
+        self.save(&problems).await?;
 
         Ok(())
     }

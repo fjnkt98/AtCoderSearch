@@ -17,6 +17,7 @@ pub enum SolrCoreError {
     UnexpectedError((u32, String)),
 }
 
+#[derive(Clone)]
 pub struct SolrCore {
     pub name: String,
     pub base_url: String,
