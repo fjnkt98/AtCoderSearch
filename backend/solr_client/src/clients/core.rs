@@ -91,7 +91,10 @@ impl SolrCore {
         Ok(response.header.status)
     }
 
-    pub async fn select<D>(&self, params: &Vec<(String, String)>) -> Result<SolrSelectResponse<D>>
+    pub async fn select<D>(
+        &self,
+        params: &Vec<(impl Serialize, impl Serialize)>,
+    ) -> Result<SolrSelectResponse<D>>
     where
         D: Serialize + DeserializeOwned,
     {
