@@ -1,10 +1,11 @@
-use crate::models::*;
+use crate::models::document::Record;
+use crate::models::errors::GeneratingError;
 use sqlx::postgres::Postgres;
 use sqlx::Pool;
 use tokio::macros::support::Pin;
 use tokio_stream::Stream;
 
-type Result<T> = std::result::Result<T, IndexingError>;
+type Result<T> = std::result::Result<T, GeneratingError>;
 
 pub struct RecordReader<'a> {
     pool: &'a Pool<Postgres>,

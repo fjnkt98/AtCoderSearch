@@ -1,10 +1,10 @@
-use crate::models::*;
+use crate::models::errors::GeneratingError;
 use ego_tree::NodeRef;
 use regex::Regex;
 use scraper::node::Node;
 use scraper::{Html, Selector};
 
-type Result<T> = std::result::Result<T, IndexingError>;
+type Result<T> = std::result::Result<T, GeneratingError>;
 
 pub struct FullTextExtractor {
     div: Selector,
@@ -15,11 +15,11 @@ pub struct FullTextExtractor {
 
 impl FullTextExtractor {
     pub fn new() -> Result<Self> {
-        let div = Selector::parse("div.part").map_err(|e| IndexingError::SelectorError(e))?;
-        let section = Selector::parse("section").map_err(|e| IndexingError::SelectorError(e))?;
-        let h3 = Selector::parse("h3").map_err(|e| IndexingError::SelectorError(e))?;
+        let div = Selector::parse("div.part").map_err(|e| GeneratingError::SelectorError(e))?;
+        let section = Selector::parse("section").map_err(|e| GeneratingError::SelectorError(e))?;
+        let h3 = Selector::parse("h3").map_err(|e| GeneratingError::SelectorError(e))?;
 
-        let ascii = Regex::new("^[\x20-\x7E].*$").map_err(|e| IndexingError::RegexError(e))?;
+        let ascii = Regex::new("^[\x20-\x7E].*$").map_err(|e| GeneratingError::RegexError(e))?;
 
         Ok(FullTextExtractor {
             div: div,

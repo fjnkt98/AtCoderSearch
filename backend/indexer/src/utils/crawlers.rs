@@ -1,4 +1,5 @@
 use crate::models::contest::ContestJson;
+use crate::models::errors::CrawlingError;
 use crate::models::problem::{ProblemDifficulty, ProblemJson};
 use crate::models::tables::{Contest, Problem};
 use minify_html::{minify, Cfg};
@@ -6,24 +7,10 @@ use reqwest::header::ACCEPT_ENCODING;
 use sqlx::postgres::{PgRow, Postgres};
 use sqlx::{Pool, Row};
 use std::collections::{HashMap, HashSet};
-use std::string::FromUtf8Error;
-use thiserror::Error;
 use tokio::time;
 use tokio::time::Duration;
 
 type Result<T> = std::result::Result<T, CrawlingError>;
-
-#[derive(Debug, Error)]
-pub enum CrawlingError {
-    #[error("Failed to get information from AtCoder Problems")]
-    RequestError(#[from] reqwest::Error),
-    #[error("Failed to deserialize JSON data")]
-    DeserializeError(#[from] serde_json::error::Error),
-    #[error("Failed to execute SQL query")]
-    SqlExecutionError(#[from] sqlx::Error),
-    #[error("Failed to parse HTML")]
-    ParseError(#[from] FromUtf8Error),
-}
 
 pub struct ContestCrawler<'a> {
     url: String,

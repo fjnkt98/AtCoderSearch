@@ -1,31 +1,9 @@
-use crate::extractor::FullTextExtractor;
+use crate::models::errors::GeneratingError;
+use crate::utils::extractor::FullTextExtractor;
 use chrono::{DateTime, NaiveDateTime, Utc};
 use serde::{Deserialize, Serialize};
-use solr_client::client::SolrClientError;
-use solr_client::core::SolrCoreError;
-use thiserror::Error;
 
-type Result<T> = std::result::Result<T, IndexingError>;
-
-#[derive(Debug, Error)]
-pub enum IndexingError {
-    #[error("Failed to execute SQL query")]
-    SqlExecutionError(#[from] sqlx::Error),
-    #[error("Failed to create selector")]
-    SelectorError(#[from] scraper::error::SelectorErrorKind<'static>),
-    #[error("Failed to create regular expression pattern")]
-    RegexError(#[from] regex::Error),
-    // #[error("Field value is mandatory")]
-    // FieldValueNotConfiguredError,
-    #[error("Failed to serialize JSON data")]
-    SerializeError(#[from] serde_json::Error),
-    #[error("Failed to operate file")]
-    FileOperationError(#[from] std::io::Error),
-    #[error("Failed to operate solr client")]
-    SolrClientError(#[from] SolrClientError),
-    #[error("Failed to operate solr core")]
-    SolrCoreError(#[from] SolrCoreError),
-}
+type Result<T> = std::result::Result<T, GeneratingError>;
 
 #[derive(sqlx::FromRow)]
 pub struct Record {

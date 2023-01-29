@@ -4,9 +4,11 @@ mod utils;
 use std::ffi::OsString;
 
 use crate::utils::crawlers::{ContestCrawler, ProblemCrawler};
-use anyhow::{anyhow, Result};
+use crate::utils::generator::DocumentGenerator;
+use anyhow::{bail, Result};
 use clap::{Args, Parser, Subcommand};
 use dotenvy::dotenv;
+use std::path::PathBuf;
 // use manager::IndexingManager;
 use sqlx::postgres::Postgres;
 use sqlx::Pool;
@@ -48,7 +50,7 @@ struct PostArgs {
     optimize: bool,
 }
 
-#[tokio::main]
+#[tokio::main(flavor = "multi_thread", worker_threads = 10)]
 async fn main() -> Result<()> {
     dotenv().ok();
 
@@ -68,7 +70,7 @@ async fn main() -> Result<()> {
                     "Failed to crawl and save contest information [{}]",
                     e.to_string()
                 );
-                anyhow!(e);
+                bail!(e.to_string());
             }
 
             let crawler = ProblemCrawler::new(&pool);
@@ -77,13 +79,29 @@ async fn main() -> Result<()> {
                     "Failed to crawl and save problem information [{}]",
                     e.to_string()
                 );
-                anyhow!(e);
+                bail!(e.to_string());
             }
         }
-        Commands::Generate(args) => match args.path {
-            Some(path) => println!("generate json into {}!", path.into_string().unwrap()),
-            None => println!("generate json into default path!"),
-        },
+        Commands::Generate(args) => {
+            let savedir = match args.path {
+                Some(path) => PathBuf::from(path),
+                None => {
+                    let path = env::var("DOCUMENT_SAVE_DIRECTORY")
+                        .expect("Default save directory does not configured");
+                    PathBuf::from(path)
+                }
+            };
+            let generator = DocumentGenerator::new(&pool, &savedir);
+            match generator.generate(1000).await {
+                Ok(()) => {
+                    tracing::info!("Successfully generate documents");
+                }
+                Err(e) => {
+                    tracing::error!("Failed to generate documents");
+                    bail!(e.to_string())
+                }
+            }
+        }
         Commands::Post(args) => {
             if args.optimize {
                 println!("post document with optimize!");
