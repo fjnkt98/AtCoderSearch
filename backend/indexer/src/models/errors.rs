@@ -1,3 +1,5 @@
+use solr_client::clients::client::SolrClientError;
+use solr_client::clients::core::SolrCoreError;
 use std::string::FromUtf8Error;
 use thiserror::Error;
 
@@ -25,12 +27,14 @@ pub enum GeneratingError {
     // FieldValueNotConfiguredError,
     #[error("Failed to serialize JSON data")]
     SerializeError(#[from] serde_json::Error),
+}
+
+#[derive(Debug, Error)]
+pub enum UploadingError {
+    #[error("Failed to operate Solr client")]
+    SolrClientError(#[from] SolrClientError),
+    #[error("Failed to operate Solr core")]
+    SolrCoreError(#[from] SolrCoreError),
     #[error("Failed to operate file")]
     FileOperationError(#[from] std::io::Error),
 }
-
-// #[derive(Debug, Error)]
-// pub enum UploadingError {
-//     #[error("Failed to operate Solr client")]
-//     SolrClientError,
-// }
