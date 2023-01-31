@@ -1,4 +1,4 @@
-use crate::models::*;
+use crate::models::response::*;
 use reqwest::header::CONTENT_TYPE;
 use reqwest::Client;
 use serde::de::DeserializeOwned;

@@ -1,5 +1,5 @@
 use crate::clients::core::SolrCore;
-use crate::models::*;
+use crate::models::response::*;
 use reqwest::Client;
 use thiserror::Error;
 use url::Url;
