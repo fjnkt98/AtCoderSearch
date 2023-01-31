@@ -1,13 +1,15 @@
+use crate::models::datetime::SolrDateTime;
 /// 命名規則
 ///
 /// - Solrから返ってくるレスポンス本体のモデル -> SolrXXXXResponse
 /// - レスポンスの一部 -> SolrXXXX(Header|Body|Info|e.t.c)
 ///
-use chrono::{DateTime, FixedOffset, Utc};
+use chrono::{DateTime, FixedOffset};
 use itertools::Itertools;
-use serde::de::{Error, Unexpected};
-use serde::{Deserialize, Deserializer, Serialize, Serializer};
+use serde::de::Error;
+use serde::{Deserialize, Deserializer, Serialize};
 use serde_json::Value;
+use serde_with::serde_as;
 use std::collections::HashMap;
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -266,104 +268,25 @@ pub struct SolrFloatRangeFacet {
     pub between: Option<f64>,
 }
 
+#[serde_as]
 #[derive(Serialize, Deserialize, Debug)]
 pub struct SolrDateTimeRangeFacet {
     #[serde(deserialize_with = "deserialize_range_facet_counts")]
     pub counts: Vec<(String, u32)>,
     pub gap: String,
-    #[serde(
-        serialize_with = "serialize_datetime",
-        deserialize_with = "deserialize_datetime"
-    )]
+    #[serde_as(as = "SolrDateTime")]
     pub start: DateTime<FixedOffset>,
-    #[serde(
-        serialize_with = "serialize_datetime",
-        deserialize_with = "deserialize_datetime"
-    )]
+    #[serde_as(as = "SolrDateTime")]
     pub end: DateTime<FixedOffset>,
     #[serde(default)]
-    #[serde(
-        serialize_with = "serialize_optional_datetime",
-        deserialize_with = "deserialize_optional_datetime"
-    )]
+    #[serde_as(as = "Option<SolrDateTime>")]
     pub before: Option<DateTime<FixedOffset>>,
     #[serde(default)]
-    #[serde(
-        serialize_with = "serialize_optional_datetime",
-        deserialize_with = "deserialize_optional_datetime"
-    )]
+    #[serde_as(as = "Option<SolrDateTime>")]
     pub after: Option<DateTime<FixedOffset>>,
     #[serde(default)]
-    #[serde(
-        serialize_with = "serialize_optional_datetime",
-        deserialize_with = "deserialize_optional_datetime"
-    )]
+    #[serde_as(as = "Option<SolrDateTime>")]
     pub between: Option<DateTime<FixedOffset>>,
-}
-
-/// DateTime型をSolrが扱える文字列形式にシリアライズする関数
-fn serialize_datetime<S>(timestamp: &DateTime<FixedOffset>, s: S) -> Result<S::Ok, S::Error>
-where
-    S: Serializer,
-{
-    s.serialize_str(
-        &timestamp
-            .with_timezone(&Utc)
-            .to_rfc3339()
-            .replace("+00:00", "Z"),
-    )
-}
-
-/// DateTime型をSolrが扱える文字列形式にシリアライズする関数(Option版)
-/// TODO: コードの重複が多いのでスマートに解決する方法を探す
-fn serialize_optional_datetime<S>(
-    timestamp: &Option<DateTime<FixedOffset>>,
-    s: S,
-) -> Result<S::Ok, S::Error>
-where
-    S: Serializer,
-{
-    match timestamp {
-        Some(timestamp) => s.serialize_str(
-            &timestamp
-                .with_timezone(&Utc)
-                .to_rfc3339()
-                .replace("+00:00", "Z"),
-        ),
-        None => s.serialize_none(),
-    }
-}
-
-/// Solrのタイムスタンプ文字列表現をDateTime型にデシリアライズする関数
-fn deserialize_datetime<'de, D>(deserializer: D) -> Result<DateTime<FixedOffset>, D::Error>
-where
-    D: Deserializer<'de>,
-{
-    let value = String::deserialize(deserializer)?;
-    if let Ok(timestamp) = DateTime::parse_from_rfc3339(&value.replace("Z", "+00:00")) {
-        return Ok(timestamp);
-    } else {
-        return Err(Error::invalid_value(
-            Unexpected::Str(&value),
-            &"Invalid timestamp string",
-        ));
-    }
-}
-
-/// Solrのタイムスタンプ文字列表現をDateTime型にデシリアライズする関数(Option版)
-/// TODO: コードの重複が多いのでスマートに解決する方法を探す
-fn deserialize_optional_datetime<'de, D>(
-    deserializer: D,
-) -> Result<Option<DateTime<FixedOffset>>, D::Error>
-where
-    D: Deserializer<'de>,
-{
-    let value = String::deserialize(deserializer)?;
-    if let Ok(timestamp) = DateTime::parse_from_rfc3339(&value.replace("Z", "+00:00")) {
-        return Ok(Some(timestamp));
-    } else {
-        return Ok(None);
-    }
 }
 
 /// ファセットの結果の配列をRustが扱える配列にデシリアライズする関数
@@ -694,6 +617,7 @@ mod test {
     }
 
     #[allow(dead_code)]
+    #[serde_as]
     #[derive(Deserialize)]
     struct Document {
         problem_id: String,
@@ -703,7 +627,7 @@ mod test {
         contest_title: String,
         contest_url: String,
         difficulty: i64,
-        #[serde(deserialize_with = "deserialize_datetime")]
+        #[serde_as(as = "SolrDateTime")]
         start_at: DateTime<FixedOffset>,
         duration: i64,
         rate_change: String,
