@@ -29,7 +29,7 @@ impl Record {
             Utc,
         );
 
-        let (text_ja, text_en) = extractor.extract(&self.html)?;
+        let (statement_ja, statement_en) = extractor.extract(&self.html)?;
 
         let contest_url: String = format!("https://atcoder.jp/contests/{}", self.contest_id);
 
@@ -45,8 +45,8 @@ impl Record {
             duration: self.duration,
             rate_change: self.rate_change,
             category: self.category,
-            text_ja: text_ja,
-            text_en: text_en,
+            statement_ja: statement_ja,
+            statement_en: statement_en,
         };
 
         Ok(document)
@@ -71,6 +71,6 @@ pub struct Document {
     pub duration: i64,
     pub rate_change: String,
     pub category: String,
-    pub text_ja: Vec<String>,
-    pub text_en: Vec<String>,
+    pub statement_ja: Vec<String>,
+    pub statement_en: Vec<String>,
 }
