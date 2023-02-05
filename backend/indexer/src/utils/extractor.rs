@@ -1,31 +1,32 @@
 use crate::models::errors::GeneratingError;
 use ego_tree::NodeRef;
-use regex::Regex;
 use scraper::node::Node;
 use scraper::{Html, Selector};
 
 type Result<T> = std::result::Result<T, GeneratingError>;
 
+/// HTMLから問題文を取得する構造体
 pub struct FullTextExtractor {
-    div: Selector,
+    span_ja: Selector,
+    span_en: Selector,
     section: Selector,
     h3: Selector,
-    ascii: Regex,
 }
 
 impl FullTextExtractor {
     pub fn new() -> Result<Self> {
-        let div = Selector::parse("div.part").map_err(|e| GeneratingError::SelectorError(e))?;
+        let span_ja =
+            Selector::parse("span.lang-ja").map_err(|e| GeneratingError::SelectorError(e))?;
+        let span_en =
+            Selector::parse("span.lang-en").map_err(|e| GeneratingError::SelectorError(e))?;
         let section = Selector::parse("section").map_err(|e| GeneratingError::SelectorError(e))?;
         let h3 = Selector::parse("h3").map_err(|e| GeneratingError::SelectorError(e))?;
 
-        let ascii = Regex::new("^[\x20-\x7E].*$").map_err(|e| GeneratingError::RegexError(e))?;
-
         Ok(FullTextExtractor {
-            div: div,
-            section: section,
-            h3: h3,
-            ascii: ascii,
+            span_ja,
+            span_en,
+            section,
+            h3,
         })
     }
 
@@ -34,56 +35,69 @@ impl FullTextExtractor {
 
         for child in element.children() {
             match child.value() {
-                Node::Element(e) => {
-                    if e.name() == "pre" {
-                        continue;
+                Node::Element(e) => match e.name() {
+                    // preタグ(入力例などのコードブロックのタグ)やh3タグは収集範囲外とする
+                    "pre" | "h3" => continue,
+                    "var" => {
+                        // varタグの値の周りには空白を空ける
+                        result.push(format!(" {} ", self.dfs(&child)));
                     }
-                    result.push(self.dfs(&child));
-                }
+                    _ => {
+                        result.push(self.dfs(&child));
+                    }
+                },
                 Node::Text(text) => {
                     result.push(text.trim().to_string());
                 }
-                _ => {
-                    continue;
-                }
+                _ => continue,
             };
         }
 
-        result.join(" ")
+        result.join("")
     }
 
+    /// HTML本文から問題文を取得するメソッド
     pub fn extract(&self, html: &str) -> Result<(Vec<String>, Vec<String>)> {
         let html = Html::parse_document(html);
 
         let mut text_ja: Vec<String> = Vec::new();
         let mut text_en: Vec<String> = Vec::new();
-        for part in html.select(&self.div) {
-            let Some(section) = part.select(&self.section).next() else {continue};
 
-            let Some(title) = section.select(&self.h3).next() else {continue};
-            let Some(title) = title.text().next() else {continue};
+        // 日本語版の問題文は<span class="lang-ja">タグ内に定義されている。そのため日本語版の問題文を取得したい場合はこのタグの子要素を探しにいけばよい。
+        // 英語版の問題文が用意されていない問題はこのタグが存在しないので、その場合はsectionタグを走査し、ボディが「問題文」であるh3タグを持つsectionをパースする。
+        if let Some(ja) = html.select(&self.span_ja).next() {
+            for section in ja.select(&self.section) {
+                let Some(h3) = section.select(&self.h3).next() else {continue};
+                let Some(h3) = h3.text().next() else {continue};
 
-            let mut full_text: Vec<String> = Vec::new();
-            for e in section.children() {
-                match e.value() {
-                    Node::Element(element) => {
-                        if element.name() == "h3" {
-                            continue;
-                        } else {
-                            full_text.push(self.dfs(&e));
-                        }
-                    }
-                    Node::Text(text) => full_text.push(text.to_string()),
-                    _ => {
-                        continue;
-                    }
+                // ボディに「問題文」を含むh3タグだった場合にその本文を取得する
+                // 単に等価比較していないのはどっかの問題で「問題分」と誤字っている問題があった気がしたのと、両端に空白が含まれている場合でも対応するため。
+                if h3.contains("問題") {
+                    text_ja.push(self.dfs(&section));
                 }
             }
+        } else {
+            for section in html.select(&self.section) {
+                let Some(h3) = section.select(&self.h3).next() else {continue};
+                let Some(h3) = h3.text().next() else {continue};
 
-            if self.ascii.is_match(&title) {
-                text_en.push(full_text.join(""));
-            } else {
-                text_ja.push(full_text.join(" "));
+                // ボディに「問題文」を含むh3タグだった場合にその本文を取得する
+                // 単に等価比較していないのはどっかの問題で「問題分」と誤字っている問題があった気がしたのと、両端に空白が含まれている場合でも対応するため。
+                if h3.contains("問題") {
+                    text_ja.push(self.dfs(&section));
+                }
+            }
+        }
+
+        // 英語版の問題分を取得する
+        if let Some(en) = html.select(&self.span_en).next() {
+            for section in en.select(&self.section) {
+                let Some(h3) = section.select(&self.h3).next() else {continue};
+                let Some(h3) = h3.text().next() else {continue};
+
+                if h3.contains("Statement") {
+                    text_en.push(self.dfs(&section));
+                }
             }
         }
 
