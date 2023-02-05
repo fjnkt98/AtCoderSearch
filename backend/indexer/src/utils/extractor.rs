@@ -1,7 +1,8 @@
 use crate::models::errors::GeneratingError;
 use ego_tree::NodeRef;
 use scraper::node::Node;
-use scraper::{Html, Selector};
+use scraper::{ElementRef, Html, Selector};
+use url::Url;
 
 type Result<T> = std::result::Result<T, GeneratingError>;
 
@@ -56,8 +57,39 @@ impl FullTextExtractor {
         result.join("")
     }
 
+    fn get_problem_id(&self, html: &str) -> Result<Option<String>> {
+        let html = Html::parse_document(html);
+        let meta = Selector::parse("meta").map_err(|e| GeneratingError::SelectorError(e))?;
+
+        let meta = html
+            .select(&meta)
+            .filter(|meta| {
+                meta.value()
+                    .attr("property")
+                    .and_then(|property| Some(property == "og:url"))
+                    .unwrap_or_else(|| false)
+            })
+            .collect::<Vec<ElementRef>>();
+
+        for meta in meta {
+            if let Some(content) = meta.value().attr("content") {
+                let url = Url::parse(content).map_err(|e| GeneratingError::UrlParseError(e))?;
+                let id = url
+                    .path()
+                    .rsplit('/')
+                    .next()
+                    .and_then(|id| Some(id.to_owned()));
+                return Ok(id);
+            }
+        }
+
+        Ok(None)
+    }
+
     /// HTML本文から問題文を取得するメソッド
     pub fn extract(&self, html: &str) -> Result<(Vec<String>, Vec<String>)> {
+        let problem_id = self.get_problem_id(html)?.unwrap_or("[No ID]".to_string());
+
         let html = Html::parse_document(html);
 
         let mut text_ja: Vec<String> = Vec::new();
@@ -73,6 +105,7 @@ impl FullTextExtractor {
                 // ボディに「問題文」を含むh3タグだった場合にその本文を取得する
                 // 単に等価比較していないのはどっかの問題で「問題分」と誤字っている問題があった気がしたのと、両端に空白が含まれている場合でも対応するため。
                 if h3.contains("問題") {
+                    tracing::debug!("Retrieve japanese problem statement. [{}]", problem_id);
                     text_ja.push(self.dfs(&section));
                 }
             }
@@ -84,6 +117,7 @@ impl FullTextExtractor {
                 // ボディに「問題文」を含むh3タグだった場合にその本文を取得する
                 // 単に等価比較していないのはどっかの問題で「問題分」と誤字っている問題があった気がしたのと、両端に空白が含まれている場合でも対応するため。
                 if h3.contains("問題") {
+                    tracing::debug!("Retrieve japanese problem statement. [{}]", problem_id);
                     text_ja.push(self.dfs(&section));
                 }
             }
@@ -96,6 +130,7 @@ impl FullTextExtractor {
                 let Some(h3) = h3.text().next() else {continue};
 
                 if h3.contains("Statement") {
+                    tracing::debug!("Retrieve english problem statement. [{}]", problem_id);
                     text_en.push(self.dfs(&section));
                 }
             }
