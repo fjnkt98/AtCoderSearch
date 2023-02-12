@@ -9,15 +9,14 @@ use solrust::types::response::{SolrRangeFacetKind, SolrSelectResponse};
 use std::collections::HashMap;
 use std::sync::Arc;
 use tokio::time::Instant;
-use tracing::instrument;
 
-#[instrument(skip(core))]
 pub async fn search_with_qs(
     ValidatedSearchQueryParams(params): ValidatedSearchQueryParams<SearchParams>,
     Extension(core): Extension<Arc<SolrCore>>,
 ) -> Result<impl IntoResponse, StatusCode> {
     let start = Instant::now();
 
+    tracing::debug!("{:?}", params);
     let params = params.as_qs();
 
     let response = match core.select(&params).await {
@@ -45,13 +44,13 @@ pub async fn search_with_qs(
     Ok((StatusCode::OK, Json(response)))
 }
 
-#[instrument(skip(core))]
 pub async fn search_with_json(
     Extension(core): Extension<Arc<SolrCore>>,
     ValidatedSearchJson(params): ValidatedSearchJson<SearchParams>,
 ) -> Result<impl IntoResponse, StatusCode> {
     let start = Instant::now();
 
+    tracing::debug!("{:?}", params);
     let params = params.as_qs();
 
     let response = core
