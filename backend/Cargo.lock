@@ -1071,7 +1071,7 @@ dependencies = [
  "serde_qs 0.10.1",
  "serde_urlencoded",
  "serde_with",
- "solr_client",
+ "solrust",
  "sqlx",
  "thiserror",
  "tokio",
@@ -1777,18 +1777,18 @@ checksum = "dc375e1527247fe1a97d8b7156678dfe7c1af2fc075c9a4db3690ecd2a148068"
 
 [[package]]
 name = "proc-macro2"
-version = "1.0.48"
+version = "1.0.51"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e9d89e5dba24725ae5678020bf8f1357a9aa7ff10736b551adbcd3f8d17d766f"
+checksum = "5d727cae5b39d21da60fa540906919ad737832fe0b1c165da3a34d6548c849d6"
 dependencies = [
  "unicode-ident",
 ]
 
 [[package]]
 name = "quote"
-version = "1.0.22"
+version = "1.0.23"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "556d0f47a940e895261e77dc200d5eadfc6ef644c179c6f5edfc105e3a2292c8"
+checksum = "8856d8364d252a14d474036ea1358d63c9e6965c8e5c1885c18f73d70bff9c7b"
 dependencies = [
  "proc-macro2",
 ]
@@ -1902,9 +1902,9 @@ dependencies = [
 
 [[package]]
 name = "regex"
-version = "1.7.0"
+version = "1.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e076559ef8e241f2ae3479e36f97bd5741c0330689e217ad51ce2c76808b868a"
+checksum = "48aaa5748ba571fb95cd2c85c09f629215d3a6ece942baa100950af03a34f733"
 dependencies = [
  "aho-corasick",
  "memchr",
@@ -2261,7 +2261,7 @@ dependencies = [
  "serde_json",
  "serde_qs 0.11.0",
  "serde_urlencoded",
- "solr_client",
+ "solrust",
  "sqlx",
  "thiserror",
  "tokio",
@@ -2353,27 +2353,49 @@ dependencies = [
 ]
 
 [[package]]
-name = "solr_client"
+name = "solrust"
 version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "efecc7ee183dcca1b3990973c2d79cd1a71a693e8daba8c62cd38bc3a1128d95"
 dependencies = [
  "anyhow",
  "chrono",
  "chrono-tz",
- "futures",
  "itertools",
  "once_cell",
  "regex",
  "reqwest",
  "serde",
  "serde_json",
- "serde_urlencoded",
  "serde_with",
+ "solrust_derive",
+ "solrust_derive_internals",
  "thiserror",
  "tokio",
  "tokio-stream",
  "tracing",
  "tracing-subscriber",
  "url",
+]
+
+[[package]]
+name = "solrust_derive"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6c9260e91fbb38a6650e39dd8bbf3223a3a8332c4ea2d09ebaad83750663c139"
+dependencies = [
+ "solrust_derive_internals",
+]
+
+[[package]]
+name = "solrust_derive_internals"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e661395ee6cf8ac102347540e66b89d3d94bffe2878b8e6e8c9c29955a9788b3"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
 ]
 
 [[package]]
@@ -2550,9 +2572,9 @@ checksum = "6bdef32e8150c2a081110b42772ffe7d7c9032b606bc226c8260fd97e0976601"
 
 [[package]]
 name = "syn"
-version = "1.0.106"
+version = "1.0.107"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "09ee3a69cd2c7e06684677e5629b3878b253af05e4714964204279c6bc02cf0b"
+checksum = "1f4064b5b16e03ae50984a5a8ed5d4f8803e6bc1fd170a3cda91a1be4b18e3f5"
 dependencies = [
  "proc-macro2",
  "quote",

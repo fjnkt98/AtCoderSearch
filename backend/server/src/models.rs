@@ -8,11 +8,16 @@ use http_body::Body;
 use hyper::Request;
 use serde::de::{DeserializeOwned, Error, Unexpected};
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
-use solr_client::query::{
-    Aggregation, FieldFacetBuilder, QueryBuilder, QueryExpression, QueryOperand, RangeFacetBuilder,
-    RangeFacetOtherOptions, StandardQueryBuilder, StandardQueryOperand,
+use solrust::querybuilder::{
+    common::SolrCommonQueryBuilder,
+    facet::{FieldFacetBuilder, RangeFacetBuilder, RangeFacetOtherOptions},
+    q::{
+        Aggregation, Operator, QueryExpression, QueryOperand, RangeQueryOperand,
+        StandardQueryOperand,
+    },
+    sort::SortOrderBuilder,
+    standard::{SolrStandardQueryBuilder, StandardQueryBuilder},
 };
-use solr_client::query::{RangeQueryOperand, SortOrderBuilder};
 use std::collections::HashMap;
 use validator::{Validate, ValidationError};
 
@@ -109,7 +114,7 @@ impl SearchParams {
             }
         }
 
-        builder = builder.op("AND");
+        builder = builder.op(Operator::AND);
 
         let category_facet = FieldFacetBuilder::new("category").min_count(1);
         let difficulty_facet = RangeFacetBuilder::new(
@@ -231,7 +236,7 @@ pub struct SearchResultStats {
     pub total: u32,
     pub offset: u32,
     pub amount: u32,
-    pub facet: Option<HashMap<String, FacetResult>>,
+    pub facet: HashMap<String, FacetResult>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

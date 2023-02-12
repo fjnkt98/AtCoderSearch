@@ -1,5 +1,5 @@
-use solr_client::clients::client::SolrClientError;
-use solr_client::clients::core::SolrCoreError;
+use solrust::client::core::SolrCoreError;
+use solrust::client::solr::SolrClientError;
 use std::string::FromUtf8Error;
 use thiserror::Error;
 use tokio::task::JoinError;

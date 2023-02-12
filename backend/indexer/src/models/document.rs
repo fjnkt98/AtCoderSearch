@@ -3,7 +3,7 @@ use crate::utils::extractor::FullTextExtractor;
 use chrono::{DateTime, NaiveDateTime, Utc};
 use serde::{Deserialize, Serialize};
 use serde_with::serde_as;
-use solr_client::models::datetime::SolrDateTime;
+use solrust::types::datetime::SolrDateTime;
 
 type Result<T> = std::result::Result<T, GeneratingError>;
 

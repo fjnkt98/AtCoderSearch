@@ -4,8 +4,8 @@ use axum::extract::Extension;
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::Json;
-use solr_client::core::{SolrCore, SolrCoreError};
-use solr_client::models::SolrSelectResponse;
+use solrust::client::core::{SolrCore, SolrCoreError};
+use solrust::types::response::{SolrRangeFacetKind, SolrSelectResponse};
 use std::collections::HashMap;
 use std::sync::Arc;
 use tokio::time::Instant;
@@ -67,11 +67,9 @@ pub async fn search_with_json(
 }
 
 async fn generate_response(
-    response: SolrSelectResponse,
+    response: SolrSelectResponse<Document>,
     start: Instant,
 ) -> Result<SearchResultResponse> {
-    let docs: Vec<Document> = serde_json::from_value(response.response.docs)?;
-
     let mut facet: HashMap<String, FacetResult> = HashMap::new();
     if let Some(facet_counts) = response.facet_counts {
         for (key, value) in facet_counts.facet_fields.iter() {
@@ -97,21 +95,61 @@ async fn generate_response(
         for (key, value) in facet_counts.facet_ranges.iter() {
             facet.insert(
                 key.clone(),
-                FacetResult {
-                    counts: value
-                        .counts
-                        .iter()
-                        .map(|(key, count)| FacetCount {
-                            key: key.clone(),
-                            count: count.clone(),
-                        })
-                        .collect(),
-                    start: Some(value.start.to_string()),
-                    end: Some(value.end.to_string()),
-                    gap: Some(value.gap.to_string()),
-                    before: None,
-                    after: None,
-                    between: None,
+                match value {
+                    SolrRangeFacetKind::Integer(count) => FacetResult {
+                        counts: count
+                            .counts
+                            .iter()
+                            .map(|(key, count)| FacetCount {
+                                key: key.clone(),
+                                count: count.clone(),
+                            })
+                            .collect(),
+                        start: Some(count.start.to_string()),
+                        end: Some(count.end.to_string()),
+                        gap: Some(count.gap.to_string()),
+                        before: count.before.and_then(|before| Some(before.to_string())),
+                        after: count.after.and_then(|after| Some(after.to_string())),
+                        between: count.after.and_then(|between| Some(between.to_string())),
+                    },
+                    SolrRangeFacetKind::Float(count) => FacetResult {
+                        counts: count
+                            .counts
+                            .iter()
+                            .map(|(key, count)| FacetCount {
+                                key: key.clone(),
+                                count: count.clone(),
+                            })
+                            .collect(),
+                        start: Some(count.start.to_string()),
+                        end: Some(count.end.to_string()),
+                        gap: Some(count.gap.to_string()),
+                        before: count.before.and_then(|before| Some(before.to_string())),
+                        after: count.after.and_then(|after| Some(after.to_string())),
+                        between: count.after.and_then(|between| Some(between.to_string())),
+                    },
+                    SolrRangeFacetKind::DateTime(count) => FacetResult {
+                        counts: count
+                            .counts
+                            .iter()
+                            .map(|(key, count)| FacetCount {
+                                key: key.clone(),
+                                count: count.clone(),
+                            })
+                            .collect(),
+                        start: Some(count.start.format("%Y-%m-%dT%H:%M:%S%:z").to_string()),
+                        end: Some(count.end.format("%Y-%m-%dT%H:%M:%S%:z").to_string()),
+                        gap: Some(count.gap.clone()),
+                        before: count.before.and_then(|before| {
+                            Some(before.format("%Y-%m-%dT%H:%M:%S%:z").to_string())
+                        }),
+                        after: count.after.and_then(|after| {
+                            Some(after.format("%Y-%m-%dT%H:%M:%S%:z").to_string())
+                        }),
+                        between: count.after.and_then(|between| {
+                            Some(between.format("%Y-%m-%dT%H:%M:%S%:z").to_string())
+                        }),
+                    },
                 },
             );
         }
@@ -124,11 +162,13 @@ async fn generate_response(
         message: None,
         total: response.response.num_found,
         offset: response.response.start,
-        amount: docs.len() as u32,
-        facet: if facet.is_empty() { None } else { Some(facet) },
+        amount: response.response.docs.len() as u32,
+        facet: facet,
     };
 
-    let items = SearchResultBody { docs: docs };
+    let items = SearchResultBody {
+        docs: response.response.docs,
+    };
 
     Ok(SearchResultResponse {
         stats: stats,

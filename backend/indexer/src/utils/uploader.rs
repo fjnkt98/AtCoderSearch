@@ -1,7 +1,7 @@
 use crate::models::errors::UploadingError;
 use futures::stream::FuturesUnordered;
 use futures::StreamExt;
-use solr_client::clients::core::SolrCore;
+use solrust::client::core::SolrCore;
 use std::path::{Path, PathBuf};
 use tokio::fs;
 
