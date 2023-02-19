@@ -6,15 +6,27 @@ use chrono::{DateTime, Local};
 use http::request::Parts;
 use http_body::Body;
 use hyper::Request;
+use once_cell::sync::Lazy;
+use regex::Regex;
 use serde::de::{DeserializeOwned, Error, Unexpected};
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
-use solr_client::query::{
-    Aggregation, FieldFacetBuilder, QueryBuilder, QueryExpression, QueryOperand, RangeFacetBuilder,
-    RangeFacetOtherOptions, StandardQueryBuilder, StandardQueryOperand,
+use solrust::querybuilder::{
+    common::SolrCommonQueryBuilder,
+    dismax::SolrDisMaxQueryBuilder,
+    edismax::{EDisMaxQueryBuilder, SolrEDisMaxQueryBuilder},
+    facet::{FieldFacetBuilder, RangeFacetBuilder, RangeFacetOtherOptions},
+    q::{
+        Aggregation, Operator, QueryExpression, QueryOperand, RangeQueryOperand,
+        StandardQueryOperand,
+    },
+    sort::SortOrderBuilder,
 };
-use solr_client::query::{RangeQueryOperand, SortOrderBuilder};
 use std::collections::HashMap;
 use validator::{Validate, ValidationError};
+
+static RE: Lazy<Regex> = Lazy::new(|| {
+    Regex::new(r#"(\+|\-|&&|\|\||!|\(|\)|\{|\}|\[|\]|\^|"|\~|\*|\?|:|/|AND|OR)"#).unwrap()
+});
 
 #[derive(Debug, Serialize, Deserialize, Clone, Validate)]
 pub struct SearchParams {
@@ -49,30 +61,29 @@ fn validate_sort_option(value: &str) -> Result<(), ValidationError> {
 
 impl SearchParams {
     pub fn as_qs(&self) -> Vec<(String, String)> {
-        let mut builder = StandardQueryBuilder::new();
+        let category_facet = FieldFacetBuilder::new("category").min_count(1);
+        let difficulty_facet = RangeFacetBuilder::new(
+            "difficulty",
+            0.to_string(),
+            2000.to_string(),
+            400.to_string(),
+        )
+        .other(RangeFacetOtherOptions::All);
+
+        let mut builder = EDisMaxQueryBuilder::new()
+            .rows(self.p.unwrap_or(20))
+            .start(self.o.unwrap_or(0))
+            .qf("text_ja text_en text_1gram")
+            .q_alt(&QueryOperand::from("*:*"))
+            .op(Operator::AND)
+            .sow(true)
+            .facet(&category_facet)
+            .facet(&difficulty_facet);
 
         if let Some(q) = &self.q {
-            let op = QueryExpression::prod(
-                q.split_whitespace()
-                    .map(|word| {
-                        let text_ja =
-                            QueryOperand::from(StandardQueryOperand::new("text_ja", word));
-                        let text_en =
-                            QueryOperand::from(StandardQueryOperand::new("text_en", word));
-                        text_ja + text_en
-                    })
-                    .collect::<Vec<QueryExpression>>(),
-            );
-            builder = builder.q(&op);
+            let q = RE.replace_all(q, r"\$0");
+            builder = builder.q(String::from(q));
         };
-
-        if let Some(p) = self.p {
-            builder = builder.rows(p);
-        };
-
-        if let Some(o) = self.o {
-            builder = builder.start(o);
-        }
 
         if let Some(s) = &self.s {
             let sort = if s.starts_with("-") {
@@ -108,19 +119,6 @@ impl SearchParams {
                 }
             }
         }
-
-        builder = builder.op("AND");
-
-        let category_facet = FieldFacetBuilder::new("category").min_count(1);
-        let difficulty_facet = RangeFacetBuilder::new(
-            "difficulty",
-            0.to_string(),
-            2000.to_string(),
-            400.to_string(),
-        )
-        .other(RangeFacetOtherOptions::All);
-
-        builder = builder.facet(&category_facet).facet(&difficulty_facet);
 
         builder.build()
     }
@@ -231,7 +229,7 @@ pub struct SearchResultStats {
     pub total: u32,
     pub offset: u32,
     pub amount: u32,
-    pub facet: Option<HashMap<String, FacetResult>>,
+    pub facet: HashMap<String, FacetResult>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

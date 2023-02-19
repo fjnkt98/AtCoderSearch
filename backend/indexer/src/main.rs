@@ -9,7 +9,7 @@ use crate::utils::uploader::DocumentUploader;
 use anyhow::{bail, Result};
 use clap::{Args, Parser, Subcommand};
 use dotenvy::dotenv;
-use solr_client::clients::client::SolrClient;
+use solrust::client::solr::SolrClient;
 use sqlx::postgres::Postgres;
 use sqlx::Pool;
 use std::env;
@@ -55,6 +55,7 @@ struct PostArgs {
 #[tokio::main(flavor = "multi_thread", worker_threads = 10)]
 async fn main() -> Result<()> {
     dotenv().ok();
+    let args = Cli::parse();
 
     let log_level = env::var("RUST_LOG").unwrap_or(String::from("info"));
     env::set_var("RUST_LOG", "info");
@@ -83,7 +84,6 @@ async fn main() -> Result<()> {
         .await
         .expect("Failed to create core client");
 
-    let args = Cli::parse();
     match args.command {
         Commands::Crawl(args) => {
             let crawler = ContestCrawler::new(&pool);

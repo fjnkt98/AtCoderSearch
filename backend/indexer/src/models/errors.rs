@@ -1,8 +1,9 @@
-use solr_client::clients::client::SolrClientError;
-use solr_client::clients::core::SolrCoreError;
+use solrust::client::core::SolrCoreError;
+use solrust::client::solr::SolrClientError;
 use std::string::FromUtf8Error;
 use thiserror::Error;
 use tokio::task::JoinError;
+use url::ParseError;
 
 #[derive(Debug, Error)]
 pub enum CrawlingError {
@@ -30,6 +31,8 @@ pub enum GeneratingError {
     SerializeError(#[from] serde_json::Error),
     #[error("Failed to operate file")]
     FileOperationError(#[from] std::io::Error),
+    #[error("Failed to parse url")]
+    UrlParseError(#[from] ParseError),
 }
 
 #[derive(Debug, Error)]
