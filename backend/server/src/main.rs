@@ -34,17 +34,32 @@ async fn main() {
     };
 
     let log_dir = env::var("LOG_DIRECTORY").unwrap_or(String::from("/var/tmp/atcoder/log"));
+
+    // システムログ(コンソールへ出力)
     let layer1 = fmt::Layer::new().with_filter(create_filter());
+
+    // システムログ(ファイルへ出力)
     let (file, _guard) = tracing_appender::non_blocking(RollingFileAppender::new(
         Rotation::DAILY,
-        log_dir,
-        "query.log",
+        log_dir.clone(),
+        "atcoder.log",
     ));
-
     let layer2 = fmt::Layer::new()
         .with_writer(file)
         .with_filter(create_filter());
-    let subscriber = Registry::default().with(layer1).with(layer2);
+    let (file, _guard) = tracing_appender::non_blocking(RollingFileAppender::new(
+        Rotation::DAILY,
+        log_dir.clone(),
+        "query.log",
+    ));
+    let layer3 = fmt::Layer::new().with_writer(file).with_filter(
+        EnvFilter::builder()
+            .with_default_directive(LevelFilter::INFO.into())
+            .from_env_lossy()
+            .add_directive("querylog=info".parse().unwrap()),
+    );
+
+    let subscriber = Registry::default().with(layer1).with(layer2).with(layer3);
     tracing::subscriber::set_global_default(subscriber).expect("Failed to set subscriber.");
 
     let solr_host = env::var("SOLR_HOST").unwrap_or(String::from("http://localhost"));
