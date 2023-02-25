@@ -31,6 +31,7 @@ async fn main() {
             .from_env_lossy()
             .add_directive(format!("solrust={}", log_level).parse().unwrap())
             .add_directive(format!("server={}", log_level).parse().unwrap())
+            .add_directive("querylog=off".parse().unwrap())
     };
 
     let log_dir = env::var("LOG_DIRECTORY").unwrap_or(String::from("/var/tmp/atcoder/log"));
@@ -47,6 +48,7 @@ async fn main() {
     let layer2 = fmt::Layer::new()
         .with_writer(file)
         .with_filter(create_filter());
+    // クエリログ(ファイルへ出力)
     let (file, _guard) = tracing_appender::non_blocking(RollingFileAppender::new(
         Rotation::DAILY,
         log_dir.clone(),

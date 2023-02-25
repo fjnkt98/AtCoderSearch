@@ -202,6 +202,15 @@ async fn generate_response(
         docs: response.response.docs,
     };
 
+    // キーワード検索、かつページング無しのときのみクエリログをロギングする。
+    if let Some(params) = response.header.params {
+        if let Some(q) = params.get("q") {
+            if q.is_string() && response.response.start == 0 {
+                tracing::info!(target: "querylog", "{} {}", q, response.response.num_found)
+            }
+        }
+    }
+
     Ok(SearchResultResponse {
         stats: stats,
         items: items,
