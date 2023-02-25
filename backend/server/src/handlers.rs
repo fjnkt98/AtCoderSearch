@@ -43,10 +43,13 @@ pub async fn search_with_qs(
         },
     };
 
-    let response = generate_response(response, start).await.or(Err((
-        StatusCode::INTERNAL_SERVER_ERROR,
-        Json(generate_error_response("Failed to generate response.")),
-    )))?;
+    let response = generate_response(response, start).await.or_else(|e| {
+        tracing::error!("{}", e.to_string());
+        return Err((
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(generate_error_response("Failed to generate response.")),
+        ));
+    })?;
 
     Ok((StatusCode::OK, Json(response)))
 }
@@ -84,10 +87,13 @@ pub async fn search_with_json(
         },
     };
 
-    let response = generate_response(response, start).await.or(Err((
-        StatusCode::INTERNAL_SERVER_ERROR,
-        Json(generate_error_response("Failed to generate response.")),
-    )))?;
+    let response = generate_response(response, start).await.or_else(|e| {
+        tracing::error!("{}", e.to_string());
+        return Err((
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(generate_error_response("Failed to generate response.")),
+        ));
+    })?;
 
     Ok((StatusCode::OK, Json(response)))
 }
