@@ -10,7 +10,7 @@ use std::collections::HashMap;
 use std::sync::Arc;
 use tokio::time::Instant;
 
-#[tracing::instrument(skip(core))]
+#[tracing::instrument(target = "querylog", skip(core))]
 pub async fn search_with_qs(
     ValidatedSearchQueryParams(params): ValidatedSearchQueryParams<SearchParams>,
     Extension(core): Extension<Arc<SolrCore>>,
@@ -54,7 +54,7 @@ pub async fn search_with_qs(
     Ok((StatusCode::OK, Json(response)))
 }
 
-#[tracing::instrument(skip(core))]
+#[tracing::instrument(target = "querylog", skip(core))]
 pub async fn search_with_json(
     Extension(core): Extension<Arc<SolrCore>>,
     ValidatedSearchJson(params): ValidatedSearchJson<SearchParams>,

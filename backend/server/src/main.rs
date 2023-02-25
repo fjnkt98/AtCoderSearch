@@ -58,7 +58,8 @@ async fn main() {
         EnvFilter::builder()
             .with_default_directive(LevelFilter::INFO.into())
             .from_env_lossy()
-            .add_directive("querylog=info".parse().unwrap()),
+            .add_directive("querylog=info".parse().unwrap())
+            .add_directive("server=off".parse().unwrap()),
     );
 
     let subscriber = Registry::default().with(layer1).with(layer2).with(layer3);
@@ -81,8 +82,7 @@ async fn main() {
         .parse()
         .unwrap();
     let addr = SocketAddr::from(([0, 0, 0, 0], port));
-    tracing::info!("Server start");
-    tracing::debug!("Server start at port 8000");
+    tracing::debug!("Server start at port {}", port);
     Server::bind(&addr)
         .serve(app.into_make_service())
         .await
