@@ -151,6 +151,7 @@ where
         let Json(value) = Json::<T>::from_request(req, state)
             .await
             .map_err(|rejection| {
+                tracing::error!("Parsing error: {}", rejection);
                 let stats = SearchResultStats {
                     time: 0,
                     message: Some(format!("JSON parse error: [{}]", rejection)),
@@ -170,6 +171,7 @@ where
             })?;
 
         value.validate().map_err(|rejection| {
+            tracing::error!("Validation error: {}", rejection);
             let stats = SearchResultStats {
                 time: 0,
                 message: Some(format!("Validation error: [{}]", rejection).replace('\n', ", ")),
@@ -236,6 +238,7 @@ where
     async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
         let query = parts.uri.query().unwrap_or_default();
         let value: T = serde_qs::from_str(query).map_err(|rejection| {
+            tracing::error!("Parsing error: {}", rejection);
             let stats = SearchResultStats {
                 time: 0,
                 message: Some(format!("Invalid format query string: [{}]", rejection)),
@@ -255,6 +258,7 @@ where
         })?;
 
         value.validate().map_err(|rejection| {
+            tracing::error!("Validation error: {}", rejection);
             let stats = SearchResultStats {
                 time: 0,
                 message: Some(format!("Validation error: [{}]", rejection).replace('\n', ", ")),

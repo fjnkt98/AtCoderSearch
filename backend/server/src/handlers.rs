@@ -10,13 +10,13 @@ use std::collections::HashMap;
 use std::sync::Arc;
 use tokio::time::Instant;
 
+#[tracing::instrument(target = "querylog", skip(core))]
 pub async fn search_with_qs(
     ValidatedSearchQueryParams(params): ValidatedSearchQueryParams<SearchParams>,
     Extension(core): Extension<Arc<SolrCore>>,
-) -> Result<impl IntoResponse, StatusCode> {
+) -> Result<impl IntoResponse, (StatusCode, Json<SearchResultResponse>)> {
     let start = Instant::now();
 
-    tracing::debug!("{:?}", params);
     let params = params.as_qs();
 
     let response = match core.select(&params).await {
@@ -24,43 +24,76 @@ pub async fn search_with_qs(
         Err(e) => match e {
             SolrCoreError::RequestError(e) => {
                 tracing::error!("{}", e.to_string());
-                return Err(StatusCode::INTERNAL_SERVER_ERROR);
+                return Err((
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(generate_error_response(&e.to_string())),
+                ));
             }
             SolrCoreError::DeserializeError(e) => {
                 tracing::error!("{}", e.to_string());
-                return Err(StatusCode::INTERNAL_SERVER_ERROR);
+                return Err((
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(generate_error_response(&e.to_string())),
+                ));
             }
             SolrCoreError::UnexpectedError((code, msg)) => {
                 tracing::error!("{}:{}", code, msg);
-                return Err(StatusCode::BAD_REQUEST);
+                return Err((StatusCode::BAD_REQUEST, Json(generate_error_response(&msg))));
             }
         },
     };
 
-    let response = generate_response(response, start)
-        .await
-        .or(Err(StatusCode::INTERNAL_SERVER_ERROR))?;
+    let response = generate_response(response, start).await.or_else(|e| {
+        tracing::error!("{}", e.to_string());
+        return Err((
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(generate_error_response("Failed to generate response.")),
+        ));
+    })?;
 
     Ok((StatusCode::OK, Json(response)))
 }
 
+#[tracing::instrument(target = "querylog", skip(core))]
 pub async fn search_with_json(
     Extension(core): Extension<Arc<SolrCore>>,
     ValidatedSearchJson(params): ValidatedSearchJson<SearchParams>,
-) -> Result<impl IntoResponse, StatusCode> {
+) -> Result<impl IntoResponse, (StatusCode, Json<SearchResultResponse>)> {
     let start = Instant::now();
 
-    tracing::debug!("{:?}", params);
     let params = params.as_qs();
 
-    let response = core
-        .select(&params)
-        .await
-        .or(Err(StatusCode::BAD_REQUEST))?;
+    let response = match core.select(&params).await {
+        Ok(response) => response,
+        Err(e) => match e {
+            SolrCoreError::RequestError(e) => {
+                tracing::error!("{}", e.to_string());
+                return Err((
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(generate_error_response(&e.to_string())),
+                ));
+            }
+            SolrCoreError::DeserializeError(e) => {
+                tracing::error!("{}", e.to_string());
+                return Err((
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(generate_error_response(&e.to_string())),
+                ));
+            }
+            SolrCoreError::UnexpectedError((code, msg)) => {
+                tracing::error!("{}:{}", code, msg);
+                return Err((StatusCode::BAD_REQUEST, Json(generate_error_response(&msg))));
+            }
+        },
+    };
 
-    let response = generate_response(response, start)
-        .await
-        .or(Err(StatusCode::INTERNAL_SERVER_ERROR))?;
+    let response = generate_response(response, start).await.or_else(|e| {
+        tracing::error!("{}", e.to_string());
+        return Err((
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(generate_error_response("Failed to generate response.")),
+        ));
+    })?;
 
     Ok((StatusCode::OK, Json(response)))
 }
@@ -169,8 +202,32 @@ async fn generate_response(
         docs: response.response.docs,
     };
 
+    // キーワード検索、かつページング無しのときのみクエリログをロギングする。
+    if let Some(params) = response.header.params {
+        if let Some(q) = params.get("q") {
+            if q.is_string() && response.response.start == 0 {
+                tracing::info!(target: "querylog", "{} {}", q, response.response.num_found)
+            }
+        }
+    }
+
     Ok(SearchResultResponse {
         stats: stats,
         items: items,
     })
+}
+
+fn generate_error_response(message: &str) -> SearchResultResponse {
+    let stats = SearchResultStats {
+        time: 0,
+        message: Some(message.to_string()),
+        total: 0,
+        offset: 0,
+        amount: 0,
+        facet: HashMap::new(),
+    };
+    let items = SearchResultBody { docs: Vec::new() };
+    let response = SearchResultResponse { stats, items };
+
+    response
 }

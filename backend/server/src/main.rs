@@ -31,20 +31,38 @@ async fn main() {
             .from_env_lossy()
             .add_directive(format!("solrust={}", log_level).parse().unwrap())
             .add_directive(format!("server={}", log_level).parse().unwrap())
+            .add_directive("querylog=off".parse().unwrap())
     };
 
     let log_dir = env::var("LOG_DIRECTORY").unwrap_or(String::from("/var/tmp/atcoder/log"));
+
+    // システムログ(コンソールへ出力)
     let layer1 = fmt::Layer::new().with_filter(create_filter());
+
+    // システムログ(ファイルへ出力)
     let (file, _guard) = tracing_appender::non_blocking(RollingFileAppender::new(
         Rotation::DAILY,
-        log_dir,
-        "query.log",
+        log_dir.clone(),
+        "atcoder.log",
     ));
-
     let layer2 = fmt::Layer::new()
         .with_writer(file)
         .with_filter(create_filter());
-    let subscriber = Registry::default().with(layer1).with(layer2);
+    // クエリログ(ファイルへ出力)
+    let (file, _guard) = tracing_appender::non_blocking(RollingFileAppender::new(
+        Rotation::DAILY,
+        log_dir.clone(),
+        "query.log",
+    ));
+    let layer3 = fmt::Layer::new().with_writer(file).with_filter(
+        EnvFilter::builder()
+            .with_default_directive(LevelFilter::INFO.into())
+            .from_env_lossy()
+            .add_directive("querylog=info".parse().unwrap())
+            .add_directive("server=off".parse().unwrap()),
+    );
+
+    let subscriber = Registry::default().with(layer1).with(layer2).with(layer3);
     tracing::subscriber::set_global_default(subscriber).expect("Failed to set subscriber.");
 
     let solr_host = env::var("SOLR_HOST").unwrap_or(String::from("http://localhost"));
@@ -64,8 +82,7 @@ async fn main() {
         .parse()
         .unwrap();
     let addr = SocketAddr::from(([0, 0, 0, 0], port));
-    tracing::info!("Server start");
-    tracing::debug!("Server start at port 8000");
+    tracing::debug!("Server start at port {}", port);
     Server::bind(&addr)
         .serve(app.into_make_service())
         .await
