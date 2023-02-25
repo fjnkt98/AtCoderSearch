@@ -17,23 +17,46 @@ pub async fn search_with_qs(
 ) -> Result<impl IntoResponse, (StatusCode, Json<SearchResultResponse>)> {
     let start = Instant::now();
 
-    tracing::info!(
-        "{}",
-        serde_json::to_string(&params).map_err(|e| (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(SearchResultResponse {
-                stats: SearchResultStats {
-                    time: 0,
-                    message: Some(e.to_string()),
-                    total: 0,
-                    offset: 0,
-                    amount: 0,
-                    facet: HashMap::new(),
-                },
-                items: SearchResultBody { docs: Vec::new() },
-            })
-        ))?
-    );
+    let params = params.as_qs();
+
+    let response = match core.select(&params).await {
+        Ok(response) => response,
+        Err(e) => match e {
+            SolrCoreError::RequestError(e) => {
+                tracing::error!("{}", e.to_string());
+                return Err((
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(generate_error_response(&e.to_string())),
+                ));
+            }
+            SolrCoreError::DeserializeError(e) => {
+                tracing::error!("{}", e.to_string());
+                return Err((
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(generate_error_response(&e.to_string())),
+                ));
+            }
+            SolrCoreError::UnexpectedError((code, msg)) => {
+                tracing::error!("{}:{}", code, msg);
+                return Err((StatusCode::BAD_REQUEST, Json(generate_error_response(&msg))));
+            }
+        },
+    };
+
+    let response = generate_response(response, start).await.or(Err((
+        StatusCode::INTERNAL_SERVER_ERROR,
+        Json(generate_error_response("Failed to generate response.")),
+    )))?;
+
+    Ok((StatusCode::OK, Json(response)))
+}
+
+#[tracing::instrument(skip(core))]
+pub async fn search_with_json(
+    Extension(core): Extension<Arc<SolrCore>>,
+    ValidatedSearchJson(params): ValidatedSearchJson<SearchParams>,
+) -> Result<impl IntoResponse, (StatusCode, Json<SearchResultResponse>)> {
+    let start = Instant::now();
 
     let params = params.as_qs();
 
@@ -44,91 +67,27 @@ pub async fn search_with_qs(
                 tracing::error!("{}", e.to_string());
                 return Err((
                     StatusCode::INTERNAL_SERVER_ERROR,
-                    Json(SearchResultResponse {
-                        stats: SearchResultStats {
-                            time: 0,
-                            message: Some(e.to_string()),
-                            total: 0,
-                            offset: 0,
-                            amount: 0,
-                            facet: HashMap::new(),
-                        },
-                        items: SearchResultBody { docs: Vec::new() },
-                    }),
+                    Json(generate_error_response(&e.to_string())),
                 ));
             }
             SolrCoreError::DeserializeError(e) => {
                 tracing::error!("{}", e.to_string());
                 return Err((
                     StatusCode::INTERNAL_SERVER_ERROR,
-                    Json(SearchResultResponse {
-                        stats: SearchResultStats {
-                            time: 0,
-                            message: Some(e.to_string()),
-                            total: 0,
-                            offset: 0,
-                            amount: 0,
-                            facet: HashMap::new(),
-                        },
-                        items: SearchResultBody { docs: Vec::new() },
-                    }),
+                    Json(generate_error_response(&e.to_string())),
                 ));
             }
             SolrCoreError::UnexpectedError((code, msg)) => {
                 tracing::error!("{}:{}", code, msg);
-                return Err((
-                    StatusCode::BAD_REQUEST,
-                    Json(SearchResultResponse {
-                        stats: SearchResultStats {
-                            time: 0,
-                            message: Some(msg),
-                            total: 0,
-                            offset: 0,
-                            amount: 0,
-                            facet: HashMap::new(),
-                        },
-                        items: SearchResultBody { docs: Vec::new() },
-                    }),
-                ));
+                return Err((StatusCode::BAD_REQUEST, Json(generate_error_response(&msg))));
             }
         },
     };
 
     let response = generate_response(response, start).await.or(Err((
         StatusCode::INTERNAL_SERVER_ERROR,
-        Json(SearchResultResponse {
-            stats: SearchResultStats {
-                time: 0,
-                message: Some("Failed to generate response".to_string()),
-                total: 0,
-                offset: 0,
-                amount: 0,
-                facet: HashMap::new(),
-            },
-            items: SearchResultBody { docs: Vec::new() },
-        }),
+        Json(generate_error_response("Failed to generate response.")),
     )))?;
-
-    Ok((StatusCode::OK, Json(response)))
-}
-
-pub async fn search_with_json(
-    Extension(core): Extension<Arc<SolrCore>>,
-    ValidatedSearchJson(params): ValidatedSearchJson<SearchParams>,
-) -> Result<impl IntoResponse, StatusCode> {
-    let start = Instant::now();
-
-    tracing::debug!("{:?}", params);
-    let params = params.as_qs();
-
-    let response = core
-        .select(&params)
-        .await
-        .or(Err(StatusCode::BAD_REQUEST))?;
-
-    let response = generate_response(response, start)
-        .await
-        .or(Err(StatusCode::INTERNAL_SERVER_ERROR))?;
 
     Ok((StatusCode::OK, Json(response)))
 }
@@ -241,4 +200,19 @@ async fn generate_response(
         stats: stats,
         items: items,
     })
+}
+
+fn generate_error_response(message: &str) -> SearchResultResponse {
+    let stats = SearchResultStats {
+        time: 0,
+        message: Some(message.to_string()),
+        total: 0,
+        offset: 0,
+        amount: 0,
+        facet: HashMap::new(),
+    };
+    let items = SearchResultBody { docs: Vec::new() };
+    let response = SearchResultResponse { stats, items };
+
+    response
 }
