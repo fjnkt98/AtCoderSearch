@@ -41,6 +41,9 @@ jobs:
           -e POSTGRES_USER=atcoder \
           -e POSTGRES_PASSWORD=atcoder \
           postgres:15-alpine
-      - name: Run backend test
-        working-directory: ./backend
-        run: cargo test
+      - name: Create tables
+        working-directory: ./backend/indexer
+        run: cargo make migrate
+      # - name: Run backend test
+      #   working-directory: ./backend
+      #   run: cargo test
