@@ -17,7 +17,7 @@ env:
   PGPASSWORD: atcoder
   PGPORT: 5432
   PGUSER: atcoder
-  DATABASE_URL: postgres://${PGUSER}:${PGPASSWORD}@${PGHOST}:${PGPORT}/${PGDATABASE}
+  DATABASE_URL: postgres://atcoder:atcoder@localhost:5432/atcoder
   SOLR_HOST: http://localhost
   SOLR_PORT: 8983
   TZ: "Asia/Tokyo"
