@@ -21,6 +21,11 @@ env:
   SOLR_HOST: http://localhost
   SOLR_PORT: 8983
   TZ: "Asia/Tokyo"
+
+defaults:
+  run:
+    shell: bash
+
 jobs:
   run-backend-tests:
     runs-on: ubuntu-22.04
