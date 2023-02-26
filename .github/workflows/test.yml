@@ -49,8 +49,6 @@ jobs:
       - name: Install psqldef
         working-directory: /usr/local/bin
         run: curl -L https://github.com/k0kubun/sqldef/releases/download/v0.15.12/psqldef_linux_amd64.tar.gz | tar xfz -
-      - run: which psqldef
-      - run: psqldef --version
       - name: Install cargo-make
         working-directory: ./backend/indexer
         run: cargo install cargo-make
@@ -60,6 +58,6 @@ jobs:
       - name: Create tables
         working-directory: ./backend/indexer
         run: cargo make migrate
-      # - name: Run backend test
-      #   working-directory: ./backend
-      #   run: cargo test
+      - name: Run backend test
+        working-directory: ./backend
+        run: cargo test
