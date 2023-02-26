@@ -94,3 +94,106 @@ fn create_router(core: SolrCore) -> Router {
         .route("/api/search", get(search_with_qs).post(search_with_json))
         .layer(Extension(Arc::new(core)))
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use axum::{
+        body::Body,
+        http::{header, Method, Request},
+    };
+    use tower::ServiceExt;
+
+    async fn create_app() -> Router {
+        let solr_host = env::var("SOLR_HOST").unwrap_or(String::from("http://localhost"));
+        let solr_port: u32 = (env::var("SOLR_PORT").unwrap_or(String::from("8983")))
+            .parse()
+            .unwrap_or(8983);
+        let solr = SolrClient::new(&solr_host, solr_port).expect("Failed to create SolrClient instance. check that your Solr instance is running properly and that the SOLR_HOST and SOLR_PORT environment variable is set correctly.");
+
+        let core_name = env::var("CORE_NAME").unwrap_or(String::from("atcoder"));
+        let core = solr
+        .core(&core_name)
+        .await
+        .expect("Failed to create SolrCore instance. Check that your Solr instance is running properly, that the CORE_NAME environment variable is set correctly, and that the specified core exists.");
+
+        create_router(core)
+    }
+
+    #[tokio::test]
+    async fn get_default() {
+        let req = Request::builder()
+            .uri("/api/search")
+            .method(Method::GET)
+            .body(Body::from(""))
+            .unwrap();
+        let res = create_app().await.oneshot(req).await.unwrap();
+
+        assert_eq!(res.status(), 200);
+    }
+
+    #[tokio::test]
+    async fn post_default() {
+        let req = Request::builder()
+            .uri("/api/search")
+            .method(Method::POST)
+            .header(header::CONTENT_TYPE, mime::APPLICATION_JSON.as_ref())
+            .body(Body::from(r#"{}"#))
+            .unwrap();
+        let res = create_app().await.oneshot(req).await.unwrap();
+
+        assert_eq!(res.status(), 200);
+    }
+
+    #[tokio::test]
+    async fn post_with_q() {
+        let req = Request::builder()
+            .uri("/api/search")
+            .method(Method::POST)
+            .header(header::CONTENT_TYPE, mime::APPLICATION_JSON.as_ref())
+            .body(Body::from(r#"{"q": "高橋"}"#))
+            .unwrap();
+        let res = create_app().await.oneshot(req).await.unwrap();
+
+        assert_eq!(res.status(), 200);
+    }
+
+    #[tokio::test]
+    async fn post_with_p() {
+        let req = Request::builder()
+            .uri("/api/search")
+            .method(Method::POST)
+            .header(header::CONTENT_TYPE, mime::APPLICATION_JSON.as_ref())
+            .body(Body::from(r#"{"p": 200}"#))
+            .unwrap();
+        let res = create_app().await.oneshot(req).await.unwrap();
+
+        assert_eq!(res.status(), 200);
+    }
+
+    #[tokio::test]
+    async fn should_return_error_when_p_is_greater_than_200() {
+        let req = Request::builder()
+            .uri("/api/search")
+            .method(Method::POST)
+            .header(header::CONTENT_TYPE, mime::APPLICATION_JSON.as_ref())
+            .body(Body::from(r#"{"p": 201}"#))
+            .unwrap();
+        let res = create_app().await.oneshot(req).await.unwrap();
+
+        assert_eq!(res.status(), 400);
+    }
+
+    #[tokio::test]
+    async fn should_return_error_when_p_is_minus() {
+        let req = Request::builder()
+            .uri("/api/search")
+            .method(Method::POST)
+            .header(header::CONTENT_TYPE, mime::APPLICATION_JSON.as_ref())
+            .body(Body::from(r#"{"p": -1}"#))
+            .unwrap();
+        let res = create_app().await.oneshot(req).await.unwrap();
+
+        assert_eq!(res.status(), 400);
+    }
+}
