@@ -9,6 +9,7 @@ use solrust::types::response::{SolrRangeFacetKind, SolrSelectResponse};
 use std::collections::HashMap;
 use std::sync::Arc;
 use tokio::time::Instant;
+use uuid::Uuid;
 
 #[tracing::instrument(target = "querylog", skip(core))]
 pub async fn search_with_qs(
@@ -202,11 +203,30 @@ async fn generate_response(
         docs: response.response.docs,
     };
 
-    // キーワード検索、かつページング無しのときのみクエリログをロギングする。
+    // キーワード検索のときのみロギングする
     if let Some(params) = response.header.params {
-        if let Some(q) = params.get("q") {
-            if q.is_string() && response.response.start == 0 {
-                tracing::info!(target: "querylog", "{} {}", q, response.response.num_found)
+        if let Some(q) = params.get("q").and_then(|q| {
+            let q = q.to_string().trim_matches('"').to_string();
+            if q.is_empty() {
+                None
+            } else {
+                Some(q)
+            }
+        }) {
+            let words = q.split_whitespace().collect::<Vec<&str>>();
+            // 空文字列でないキーワード検索が実行されたときのみロギングする
+            // オフセットが指定された場合はロギングしない(多重カウントになるので)
+            if response.response.start == 0 && words.len() > 0 {
+                // 複数キーワード検索か否かを判断する
+                let word_type = if words.len() > 1 {
+                    "multiple"
+                } else {
+                    "single"
+                };
+                let uuid = Uuid::new_v4();
+                for (position, word) in words.iter().enumerate() {
+                    tracing::info!(target: "querylog", "{} {} {} {} {}", uuid, word, response.response.num_found, position, word_type)
+                }
             }
         }
     }
