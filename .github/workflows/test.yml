@@ -46,6 +46,11 @@ jobs:
           -e POSTGRES_USER=atcoder \
           -e POSTGRES_PASSWORD=atcoder \
           postgres:15-alpine
+      - name: Install psqldef
+        working-directory: /usr/local/bin
+        run: curl -L https://github.com/k0kubun/sqldef/releases/download/v0.15.12/psqldef_linux_amd64.tar.gz | tar xfz -
+      - run: which psqldef
+      - run: psqldef --version
       - name: Install cargo-make
         working-directory: ./backend/indexer
         run: cargo install cargo-make
