@@ -91,7 +91,9 @@ impl SearchParams {
 
         if let Some(q) = &self.q {
             let q = RE.replace_all(q, r"\$0");
-            builder = builder.q(String::from(q));
+            if !q.is_empty() {
+                builder = builder.q(String::from(q));
+            }
         };
 
         if let Some(s) = &self.s {
