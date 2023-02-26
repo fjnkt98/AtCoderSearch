@@ -11,5 +11,14 @@ RUN cargo build --release
 
 FROM debian:11.6
 
+RUN apt-get update \
+    && apt-get install -y \
+    curl \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN cd /usr/local/bin && curl -L https://github.com/k0kubun/sqldef/releases/download/v0.15.12/psqldef_linux_amd64.tar.gz | tar xfz -
+
 COPY --from=builder /indexer/target/release/indexer /usr/local/bin/indexer
+COPY schema.sql /schema.sql
 CMD ["indexer"]
