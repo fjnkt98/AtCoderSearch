@@ -1,0 +1,25 @@
+name: run-tests
+run-name: run-tests
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+env:
+  CARGO_TERM_COLOR: always
+  TZ: "Asia/Tokyo"
+jobs:
+  run-backend-tests:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build solr docker image
+        working-directory: ./middlewares/solr
+        run: docker build -t solr:atcoder-search .
+      - name: Run solr docker image
+        run: docker container run --rm --name solr -p 8983:8983 solr:atcoder-search
+      - name: Run backend test
+        working-directory: ./backend
+        run: cargo test
