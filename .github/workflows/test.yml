@@ -8,7 +8,18 @@ on:
     branches:
       - master
 env:
+  API_SERVER_LISTEN_PORT: 8000
   CARGO_TERM_COLOR: always
+  CORE_NAME: atcoder
+  DATABASE_URL: postgres://${PGUSER}:${PGPASSWORD}@${PGHOST}:${PGPORT}/${PGDATABASE}
+  DOCUMENT_SAVE_DIRECTORY: /var/tmp/atcoder
+  PGDATABASE: atcoder
+  PGHOST: localhost
+  PGPASSWORD: atcoder
+  PGPORT: 5432
+  PGUSER: atcoder
+  SOLR_HOST: http://localhost
+  SOLR_PORT: 8983
   TZ: "Asia/Tokyo"
 jobs:
   run-backend-tests:
@@ -20,6 +31,16 @@ jobs:
         run: docker build -t solr:atcoder-search .
       - name: Run solr docker image
         run: docker container run -d --rm --name solr -p 8983:8983 solr:atcoder-search
+      - name: Run postgresql docker image
+        run: |
+          docker container run \
+          -d --rm \
+          --name postgres \
+          -p 5432:5432 \
+          -e POSTGRES_DB=atcoder \
+          -e POSTGRES_USER=atcoder \
+          -e POSTGRES_PASSWORD=atcoder \
+          postgres:15-alpine
       - name: Run backend test
         working-directory: ./backend
         run: cargo test
