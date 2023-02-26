@@ -20,8 +20,7 @@ impl<'a> RecordReader<'a> {
         &self,
     ) -> Result<Pin<Box<dyn Stream<Item = std::result::Result<Record, sqlx::Error>> + Send + 'a>>>
     {
-        let stream = sqlx::query_as!(
-            Record,
+        let stream = sqlx::query_as(
             "
             SELECT
                 problems.id AS problem_id,
@@ -38,7 +37,7 @@ impl<'a> RecordReader<'a> {
             FROM
                 problems
                 JOIN contests ON problems.contest_id = contests.id;
-            "
+            ",
         )
         .fetch(self.pool);
 
