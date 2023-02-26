@@ -8,25 +8,25 @@ version = "0.1.0"
 [dependencies]
 anyhow = "^1.0"
 chrono = {version = "^0.4", features = ["serde"]}
-chrono-tz = "0.8.1"
-clap = {version = "4.0.32", features = ["derive"]}
+chrono-tz = "^0.8.1"
+clap = {version = "^4.0.32", features = ["derive"]}
 dotenvy = "^0.15"
-ego-tree = "0.6.2"
-futures = "0.3.25"
-minify-html = "0.10.3"
-regex = "1.7.0"
-reqwest = {version = "0.11.13", features = ["json", "gzip"]}
-scraper = "0.14.0"
-serde = {version = "1.0.148", features = ["derive"]}
-serde_json = "1.0.89"
-serde_qs = "0.10.1"
-serde_urlencoded = "0.7.1"
-serde_with = "2.2.0"
-solrust = "0.1.0"
+ego-tree = "^0.6.2"
+futures = "^0.3.25"
+minify-html = "^0.10.3"
+regex = "^1.7.0"
+reqwest = {version = "^0.11.13", features = ["json", "gzip"]}
+scraper = "^0.14.0"
+serde = {version = "^1.0.148", features = ["derive"]}
+serde_json = "^1.0.89"
+serde_qs = "^0.10.1"
+serde_urlencoded = "^0.7.1"
+serde_with = "^2.2.0"
+solrust = "^0.1.0"
 sqlx = {version = "^0.6", features = ["postgres", "chrono", "runtime-tokio-rustls"]}
-thiserror = "1.0.38"
-tokio = {version = "1.23", features = ["full"]}
-tokio-stream = "0.1.11"
-tracing = "0.1.37"
-tracing-subscriber = {version = "0.3.16", features = ["env-filter"]}
-url = "2.3.1"
+thiserror = "^1.0.38"
+tokio = {version = "^1.23", features = ["full"]}
+tokio-stream = "^0.1.11"
+tracing = "^0.1.37"
+tracing-subscriber = {version = "^0.3.16", features = ["env-filter"]}
+url = "^2.3.1"
