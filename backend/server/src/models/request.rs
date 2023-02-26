@@ -94,6 +94,7 @@ impl SearchParams {
             if !q.is_empty() {
                 builder = builder.q(String::from(q));
             }
+        }
 
         if let Some(s) = &self.s {
             let sort = if s.starts_with("-") {
