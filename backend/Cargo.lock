@@ -1046,7 +1046,6 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "chrono",
- "chrono-tz",
  "clap",
  "dotenvy",
  "ego-tree",
@@ -1057,7 +1056,6 @@ dependencies = [
  "scraper",
  "serde",
  "serde_json",
- "serde_qs 0.10.1",
  "serde_urlencoded",
  "serde_with",
  "solrust",
@@ -2138,17 +2136,6 @@ dependencies = [
 
 [[package]]
 name = "serde_qs"
-version = "0.10.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8cac3f1e2ca2fe333923a1ae72caca910b98ed0630bb35ef6f8c8517d6e81afa"
-dependencies = [
- "percent-encoding",
- "serde",
- "thiserror",
-]
-
-[[package]]
-name = "serde_qs"
 version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c679fa27b429f2bb57fd4710257e643e86c966e716037259f8baa33de594a1b6"
@@ -2205,7 +2192,6 @@ dependencies = [
  "anyhow",
  "axum",
  "chrono",
- "chrono-tz",
  "dotenvy",
  "http",
  "http-body",
@@ -2215,11 +2201,10 @@ dependencies = [
  "regex",
  "serde",
  "serde_json",
- "serde_qs 0.11.0",
+ "serde_qs",
  "serde_urlencoded",
  "serde_with",
  "solrust",
- "sqlx",
  "thiserror",
  "tokio",
  "tower",
@@ -2431,7 +2416,6 @@ dependencies = [
  "thiserror",
  "tokio-stream",
  "url",
- "uuid",
  "webpki-roots",
  "whoami",
 ]
