@@ -11,13 +11,13 @@ env:
   API_SERVER_LISTEN_PORT: 8000
   CARGO_TERM_COLOR: always
   CORE_NAME: atcoder
-  DATABASE_URL: postgres://${PGUSER}:${PGPASSWORD}@${PGHOST}:${PGPORT}/${PGDATABASE}
   DOCUMENT_SAVE_DIRECTORY: /var/tmp/atcoder
   PGDATABASE: atcoder
   PGHOST: localhost
   PGPASSWORD: atcoder
   PGPORT: 5432
   PGUSER: atcoder
+  DATABASE_URL: postgres://${PGUSER}:${PGPASSWORD}@${PGHOST}:${PGPORT}/${PGDATABASE}
   SOLR_HOST: http://localhost
   SOLR_PORT: 8983
   TZ: "Asia/Tokyo"
