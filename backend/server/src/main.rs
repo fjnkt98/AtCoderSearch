@@ -6,11 +6,13 @@ use axum::extract::Extension;
 use axum::routing::get;
 use axum::{Router, Server};
 use dotenvy::dotenv;
+use hyper::header::CONTENT_TYPE;
 use solrust::client::core::SolrCore;
 use solrust::client::solr::SolrClient;
 use std::env;
 use std::net::SocketAddr;
 use std::sync::Arc;
+use tower_http::cors::{AllowOrigin, Any, CorsLayer};
 use tracing_appender::rolling::{RollingFileAppender, Rotation};
 use tracing_subscriber::prelude::__tracing_subscriber_SubscriberExt;
 use tracing_subscriber::Layer;
@@ -93,6 +95,12 @@ fn create_router(core: SolrCore) -> Router {
     Router::new()
         .route("/api/search", get(search_with_qs).post(search_with_json))
         .layer(Extension(Arc::new(core)))
+        .layer(
+            CorsLayer::new()
+                .allow_origin(AllowOrigin::exact("http://localhost:8080".parse().unwrap()))
+                .allow_methods(Any)
+                .allow_headers(vec![CONTENT_TYPE]),
+        )
 }
 
 #[cfg(test)]
