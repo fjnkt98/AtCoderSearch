@@ -322,4 +322,115 @@ mod test {
 
         assert_eq!(qs, expected)
     }
+
+    #[test]
+    fn should_wildcard_search_when_q_is_empty() {
+        let params = SearchParams {
+            q: Some("".to_string()),
+            p: None,
+            o: None,
+            f: None,
+            s: None,
+        };
+
+        let mut qs = params.as_qs();
+        qs.sort();
+        let mut expected = vec![
+            ("defType", "edismax"),
+            ("f.category.facet.mincount", "1"),
+            ("f.difficulty.facet.range.end", "2000"),
+            ("f.difficulty.facet.range.gap", "400"),
+            ("f.difficulty.facet.range.other", "all"),
+            ("f.difficulty.facet.range.start", "0"),
+            ("facet", "true"),
+            ("facet.field", "category"),
+            ("facet.range", "difficulty"),
+            ("q.alt", "*:*"),
+            ("q.op", "AND"),
+            ("qf", "text_ja text_en text_1gram"),
+            ("sow", "true"),
+            ("rows", "20"),
+            ("start", "0"),
+        ]
+        .into_iter()
+        .map(|(key, value)| (key.to_string(), value.to_string()))
+        .collect::<Vec<(String, String)>>();
+        expected.sort();
+
+        assert_eq!(qs, expected)
+    }
+
+    #[test]
+    fn rows_should_equal_to_p_parameter() {
+        let params = SearchParams {
+            q: None,
+            p: Some(10),
+            o: None,
+            f: None,
+            s: None,
+        };
+
+        let mut qs = params.as_qs();
+        qs.sort();
+        let mut expected = vec![
+            ("defType", "edismax"),
+            ("f.category.facet.mincount", "1"),
+            ("f.difficulty.facet.range.end", "2000"),
+            ("f.difficulty.facet.range.gap", "400"),
+            ("f.difficulty.facet.range.other", "all"),
+            ("f.difficulty.facet.range.start", "0"),
+            ("facet", "true"),
+            ("facet.field", "category"),
+            ("facet.range", "difficulty"),
+            ("q.alt", "*:*"),
+            ("q.op", "AND"),
+            ("qf", "text_ja text_en text_1gram"),
+            ("sow", "true"),
+            ("rows", "10"),
+            ("start", "0"),
+        ]
+        .into_iter()
+        .map(|(key, value)| (key.to_string(), value.to_string()))
+        .collect::<Vec<(String, String)>>();
+        expected.sort();
+
+        assert_eq!(qs, expected)
+    }
+
+    #[test]
+    fn start_should_equal_to_o() {
+        let params = SearchParams {
+            q: None,
+            p: None,
+            o: Some(10),
+            f: None,
+            s: None,
+        };
+
+        let mut qs = params.as_qs();
+        qs.sort();
+        let mut expected = vec![
+            ("defType", "edismax"),
+            ("f.category.facet.mincount", "1"),
+            ("f.difficulty.facet.range.end", "2000"),
+            ("f.difficulty.facet.range.gap", "400"),
+            ("f.difficulty.facet.range.other", "all"),
+            ("f.difficulty.facet.range.start", "0"),
+            ("facet", "true"),
+            ("facet.field", "category"),
+            ("facet.range", "difficulty"),
+            ("q.alt", "*:*"),
+            ("q.op", "AND"),
+            ("qf", "text_ja text_en text_1gram"),
+            ("sow", "true"),
+            ("rows", "20"),
+            ("start", "10"),
+        ]
+        .into_iter()
+        .map(|(key, value)| (key.to_string(), value.to_string()))
+        .collect::<Vec<(String, String)>>();
+        expected.sort();
+
+        assert_eq!(qs, expected)
+    }
 }
