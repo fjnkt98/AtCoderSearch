@@ -90,7 +90,7 @@ impl SearchParams {
             .facet(&difficulty_facet);
 
         if let Some(q) = &self.q {
-            let q = RE.replace_all(q, r"\$0");
+            let q = RE.replace_all(q.trim(), r"\$0");
             builder = builder.q(String::from(q));
         };
 
