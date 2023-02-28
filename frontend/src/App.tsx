@@ -6,7 +6,12 @@ export default function App() {
 
   useEffect(() => {
     (async () => {
-      const response = await fetch("http://localhost:8000/api/search", {
+      const api_endpoint = import.meta.env.VITE_API_ENDPOINT;
+
+      const api_url = new URL(
+        api_endpoint == null ? "http://localhost:8000/api/" : api_endpoint
+      );
+      const response = await fetch(api_url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
