@@ -190,17 +190,28 @@ async fn generate_response(
 
     let now = Instant::now();
 
+    let total: u32 = response.response.num_found;
+    let count: u32 = response.response.docs.len() as u32;
+    let rows: u32 = response
+        .header
+        .params
+        .as_ref()
+        .and_then(|params| {
+            params
+                .get("rows")
+                .and_then(|rows| rows.as_str())
+                .and_then(|rows| rows.parse::<u32>().ok())
+        })
+        .unwrap_or(20);
+    let index: u32 = (response.response.start / rows) + 1;
+    let pages: u32 = (total + rows - 1) / rows;
     let stats = SearchResultStats {
         time: now.duration_since(start).as_millis() as u32,
-        message: None,
-        total: response.response.num_found,
-        offset: response.response.start,
-        amount: response.response.docs.len() as u32,
+        total,
+        index,
+        count,
+        pages,
         facet: facet,
-    };
-
-    let items = SearchResultBody {
-        docs: response.response.docs,
     };
 
     // キーワード検索のときのみロギングする
@@ -233,21 +244,25 @@ async fn generate_response(
 
     Ok(SearchResultResponse {
         stats: stats,
-        items: items,
+        items: response.response.docs,
+        message: None,
     })
 }
 
 fn generate_error_response(message: &str) -> SearchResultResponse {
     let stats = SearchResultStats {
         time: 0,
-        message: Some(message.to_string()),
         total: 0,
-        offset: 0,
-        amount: 0,
+        index: 0,
+        pages: 0,
+        count: 0,
         facet: HashMap::new(),
     };
-    let items = SearchResultBody { docs: Vec::new() };
-    let response = SearchResultResponse { stats, items };
+    let response = SearchResultResponse {
+        stats,
+        items: Vec::new(),
+        message: Some(message.to_string()),
+    };
 
     response
 }

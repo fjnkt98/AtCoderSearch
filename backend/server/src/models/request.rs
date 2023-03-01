@@ -1,4 +1,4 @@
-use crate::models::{SearchResultBody, SearchResultResponse, SearchResultStats};
+use crate::models::{SearchResultResponse, SearchResultStats};
 use axum::async_trait;
 use axum::extract::{FromRequest, FromRequestParts};
 use axum::http::StatusCode;
@@ -34,11 +34,17 @@ static RE: Lazy<Regex> = Lazy::new(|| {
 /// クエリパラメータとJSONパラメータ兼用
 #[derive(Debug, Serialize, Deserialize, Clone, Validate)]
 pub struct SearchParams {
+    // 検索キーワード
     pub q: Option<String>,
+    // 1ページ当たり返却数
     #[validate(range(max = 200))]
+    pub c: Option<u32>,
+    // 返却ページ番号
+    #[validate(range(min = 1))]
     pub p: Option<u32>,
-    pub o: Option<u32>,
+    // フィルタリング条件
     pub f: Option<FilteringParameters>,
+    // ソート順
     #[validate(custom = "validate_sort_option")]
     pub s: Option<String>,
 }
@@ -60,7 +66,7 @@ pub struct RangeFilteringParameter<T> {
 /// ソートフィールドを限定するためのバリデーション関数
 fn validate_sort_option(value: &str) -> Result<(), ValidationError> {
     match value {
-        "start_at" | "-start_at" | "difficulty" | "-difficulty" | "score" | "-score" => {}
+        "start_at" | "-start_at" | "difficulty" | "-difficulty" | "-score" => {}
         _ => return Err(ValidationError::new("Invalid sort field option.")),
     }
     Ok(())
@@ -79,9 +85,13 @@ impl SearchParams {
         )
         .other(RangeFacetOtherOptions::All);
 
+        let count: u32 = self.c.unwrap_or(20);
+        let page: u32 = self.p.unwrap_or(1);
+        let start: u32 = (page - 1) * count;
+
         let mut builder = EDisMaxQueryBuilder::new()
-            .rows(self.p.unwrap_or(20))
-            .start(self.o.unwrap_or(0))
+            .rows(count)
+            .start(start)
             .qf("text_ja text_en text_1gram")
             .q_alt(&QueryOperand::from("*:*"))
             .op(Operator::AND)
@@ -156,18 +166,18 @@ where
                 tracing::error!("Parsing error: {}", rejection);
                 let stats = SearchResultStats {
                     time: 0,
-                    message: Some(format!("JSON parse error: [{}]", rejection)),
                     total: 0,
-                    offset: 0,
-                    amount: 0,
+                    index: 0,
+                    pages: 0,
+                    count: 0,
                     facet: HashMap::new(),
                 };
-                let body = SearchResultBody { docs: Vec::new() };
                 (
                     StatusCode::BAD_REQUEST,
                     Json(SearchResultResponse {
                         stats: stats,
-                        items: body,
+                        items: Vec::new(),
+                        message: Some(format!("JSON parse error: [{}]", rejection)),
                     }),
                 )
             })?;
@@ -176,18 +186,18 @@ where
             tracing::error!("Validation error: {}", rejection);
             let stats = SearchResultStats {
                 time: 0,
-                message: Some(format!("Validation error: [{}]", rejection).replace('\n', ", ")),
                 total: 0,
-                offset: 0,
-                amount: 0,
+                index: 0,
+                pages: 0,
+                count: 0,
                 facet: HashMap::new(),
             };
-            let body = SearchResultBody { docs: Vec::new() };
             (
                 StatusCode::BAD_REQUEST,
                 Json(SearchResultResponse {
                     stats: stats,
-                    items: body,
+                    items: Vec::new(),
+                    message: Some(format!("Validation error: [{}]", rejection).replace('\n', ", ")),
                 }),
             )
         })?;
@@ -243,18 +253,18 @@ where
             tracing::error!("Parsing error: {}", rejection);
             let stats = SearchResultStats {
                 time: 0,
-                message: Some(format!("Invalid format query string: [{}]", rejection)),
                 total: 0,
-                offset: 0,
-                amount: 0,
+                index: 0,
+                pages: 0,
+                count: 0,
                 facet: HashMap::new(),
             };
-            let body = SearchResultBody { docs: Vec::new() };
             (
                 StatusCode::BAD_REQUEST,
                 Json(SearchResultResponse {
                     stats: stats,
-                    items: body,
+                    items: Vec::new(),
+                    message: Some(format!("Invalid format query string: [{}]", rejection)),
                 }),
             )
         })?;
@@ -263,19 +273,18 @@ where
             tracing::error!("Validation error: {}", rejection);
             let stats = SearchResultStats {
                 time: 0,
-                message: Some(format!("Validation error: [{}]", rejection).replace('\n', ", ")),
                 total: 0,
-                offset: 0,
-                amount: 0,
+                index: 0,
+                pages: 0,
+                count: 0,
                 facet: HashMap::new(),
             };
-            let body = SearchResultBody { docs: Vec::new() };
-
             (
                 StatusCode::BAD_REQUEST,
                 Json(SearchResultResponse {
                     stats: stats,
-                    items: body,
+                    items: Vec::new(),
+                    message: Some(format!("Validation error: [{}]", rejection).replace('\n', ", ")),
                 }),
             )
         })?;
@@ -292,8 +301,8 @@ mod test {
     fn test_default() {
         let params = SearchParams {
             q: None,
+            c: None,
             p: None,
-            o: None,
             f: None,
             s: None,
         };
@@ -326,11 +335,11 @@ mod test {
     }
 
     #[test]
-    fn should_wildcard_search_when_q_is_empty() {
+    fn should_do_wildcard_search_when_q_is_empty() {
         let params = SearchParams {
             q: Some("".to_string()),
+            c: None,
             p: None,
-            o: None,
             f: None,
             s: None,
         };
@@ -363,11 +372,11 @@ mod test {
     }
 
     #[test]
-    fn rows_should_equal_to_p_parameter() {
+    fn rows_should_equal_to_c_parameter() {
         let params = SearchParams {
             q: None,
-            p: Some(10),
-            o: None,
+            c: Some(10),
+            p: None,
             f: None,
             s: None,
         };
@@ -400,11 +409,11 @@ mod test {
     }
 
     #[test]
-    fn start_should_equal_to_o() {
+    fn start_should_equal_to_0_when_p_is_1() {
         let params = SearchParams {
             q: None,
-            p: None,
-            o: Some(10),
+            c: Some(20),
+            p: Some(1),
             f: None,
             s: None,
         };
@@ -426,7 +435,44 @@ mod test {
             ("qf", "text_ja text_en text_1gram"),
             ("sow", "true"),
             ("rows", "20"),
-            ("start", "10"),
+            ("start", "0"),
+        ]
+        .into_iter()
+        .map(|(key, value)| (key.to_string(), value.to_string()))
+        .collect::<Vec<(String, String)>>();
+        expected.sort();
+
+        assert_eq!(qs, expected)
+    }
+
+    #[test]
+    fn start_should_equal_to_20_when_p_is_2() {
+        let params = SearchParams {
+            q: None,
+            c: Some(20),
+            p: Some(2),
+            f: None,
+            s: None,
+        };
+
+        let mut qs = params.as_qs();
+        qs.sort();
+        let mut expected = vec![
+            ("defType", "edismax"),
+            ("f.category.facet.mincount", "1"),
+            ("f.difficulty.facet.range.end", "2000"),
+            ("f.difficulty.facet.range.gap", "400"),
+            ("f.difficulty.facet.range.other", "all"),
+            ("f.difficulty.facet.range.start", "0"),
+            ("facet", "true"),
+            ("facet.field", "category"),
+            ("facet.range", "difficulty"),
+            ("q.alt", "*:*"),
+            ("q.op", "AND"),
+            ("qf", "text_ja text_en text_1gram"),
+            ("sow", "true"),
+            ("rows", "20"),
+            ("start", "20"),
         ]
         .into_iter()
         .map(|(key, value)| (key.to_string(), value.to_string()))

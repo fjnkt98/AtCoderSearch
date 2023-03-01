@@ -7,7 +7,8 @@ use std::collections::HashMap;
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SearchResultResponse {
     pub stats: SearchResultStats,
-    pub items: SearchResultBody,
+    pub items: Vec<Document>,
+    pub message: Option<String>,
 }
 
 /// 検索結果の統計情報
@@ -16,17 +17,11 @@ pub struct SearchResultResponse {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SearchResultStats {
     pub time: u32,
-    pub message: Option<String>,
     pub total: u32,
-    pub offset: u32,
-    pub amount: u32,
+    pub index: u32,
+    pub pages: u32,
+    pub count: u32,
     pub facet: HashMap<String, FacetResult>,
-}
-
-/// 検索にヒットしたドキュメント
-#[derive(Debug, Serialize, Deserialize)]
-pub struct SearchResultBody {
-    pub docs: Vec<Document>,
 }
 
 /// ファセット結果を格納するフィールドのスキーマ

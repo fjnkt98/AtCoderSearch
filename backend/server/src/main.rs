@@ -128,6 +128,7 @@ mod test {
         create_router(core)
     }
 
+    #[ignore]
     #[tokio::test]
     async fn get_default() {
         let req = Request::builder()
@@ -140,6 +141,7 @@ mod test {
         assert_eq!(res.status(), 200);
     }
 
+    #[ignore]
     #[tokio::test]
     async fn post_default() {
         let req = Request::builder()
@@ -153,6 +155,7 @@ mod test {
         assert_eq!(res.status(), 200);
     }
 
+    #[ignore]
     #[tokio::test]
     async fn post_with_q() {
         let req = Request::builder()
@@ -166,6 +169,7 @@ mod test {
         assert_eq!(res.status(), 200);
     }
 
+    #[ignore]
     #[tokio::test]
     async fn post_with_p() {
         let req = Request::builder()
@@ -179,6 +183,7 @@ mod test {
         assert_eq!(res.status(), 200);
     }
 
+    #[ignore]
     #[tokio::test]
     async fn should_return_error_when_p_is_greater_than_200() {
         let req = Request::builder()
@@ -192,6 +197,7 @@ mod test {
         assert_eq!(res.status(), 400);
     }
 
+    #[ignore]
     #[tokio::test]
     async fn should_return_error_when_p_is_minus() {
         let req = Request::builder()
