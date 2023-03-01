@@ -13,24 +13,24 @@ paths:
           name: q
           schema:
             type: string
-          description: Search keyword
+          description: The search keyword.
           required: false
         - in: query
-          name: p
+          name: c
           schema:
             type: integer
             minimum: 0
             maximum: 200
             default: 20
-          description: Number of search results which returned
+          description: The number of search results per page.
           required: false
         - in: query
-          name: o
+          name: p
           schema:
             type: integer
-            minimum: 0
-            default: 0
-          description: Offset position from which to start returning search result
+            minimum: 1
+            default: 1
+          description: The page index of search results.
           required: false
         - in: query
           name: f[category][]
@@ -60,9 +60,8 @@ paths:
               - "-start_at"
               - "difficulty"
               - "-difficulty"
-              - "score"
               - "-score"
-            default: score
+            default: -score
       responses:
         200:
           description: "Search result"
@@ -88,15 +87,15 @@ paths:
               properties:
                 q:
                   type: string
-                p:
+                c:
                   type: integer
                   minimum: 0
                   maximum: 200
                   default: 20
-                o:
+                p:
                   type: integer
-                  minimum: 0
-                  default: 0
+                  minimum: 1
+                  default: 1
                 s:
                   type: string
                   enum:
@@ -104,9 +103,8 @@ paths:
                     - "-start_at"
                     - "difficulty"
                     - "-difficulty"
-                    - "score"
                     - "-score"
-                  default: score
+                  default: -score
                 f:
                   type: object
                   properties:
@@ -145,17 +143,17 @@ components:
         # 検索処理時間
         time:
           type: integer
-        # メッセージ(エラー時に使用)
-        message:
-          type: string
         # 総検索ヒット数
         total:
           type: integer
-        # 返却開始位置
-        offset:
+        # 表示ページ番号
+        index:
           type: integer
-        # 返却数
-        amount:
+        # 総ページ数
+        pages:
+          type: integer
+        # 返却件数
+        count:
           type: integer
         # ファセット情報
         facet:
@@ -163,12 +161,13 @@ components:
       required:
         - time
         - total
-        - offset
-        - amount
+        - index
+        - pages
+        - count
     # -----------------------
     # ドキュメント
     # -----------------------
-    Item:
+    Items:
       type: object
       properties:
         problem_id:
@@ -209,7 +208,9 @@ components:
           type: array
           items:
             type: object
-            $ref: "#/components/schemas/Item"
+            $ref: "#/components/schemas/Items"
+        message:
+          type: string
       required:
         - stats
         - items
