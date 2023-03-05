@@ -5,10 +5,11 @@ import { ProblemList } from "../components/ProblemList";
 import { SearchBar } from "../components/SearchBar";
 import { SideBar } from "../components/SideBar";
 import { useSearchParams } from "react-router-dom";
-import { SearchResponse, Item } from "../types/response";
+import { SearchResponse, Item, Facet } from "../types/response";
 
 export function SearchResult() {
   const [items, setItems] = useState<Item[]>([]);
+  const [facet, setFacet] = useState<Map<string, Facet>>(new Map());
 
   const [searchParams] = useSearchParams();
 
@@ -18,6 +19,7 @@ export function SearchResult() {
       const response = await fetch(`${url}?${searchParams.toString()}`);
       const content: SearchResponse = await response.json();
       setItems(content.items);
+      setFacet(content.stats.facet);
     })();
   }, [searchParams]);
 
@@ -26,7 +28,7 @@ export function SearchResult() {
       <Logo isBig={false} />
       <SearchBar />
       <div className="flex flex-row justify-between">
-        <SideBar searchParams={searchParams} />
+        <SideBar searchParams={searchParams} facet={facet} />
         <ProblemList items={items} />
       </div>
     </>
