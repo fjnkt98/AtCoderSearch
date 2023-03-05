@@ -1,14 +1,29 @@
-import { useRef } from "react";
-import { Link } from "react-router-dom";
+import { useState, ChangeEvent } from "react";
+import { Link, createSearchParams } from "react-router-dom";
 
 export function SearchBar() {
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [text, setText] = useState<string>("");
+  const [url, setUrl] = useState<string>("/search");
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setText(() => {
+      return e.target.value;
+    });
+    const params: string = createSearchParams({
+      q: e.target.value,
+    }).toString();
+    setUrl(`/search?${params}`);
+  };
 
   return (
     <div className="my-2 flex flex-row items-center">
-      <input type="text" placeholder="Search Problems" ref={inputRef}></input>
+      <input
+        type="text"
+        placeholder="Search Problems"
+        onChange={handleChange}
+      ></input>
       <button type="button">
-        <Link to="/search">Search</Link>
+        <Link to={url}>Search</Link>
       </button>
     </div>
   );

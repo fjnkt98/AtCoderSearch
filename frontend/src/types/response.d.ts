@@ -1,19 +1,16 @@
 export type SearchResponse = {
   stats: Stats;
-  items: Items;
+  items: Item[];
+  message: string | null;
 };
 
 export type Stats = {
   time: number;
-  message: string | null;
   total: number;
-  offset: number;
-  amount: number;
+  index: number;
+  pages: number;
+  count: number;
   facet: Map<string, Facet>;
-};
-
-export type Items = {
-  docs: Item[];
 };
 
 export type Item = {

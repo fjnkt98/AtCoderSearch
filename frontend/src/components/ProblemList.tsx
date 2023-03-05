@@ -1,13 +1,16 @@
 import { Problem } from "./Problem";
+import { Item } from "../types/response";
 
-export function ProblemList() {
+type Props = {
+  items: Item[];
+};
+
+export function ProblemList({ items }: Props) {
   return (
     <div>
-      <Problem />
-      <Problem />
-      <Problem />
-      <Problem />
-      <Problem />
+      {items.map((item) => {
+        return <Problem key={item.problem_id} item={item} />;
+      })}
     </div>
   );
 }
