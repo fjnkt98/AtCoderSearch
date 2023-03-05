@@ -134,8 +134,10 @@ async fn main() -> Result<()> {
             let savedir = match args.path {
                 Some(path) => PathBuf::from(path),
                 None => {
-                    let path = env::var("DOCUMENT_SAVE_DIRECTORY")
-                        .expect("Default save directory does not configured");
+                    let path = env::var("DOCUMENT_SAVE_DIRECTORY").unwrap_or_else(|_| {
+                        tracing::error!("Documents save directory does not configured. Check and make sure DOCUMENT_SAVE_DIRECTORY environment variable.");
+                        panic!("Documents save directory does not configured. Check and make sure DOCUMENT_SAVE_DIRECTORY environment variable.");
+                    });
                     PathBuf::from(path)
                 }
             };
@@ -162,8 +164,10 @@ async fn main() -> Result<()> {
             let savedir = match args.path {
                 Some(path) => PathBuf::from(path),
                 None => {
-                    let path = env::var("DOCUMENT_SAVE_DIRECTORY")
-                        .expect("Default save directory does not configured");
+                    let path = env::var("DOCUMENT_SAVE_DIRECTORY").unwrap_or_else(|e| {
+                        tracing::error!("Documents save directory does not configured. Check your DOCUMENT_SAVE_DIRECTORY environment variable. [{}]", e.to_string());
+                        panic!("Documents save directory does not configured. Check your DOCUMENT_SAVE_DIRECTORY environment variable. [{}]", e.to_string());
+                    });
                     PathBuf::from(path)
                 }
             };
