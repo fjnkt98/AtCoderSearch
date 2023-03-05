@@ -56,7 +56,7 @@ impl<'a> DocumentGenerator<'a> {
             buffer.push(record);
 
             if buffer.len() >= chunk_size {
-                suffix += chunk_size;
+                suffix += buffer.len();
                 let mut savedir = self.savedir.clone();
                 let task = tokio::spawn(async move {
                     let extractor = FullTextExtractor::new().unwrap();
