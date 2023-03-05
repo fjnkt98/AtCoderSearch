@@ -1,11 +1,16 @@
 import { ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
 
-export function SortOrder() {
+type Props = {
+  searchParams: URLSearchParams;
+};
+
+export function SortOrder({ searchParams }: Props) {
   const navigate = useNavigate();
 
   const handleChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    navigate(`/search?q=atcoder&s=${e.target.value}`);
+    searchParams.set("s", e.target.value);
+    navigate(`/search?${searchParams.toString()}`);
   };
 
   return (

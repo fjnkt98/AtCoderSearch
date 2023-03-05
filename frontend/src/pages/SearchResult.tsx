@@ -26,7 +26,7 @@ export function SearchResult() {
       <Logo isBig={false} />
       <SearchBar />
       <div className="flex flex-row justify-between">
-        <SideBar />
+        <SideBar searchParams={searchParams} />
         <ProblemList items={items} />
       </div>
     </>

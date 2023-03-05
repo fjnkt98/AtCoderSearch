@@ -1,10 +1,14 @@
 import { FacetCount } from "./FacetCount";
 import { SortOrder } from "./SortOrder";
 
-export function SideBar() {
+type Props = {
+  searchParams: URLSearchParams;
+};
+
+export function SideBar({ searchParams }: Props) {
   return (
     <div>
-      <SortOrder />
+      <SortOrder searchParams={searchParams} />
       <FacetCount />
       <FacetCount />
     </div>
