@@ -14,7 +14,7 @@ use std::net::SocketAddr;
 use std::sync::Arc;
 use tower_http::cors::{AllowOrigin, Any, CorsLayer};
 use tracing_appender::rolling::{RollingFileAppender, Rotation};
-use tracing_subscriber::prelude::__tracing_subscriber_SubscriberExt;
+use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::Layer;
 use tracing_subscriber::{
     filter::{EnvFilter, LevelFilter},
