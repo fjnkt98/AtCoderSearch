@@ -21,7 +21,7 @@ export type Item = {
   contest_title: string;
   contest_url: string;
   difficulty: number;
-  start_at: Date;
+  start_at: string;
   duration: number;
   rate_change: string;
   category: string;
