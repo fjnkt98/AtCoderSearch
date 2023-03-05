@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { api_endpoint } from "../libs/endpoints";
+import { api_host } from "../libs/api_host";
 import { Logo } from "../components/Logo";
 import { ProblemList } from "../components/ProblemList";
 import { SearchBar } from "../components/SearchBar";
@@ -14,7 +14,7 @@ export function SearchResult() {
 
   useEffect(() => {
     (async () => {
-      const url = new URL("/api/search", api_endpoint);
+      const url = new URL("/api/search", api_host);
       const response = await fetch(`${url}?${searchParams.toString()}`);
       const content: SearchResponse = await response.json();
       setItems(content.items);
