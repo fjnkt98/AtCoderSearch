@@ -10,6 +10,7 @@ use once_cell::sync::Lazy;
 use regex::Regex;
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
+use serde_qs::Config;
 use solrust::querybuilder::{
     common::SolrCommonQueryBuilder,
     dismax::SolrDisMaxQueryBuilder,
@@ -248,8 +249,9 @@ where
     type Rejection = (StatusCode, Json<SearchResultResponse>);
 
     async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
+        let config = Config::new(0, false);
         let query = parts.uri.query().unwrap_or_default();
-        let value: T = serde_qs::from_str(query).map_err(|rejection| {
+        let value: T = config.deserialize_str(query).map_err(|rejection| {
             tracing::error!("Parsing error: {}", rejection);
             let stats = SearchResultStats {
                 time: 0,
