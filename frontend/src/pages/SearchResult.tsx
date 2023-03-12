@@ -32,12 +32,17 @@ export function SearchResult() {
   }, [searchParams]);
 
   return (
-    <>
-      <Logo isBig={false} />
-      <SearchBar />
-      <div className="flex flex-row justify-between">
-        <SideBar searchParams={searchParams} facet={facet} />
-        <div className="">
+    <div className="bg-slate-200 text-gray-900 dark:bg-gray-900 dark:text-slate-100">
+      <div className="mx-auto flex w-screen flex-col items-center justify-center pt-6">
+        <Logo isBig={false} />
+        <SearchBar />
+      </div>
+
+      <div className="flex flex-grow flex-row px-6">
+        <div className="mr-4 w-1/4 p-2">
+          <SideBar searchParams={searchParams} facet={facet} />
+        </div>
+        <div className="w-3/4">
           <ProblemList items={items} />
           <PageNavigation
             searchParams={searchParams}
@@ -46,6 +51,6 @@ export function SearchResult() {
           />
         </div>
       </div>
-    </>
+    </div>
   );
 }

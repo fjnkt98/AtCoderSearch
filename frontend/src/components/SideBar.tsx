@@ -18,7 +18,7 @@ export function SideBar({ searchParams, facet }: Props) {
   facets.sort((a, b) => (a.field > b.field ? 1 : -1));
 
   return (
-    <div>
+    <div className="px-0">
       <SortOrder searchParams={searchParams} />
 
       {facets.map(({ field, counts }) => (

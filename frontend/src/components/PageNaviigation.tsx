@@ -20,20 +20,22 @@ export function PageNavigation({
     const params = new URLSearchParams(searchParams);
     params.set("p", i.toString());
     navigations.push(
-      <Link
-        key={`page-link-${i}`}
-        to={`/search?${params.toString()}`}
-        className={`m-1 border-2 border-solid px-4 py-2 ${
-          i == currentPageIndex ? "text-red-500" : "text-black"
+      <div
+        className={`mx-2 flex aspect-square h-10 w-10 select-none items-center justify-center rounded-full text-center text-gray-900 shadow-sm shadow-gray-900 dark:text-slate-100 ${
+          i == currentPageIndex ? "bg-gray-600" : "bg-gray-800"
         }`}
+        key={`page-link-${i}`}
       >
-        {i}
-      </Link>
+        <Link to={`/search?${params.toString()}`}>{i}</Link>
+      </div>
     );
   }
 
   return (
-    <div key="page-navigation" className="flex flex-row">
+    <div
+      key="page-navigation"
+      className="flex flex-row items-center justify-center"
+    >
       {navigations}
     </div>
   );
