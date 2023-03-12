@@ -5,11 +5,15 @@ import { SearchBar } from "../components/SearchBar";
 export function StartPage() {
   return (
     <>
-      <div className="container mx-auto flex w-full justify-center border-2 border-solid border-sky-500 py-10">
-        <Logo isBig={true} />
+      <div className="flex min-h-screen flex-col items-center justify-center bg-slate-100 text-black dark:bg-gray-800 dark:text-slate-100">
+        <div className="mx-auto flex w-screen flex-grow flex-col items-center justify-center border-2 border-red-500">
+          <Logo isBig={true} />
+          <SearchBar />
+        </div>
+        <div className="min-h-2 w-screen flex-shrink-0 border-2 border-solid border-red-500 text-center">
+          <Footer />
+        </div>
       </div>
-      <SearchBar />
-      <Footer />
     </>
   );
 }

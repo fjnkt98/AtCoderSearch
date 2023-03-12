@@ -1,5 +1,9 @@
 import { useState, ChangeEvent, KeyboardEvent } from "react";
 import { createSearchParams, useNavigate } from "react-router-dom";
+import {
+  MagnifyingGlassIcon,
+  PaperAirplaneIcon,
+} from "@heroicons/react/24/solid";
 
 export function SearchBar() {
   // 検索キーワード
@@ -47,15 +51,23 @@ export function SearchBar() {
   };
 
   return (
-    <div className="my-2 flex flex-row items-center">
+    <div className="my-2 flex h-12 w-1/2 min-w-min flex-row items-stretch justify-center rounded-full border-2 border-solid border-red-500 bg-slate-100 px-1">
+      <div className="flex w-8 items-center border-2 border-red-500 bg-transparent p-1">
+        <MagnifyingGlassIcon className="w-full text-gray-900" />
+      </div>
       <input
         type="text"
+        className="flex-1 appearance-none bg-transparent px-2 font-notoSans text-lg text-gray-800 shadow-sm focus:border-2 focus:border-blue-300 focus:outline-none"
         placeholder="Search Problems"
         onChange={handleChange}
         onKeyDown={handleKeyDown}
-      ></input>
-      <button type="button" onClick={search}>
-        Search
+      />
+      <button
+        type="button"
+        className="w-8 border-2 border-red-500 bg-transparent px-1"
+        onClick={search}
+      >
+        <PaperAirplaneIcon className="text-blue-600" />
       </button>
     </div>
   );
