@@ -22,7 +22,7 @@ export function PageNavigation({
     navigations.push(
       <div
         className={`mx-2 flex aspect-square h-10 w-10 select-none items-center justify-center rounded-full text-center text-gray-900 shadow-sm shadow-gray-900 dark:text-slate-100 ${
-          i == currentPageIndex ? "bg-gray-600" : "bg-gray-800"
+          i == currentPageIndex ? "bg-blue-600" : "bg-gray-800"
         }`}
         key={`page-link-${i}`}
       >

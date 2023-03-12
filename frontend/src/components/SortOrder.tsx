@@ -15,7 +15,7 @@ export function SortOrder({ searchParams }: Props) {
   };
 
   return (
-    <div className="relative w-full lg:max-w-sm">
+    <div className="w-full lg:max-w-sm">
       <select
         onChange={handleChange}
         className="w-full appearance-none rounded-md border bg-white p-2.5 text-gray-900 shadow-sm outline-none focus:border-indigo-600"

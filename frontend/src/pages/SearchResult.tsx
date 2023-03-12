@@ -32,10 +32,15 @@ export function SearchResult() {
   }, [searchParams]);
 
   return (
-    <div className="bg-slate-200 text-gray-900 dark:bg-gray-900 dark:text-slate-100">
-      <div className="mx-auto flex w-screen flex-col items-center justify-center pt-6">
+    <div className="h-full w-full bg-slate-200 text-gray-900 dark:bg-gray-900 dark:text-slate-100">
+      <div className="sticky top-0 mx-auto flex w-full flex-col items-center justify-center bg-slate-200 py-2 pt-6 shadow-sm shadow-black dark:bg-gray-900">
         <Logo isBig={false} />
         <SearchBar />
+        <PageNavigation
+          searchParams={searchParams}
+          maxPageIndex={pages}
+          currentPageIndex={index}
+        />
       </div>
 
       <div className="flex flex-grow flex-row px-6">
@@ -44,11 +49,6 @@ export function SearchResult() {
         </div>
         <div className="w-3/4">
           <ProblemList items={items} />
-          <PageNavigation
-            searchParams={searchParams}
-            maxPageIndex={pages}
-            currentPageIndex={index}
-          />
         </div>
       </div>
     </div>
