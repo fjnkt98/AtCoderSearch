@@ -85,10 +85,7 @@ async fn main() {
         .unwrap();
     let addr = SocketAddr::from(([0, 0, 0, 0], port));
     tracing::debug!("Server start at port {}", port);
-    Server::bind(&addr)
-        .serve(app.into_make_service())
-        .await
-        .unwrap();
+    let _ = Server::bind(&addr).serve(app.into_make_service()).await;
 }
 
 fn create_router(core: SolrCore) -> Router {
