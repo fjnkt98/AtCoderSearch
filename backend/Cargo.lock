@@ -2197,6 +2197,7 @@ dependencies = [
  "http",
  "http-body",
  "hyper",
+ "itertools",
  "mime",
  "once_cell",
  "regex",

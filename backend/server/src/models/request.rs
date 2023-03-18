@@ -1,4 +1,4 @@
-use crate::models::{SearchResultResponse, SearchResultStats};
+use crate::models::{FacetResult, SearchResultResponse, SearchResultStats};
 use axum::async_trait;
 use axum::extract::{FromRequest, FromRequestParts};
 use axum::http::StatusCode;
@@ -21,7 +21,6 @@ use solrust::querybuilder::{
     },
     sort::SortOrderBuilder,
 };
-use std::collections::BTreeMap;
 use validator::{Validate, ValidationError};
 
 // Solrの特殊文字をエスケープする正規表現
@@ -81,7 +80,7 @@ impl SearchParams {
         let difficulty_facet = RangeFacetBuilder::new(
             "difficulty",
             0.to_string(),
-            3200.to_string(),
+            3600.to_string(),
             400.to_string(),
         )
         .other(RangeFacetOtherOptions::All);
@@ -171,7 +170,7 @@ where
                     index: 0,
                     pages: 0,
                     count: 0,
-                    facet: BTreeMap::new(),
+                    facet: FacetResult::from(None),
                 };
                 (
                     StatusCode::BAD_REQUEST,
@@ -191,7 +190,7 @@ where
                 index: 0,
                 pages: 0,
                 count: 0,
-                facet: BTreeMap::new(),
+                facet: FacetResult::from(None),
             };
             (
                 StatusCode::BAD_REQUEST,
@@ -259,7 +258,7 @@ where
                 index: 0,
                 pages: 0,
                 count: 0,
-                facet: BTreeMap::new(),
+                facet: FacetResult::from(None),
             };
             (
                 StatusCode::BAD_REQUEST,
@@ -279,7 +278,7 @@ where
                 index: 0,
                 pages: 0,
                 count: 0,
-                facet: BTreeMap::new(),
+                facet: FacetResult::from(None),
             };
             (
                 StatusCode::BAD_REQUEST,
