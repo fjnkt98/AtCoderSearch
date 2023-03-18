@@ -89,7 +89,7 @@
   <field name="contest_url" type="String" indexed="false" stored="true" multiValued="false" />
 
   <field name="difficulty" type="i32" indexed="true" stored="true" multiValued="false" />
-  <field name="start_at" type="DateTime" indexed="true" stored="true" required="true" multiValued="false" />
+  <field name="start_at" type="i64" indexed="true" stored="true" required="true" multiValued="false" />
   <field name="duration" type="i32" indexed="true" stored="true" required="true" multiValued="false" />
   <field name="rate_change" type="String" indexed="true" stored="true" required="true" multiValued="false" />
   <field name="category" type="String" indexed="true" stored="true" required="true" multiValued="false" />

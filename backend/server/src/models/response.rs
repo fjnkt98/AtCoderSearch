@@ -1,6 +1,9 @@
-use chrono::{DateTime, Local};
+use chrono::{DateTime, Local, TimeZone, Utc};
 use itertools::Itertools;
-use serde::de::{Error, Unexpected};
+use serde::{
+    de::{Error as deError, Unexpected},
+    ser::Error as seError,
+};
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use solrust::types::response::{SolrFacetBody, SolrRangeFacetKind};
 use std::collections::BTreeMap;
@@ -160,17 +163,22 @@ pub struct Document {
     pub contest_title: String,
     pub contest_url: String,
     pub difficulty: i32,
-    #[serde(serialize_with = "serialize", deserialize_with = "deserialize")]
-    pub start_at: DateTime<Local>,
+    #[serde(serialize_with = "serialize")]
+    pub start_at: i64,
     pub duration: i64,
     pub rate_change: String,
     pub category: String,
 }
 
-fn serialize<S>(value: &DateTime<Local>, serializer: S) -> Result<S::Ok, S::Error>
+fn serialize<S>(value: &i64, serializer: S) -> Result<S::Ok, S::Error>
 where
     S: Serializer,
 {
+    let value = Utc
+        .timestamp_opt(*value, 0)
+        .single()
+        .and_then(|d| Some(d.with_timezone(&Local)))
+        .ok_or_else(|| S::Error::custom("Failed to deserialize Unix epoch time."))?;
     serializer.serialize_str(&value.to_rfc3339())
 }
 
@@ -179,12 +187,16 @@ where
     D: Deserializer<'de>,
 {
     let value = String::deserialize(deserializer)?;
-    if let Ok(timestamp) = DateTime::parse_from_rfc3339(&value) {
-        return Ok(timestamp.with_timezone(&Local));
-    } else {
-        return Err(Error::invalid_value(
-            Unexpected::Str(&value),
-            &"Invalid timestamp string",
-        ));
-    }
+    let timestamp = value.parse::<i64>().map_err(|e| {
+        D::Error::invalid_value(
+            Unexpected::Str(&e.to_string()),
+            &"Valid Unix epoch timestamp",
+        )
+    })?;
+    let datetime = Utc
+        .timestamp_opt(timestamp, 0)
+        .single()
+        .and_then(|d| Some(d.with_timezone(&Local)))
+        .ok_or_else(|| D::Error::custom("Failed to deserialize Unix epoch time."))?;
+    Ok(datetime)
 }
