@@ -17,8 +17,7 @@ use solrust::querybuilder::{
     edismax::{EDisMaxQueryBuilder, SolrEDisMaxQueryBuilder},
     facet::{FieldFacetBuilder, RangeFacetBuilder, RangeFacetOtherOptions},
     q::{
-        Aggregation, Operator, QueryExpression, QueryOperand, RangeQueryOperand,
-        StandardQueryOperand,
+        Aggregation, Operator, PhraseQueryOperand, QueryExpression, QueryOperand, RangeQueryOperand,
     },
     sort::SortOrderBuilder,
 };
@@ -122,7 +121,7 @@ impl SearchParams {
                 let fq = QueryExpression::sum(
                     category
                         .iter()
-                        .map(|c| QueryOperand::from(StandardQueryOperand::new("category", c)))
+                        .map(|c| QueryOperand::from(PhraseQueryOperand::new("category", c)))
                         .collect::<Vec<QueryOperand>>(),
                 );
                 builder = builder.fq(&fq);
