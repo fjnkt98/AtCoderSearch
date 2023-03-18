@@ -36,18 +36,19 @@ static RE: Lazy<Regex> = Lazy::new(|| {
 #[derive(Debug, Serialize, Deserialize, Clone, Validate)]
 pub struct SearchParams {
     // 検索キーワード
-    pub q: Option<String>,
+    #[validate(length(max = 200))]
+    pub keyword: Option<String>,
     // 1ページ当たり返却数
     #[validate(range(max = 200))]
-    pub c: Option<u32>,
+    pub limit: Option<u32>,
     // 返却ページ番号
     #[validate(range(min = 1))]
-    pub p: Option<u32>,
+    pub page: Option<u32>,
     // フィルタリング条件
-    pub f: Option<FilteringParameters>,
+    pub filter: Option<FilteringParameters>,
     // ソート順
     #[validate(custom = "validate_sort_option")]
-    pub s: Option<String>,
+    pub sort: Option<String>,
 }
 
 /// fパラメータに指定できる値
@@ -68,7 +69,7 @@ pub struct RangeFilteringParameter<T> {
 fn validate_sort_option(value: &str) -> Result<(), ValidationError> {
     match value {
         "start_at" | "-start_at" | "difficulty" | "-difficulty" | "-score" => {}
-        _ => return Err(ValidationError::new("Invalid sort field option.")),
+        _ => return Err(ValidationError::new("Invalid sort field option. Select from start_at, -start_at, difficulty, -difficulty, -score.")),
     }
     Ok(())
 }
@@ -81,17 +82,17 @@ impl SearchParams {
         let difficulty_facet = RangeFacetBuilder::new(
             "difficulty",
             0.to_string(),
-            2000.to_string(),
+            3200.to_string(),
             400.to_string(),
         )
         .other(RangeFacetOtherOptions::All);
 
-        let count: u32 = self.c.unwrap_or(20);
-        let page: u32 = self.p.unwrap_or(1);
-        let start: u32 = (page - 1) * count;
+        let rows: u32 = self.limit.unwrap_or(20);
+        let page: u32 = self.page.unwrap_or(1);
+        let start: u32 = (page - 1) * rows;
 
         let mut builder = EDisMaxQueryBuilder::new()
-            .rows(count)
+            .rows(rows)
             .start(start)
             .qf("text_ja text_en text_1gram")
             .q_alt(&QueryOperand::from("*:*"))
@@ -100,14 +101,14 @@ impl SearchParams {
             .facet(&category_facet)
             .facet(&difficulty_facet);
 
-        if let Some(q) = &self.q {
+        if let Some(q) = &self.keyword {
             let q = RE.replace_all(q, r"\$0");
             if !q.is_empty() {
                 builder = builder.q(String::from(q));
             }
         }
 
-        if let Some(s) = &self.s {
+        if let Some(s) = &self.sort {
             let sort = if s.starts_with("-") {
                 SortOrderBuilder::new().desc(&s[1..])
             } else {
@@ -116,7 +117,7 @@ impl SearchParams {
             builder = builder.sort(&sort);
         }
 
-        if let Some(f) = &self.f {
+        if let Some(f) = &self.filter {
             if let Some(category) = &f.category {
                 let fq = QueryExpression::sum(
                     category
@@ -302,11 +303,11 @@ mod test {
     #[test]
     fn test_default() {
         let params = SearchParams {
-            q: None,
-            c: None,
-            p: None,
-            f: None,
-            s: None,
+            keyword: None,
+            limit: None,
+            page: None,
+            filter: None,
+            sort: None,
         };
 
         let mut qs = params.as_qs();
@@ -339,11 +340,11 @@ mod test {
     #[test]
     fn should_do_wildcard_search_when_q_is_empty() {
         let params = SearchParams {
-            q: Some("".to_string()),
-            c: None,
-            p: None,
-            f: None,
-            s: None,
+            keyword: Some("".to_string()),
+            limit: None,
+            page: None,
+            filter: None,
+            sort: None,
         };
 
         let mut qs = params.as_qs();
@@ -376,11 +377,11 @@ mod test {
     #[test]
     fn rows_should_equal_to_c_parameter() {
         let params = SearchParams {
-            q: None,
-            c: Some(10),
-            p: None,
-            f: None,
-            s: None,
+            keyword: None,
+            limit: Some(10),
+            page: None,
+            filter: None,
+            sort: None,
         };
 
         let mut qs = params.as_qs();
@@ -413,11 +414,11 @@ mod test {
     #[test]
     fn start_should_equal_to_0_when_p_is_1() {
         let params = SearchParams {
-            q: None,
-            c: Some(20),
-            p: Some(1),
-            f: None,
-            s: None,
+            keyword: None,
+            limit: Some(20),
+            page: Some(1),
+            filter: None,
+            sort: None,
         };
 
         let mut qs = params.as_qs();
@@ -450,11 +451,11 @@ mod test {
     #[test]
     fn start_should_equal_to_20_when_p_is_2() {
         let params = SearchParams {
-            q: None,
-            c: Some(20),
-            p: Some(2),
-            f: None,
-            s: None,
+            keyword: None,
+            limit: Some(20),
+            page: Some(2),
+            filter: None,
+            sort: None,
         };
 
         let mut qs = params.as_qs();
