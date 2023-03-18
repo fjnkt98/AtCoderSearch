@@ -10,22 +10,23 @@ paths:
       description: Search problems
       parameters:
         - in: query
-          name: q
+          name: keyword
           schema:
             type: string
+            maxLength: 200
           description: The search keyword.
           required: false
         - in: query
-          name: c
+          name: limit
           schema:
             type: integer
             minimum: 0
             maximum: 200
             default: 20
-          description: The number of search results per page.
+          description: Maximum number of search results per page.
           required: false
         - in: query
-          name: p
+          name: page
           schema:
             type: integer
             minimum: 1
@@ -33,26 +34,28 @@ paths:
           description: The page index of search results.
           required: false
         - in: query
-          name: f[category][]
+          name: filter[category][]
           schema:
             type: array
             items:
               type: string
           example: "ABC"
-          description: Multiple values are accepted. Set the value in the f[category][] key for each value.
+          description: Filter by contest type. Multiple values are accepted. Set the value in the f[category][] key for each value.
           explode: true
         - in: query
           name: f[difficulty][from]
           schema:
             type: integer
           example: 1000
+          description: Filter by problem difficulty.
         - in: query
           name: f[difficulty][to]
           schema:
             type: integer
           example: 2000
+          description: Filter by problem difficulty.
         - in: query
-          name: s
+          name: sort
           schema:
             type: string
             enum:
@@ -85,18 +88,19 @@ paths:
             schema:
               type: object
               properties:
-                q:
+                keyword:
                   type: string
-                c:
+                  maxLength: 200
+                limit:
                   type: integer
                   minimum: 0
                   maximum: 200
                   default: 20
-                p:
+                page:
                   type: integer
                   minimum: 1
                   default: 1
-                s:
+                sort:
                   type: string
                   enum:
                     - "start_at"
@@ -105,7 +109,7 @@ paths:
                     - "-difficulty"
                     - "-score"
                   default: -score
-                f:
+                filter:
                   type: object
                   properties:
                     category:
