@@ -21,7 +21,7 @@ use solrust::querybuilder::{
     },
     sort::SortOrderBuilder,
 };
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 use validator::{Validate, ValidationError};
 
 // Solrの特殊文字をエスケープする正規表現
@@ -171,7 +171,7 @@ where
                     index: 0,
                     pages: 0,
                     count: 0,
-                    facet: HashMap::new(),
+                    facet: BTreeMap::new(),
                 };
                 (
                     StatusCode::BAD_REQUEST,
@@ -191,7 +191,7 @@ where
                 index: 0,
                 pages: 0,
                 count: 0,
-                facet: HashMap::new(),
+                facet: BTreeMap::new(),
             };
             (
                 StatusCode::BAD_REQUEST,
@@ -259,7 +259,7 @@ where
                 index: 0,
                 pages: 0,
                 count: 0,
-                facet: HashMap::new(),
+                facet: BTreeMap::new(),
             };
             (
                 StatusCode::BAD_REQUEST,
@@ -279,7 +279,7 @@ where
                 index: 0,
                 pages: 0,
                 count: 0,
-                facet: HashMap::new(),
+                facet: BTreeMap::new(),
             };
             (
                 StatusCode::BAD_REQUEST,

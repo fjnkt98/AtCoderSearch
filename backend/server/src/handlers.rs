@@ -6,7 +6,7 @@ use axum::response::IntoResponse;
 use axum::Json;
 use solrust::client::core::{SolrCore, SolrCoreError};
 use solrust::types::response::{SolrRangeFacetKind, SolrSelectResponse};
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 use std::sync::Arc;
 use tokio::time::Instant;
 use uuid::Uuid;
@@ -103,7 +103,7 @@ async fn generate_response(
     response: SolrSelectResponse<Document>,
     start: Instant,
 ) -> Result<SearchResultResponse> {
-    let mut facet: HashMap<String, FacetResult> = HashMap::new();
+    let mut facet: BTreeMap<String, FacetResult> = BTreeMap::new();
     if let Some(facet_counts) = response.facet_counts {
         for (key, value) in facet_counts.facet_fields.iter() {
             facet.insert(
@@ -256,7 +256,7 @@ fn generate_error_response(message: &str) -> SearchResultResponse {
         index: 0,
         pages: 0,
         count: 0,
-        facet: HashMap::new(),
+        facet: BTreeMap::new(),
     };
     let response = SearchResultResponse {
         stats,

@@ -1,7 +1,7 @@
 use chrono::{DateTime, Local};
 use serde::de::{Error, Unexpected};
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 /// レスポンスのボディに乗せるJSONのスキーマ
 #[derive(Debug, Serialize, Deserialize)]
@@ -21,7 +21,7 @@ pub struct SearchResultStats {
     pub index: u32,
     pub pages: u32,
     pub count: u32,
-    pub facet: HashMap<String, FacetResult>,
+    pub facet: BTreeMap<String, FacetResult>,
 }
 
 /// ファセット結果を格納するフィールドのスキーマ
