@@ -5,12 +5,12 @@ import { ProblemList } from "../components/ProblemList";
 import { SearchBar } from "../components/SearchBar";
 import { SideBar } from "../components/SideBar";
 import { useSearchParams } from "react-router-dom";
-import { SearchResponse, Item, Facet } from "../types/response";
+import { SearchResponse, Item, FacetResult } from "../types/response";
 import { PageNavigation } from "../components/PageNaviigation";
 
 export function SearchResult() {
   const [items, setItems] = useState<Item[]>([]);
-  const [facet, setFacet] = useState<Map<string, Facet>>(new Map());
+  const [facet, setFacet] = useState<Map<string, FacetResult>>(new Map());
   // const [total, setTotal] = useState<number>(0);
   const [pages, setPages] = useState<number>(0);
   const [index, setIndex] = useState<number>(0);
