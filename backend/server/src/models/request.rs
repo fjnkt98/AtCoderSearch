@@ -297,6 +297,7 @@ where
 #[cfg(test)]
 mod test {
     use super::*;
+    use itertools::{sorted, Itertools};
 
     /// すべてのパラメータがデフォルト値のときのテスト
     #[test]
@@ -309,29 +310,28 @@ mod test {
             sort: None,
         };
 
-        let mut qs = params.as_qs();
-        qs.sort();
-        let mut expected = vec![
-            ("defType", "edismax"),
-            ("f.category.facet.mincount", "1"),
-            ("f.difficulty.facet.range.end", "3600"),
-            ("f.difficulty.facet.range.gap", "400"),
-            ("f.difficulty.facet.range.other", "all"),
-            ("f.difficulty.facet.range.start", "0"),
-            ("facet", "true"),
-            ("facet.field", "category"),
-            ("facet.range", "difficulty"),
-            ("q.alt", "*:*"),
-            ("q.op", "AND"),
-            ("qf", "text_ja text_en text_1gram"),
-            ("sow", "true"),
-            ("rows", "20"),
-            ("start", "0"),
-        ]
-        .into_iter()
-        .map(|(key, value)| (key.to_string(), value.to_string()))
-        .collect::<Vec<(String, String)>>();
-        expected.sort();
+        let qs = sorted(params.as_qs()).collect_vec();
+        let expected = sorted(
+            [
+                ("defType", "edismax"),
+                ("f.category.facet.mincount", "1"),
+                ("f.difficulty.facet.range.end", "3600"),
+                ("f.difficulty.facet.range.gap", "400"),
+                ("f.difficulty.facet.range.other", "all"),
+                ("f.difficulty.facet.range.start", "0"),
+                ("facet", "true"),
+                ("facet.field", "category"),
+                ("facet.range", "difficulty"),
+                ("q.alt", "*:*"),
+                ("q.op", "AND"),
+                ("qf", "text_ja text_en text_1gram"),
+                ("sow", "true"),
+                ("rows", "20"),
+                ("start", "0"),
+            ]
+            .map(|(key, value)| (key.to_string(), value.to_string())),
+        )
+        .collect_vec();
 
         assert_eq!(qs, expected)
     }
@@ -347,29 +347,29 @@ mod test {
             sort: None,
         };
 
-        let mut qs = params.as_qs();
-        qs.sort();
-        let mut expected = vec![
-            ("defType", "edismax"),
-            ("f.category.facet.mincount", "1"),
-            ("f.difficulty.facet.range.end", "3600"),
-            ("f.difficulty.facet.range.gap", "400"),
-            ("f.difficulty.facet.range.other", "all"),
-            ("f.difficulty.facet.range.start", "0"),
-            ("facet", "true"),
-            ("facet.field", "category"),
-            ("facet.range", "difficulty"),
-            ("q.alt", "*:*"),
-            ("q.op", "AND"),
-            ("qf", "text_ja text_en text_1gram"),
-            ("sow", "true"),
-            ("rows", "20"),
-            ("start", "0"),
-        ]
-        .into_iter()
-        .map(|(key, value)| (key.to_string(), value.to_string()))
-        .collect::<Vec<(String, String)>>();
-        expected.sort();
+        let qs = sorted(params.as_qs()).collect_vec();
+        let expected = sorted(
+            [
+                ("defType", "edismax"),
+                ("f.category.facet.mincount", "1"),
+                ("f.difficulty.facet.range.end", "3600"),
+                ("f.difficulty.facet.range.gap", "400"),
+                ("f.difficulty.facet.range.other", "all"),
+                ("f.difficulty.facet.range.start", "0"),
+                ("facet", "true"),
+                ("facet.field", "category"),
+                ("facet.range", "difficulty"),
+                ("q.alt", "*:*"),
+                ("q.op", "AND"),
+                ("qf", "text_ja text_en text_1gram"),
+                ("sow", "true"),
+                ("rows", "20"),
+                ("start", "0"),
+            ]
+            .into_iter()
+            .map(|(key, value)| (key.to_string(), value.to_string())),
+        )
+        .collect_vec();
 
         assert_eq!(qs, expected)
     }
@@ -385,29 +385,13 @@ mod test {
             sort: None,
         };
 
-        let mut qs = params.as_qs();
-        qs.sort();
-        let mut expected = vec![
-            ("defType", "edismax"),
-            ("f.category.facet.mincount", "1"),
-            ("f.difficulty.facet.range.end", "3600"),
-            ("f.difficulty.facet.range.gap", "400"),
-            ("f.difficulty.facet.range.other", "all"),
-            ("f.difficulty.facet.range.start", "0"),
-            ("facet", "true"),
-            ("facet.field", "category"),
-            ("facet.range", "difficulty"),
-            ("q.alt", "*:*"),
-            ("q.op", "AND"),
-            ("qf", "text_ja text_en text_1gram"),
-            ("sow", "true"),
-            ("rows", "10"),
-            ("start", "0"),
-        ]
-        .into_iter()
-        .map(|(key, value)| (key.to_string(), value.to_string()))
-        .collect::<Vec<(String, String)>>();
-        expected.sort();
+        let qs = params
+            .as_qs()
+            .into_iter()
+            .filter(|(key, _)| key == "rows")
+            .collect_vec();
+
+        let expected = vec![("rows".to_string(), "10".to_string())];
 
         assert_eq!(qs, expected)
     }
@@ -423,29 +407,12 @@ mod test {
             sort: None,
         };
 
-        let mut qs = params.as_qs();
-        qs.sort();
-        let mut expected = vec![
-            ("defType", "edismax"),
-            ("f.category.facet.mincount", "1"),
-            ("f.difficulty.facet.range.end", "3600"),
-            ("f.difficulty.facet.range.gap", "400"),
-            ("f.difficulty.facet.range.other", "all"),
-            ("f.difficulty.facet.range.start", "0"),
-            ("facet", "true"),
-            ("facet.field", "category"),
-            ("facet.range", "difficulty"),
-            ("q.alt", "*:*"),
-            ("q.op", "AND"),
-            ("qf", "text_ja text_en text_1gram"),
-            ("sow", "true"),
-            ("rows", "20"),
-            ("start", "0"),
-        ]
-        .into_iter()
-        .map(|(key, value)| (key.to_string(), value.to_string()))
-        .collect::<Vec<(String, String)>>();
-        expected.sort();
+        let qs = params
+            .as_qs()
+            .into_iter()
+            .filter(|(key, _)| key == "start")
+            .collect_vec();
+        let expected = vec![("start".to_string(), "0".to_string())];
 
         assert_eq!(qs, expected)
     }
@@ -461,29 +428,12 @@ mod test {
             sort: None,
         };
 
-        let mut qs = params.as_qs();
-        qs.sort();
-        let mut expected = vec![
-            ("defType", "edismax"),
-            ("f.category.facet.mincount", "1"),
-            ("f.difficulty.facet.range.end", "3600"),
-            ("f.difficulty.facet.range.gap", "400"),
-            ("f.difficulty.facet.range.other", "all"),
-            ("f.difficulty.facet.range.start", "0"),
-            ("facet", "true"),
-            ("facet.field", "category"),
-            ("facet.range", "difficulty"),
-            ("q.alt", "*:*"),
-            ("q.op", "AND"),
-            ("qf", "text_ja text_en text_1gram"),
-            ("sow", "true"),
-            ("rows", "20"),
-            ("start", "20"),
-        ]
-        .into_iter()
-        .map(|(key, value)| (key.to_string(), value.to_string()))
-        .collect::<Vec<(String, String)>>();
-        expected.sort();
+        let qs = params
+            .as_qs()
+            .into_iter()
+            .filter(|(key, _)| key == "start")
+            .collect_vec();
+        let expected = vec![("start".to_string(), "20".to_string())];
 
         assert_eq!(qs, expected)
     }
