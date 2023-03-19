@@ -1,10 +1,7 @@
-use chrono::{DateTime, Local, TimeZone, Utc};
+use chrono::{Local, TimeZone, Utc};
 use itertools::Itertools;
-use serde::{
-    de::{Error as deError, Unexpected},
-    ser::Error as seError,
-};
-use serde::{Deserialize, Deserializer, Serialize, Serializer};
+use serde::ser::Error;
+use serde::{Deserialize, Serialize, Serializer};
 use solrust::types::response::{SolrFacetBody, SolrRangeFacetKind};
 use std::collections::BTreeMap;
 
@@ -180,23 +177,4 @@ where
         .and_then(|d| Some(d.with_timezone(&Local)))
         .ok_or_else(|| S::Error::custom("Failed to deserialize Unix epoch time."))?;
     serializer.serialize_str(&value.to_rfc3339())
-}
-
-fn deserialize<'de, D>(deserializer: D) -> Result<DateTime<Local>, D::Error>
-where
-    D: Deserializer<'de>,
-{
-    let value = String::deserialize(deserializer)?;
-    let timestamp = value.parse::<i64>().map_err(|e| {
-        D::Error::invalid_value(
-            Unexpected::Str(&e.to_string()),
-            &"Valid Unix epoch timestamp",
-        )
-    })?;
-    let datetime = Utc
-        .timestamp_opt(timestamp, 0)
-        .single()
-        .and_then(|d| Some(d.with_timezone(&Local)))
-        .ok_or_else(|| D::Error::custom("Failed to deserialize Unix epoch time."))?;
-    Ok(datetime)
 }
