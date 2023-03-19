@@ -105,10 +105,13 @@ mod test {
     use super::*;
     use axum::{
         body::Body,
-        http::{header, Method, Request},
+        http::{Method, Request},
     };
+    use reqwest::Url;
+    use rstest::*;
     use tower::ServiceExt;
 
+    /// テスト用のヘルパーメソッド
     async fn create_app() -> Router {
         let solr_host = env::var("SOLR_HOST").unwrap_or(String::from("http://localhost"));
         let solr_port: u32 = (env::var("SOLR_PORT").unwrap_or(String::from("8983")))
@@ -126,85 +129,46 @@ mod test {
     }
 
     #[ignore]
+    #[rstest(
+        keyword => ["", "高橋"],
+        limit => [1, 20, 200],
+        page => [1, 2],
+        category => ["", "ABC", "Other Contests", "ABC-Like"],
+        difficulty_from => ["", "400"],
+        difficulty_to => ["", "1200"],
+        sort => ["", "-score", "start_at", "-start_at", "-difficulty", "difficulty"]
+    )]
     #[tokio::test]
-    async fn get_default() {
+    async fn test(
+        keyword: &str,
+        limit: u32,
+        page: u32,
+        category: &str,
+        difficulty_from: &str,
+        difficulty_to: &str,
+        sort: &str,
+    ) {
+        let uri = Url::parse_with_params(
+            "https://localhost:8000/api/search",
+            &[
+                ("keyword", keyword),
+                ("limit", &limit.to_string()),
+                ("page", &page.to_string()),
+                ("filter[category][]", category),
+                ("filter[difficulty][from]", difficulty_from),
+                ("filter[difficulty][to]", difficulty_to),
+                ("sort", sort),
+            ],
+        )
+        .unwrap();
+
         let req = Request::builder()
-            .uri("/api/search")
+            .uri(format!("/api/search?{}", uri.query().unwrap()))
             .method(Method::GET)
-            .body(Body::from(""))
+            .body(Body::empty())
             .unwrap();
         let res = create_app().await.oneshot(req).await.unwrap();
 
         assert_eq!(res.status(), 200);
-    }
-
-    #[ignore]
-    #[tokio::test]
-    async fn post_default() {
-        let req = Request::builder()
-            .uri("/api/search")
-            .method(Method::POST)
-            .header(header::CONTENT_TYPE, mime::APPLICATION_JSON.as_ref())
-            .body(Body::from(r#"{}"#))
-            .unwrap();
-        let res = create_app().await.oneshot(req).await.unwrap();
-
-        assert_eq!(res.status(), 200);
-    }
-
-    #[ignore]
-    #[tokio::test]
-    async fn post_with_q() {
-        let req = Request::builder()
-            .uri("/api/search")
-            .method(Method::POST)
-            .header(header::CONTENT_TYPE, mime::APPLICATION_JSON.as_ref())
-            .body(Body::from(r#"{"q": "高橋"}"#))
-            .unwrap();
-        let res = create_app().await.oneshot(req).await.unwrap();
-
-        assert_eq!(res.status(), 200);
-    }
-
-    #[ignore]
-    #[tokio::test]
-    async fn post_with_p() {
-        let req = Request::builder()
-            .uri("/api/search")
-            .method(Method::POST)
-            .header(header::CONTENT_TYPE, mime::APPLICATION_JSON.as_ref())
-            .body(Body::from(r#"{"p": 200}"#))
-            .unwrap();
-        let res = create_app().await.oneshot(req).await.unwrap();
-
-        assert_eq!(res.status(), 200);
-    }
-
-    #[ignore]
-    #[tokio::test]
-    async fn should_return_error_when_p_is_greater_than_200() {
-        let req = Request::builder()
-            .uri("/api/search")
-            .method(Method::POST)
-            .header(header::CONTENT_TYPE, mime::APPLICATION_JSON.as_ref())
-            .body(Body::from(r#"{"p": 201}"#))
-            .unwrap();
-        let res = create_app().await.oneshot(req).await.unwrap();
-
-        assert_eq!(res.status(), 400);
-    }
-
-    #[ignore]
-    #[tokio::test]
-    async fn should_return_error_when_p_is_minus() {
-        let req = Request::builder()
-            .uri("/api/search")
-            .method(Method::POST)
-            .header(header::CONTENT_TYPE, mime::APPLICATION_JSON.as_ref())
-            .body(Body::from(r#"{"p": -1}"#))
-            .unwrap();
-        let res = create_app().await.oneshot(req).await.unwrap();
-
-        assert_eq!(res.status(), 400);
     }
 }

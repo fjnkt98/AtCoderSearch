@@ -2233,6 +2233,7 @@ dependencies = [
  "mime",
  "once_cell",
  "regex",
+ "reqwest",
  "rstest",
  "serde",
  "serde_json",
