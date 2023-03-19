@@ -8,19 +8,13 @@ type Props = {
 };
 
 export function SideBar({ searchParams, facet }: Props) {
-  const facets = [];
-  for (const [field, counts] of Object.entries(facet)) {
-    facets.push({
-      field,
-      counts,
-    });
-  }
+  const facets = Array.from(Object.entries(facet));
 
   return (
     <div className="px-0 py-6">
       <SortOrder searchParams={searchParams} />
 
-      {facets.map(({ field, counts }) => (
+      {facets.map(([field, counts]) => (
         <FacetCount
           key={field}
           searchParams={searchParams}
