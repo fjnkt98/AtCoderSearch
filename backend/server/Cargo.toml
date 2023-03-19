@@ -30,3 +30,6 @@ tracing-appender = "^0.2.2"
 tracing-subscriber = {version = "^0.3.16", features = ["env-filter"]}
 uuid = {version = "^1.3.0", features = ["v4"]}
 validator = {version = "^0.16.0", features = ["derive"]}
+
+[dev-dependencies]
+rstest = "0.16.0"
