@@ -162,6 +162,54 @@ components:
         # ファセット情報
         facet:
           type: object
+          additionalProperties:
+            type: object
+            properties:
+              counts:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    key:
+                      type: string
+                    count:
+                      type: integer
+              range_info:
+                type: object
+                properties:
+                  start:
+                    type: string
+                  end:
+                    type: string
+                  gap:
+                    type: string
+                  before:
+                    type: string
+                  after:
+                    type: string
+                  between:
+                    type: string
+          example:
+            category:
+              counts:
+                - key: "ABC"
+                  count: 123
+                - key: "ARC"
+                  count: 123
+              range_info:
+            difficulty:
+              counts:
+                - key: "0 ~ 400"
+                  count: 123
+                - key: "400 ~ 800"
+                  count: 123
+              range_info:
+                start: "0"
+                end: "800"
+                gap: "400"
+                before: "0"
+                after: "0"
+                between: "123"
       required:
         - time
         - total
@@ -171,7 +219,7 @@ components:
     # -----------------------
     # ドキュメント
     # -----------------------
-    Items:
+    Item:
       type: object
       properties:
         problem_id:
@@ -212,7 +260,7 @@ components:
           type: array
           items:
             type: object
-            $ref: "#/components/schemas/Items"
+            $ref: "#/components/schemas/Item"
         message:
           type: string
       required:
