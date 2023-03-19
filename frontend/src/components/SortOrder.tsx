@@ -9,8 +9,8 @@ export function SortOrder({ searchParams }: Props) {
   const navigate = useNavigate();
 
   const handleChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    searchParams.set("p", "1");
-    searchParams.set("s", e.target.value);
+    searchParams.set("page", "1");
+    searchParams.set("sort", e.target.value);
     navigate(`/search?${searchParams.toString()}`);
   };
 
@@ -23,6 +23,8 @@ export function SortOrder({ searchParams }: Props) {
         <option value="-score">関連度順</option>
         <option value="difficulty">難易度(低い順)</option>
         <option value="-difficulty">難易度(高い順)</option>
+        <option value="start_at">開催時期(早い順)</option>
+        <option value="-start_at">開催時期(遅い順))</option>
       </select>
     </div>
   );

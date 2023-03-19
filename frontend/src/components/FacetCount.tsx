@@ -1,18 +1,18 @@
-import { Facet } from "../types/response";
+import { FacetResult } from "../types/response";
 import { Link, useNavigate } from "react-router-dom";
 
 type Props = {
   searchParams: URLSearchParams;
   field: string;
-  counts: Facet;
+  counts: FacetResult;
 };
 
 export function FacetCount({ searchParams, field, counts }: Props) {
   const navigate = useNavigate();
   const handleClick = () => {
-    searchParams.delete(`f[${field}][]`);
-    searchParams.delete(`f[${field}][from]`);
-    searchParams.delete(`f[${field}][to]`);
+    searchParams.delete(`filter[${field}][]`);
+    searchParams.delete(`filter[${field}][from]`);
+    searchParams.delete(`filter[${field}][to]`);
 
     navigate(`/search?${searchParams.toString()}`);
   };
@@ -27,13 +27,13 @@ export function FacetCount({ searchParams, field, counts }: Props) {
       </div>
       {counts.counts.map(({ key, count }) => {
         const params = new URLSearchParams(searchParams);
-        if (counts.gap == null) {
-          params.set(`f[${field}][]`, key);
+        if (counts.range_info == null) {
+          params.set(`filter[${field}][]`, key);
         } else {
           const start = Number(key);
-          const end = Number(key) + Number(counts.gap);
-          params.set(`f[${field}][from]`, start.toString());
-          params.set(`f[${field}][to]`, end.toString());
+          const end = Number(key) + Number(counts.range_info.gap);
+          params.set(`filter[${field}][from]`, start.toString());
+          params.set(`filter[${field}][to]`, end.toString());
         }
         const linkTo = `/search?${params.toString()}`;
 

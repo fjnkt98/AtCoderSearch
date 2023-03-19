@@ -10,8 +10,8 @@ export function SearchBar() {
   // キーワード検索を実行したときの初期ページは1固定
   const [params, setParams] = useState<URLSearchParams>(
     createSearchParams({
-      c: "20",
-      p: "1",
+      limit: "20",
+      page: "1",
     })
   );
 
@@ -21,7 +21,7 @@ export function SearchBar() {
 
     // 入力の度に検索用パラメータを更新する
     setParams((params) => {
-      params.set("q", e.target.value);
+      params.set("keyword", e.target.value);
       return params;
     });
   };

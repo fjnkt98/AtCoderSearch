@@ -1,10 +1,10 @@
 import { FacetCount } from "./FacetCount";
 import { SortOrder } from "./SortOrder";
-import { Facet } from "../types/response";
+import { FacetResult } from "../types/response";
 
 type Props = {
   searchParams: URLSearchParams;
-  facet: Map<string, Facet>;
+  facet: Map<string, FacetResult>;
 };
 
 export function SideBar({ searchParams, facet }: Props) {
@@ -15,7 +15,6 @@ export function SideBar({ searchParams, facet }: Props) {
       counts,
     });
   }
-  facets.sort((a, b) => (a.field > b.field ? 1 : -1));
 
   return (
     <div className="px-0 py-6">
