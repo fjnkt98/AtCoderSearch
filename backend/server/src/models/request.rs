@@ -437,4 +437,126 @@ mod test {
 
         assert_eq!(qs, expected)
     }
+
+    /// 単一カテゴリ絞り込みテスト
+    #[test]
+    fn filter_by_single_category() {
+        let params = SearchParams {
+            keyword: None,
+            limit: None,
+            page: None,
+            filter: Some(FilteringParameters {
+                category: Some(vec![String::from("ABC")]),
+                difficulty: None,
+            }),
+            sort: None,
+        };
+
+        let qs = params
+            .as_qs()
+            .into_iter()
+            .filter(|(key, _)| key == "fq")
+            .collect_vec();
+        let expected = vec![("fq".to_string(), r#"category:"ABC""#.to_string())];
+
+        assert_eq!(qs, expected);
+    }
+
+    /// 複数カテゴリ絞り込みテスト
+    #[test]
+    fn filter_by_multiple_category() {
+        let params = SearchParams {
+            keyword: None,
+            limit: None,
+            page: None,
+            filter: Some(FilteringParameters {
+                category: Some(vec![
+                    String::from("ABC"),
+                    String::from("Other Contests"),
+                    String::from("ABC-Like"),
+                ]),
+                difficulty: None,
+            }),
+            sort: None,
+        };
+
+        let qs = params
+            .as_qs()
+            .into_iter()
+            .filter(|(key, _)| key == "fq")
+            .collect_vec();
+        let expected = vec![(
+            "fq".to_string(),
+            r#"category:"ABC" OR category:"Other Contests" OR category:"ABC\-Like""#.to_string(),
+        )];
+
+        assert_eq!(qs, expected);
+    }
+
+    /// 難易度絞り込み
+    #[test]
+    fn filter_by_difficulty() {
+        let params = SearchParams {
+            keyword: None,
+            limit: None,
+            page: None,
+            filter: Some(FilteringParameters {
+                category: None,
+                difficulty: Some(RangeFilteringParameter {
+                    from: Some(800),
+                    to: Some(1200),
+                }),
+            }),
+            sort: None,
+        };
+
+        let qs = params
+            .as_qs()
+            .into_iter()
+            .filter(|(key, _)| key == "fq")
+            .collect_vec();
+        let expected = vec![("fq".to_string(), r#"difficulty:[800 TO 1200}"#.to_string())];
+
+        assert_eq!(qs, expected);
+    }
+
+    /// 昇順ソート指定
+    #[test]
+    fn sort_by_ascending() {
+        let params = SearchParams {
+            keyword: None,
+            limit: None,
+            page: None,
+            filter: None,
+            sort: Some(String::from("start_at")),
+        };
+
+        let qs = params
+            .as_qs()
+            .into_iter()
+            .filter(|(key, _)| key == "sort")
+            .collect_vec();
+        let expected = vec![("sort".to_string(), "start_at asc".to_string())];
+        assert_eq!(qs, expected);
+    }
+
+    /// 降順ソート指定
+    #[test]
+    fn sort_by_descending() {
+        let params = SearchParams {
+            keyword: None,
+            limit: None,
+            page: None,
+            filter: None,
+            sort: Some(String::from("-score")),
+        };
+
+        let qs = params
+            .as_qs()
+            .into_iter()
+            .filter(|(key, _)| key == "sort")
+            .collect_vec();
+        let expected = vec![("sort".to_string(), "score desc".to_string())];
+        assert_eq!(qs, expected);
+    }
 }
