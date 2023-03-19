@@ -18,7 +18,7 @@ export function FacetCount({ searchParams, field, counts }: Props) {
   };
 
   return (
-    <div className="my-4 rounded-xl bg-zinc-900 py-2 px-1">
+    <div className="my-4 min-w-[120px] rounded-xl bg-zinc-900 py-2 px-2">
       <div className="flex flex-row items-center justify-between">
         <p className="p-1 text-xl">{field}</p>
         <button className="text-lg text-blue-500" onClick={handleClick}>
@@ -41,7 +41,7 @@ export function FacetCount({ searchParams, field, counts }: Props) {
           <Link
             key={key}
             to={linkTo}
-            className="my-1 flex flex-row justify-between rounded-full bg-slate-800 px-4 py-2"
+            className="my-1 flex min-w-[100px] flex-row justify-between rounded-md px-4 py-2 shadow-sm shadow-black"
           >
             <div>{key}</div>
             <div>{count}</div>

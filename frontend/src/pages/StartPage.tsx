@@ -5,7 +5,7 @@ import { SearchBar } from "../components/SearchBar";
 export function StartPage() {
   return (
     <>
-      <div className="flex min-h-screen flex-col items-center justify-center bg-slate-200 text-gray-900 dark:bg-gray-900 dark:text-slate-100">
+      <div className="flex min-h-screen flex-col items-center justify-center bg-zinc-800 dark:text-slate-200">
         <div className="mx-auto flex w-screen flex-grow flex-col items-center justify-center">
           <Logo isBig={true} />
           <SearchBar />

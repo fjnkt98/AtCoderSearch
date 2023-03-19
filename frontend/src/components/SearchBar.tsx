@@ -1,9 +1,14 @@
-import { useState, ChangeEvent, KeyboardEvent } from "react";
-import { createSearchParams, useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState, ChangeEvent, KeyboardEvent } from "react";
+import {
+  createSearchParams,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import { HiPaperAirplane } from "react-icons/hi";
 import { AiOutlineSearch } from "react-icons/ai";
 
 export function SearchBar() {
+  const inputRef = useRef<HTMLInputElement>(null);
   // 検索キーワード
   const [text, setText] = useState<string>("");
   // 検索用パラメータ
@@ -25,6 +30,15 @@ export function SearchBar() {
       return params;
     });
   };
+
+  const [searchParams] = useSearchParams();
+
+  // ページ遷移時に入力ボックスの中身をクリアさせない
+  useEffect(() => {
+    if (inputRef != null && inputRef.current != null) {
+      inputRef.current.value = searchParams.get("keyword") ?? "";
+    }
+  }, []);
 
   // ページ遷移のためのオブジェクト
   const navigate = useNavigate();
@@ -59,6 +73,7 @@ export function SearchBar() {
         placeholder="Search Problems"
         onChange={handleChange}
         onKeyDown={handleKeyDown}
+        ref={inputRef}
       />
       <button
         type="button"
