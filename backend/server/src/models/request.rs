@@ -298,6 +298,7 @@ where
 mod test {
     use super::*;
 
+    /// すべてのパラメータがデフォルト値のときのテスト
     #[test]
     fn test_default() {
         let params = SearchParams {
@@ -313,7 +314,7 @@ mod test {
         let mut expected = vec![
             ("defType", "edismax"),
             ("f.category.facet.mincount", "1"),
-            ("f.difficulty.facet.range.end", "2000"),
+            ("f.difficulty.facet.range.end", "3600"),
             ("f.difficulty.facet.range.gap", "400"),
             ("f.difficulty.facet.range.other", "all"),
             ("f.difficulty.facet.range.start", "0"),
@@ -335,8 +336,9 @@ mod test {
         assert_eq!(qs, expected)
     }
 
+    /// 検索キーワードが空文字列のときはすべてのドキュメントを取得する
     #[test]
-    fn should_do_wildcard_search_when_q_is_empty() {
+    fn should_do_wildcard_search_when_keyword_is_empty() {
         let params = SearchParams {
             keyword: Some("".to_string()),
             limit: None,
@@ -350,7 +352,7 @@ mod test {
         let mut expected = vec![
             ("defType", "edismax"),
             ("f.category.facet.mincount", "1"),
-            ("f.difficulty.facet.range.end", "2000"),
+            ("f.difficulty.facet.range.end", "3600"),
             ("f.difficulty.facet.range.gap", "400"),
             ("f.difficulty.facet.range.other", "all"),
             ("f.difficulty.facet.range.start", "0"),
@@ -372,8 +374,9 @@ mod test {
         assert_eq!(qs, expected)
     }
 
+    /// limitパラメータに指定した値がrowsパラメータになることを確かめるテスト
     #[test]
-    fn rows_should_equal_to_c_parameter() {
+    fn rows_should_equal_to_limit_parameter() {
         let params = SearchParams {
             keyword: None,
             limit: Some(10),
@@ -387,7 +390,7 @@ mod test {
         let mut expected = vec![
             ("defType", "edismax"),
             ("f.category.facet.mincount", "1"),
-            ("f.difficulty.facet.range.end", "2000"),
+            ("f.difficulty.facet.range.end", "3600"),
             ("f.difficulty.facet.range.gap", "400"),
             ("f.difficulty.facet.range.other", "all"),
             ("f.difficulty.facet.range.start", "0"),
@@ -409,8 +412,9 @@ mod test {
         assert_eq!(qs, expected)
     }
 
+    /// pageパラメータに1が指定されたらstartパラメータが0になることを確かめる
     #[test]
-    fn start_should_equal_to_0_when_p_is_1() {
+    fn start_should_equal_to_0_when_page_is_1() {
         let params = SearchParams {
             keyword: None,
             limit: Some(20),
@@ -424,7 +428,7 @@ mod test {
         let mut expected = vec![
             ("defType", "edismax"),
             ("f.category.facet.mincount", "1"),
-            ("f.difficulty.facet.range.end", "2000"),
+            ("f.difficulty.facet.range.end", "3600"),
             ("f.difficulty.facet.range.gap", "400"),
             ("f.difficulty.facet.range.other", "all"),
             ("f.difficulty.facet.range.start", "0"),
@@ -446,8 +450,9 @@ mod test {
         assert_eq!(qs, expected)
     }
 
+    /// 2ページ目を指定したときstartパラメータに20が指定されることを確かめる
     #[test]
-    fn start_should_equal_to_20_when_p_is_2() {
+    fn start_should_equal_to_20_when_page_is_2() {
         let params = SearchParams {
             keyword: None,
             limit: Some(20),
@@ -461,7 +466,7 @@ mod test {
         let mut expected = vec![
             ("defType", "edismax"),
             ("f.category.facet.mincount", "1"),
-            ("f.difficulty.facet.range.end", "2000"),
+            ("f.difficulty.facet.range.end", "3600"),
             ("f.difficulty.facet.range.gap", "400"),
             ("f.difficulty.facet.range.other", "all"),
             ("f.difficulty.facet.range.start", "0"),
