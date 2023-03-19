@@ -37,9 +37,11 @@ export function SearchResult() {
 
   return (
     <div className="h-full w-full bg-slate-200 text-gray-900 dark:bg-gray-900 dark:text-slate-100">
-      <div className="sticky top-0 mx-auto flex w-full flex-col items-center justify-center bg-slate-200 py-2 pt-6 shadow-sm shadow-black dark:bg-gray-900">
-        <Logo isBig={false} />
-        <SearchBar />
+      <div className="sticky top-0 mx-auto flex w-full flex-col items-center justify-center bg-slate-200 py-2 shadow-sm shadow-black dark:bg-gray-900">
+        <div className="flex w-3/4 flex-row items-center justify-center gap-10">
+          <Logo isBig={false} />
+          <SearchBar />
+        </div>
         <PageNavigation
           searchParams={searchParams}
           maxPageIndex={pages}
