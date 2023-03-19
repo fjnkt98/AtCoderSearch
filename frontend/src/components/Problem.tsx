@@ -15,6 +15,7 @@ export function Problem({ item }: Props) {
   const startAt = dayjs(item.start_at)
     .tz("Asia/Tokyo")
     .format("YYYY/MM/DD HH:mm:ss");
+  const duration = `${item.duration / 60}分間`;
 
   const categoryColor = new Map<string, string>([
     ["ABC", "bg-blue-600"],
@@ -59,18 +60,20 @@ export function Problem({ item }: Props) {
   };
 
   return (
-    <div className="mx-2 my-5 rounded-2xl bg-slate-200 px-2 py-2 text-gray-900 shadow-sm shadow-slate-700 dark:bg-gray-800 dark:text-slate-100">
+    <div className="mx-2 my-5 min-w-[600px] rounded-2xl bg-gray-800 px-2 py-4 text-slate-100 shadow-sm shadow-slate-700">
       <div className="flex flex-row items-center">
-        <img
-          alt="AtCoder Logo"
-          src={atcoderLogo}
-          className="m-2 aspect-square h-12  rounded-full bg-white"
-        />
+        <a href={item.contest_url} target="_blank" rel="noreferrer">
+          <img
+            alt="AtCoder Logo"
+            src={atcoderLogo}
+            className="m-2 aspect-square h-12  rounded-full bg-white"
+          />
+        </a>
         <div className="mx-2">
-          <p className="text-xl">{item.problem_title}</p>
+          <p className="my-1 text-xl">{item.problem_title}</p>
           <a
             href={item.problem_url}
-            className="text-sm text-blue-500"
+            className="text-md text-blue-500"
             target="_blank"
             rel="noreferrer"
           >
@@ -78,19 +81,26 @@ export function Problem({ item }: Props) {
           </a>
         </div>
       </div>
-      <div className="flex flex-row pt-1">
-        <div className="mx-1 rounded-full bg-gray-700 px-2 py-1">{startAt}</div>
+      <div className="my-2">
+        <div className="mx-1 my-1 px-2 text-sm text-slate-400">
+          {item.contest_title}
+        </div>
+        <div className="mx-1 my-1 px-2 text-sm text-slate-400">
+          {startAt} ~ {duration}
+        </div>
+      </div>
+      <div className="mt-2 flex flex-row pt-1">
         <div
           className={`mx-1 rounded-full ${categoryColor.get(
             item.category
-          )} px-2 py-1`}
+          )} select-none px-3 py-2`}
         >
           {item.category}
         </div>
         <div
-          className={`mx-1 rounded-full bg-gray-700 px-2 py-1 ${difficultyColor(
+          className={`mx-1 rounded-full bg-gray-700 px-3 py-2 ${difficultyColor(
             item.difficulty
-          )}`}
+          )} select-none`}
         >
           {item.difficulty}
         </div>
