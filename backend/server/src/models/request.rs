@@ -37,7 +37,7 @@ pub struct SearchParams {
     #[validate(length(max = 200))]
     pub keyword: Option<String>,
     // 1ページ当たり返却数
-    #[validate(range(max = 200))]
+    #[validate(range(min = 1, max = 200))]
     pub limit: Option<u32>,
     // 返却ページ番号
     #[validate(range(min = 1))]
