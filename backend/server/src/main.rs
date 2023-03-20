@@ -129,35 +129,125 @@ mod test {
     }
 
     #[ignore]
+    #[rstest]
+    #[case("")]
+    #[case("高橋")]
+    #[tokio::test]
+    async fn test_keyword(#[case] keyword: &str) {
+        let uri =
+            Url::parse_with_params("https://localhost:8000/api/search", &[("keyword", keyword)])
+                .unwrap();
+
+        let req = Request::builder()
+            .uri(format!("/api/search?{}", uri.query().unwrap()))
+            .method(Method::GET)
+            .body(Body::empty())
+            .unwrap();
+        let res = create_app().await.oneshot(req).await.unwrap();
+
+        assert_eq!(res.status(), 200);
+    }
+
+    #[ignore]
+    #[rstest]
+    #[case("")]
+    #[case("1")]
+    #[case("20")]
+    #[case("200")]
+    #[tokio::test]
+    async fn test_limit(#[case] limit: &str) {
+        let uri = Url::parse_with_params("https://localhost:8000/api/search", &[("limit", limit)])
+            .unwrap();
+
+        let req = Request::builder()
+            .uri(format!("/api/search?{}", uri.query().unwrap()))
+            .method(Method::GET)
+            .body(Body::empty())
+            .unwrap();
+        let res = create_app().await.oneshot(req).await.unwrap();
+
+        assert_eq!(res.status(), 200);
+    }
+
+    #[ignore]
+    #[rstest]
+    #[case("")]
+    #[case("1")]
+    #[case("2")]
+    #[tokio::test]
+    async fn test_page(#[case] page: &str) {
+        let uri =
+            Url::parse_with_params("https://localhost:8000/api/search", &[("page", page)]).unwrap();
+
+        let req = Request::builder()
+            .uri(format!("/api/search?{}", uri.query().unwrap()))
+            .method(Method::GET)
+            .body(Body::empty())
+            .unwrap();
+        let res = create_app().await.oneshot(req).await.unwrap();
+
+        assert_eq!(res.status(), 200);
+    }
+
+    #[ignore]
+    #[rstest]
+    #[case("")]
+    #[case("ABC")]
+    #[case("Other Contests")]
+    #[case("ABC-Like")]
+    #[tokio::test]
+    async fn test_category(#[case] category: &str) {
+        let uri = Url::parse_with_params(
+            "https://localhost:8000/api/search",
+            &[("filter[category][]", category)],
+        )
+        .unwrap();
+
+        let req = Request::builder()
+            .uri(format!("/api/search?{}", uri.query().unwrap()))
+            .method(Method::GET)
+            .body(Body::empty())
+            .unwrap();
+        let res = create_app().await.oneshot(req).await.unwrap();
+
+        assert_eq!(res.status(), 200);
+    }
+
+    #[ignore]
+    #[rstest]
+    #[case("")]
+    #[case("-score")]
+    #[case("difficulty")]
+    #[case("-difficulty")]
+    #[case("start_at")]
+    #[case("-start_at")]
+    #[tokio::test]
+    async fn test_sort(#[case] sort: &str) {
+        let uri =
+            Url::parse_with_params("https://localhost:8000/api/search", &[("sort", sort)]).unwrap();
+
+        let req = Request::builder()
+            .uri(format!("/api/search?{}", uri.query().unwrap()))
+            .method(Method::GET)
+            .body(Body::empty())
+            .unwrap();
+        let res = create_app().await.oneshot(req).await.unwrap();
+
+        assert_eq!(res.status(), 200);
+    }
+
+    #[ignore]
     #[rstest(
-        keyword => ["", "高橋"],
-        limit => [1, 20, 200],
-        page => [1, 2],
-        category => ["", "ABC", "Other Contests", "ABC-Like"],
         difficulty_from => ["", "400"],
         difficulty_to => ["", "1200"],
-        sort => ["", "-score", "start_at", "-start_at", "-difficulty", "difficulty"]
     )]
     #[tokio::test]
-    async fn test(
-        keyword: &str,
-        limit: u32,
-        page: u32,
-        category: &str,
-        difficulty_from: &str,
-        difficulty_to: &str,
-        sort: &str,
-    ) {
+    async fn test_difficulty(difficulty_from: &str, difficulty_to: &str) {
         let uri = Url::parse_with_params(
             "https://localhost:8000/api/search",
             &[
-                ("keyword", keyword),
-                ("limit", &limit.to_string()),
-                ("page", &page.to_string()),
-                ("filter[category][]", category),
                 ("filter[difficulty][from]", difficulty_from),
                 ("filter[difficulty][to]", difficulty_to),
-                ("sort", sort),
             ],
         )
         .unwrap();
