@@ -250,7 +250,7 @@ where
     type Rejection = (StatusCode, Json<SearchResultResponse>);
 
     async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
-        let config = Config::new(1, false);
+        let config = Config::new(2, false);
         let query = parts.uri.query().unwrap_or_default();
         let value: T = config.deserialize_str(query).map_err(|rejection| {
             tracing::error!("Parsing error: {}", rejection);
