@@ -1,11 +1,11 @@
 import { ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
+import { useRecoilValue } from "recoil";
+import { searchParamsStateSelector } from "../libs/searchParamsState";
 
-type Props = {
-  searchParams: URLSearchParams;
-};
+export function SortOrder() {
+  const searchParams = useRecoilValue(searchParamsStateSelector);
 
-export function SortOrder({ searchParams }: Props) {
   const navigate = useNavigate();
 
   const handleChange = (e: ChangeEvent<HTMLSelectElement>) => {

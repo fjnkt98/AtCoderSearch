@@ -1,46 +1,60 @@
 import { FieldFacetResult } from "../types/response";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useRecoilValue } from "recoil";
+import { searchParamsStateSelector } from "../libs/searchParamsState";
 
 type Props = {
   fieldName: string;
   facet: FieldFacetResult;
-  setFilteredSearchParams: React.Dispatch<
-    React.SetStateAction<URLSearchParams>
-  >;
+  setParams: React.Dispatch<React.SetStateAction<Map<string, string>>>;
 };
 
 export function FieldFacetNavigationPart({
   fieldName,
   facet,
-  setFilteredSearchParams,
+  setParams,
 }: Props) {
   const [checkboxState, setCheckboxState] = useState<
     [string, number, boolean][]
   >(facet.counts.map(({ key, count }) => [key, count, false]));
 
-  // setCheckboxState(facet.counts.map(({ key, count }) => [key, count, false]));
-  // useEffect(() => {
-  //   setCheckboxState(facet.counts.map(({ key, count }) => [key, count, false]));
-  // }, [facet]);
-
-  const handleCheckboxChange = (index: number, isChecked: boolean) => {
-    setCheckboxState((previousState) => {
-      previousState[index][2] = isChecked;
-      return previousState;
-    });
-
-    setFilteredSearchParams((previousParams) => {
-      for (const [index, [key, , isChecked]] of checkboxState.entries()) {
-        console.log(isChecked);
-        if (isChecked) {
-          previousParams.set(`filter[${fieldName}][${index}]`, key);
+  const searchParams = useRecoilValue(searchParamsStateSelector);
+  useEffect(() => {
+    setCheckboxState(
+      facet.counts.map(({ key, count }, index) => {
+        if (searchParams.has(`filter[${fieldName}][${index}]`)) {
+          return [key, count, true];
         } else {
-          previousParams.delete(`filter[${fieldName}][${index}]`);
+          return [key, count, false];
         }
-      }
-      console.log(previousParams.toString());
+      })
+    );
+  }, [facet]);
+
+  const addParam = (key: string, value: string) => {
+    setParams((previousParams) => {
+      previousParams.set(key, value);
       return previousParams;
     });
+  };
+
+  const deleteParam = (key: string) => {
+    setParams((previousParams) => {
+      previousParams.delete(key);
+      return previousParams;
+    });
+  };
+
+  const onCheckboxChange = (index: number, key: string, isChecked: boolean) => {
+    setCheckboxState((previous) => {
+      previous[index][2] = isChecked;
+      return previous;
+    });
+    if (isChecked) {
+      addParam(`filter[${fieldName}][${index}]`, key);
+    } else {
+      deleteParam(`filter[${fieldName}][${index}]`);
+    }
   };
 
   return (
@@ -50,18 +64,12 @@ export function FieldFacetNavigationPart({
         <button
           className="text-lg text-blue-500"
           onClick={() => {
-            setFilteredSearchParams((previousParams) => {
-              const target = Array.from(previousParams.keys()).filter((key) =>
-                key.startsWith(`filter[${fieldName}]`)
-              );
-              for (const key of target) {
-                previousParams.delete(key);
-              }
-              return previousParams;
+            for (const [index] of checkboxState.entries()) {
+              deleteParam(`filter[${fieldName}][${index}]`);
+            }
+            setCheckboxState((previous) => {
+              return previous.map(([key, count]) => [key, count, false]);
             });
-            // setCheckboxState((previous) => {
-            //   return previous.map(([key, count]) => [key, count, false]);
-            // });
           }}
         >
           reset
@@ -75,7 +83,8 @@ export function FieldFacetNavigationPart({
             facetKey={key}
             count={count}
             index={index}
-            onCheckboxChange={handleCheckboxChange}
+            checked={checked}
+            onCheckboxChange={onCheckboxChange}
           />
         ))}
       </div>
@@ -87,35 +96,43 @@ type CheckboxProps = {
   facetKey: string;
   count: number;
   index: number;
-  onCheckboxChange: (index: number, isChecked: boolean) => void;
+  checked: boolean;
+  onCheckboxChange: (index: number, key: string, isChecked: boolean) => void;
 };
 
 function FilteringCheckBox({
   facetKey,
   count,
   index,
+  checked,
   onCheckboxChange,
 }: CheckboxProps) {
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    onCheckboxChange(index, event.target.checked);
-  };
+  const checkbox = useRef<HTMLInputElement>(null);
+  if (checkbox != null && checkbox.current != null) {
+    checkbox.current.checked = checked;
+  }
+
   return (
-    <div className="flex flex-row items-center justify-between">
+    <div className="my-3 flex flex-row items-center justify-between rounded-xl shadow-sm shadow-gray-700">
       <input
         id={`${facetKey}-filtering-${index}`}
         type="checkbox"
-        className="inline-block h-4 w-4 rounded-xl focus:border-blue-600 focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50"
-        onChange={handleChange}
+        className="mx-1 inline-block h-4 w-4 rounded-xl focus:border-blue-600 focus:ring-2 focus:ring-blue-600 focus:ring-opacity-50"
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+          onCheckboxChange(index, facetKey, e.target.checked);
+        }}
+        defaultChecked={checked}
+        ref={checkbox}
       />
       <label
         htmlFor={`${facetKey}-filtering-${index}`}
-        className="inline-block flex-auto cursor-pointer select-none break-all"
+        className="mx-1 inline-block flex-grow cursor-pointer select-none break-all"
       >
         {facetKey}
       </label>
       <label
         htmlFor={`${facetKey}-filtering-${index}`}
-        className="inline-block flex-auto cursor-pointer select-none break-all"
+        className="mx-1 inline-block cursor-pointer select-none break-all"
       >
         {count}
       </label>

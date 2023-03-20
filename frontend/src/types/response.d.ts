@@ -10,10 +10,7 @@ export type Stats = {
   index: number;
   pages: number;
   count: number;
-  facet: {
-    category: FieldFacetResult;
-    difficulty: RangeFacetResult;
-  };
+  facet: FacetResults;
 };
 
 export type Item = {
@@ -28,6 +25,11 @@ export type Item = {
   duration: number;
   rate_change: string;
   category: string;
+};
+
+export type FacetResults = {
+  category: FieldFacetResult;
+  difficulty: RangeFacetResult;
 };
 
 export type FieldFacetResult = {

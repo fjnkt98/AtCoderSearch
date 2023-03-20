@@ -1,19 +1,16 @@
 import { useState } from "react";
-import { FieldFacetResult, RangeFacetResult } from "../types/response";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, createSearchParams } from "react-router-dom";
 import { FieldFacetNavigationPart } from "./FieldFacetNavigationPart";
+import { useRecoilValue } from "recoil";
+import { searchResponseFacetSelector } from "../libs/searchResponseState";
+import { searchParamsStateSelector } from "../libs/searchParamsState";
 
-type Props = {
-  searchParams: URLSearchParams;
-  facets: {
-    category: FieldFacetResult;
-    difficulty: RangeFacetResult;
-  };
-};
-
-export function FacetNavigation({ searchParams, facets }: Props) {
-  const [filteredSearchParams, setFilteredSearchParams] =
-    useState<URLSearchParams>(searchParams);
+export function FacetNavigation() {
+  const searchParams = useRecoilValue(searchParamsStateSelector);
+  const [params, setParams] = useState<Map<string, string>>(
+    new Map<string, string>()
+  );
+  const facets = useRecoilValue(searchResponseFacetSelector);
 
   const navigate = useNavigate();
 
@@ -22,12 +19,23 @@ export function FacetNavigation({ searchParams, facets }: Props) {
       <FieldFacetNavigationPart
         fieldName="category"
         facet={facets.category}
-        setFilteredSearchParams={setFilteredSearchParams}
+        setParams={setParams}
       />
 
       <button
-        className=""
+        className="my-1 mx-2 rounded-full bg-teal-800 py-2"
         onClick={() => {
+          const filteredSearchParams = createSearchParams();
+          for (const [key, value] of searchParams.entries()) {
+            if (!key.startsWith("filter")) {
+              filteredSearchParams.set(key, value);
+            }
+          }
+          for (const [key, value] of params.entries()) {
+            filteredSearchParams.set(key, value);
+          }
+
+          console.log(filteredSearchParams.toString());
           navigate(`/search?${filteredSearchParams.toString()}`);
         }}
       >

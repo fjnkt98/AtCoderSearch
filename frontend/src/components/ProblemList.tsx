@@ -1,11 +1,10 @@
 import { Problem } from "./Problem";
-import { Item } from "../types/response";
+import { useRecoilValue } from "recoil";
+import { searchResponseItemsSelector } from "../libs/searchResponseState";
 
-type Props = {
-  items: Item[];
-};
+export function ProblemList() {
+  const items = useRecoilValue(searchResponseItemsSelector);
 
-export function ProblemList({ items }: Props) {
   return (
     <div>
       {items.map((item) => {
