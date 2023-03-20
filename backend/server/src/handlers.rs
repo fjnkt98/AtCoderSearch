@@ -130,17 +130,27 @@ async fn generate_response(
 
     // キーワード検索のときのみロギングする
     if let Some(params) = response.header.params {
-        if let Some(q) = params.get("q").and_then(|q| {
-            let q = q.to_string().trim_matches('"').to_string();
-            if q.is_empty() {
-                None
-            } else {
-                Some(q)
-            }
-        }) {
+        let q = params
+            .get("q")
+            .and_then(|q| q.as_str().map(|q| q.replace(r#"\"#, "").to_string()));
+        let start = match params.get("start").and_then(|start| start.as_str()) {
+            None => Some(0),
+            Some("0") => Some(0),
+            _ => None,
+        };
+        let sort = match params.get("sort").and_then(|sort| sort.as_str()) {
+            None => Some("score desc"),
+            Some("score desc") => Some("score desc"),
+            _ => None,
+        };
+        let fq = params.get("fq");
+        if let (Some(q), Some(_start), Some(_sort), None) = (q, start, sort, fq) {
+            // 以下の条件をすべて満たすときのみロギングを行う
+            // - 空文字列でないキーワード検索が実行された
+            // - オフセットが0である
+            // - ソート順が-scoreである
+            // - 絞り込みが実行されていない
             let words = q.split_whitespace().collect::<Vec<&str>>();
-            // 空文字列でないキーワード検索が実行されたときのみロギングする
-            // オフセットが指定された場合はロギングしない(多重カウントになるので)
             if response.response.start == 0 && words.len() > 0 {
                 // 複数キーワード検索か否かを判断する
                 let word_type = if words.len() > 1 {
