@@ -15,7 +15,7 @@ use solrust::querybuilder::{
     common::SolrCommonQueryBuilder,
     dismax::SolrDisMaxQueryBuilder,
     edismax::{EDisMaxQueryBuilder, SolrEDisMaxQueryBuilder},
-    facet::{FieldFacetBuilder, RangeFacetBuilder, RangeFacetOtherOptions},
+    facet::{FieldFacetBuilder, FieldFacetSortOrder, RangeFacetBuilder, RangeFacetOtherOptions},
     q::{
         Aggregation, Operator, PhraseQueryOperand, QueryExpression, QueryOperand, RangeQueryOperand,
     },
@@ -76,7 +76,9 @@ impl SearchParams {
     /// リクエストパラメータからSolrへのリクエストパラメータを生成するメソッド
     /// Solrへ送るパラメータはすべてここで生成する
     pub fn as_qs(&self) -> Vec<(String, String)> {
-        let category_facet = FieldFacetBuilder::new("category").min_count(1);
+        let category_facet = FieldFacetBuilder::new("category")
+            .min_count(0)
+            .sort(FieldFacetSortOrder::Index);
         let difficulty_facet = RangeFacetBuilder::new(
             "difficulty",
             0.to_string(),

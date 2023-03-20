@@ -16,7 +16,23 @@ export function SearchResult() {
       pages: 0,
       index: 0,
       count: 0,
-      facet: new Map(),
+      facet: {
+        category: {
+          counts: [],
+          range_info: null,
+        },
+        difficulty: {
+          counts: [],
+          range_info: {
+            start: "0",
+            end: "0",
+            gap: "0",
+            after: null,
+            before: null,
+            between: null,
+          },
+        },
+      },
     },
     items: [],
     message: null,
@@ -49,7 +65,7 @@ export function SearchResult() {
 
       <div className="flex flex-col px-6 lg:flex-row">
         <div className="mr-4 w-1/4 p-2">
-          <SideBar searchParams={searchParams} facet={response.stats.facet} />
+          <SideBar searchParams={searchParams} facets={response.stats.facet} />
         </div>
         <div className="w-3/4">
           <div className="mx-4 mt-6 text-slate-400">

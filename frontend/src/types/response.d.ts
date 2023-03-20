@@ -10,7 +10,10 @@ export type Stats = {
   index: number;
   pages: number;
   count: number;
-  facet: Map<string, FacetResult>;
+  facet: {
+    category: FieldFacetResult;
+    difficulty: RangeFacetResult;
+  };
 };
 
 export type Item = {
@@ -27,9 +30,14 @@ export type Item = {
   category: string;
 };
 
-export type FacetResult = {
+export type FieldFacetResult = {
   counts: FacetCount[];
-  range_info: RangeFacetInfo | null;
+  range_info: null;
+};
+
+export type RangeFacetResult = {
+  counts: FacetCount[];
+  range_info: RangeFacetInfo;
 };
 
 export type RangeFacetInfo = {
