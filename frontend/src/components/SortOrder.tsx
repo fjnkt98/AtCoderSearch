@@ -9,9 +9,11 @@ export function SortOrder({ searchParams }: Props) {
   const navigate = useNavigate();
 
   const handleChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    searchParams.set("page", "1");
-    searchParams.set("sort", e.target.value);
-    navigate(`/search?${searchParams.toString()}`);
+    const params = new URLSearchParams(searchParams);
+    params.set("page", "1");
+    params.set("sort", e.target.value);
+
+    navigate(`/search?${params.toString()}`);
   };
 
   return (

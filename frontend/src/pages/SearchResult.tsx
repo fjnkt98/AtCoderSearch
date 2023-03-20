@@ -1,37 +1,35 @@
 import { useState, useEffect } from "react";
-import { api_host } from "../libs/api_host";
+import { apiHost } from "../libs/apiHost";
 import { Logo } from "../components/Logo";
 import { ProblemList } from "../components/ProblemList";
 import { SearchBar } from "../components/SearchBar";
 import { SideBar } from "../components/SideBar";
 import { useSearchParams } from "react-router-dom";
-import { SearchResponse, Item, FacetResult } from "../types/response";
-import { PageNavigation } from "../components/PageNaviigation";
+import { SearchResponse } from "../types/response";
+import { PageNavigation } from "../components/PageNavigation";
 
 export function SearchResult() {
-  const [items, setItems] = useState<Item[]>([]);
-  const [facet, setFacet] = useState<Map<string, FacetResult>>(new Map());
-  const [total, setTotal] = useState<number>(0);
-  const [time, setTime] = useState<number>(0);
-  const [count, setCount] = useState<number>(0);
-  const [pages, setPages] = useState<number>(0);
-  const [index, setIndex] = useState<number>(0);
+  const [response, setResponse] = useState<SearchResponse>({
+    stats: {
+      time: 0,
+      total: 0,
+      pages: 0,
+      index: 0,
+      count: 0,
+      facet: new Map(),
+    },
+    items: [],
+    message: null,
+  });
 
-  const [searchParams] = useSearchParams();
+  const searchParams = useSearchParams()[0];
 
   useEffect(() => {
     (async () => {
-      const url = new URL("/api/search", api_host);
+      const url = new URL("/api/search", apiHost);
       const response = await fetch(`${url}?${searchParams.toString()}`);
       const content: SearchResponse = await response.json();
-      setItems(content.items);
-      setFacet(content.stats.facet);
-      setTotal(content.stats.total);
-      setTime(content.stats.time);
-      setCount(content.stats.count);
-      setPages(content.stats.pages);
-      setIndex(content.stats.index);
-      console.log(content.stats.time);
+      setResponse(content);
     })();
   }, [searchParams]);
 
@@ -44,21 +42,22 @@ export function SearchResult() {
         </div>
         <PageNavigation
           searchParams={searchParams}
-          maxPageIndex={pages}
-          currentPageIndex={index}
+          maxPageIndex={response?.stats.pages}
+          currentPageIndex={response?.stats.index}
         />
       </div>
 
       <div className="flex flex-col px-6 lg:flex-row">
         <div className="mr-4 w-1/4 p-2">
-          <SideBar searchParams={searchParams} facet={facet} />
+          <SideBar searchParams={searchParams} facet={response.stats.facet} />
         </div>
         <div className="w-3/4">
           <div className="mx-4 mt-6 text-slate-400">
-            {count}件/{total}件 約{time / 1000}秒
+            {response.stats.count}件/{response.stats.total}件 約
+            {response.stats.time / 1000}秒
           </div>
           <div>
-            <ProblemList items={items} />
+            <ProblemList items={response.items} />
           </div>
         </div>
       </div>

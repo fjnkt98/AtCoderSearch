@@ -31,26 +31,21 @@ export function SearchBar() {
     });
   };
 
-  const [searchParams] = useSearchParams();
-
   // ページ遷移時に入力ボックスの中身をクリアさせない
+  const searchParams = useSearchParams()[0];
   useEffect(() => {
     if (inputRef != null && inputRef.current != null) {
       inputRef.current.value = searchParams.get("keyword") ?? "";
     }
   }, []);
 
-  // ページ遷移のためのオブジェクト
   const navigate = useNavigate();
-
-  // 検索結果ページへ遷移する関数
   const search = () => {
     // 空白文字だけの場合は検索を実行しない
     if (text.trim() === "") {
       return;
     }
 
-    // 検索APIは検索結果ページに遷移して初めて実行される
     navigate(`/search?${params.toString()}`);
   };
 
