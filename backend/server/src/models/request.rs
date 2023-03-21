@@ -49,6 +49,18 @@ pub struct SearchParams {
     pub sort: Option<String>,
 }
 
+impl SearchParams {
+    pub fn empty() -> Self {
+        Self {
+            keyword: None,
+            limit: None,
+            page: None,
+            filter: None,
+            sort: None,
+        }
+    }
+}
+
 /// fパラメータに指定できる値
 #[derive(Debug, Serialize, Deserialize, Clone, Validate)]
 pub struct FilteringParameters {
@@ -82,7 +94,7 @@ impl SearchParams {
         let difficulty_facet = RangeFacetBuilder::new(
             "difficulty",
             0.to_string(),
-            3600.to_string(),
+            4000.to_string(),
             400.to_string(),
         )
         .other(RangeFacetOtherOptions::All);
@@ -172,7 +184,8 @@ where
                     index: 0,
                     pages: 0,
                     count: 0,
-                    facet: FacetResult::from(None),
+                    params: SearchParams::empty(),
+                    facet: FacetResult::empty(),
                 };
                 (
                     StatusCode::BAD_REQUEST,
@@ -192,7 +205,8 @@ where
                 index: 0,
                 pages: 0,
                 count: 0,
-                facet: FacetResult::from(None),
+                params: SearchParams::empty(),
+                facet: FacetResult::empty(),
             };
             (
                 StatusCode::BAD_REQUEST,
@@ -250,7 +264,7 @@ where
     type Rejection = (StatusCode, Json<SearchResultResponse>);
 
     async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
-        let config = Config::new(2, false);
+        let config = Config::new(2, true);
         let query = parts.uri.query().unwrap_or_default();
         let value: T = config.deserialize_str(query).map_err(|rejection| {
             tracing::error!("Parsing error: {}", rejection);
@@ -260,7 +274,8 @@ where
                 index: 0,
                 pages: 0,
                 count: 0,
-                facet: FacetResult::from(None),
+                params: SearchParams::empty(),
+                facet: FacetResult::empty(),
             };
             (
                 StatusCode::BAD_REQUEST,
@@ -280,7 +295,8 @@ where
                 index: 0,
                 pages: 0,
                 count: 0,
-                facet: FacetResult::from(None),
+                params: SearchParams::empty(),
+                facet: FacetResult::empty(),
             };
             (
                 StatusCode::BAD_REQUEST,
@@ -316,8 +332,9 @@ mod test {
         let expected = sorted(
             [
                 ("defType", "edismax"),
-                ("f.category.facet.mincount", "1"),
-                ("f.difficulty.facet.range.end", "3600"),
+                ("f.category.facet.mincount", "0"),
+                ("f.category.facet.sort", "index"),
+                ("f.difficulty.facet.range.end", "4000"),
                 ("f.difficulty.facet.range.gap", "400"),
                 ("f.difficulty.facet.range.other", "all"),
                 ("f.difficulty.facet.range.start", "0"),
@@ -353,8 +370,9 @@ mod test {
         let expected = sorted(
             [
                 ("defType", "edismax"),
-                ("f.category.facet.mincount", "1"),
-                ("f.difficulty.facet.range.end", "3600"),
+                ("f.category.facet.mincount", "0"),
+                ("f.category.facet.sort", "index"),
+                ("f.difficulty.facet.range.end", "4000"),
                 ("f.difficulty.facet.range.gap", "400"),
                 ("f.difficulty.facet.range.other", "all"),
                 ("f.difficulty.facet.range.start", "0"),

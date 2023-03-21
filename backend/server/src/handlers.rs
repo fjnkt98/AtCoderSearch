@@ -12,12 +12,12 @@ use uuid::Uuid;
 
 #[tracing::instrument(target = "querylog", skip(core))]
 pub async fn search_with_qs(
-    ValidatedSearchQueryParams(params): ValidatedSearchQueryParams<SearchParams>,
+    ValidatedSearchQueryParams(query_params): ValidatedSearchQueryParams<SearchParams>,
     Extension(core): Extension<Arc<SolrCore>>,
 ) -> Result<impl IntoResponse, (StatusCode, Json<SearchResultResponse>)> {
     let start = Instant::now();
 
-    let params = params.as_qs();
+    let params = query_params.as_qs();
 
     let response = match core.select(&params).await {
         Ok(response) => response,
@@ -26,30 +26,38 @@ pub async fn search_with_qs(
                 tracing::error!("{}", e.to_string());
                 return Err((
                     StatusCode::INTERNAL_SERVER_ERROR,
-                    Json(generate_error_response(&e.to_string())),
+                    Json(generate_error_response(&query_params, &e.to_string())),
                 ));
             }
             SolrCoreError::DeserializeError(e) => {
                 tracing::error!("{}", e.to_string());
                 return Err((
                     StatusCode::INTERNAL_SERVER_ERROR,
-                    Json(generate_error_response(&e.to_string())),
+                    Json(generate_error_response(&query_params, &e.to_string())),
                 ));
             }
             SolrCoreError::UnexpectedError((code, msg)) => {
                 tracing::error!("{}:{}", code, msg);
-                return Err((StatusCode::BAD_REQUEST, Json(generate_error_response(&msg))));
+                return Err((
+                    StatusCode::BAD_REQUEST,
+                    Json(generate_error_response(&query_params, &msg)),
+                ));
             }
         },
     };
 
-    let response = generate_response(response, start).await.or_else(|e| {
-        tracing::error!("{}", e.to_string());
-        return Err((
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(generate_error_response("Failed to generate response.")),
-        ));
-    })?;
+    let response = generate_response(&query_params, response, start)
+        .await
+        .or_else(|e| {
+            tracing::error!("{}", e.to_string());
+            return Err((
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(generate_error_response(
+                    &query_params,
+                    "Failed to generate response.",
+                )),
+            ));
+        })?;
 
     Ok((StatusCode::OK, Json(response)))
 }
@@ -57,11 +65,11 @@ pub async fn search_with_qs(
 #[tracing::instrument(target = "querylog", skip(core))]
 pub async fn search_with_json(
     Extension(core): Extension<Arc<SolrCore>>,
-    ValidatedSearchJson(params): ValidatedSearchJson<SearchParams>,
+    ValidatedSearchJson(query_params): ValidatedSearchJson<SearchParams>,
 ) -> Result<impl IntoResponse, (StatusCode, Json<SearchResultResponse>)> {
     let start = Instant::now();
 
-    let params = params.as_qs();
+    let params = query_params.as_qs();
 
     let response = match core.select(&params).await {
         Ok(response) => response,
@@ -70,35 +78,44 @@ pub async fn search_with_json(
                 tracing::error!("{}", e.to_string());
                 return Err((
                     StatusCode::INTERNAL_SERVER_ERROR,
-                    Json(generate_error_response(&e.to_string())),
+                    Json(generate_error_response(&query_params, &e.to_string())),
                 ));
             }
             SolrCoreError::DeserializeError(e) => {
                 tracing::error!("{}", e.to_string());
                 return Err((
                     StatusCode::INTERNAL_SERVER_ERROR,
-                    Json(generate_error_response(&e.to_string())),
+                    Json(generate_error_response(&query_params, &e.to_string())),
                 ));
             }
             SolrCoreError::UnexpectedError((code, msg)) => {
                 tracing::error!("{}:{}", code, msg);
-                return Err((StatusCode::BAD_REQUEST, Json(generate_error_response(&msg))));
+                return Err((
+                    StatusCode::BAD_REQUEST,
+                    Json(generate_error_response(&query_params, &msg)),
+                ));
             }
         },
     };
 
-    let response = generate_response(response, start).await.or_else(|e| {
-        tracing::error!("{}", e.to_string());
-        return Err((
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(generate_error_response("Failed to generate response.")),
-        ));
-    })?;
+    let response = generate_response(&query_params, response, start)
+        .await
+        .or_else(|e| {
+            tracing::error!("{}", e.to_string());
+            return Err((
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(generate_error_response(
+                    &query_params,
+                    "Failed to generate response.",
+                )),
+            ));
+        })?;
 
     Ok((StatusCode::OK, Json(response)))
 }
 
 async fn generate_response(
+    query_params: &SearchParams,
     response: SolrSelectResponse<Document>,
     start: Instant,
 ) -> Result<SearchResultResponse> {
@@ -125,14 +142,13 @@ async fn generate_response(
         index,
         count,
         pages,
+        params: query_params.clone(),
         facet: FacetResult::from(response.facet_counts),
     };
 
     // キーワード検索のときのみロギングする
     if let Some(params) = response.header.params {
-        let q = params
-            .get("q")
-            .and_then(|q| q.as_str().map(|q| q.replace(r#"\"#, "").to_string()));
+        let q = query_params.keyword.clone();
         let start = match params.get("start").and_then(|start| start.as_str()) {
             None => Some(0),
             Some("0") => Some(0),
@@ -173,14 +189,15 @@ async fn generate_response(
     })
 }
 
-fn generate_error_response(message: &str) -> SearchResultResponse {
+fn generate_error_response(params: &SearchParams, message: &str) -> SearchResultResponse {
     let stats = SearchResultStats {
         time: 0,
         total: 0,
         index: 0,
         pages: 0,
         count: 0,
-        facet: FacetResult::from(None),
+        params: params.clone(),
+        facet: FacetResult::empty(),
     };
     let response = SearchResultResponse {
         stats,

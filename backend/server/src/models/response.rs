@@ -1,9 +1,9 @@
+use crate::models::SearchParams;
 use chrono::{Local, TimeZone, Utc};
 use itertools::Itertools;
 use serde::ser::Error;
 use serde::{Deserialize, Serialize, Serializer};
 use solrust::types::response::{SolrFacetBody, SolrRangeFacetKind};
-use std::collections::BTreeMap;
 
 /// レスポンスのボディに乗せるJSONのスキーマ
 #[derive(Debug, Serialize, Deserialize)]
@@ -23,119 +23,101 @@ pub struct SearchResultStats {
     pub index: u32,
     pub pages: u32,
     pub count: u32,
+    pub params: SearchParams,
     pub facet: FacetResult,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct FacetResult(BTreeMap<String, FacetResultPart>);
+pub struct FacetResult {
+    pub category: FieldFacetResultPart,
+    pub difficulty: RangeFacetResultPart,
+}
 
-impl From<Option<SolrFacetBody>> for FacetResult {
-    fn from(facet: Option<SolrFacetBody>) -> FacetResult {
-        let mut result: BTreeMap<String, FacetResultPart> = BTreeMap::new();
-        if let Some(facet) = facet {
-            for (key, value) in facet.facet_fields.iter() {
-                result.insert(
-                    key.clone(),
-                    FacetResultPart {
-                        counts: value
-                            .iter()
-                            .map(|(key, count)| FacetCount {
-                                key: key.clone(),
-                                count: count.clone(),
-                            })
-                            .collect(),
-                        range_info: None,
-                    },
-                );
-            }
-
-            for (key, value) in facet.facet_ranges.iter() {
-                result.insert(
-                    key.clone(),
-                    match value {
-                        SolrRangeFacetKind::Integer(count) => FacetResultPart {
-                            counts: count
-                                .counts
-                                .iter()
-                                .tuple_windows()
-                                .map(|(begin, end)| FacetCount {
-                                    key: format!("{} ~ {}", begin.0, end.0),
-                                    count: begin.1,
-                                })
-                                .collect(),
-                            range_info: Some(RangeFacetInfo {
-                                start: count.start.to_string(),
-                                end: count.end.to_string(),
-                                gap: count.gap.to_string(),
-                                before: count.before.and_then(|before| Some(before.to_string())),
-                                after: count.after.and_then(|after| Some(after.to_string())),
-                                between: count.after.and_then(|between| Some(between.to_string())),
-                            }),
-                        },
-                        SolrRangeFacetKind::Float(count) => FacetResultPart {
-                            counts: count
-                                .counts
-                                .iter()
-                                .tuple_windows()
-                                .map(|(begin, end)| FacetCount {
-                                    key: format!("{} ~ {}", begin.0, end.0),
-                                    count: begin.1,
-                                })
-                                .collect(),
-                            range_info: Some(RangeFacetInfo {
-                                start: count.start.to_string(),
-                                end: count.end.to_string(),
-                                gap: count.gap.to_string(),
-                                before: count.before.and_then(|before| Some(before.to_string())),
-                                after: count.after.and_then(|after| Some(after.to_string())),
-                                between: count.after.and_then(|between| Some(between.to_string())),
-                            }),
-                        },
-                        SolrRangeFacetKind::DateTime(count) => FacetResultPart {
-                            counts: count
-                                .counts
-                                .iter()
-                                .tuple_windows()
-                                .map(|(begin, end)| FacetCount {
-                                    key: format!("{} ~ {}", begin.0, end.0),
-                                    count: begin.1,
-                                })
-                                .collect(),
-                            range_info: Some(RangeFacetInfo {
-                                start: count.start.format("%Y-%m-%dT%H:%M:%S%:z").to_string(),
-                                end: count.end.format("%Y-%m-%dT%H:%M:%S%:z").to_string(),
-                                gap: count.gap.clone(),
-                                before: count.before.and_then(|before| {
-                                    Some(before.format("%Y-%m-%dT%H:%M:%S%:z").to_string())
-                                }),
-                                after: count.after.and_then(|after| {
-                                    Some(after.format("%Y-%m-%dT%H:%M:%S%:z").to_string())
-                                }),
-                                between: count.after.and_then(|between| {
-                                    Some(between.format("%Y-%m-%dT%H:%M:%S%:z").to_string())
-                                }),
-                            }),
-                        },
-                    },
-                );
-            }
+impl FacetResult {
+    pub fn empty() -> Self {
+        Self {
+            category: FieldFacetResultPart::empty(),
+            difficulty: RangeFacetResultPart::empty(),
         }
-
-        FacetResult(result)
     }
 }
 
-/// ファセット結果を格納するフィールドのスキーマ
-/// フィールドファセットもレンジファセットも同じスキーマにしている
-/// (なのでフィールドファセットの場合startやend等のフィールドは完全に無駄になる。どうにかしたい)
-#[derive(Debug, Serialize, Deserialize)]
-pub struct FacetResultPart {
-    pub counts: Vec<FacetCount>,
-    pub range_info: Option<RangeFacetInfo>,
+impl From<Option<SolrFacetBody>> for FacetResult {
+    fn from(facet: Option<SolrFacetBody>) -> FacetResult {
+        let result = if let Some(facet) = facet {
+            let category = if let Some(counts) = facet.facet_fields.get("category") {
+                FieldFacetResultPart {
+                    counts: counts
+                        .iter()
+                        .cloned()
+                        .map(|(key, count)| FieldFacetCount { key, count })
+                        .collect_vec(),
+                }
+            } else {
+                FieldFacetResultPart::empty()
+            };
+            let difficulty = if let Some(ranges) = facet.facet_ranges.get("difficulty") {
+                match ranges {
+                    SolrRangeFacetKind::Integer(range) => {
+                        let mut counts = range.counts.clone();
+                        counts.push((range.end.to_string(), 0));
+
+                        RangeFacetResultPart {
+                            counts: counts
+                                .iter()
+                                .cloned()
+                                .tuple_windows()
+                                .map(|(begin, end)| RangeFacetCount {
+                                    begin: begin.0,
+                                    end: end.0,
+                                    count: begin.1,
+                                })
+                                .collect(),
+                            start: range.start.to_string(),
+                            end: range.end.to_string(),
+                            gap: range.gap.to_string(),
+                            before: range.before.and_then(|before| Some(before.to_string())),
+                            after: range.after.and_then(|after| Some(after.to_string())),
+                            between: range.after.and_then(|between| Some(between.to_string())),
+                        }
+                    }
+                    _ => RangeFacetResultPart::empty(),
+                }
+            } else {
+                RangeFacetResultPart::empty()
+            };
+            FacetResult {
+                category,
+                difficulty,
+            }
+        } else {
+            FacetResult::empty()
+        };
+
+        result
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct RangeFacetInfo {
+pub struct FieldFacetResultPart {
+    pub counts: Vec<FieldFacetCount>,
+}
+
+impl FieldFacetResultPart {
+    pub fn empty() -> Self {
+        Self { counts: Vec::new() }
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct FieldFacetCount {
+    pub key: String,
+    pub count: u32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct RangeFacetResultPart {
+    pub counts: Vec<RangeFacetCount>,
     pub start: String,
     pub end: String,
     pub gap: String,
@@ -144,9 +126,24 @@ pub struct RangeFacetInfo {
     pub between: Option<String>,
 }
 
+impl RangeFacetResultPart {
+    pub fn empty() -> Self {
+        Self {
+            counts: Vec::new(),
+            start: String::from(""),
+            end: String::from(""),
+            gap: String::from(""),
+            before: None,
+            after: None,
+            between: None,
+        }
+    }
+}
+
 #[derive(Debug, Serialize, Deserialize)]
-pub struct FacetCount {
-    pub key: String,
+pub struct RangeFacetCount {
+    pub begin: String,
+    pub end: String,
     pub count: u32,
 }
 
