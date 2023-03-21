@@ -13,7 +13,7 @@ pub struct Record {
     pub problem_url: String,
     pub contest_id: String,
     pub contest_title: String,
-    pub difficulty: i32,
+    pub difficulty: Option<i32>,
     pub start_at: i64,
     pub duration: i64,
     pub rate_change: String,
@@ -63,7 +63,7 @@ pub struct Document {
     pub contest_id: String,
     pub contest_title: String,
     pub contest_url: String,
-    pub difficulty: i32,
+    pub difficulty: Option<i32>,
     // #[serde(default)]
     // #[serde_as(as = "SolrDateTime")]
     pub start_at: i64,

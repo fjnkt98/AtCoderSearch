@@ -273,21 +273,15 @@ impl<'a> ProblemCrawler<'a> {
     }
 
     /// 問題データをデータベースに格納するメソッド
-    /// 難易度情報が存在しない問題のDifficultyは-99999にしている
     pub async fn save(&self, problems: &Vec<Problem>) -> Result<()> {
         let mut tx = self.pool.begin().await?;
 
         let difficulties = self.get_difficulties().await?;
 
         for problem in problems.iter() {
-            let difficulty = if difficulties.contains_key(&problem.id) {
-                match difficulties.get(&problem.id).unwrap().difficulty {
-                    Some(difficulty) => difficulty,
-                    None => -99999,
-                }
-            } else {
-                -99999
-            };
+            let difficulty = difficulties
+                .get(&problem.id)
+                .and_then(|difficulty| difficulty.difficulty);
 
             let result = sqlx::query(r"
                 MERGE INTO problems
