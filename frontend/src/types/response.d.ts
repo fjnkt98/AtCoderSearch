@@ -33,16 +33,16 @@ export type FacetResults = {
 };
 
 export type FieldFacetResult = {
-  counts: FacetCount[];
-  range_info: null;
+  counts: FieldFacetCount[];
+};
+
+export type FieldFacetCount = {
+  key: string;
+  count: number;
 };
 
 export type RangeFacetResult = {
-  counts: FacetCount[];
-  range_info: RangeFacetInfo;
-};
-
-export type RangeFacetInfo = {
+  counts: RangeFacetCount[];
   start: string;
   end: string;
   gap: string;
@@ -51,7 +51,8 @@ export type RangeFacetInfo = {
   between: string | null;
 };
 
-export type FacetCount = {
-  key: string;
+export type RangeFacetCount = {
+  begin: string;
+  end: string;
   count: number;
 };

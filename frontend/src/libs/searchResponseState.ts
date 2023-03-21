@@ -13,18 +13,15 @@ export const searchResponseState = recoil.atom<SearchResponse>({
       facet: {
         category: {
           counts: [],
-          range_info: null,
         },
         difficulty: {
           counts: [],
-          range_info: {
-            start: "0",
-            end: "0",
-            gap: "0",
-            before: null,
-            between: null,
-            after: null,
-          },
+          start: "0",
+          end: "4000",
+          gap: "400",
+          before: null,
+          between: null,
+          after: null,
         },
       },
     },
