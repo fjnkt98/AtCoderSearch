@@ -22,7 +22,7 @@ export function FieldFacetNavigationPart({
   useEffect(() => {
     setCheckboxState(
       facet.counts.map(({ key, count }, index) => {
-        if (searchParams.has(`filter[${fieldName}][${index}]`)) {
+        if (searchParams.has(`filter.${fieldName}[${index}]`)) {
           return [key, count, true];
         } else {
           return [key, count, false];
@@ -51,9 +51,9 @@ export function FieldFacetNavigationPart({
       return previous;
     });
     if (isChecked) {
-      addParam(`filter[${fieldName}][${index}]`, key);
+      addParam(`filter.${fieldName}[${index}]`, key);
     } else {
-      deleteParam(`filter[${fieldName}][${index}]`);
+      deleteParam(`filter.${fieldName}[${index}]`);
     }
   };
 
@@ -65,7 +65,7 @@ export function FieldFacetNavigationPart({
           className="text-lg text-blue-500"
           onClick={() => {
             for (const [index] of checkboxState.entries()) {
-              deleteParam(`filter[${fieldName}][${index}]`);
+              deleteParam(`filter.${fieldName}[${index}]`);
             }
             setCheckboxState((previous) => {
               return previous.map(([key, count]) => [key, count, false]);
