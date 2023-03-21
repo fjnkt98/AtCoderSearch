@@ -12,11 +12,12 @@ use uuid::Uuid;
 
 #[tracing::instrument(target = "querylog", skip(core))]
 pub async fn search_with_qs(
-    ValidatedSearchQueryParams(query_params): ValidatedSearchQueryParams<SearchParams>,
+    ValidatedSearchQueryParams(query_params): ValidatedSearchQueryParams<SearchQueryParams>,
     Extension(core): Extension<Arc<SolrCore>>,
 ) -> Result<impl IntoResponse, (StatusCode, Json<SearchResultResponse>)> {
     let start = Instant::now();
 
+    let query_params: SearchParams = query_params.into();
     let params = query_params.as_qs();
 
     let response = match core.select(&params).await {

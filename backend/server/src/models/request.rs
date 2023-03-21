@@ -10,7 +10,7 @@ use once_cell::sync::Lazy;
 use regex::Regex;
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
-use serde_qs::Config;
+use serde_qs;
 use solrust::querybuilder::{
     common::SolrCommonQueryBuilder,
     dismax::SolrDisMaxQueryBuilder,
@@ -255,6 +255,44 @@ where
 /// クエリパラメータをバリデーションする構造体
 pub struct ValidatedSearchQueryParams<T>(pub T);
 
+/// クエリパラメータをパースした結果を格納し、SearchParams構造体へ変換するための中間構造体
+#[derive(Debug, Serialize, Deserialize, Validate)]
+pub struct SearchQueryParams {
+    #[validate(length(max = 200))]
+    pub keyword: Option<String>,
+    #[validate(range(min = 1, max = 200))]
+    pub limit: Option<u32>,
+    #[validate(range(min = 1))]
+    pub page: Option<u32>,
+    #[serde(alias = "filter.category")]
+    pub filter_category: Option<Vec<String>>,
+    #[serde(alias = "filter.difficulty.from")]
+    pub filter_difficulty_from: Option<u32>,
+    #[serde(alias = "filter.difficulty.to")]
+    pub filter_difficulty_to: Option<u32>,
+    #[validate(custom = "validate_sort_option")]
+    pub sort: Option<String>,
+}
+
+impl Into<SearchParams> for SearchQueryParams {
+    fn into(self) -> SearchParams {
+        let filter = Some(FilteringParameters {
+            category: self.filter_category,
+            difficulty: Some(RangeFilteringParameter {
+                from: self.filter_difficulty_from,
+                to: self.filter_difficulty_to,
+            }),
+        });
+        SearchParams {
+            keyword: self.keyword,
+            limit: self.limit,
+            page: self.page,
+            filter: filter,
+            sort: self.sort,
+        }
+    }
+}
+
 #[async_trait]
 impl<T, S> FromRequestParts<S> for ValidatedSearchQueryParams<T>
 where
@@ -264,9 +302,8 @@ where
     type Rejection = (StatusCode, Json<SearchResultResponse>);
 
     async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
-        let config = Config::new(2, true);
         let query = parts.uri.query().unwrap_or_default();
-        let value: T = config.deserialize_str(query).map_err(|rejection| {
+        let value: T = serde_qs::from_str(query).map_err(|rejection| {
             tracing::error!("Parsing error: {}", rejection);
             let stats = SearchResultStats {
                 time: 0,

@@ -199,7 +199,7 @@ mod test {
     async fn test_category(#[case] category: &str) {
         let uri = Url::parse_with_params(
             "https://localhost:8000/api/search",
-            &[("filter[category][]", category)],
+            &[("filter.category[]", category)],
         )
         .unwrap();
 
@@ -246,8 +246,8 @@ mod test {
         let uri = Url::parse_with_params(
             "https://localhost:8000/api/search",
             &[
-                ("filter[difficulty][from]", difficulty_from),
-                ("filter[difficulty][to]", difficulty_to),
+                ("filter.difficulty.from", difficulty_from),
+                ("filter.difficulty.to", difficulty_to),
             ],
         )
         .unwrap();
