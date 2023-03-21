@@ -156,7 +156,7 @@ pub struct Document {
     pub contest_id: String,
     pub contest_title: String,
     pub contest_url: String,
-    pub difficulty: i32,
+    pub difficulty: Option<i32>,
     #[serde(serialize_with = "serialize")]
     pub start_at: i64,
     pub duration: i64,
