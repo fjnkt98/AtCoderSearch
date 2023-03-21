@@ -97,19 +97,6 @@ async fn main() -> Result<()> {
         .connect(&database_url)
         .await?;
 
-    let solr_host = env::var("SOLR_HOST").unwrap_or(String::from("http://localhost"));
-    let solr_port = env::var("SOLR_PORT")
-        .map(|v| v.parse::<u32>().unwrap())
-        .unwrap_or(8983u32);
-
-    let core_name = env::var("CORE_NAME").expect("CORE_NAME must be configured");
-
-    let solr = SolrClient::new(&solr_host, solr_port).expect("Failed to create solr client.");
-    let core = solr
-        .core(&core_name)
-        .await
-        .expect("Failed to create core client");
-
     match args.command {
         Commands::Crawl(args) => {
             let crawler = ContestCrawler::new(&pool);
@@ -161,6 +148,20 @@ async fn main() -> Result<()> {
             }
         }
         Commands::Post(args) => {
+            let solr_host = env::var("SOLR_HOST").unwrap_or(String::from("http://localhost"));
+            let solr_port = env::var("SOLR_PORT")
+                .map(|v| v.parse::<u32>().unwrap())
+                .unwrap_or(8983u32);
+
+            let core_name = env::var("CORE_NAME").expect("CORE_NAME must be configured");
+
+            let solr =
+                SolrClient::new(&solr_host, solr_port).expect("Failed to create solr client.");
+            let core = solr
+                .core(&core_name)
+                .await
+                .expect("Failed to create core client");
+
             let savedir = match args.path {
                 Some(path) => PathBuf::from(path),
                 None => {
