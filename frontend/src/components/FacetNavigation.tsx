@@ -17,7 +17,7 @@ export function FacetNavigation() {
   const navigate = useNavigate();
 
   return (
-    <div className="my-4 flex min-w-[120px] flex-col rounded-xl bg-zinc-900 py-2 px-2">
+    <div className="my-4  flex min-w-[240px] flex-col rounded-xl bg-zinc-900 py-2 px-4">
       <FieldFacetNavigationPart
         fieldName="category"
         facet={facets.category}

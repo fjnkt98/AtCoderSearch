@@ -37,7 +37,7 @@ export function SearchResult() {
 
   return (
     <div className="h-full w-full bg-zinc-800 text-slate-200">
-      <div className="sticky top-0 mx-auto flex w-full flex-col items-center justify-center bg-zinc-800 py-2 shadow-sm shadow-black">
+      <div className="sticky top-0 z-[5000] mx-auto flex w-full flex-col items-center justify-center bg-zinc-800 py-2 shadow-sm shadow-black">
         <div className="flex w-3/4 flex-row items-center justify-center gap-10">
           <Logo isBig={false} />
           <SearchBar />

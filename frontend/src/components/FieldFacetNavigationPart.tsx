@@ -113,7 +113,7 @@ function FilteringCheckBox({
   }
 
   return (
-    <div className="my-3 flex flex-row items-center justify-between rounded-xl shadow-sm shadow-gray-700">
+    <div className="my-2 flex flex-row items-center justify-between rounded-xl shadow-sm shadow-gray-700">
       <input
         id={`${facetKey}-filtering-${index}`}
         type="checkbox"

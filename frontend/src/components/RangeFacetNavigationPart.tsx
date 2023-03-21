@@ -35,7 +35,7 @@ export function RangeFacetNavigationPart({
   };
 
   return (
-    <div className="px-4">
+    <div className="mt-3">
       <div className="flex flex-row items-center justify-between">
         <div className="p-1 text-xl">{fieldName}</div>
         <button
@@ -57,22 +57,24 @@ export function RangeFacetNavigationPart({
         {facetCounts.map(({ begin, end, count }, index) => (
           <div
             key={`${fieldName}-range-racet-${index}`}
-            className="my-3 flex flex-row items-center justify-between rounded-xl shadow-sm shadow-gray-700"
+            className="my-2 flex cursor-pointer flex-row items-center justify-between rounded-xl shadow-sm shadow-gray-700"
             onClick={() => {
-              setDifficulties([Number(begin), Number(end)]);
               if (begin === "") {
+                setDifficulties([Number(end), Number(end)]);
                 setParams((previous) => {
                   previous.delete(`filter.${fieldName}.from`);
                   previous.set(`filter.${fieldName}.to`, end.toString());
                   return previous;
                 });
               } else if (end === "") {
+                setDifficulties([Number(begin), Number(begin)]);
                 setParams((previous) => {
                   previous.set(`filter.${fieldName}.from`, begin.toString());
                   previous.delete(`filter.${fieldName}.to`);
                   return previous;
                 });
               } else {
+                setDifficulties([Number(begin), Number(end)]);
                 setParams((previous) => {
                   previous.set(`filter.${fieldName}.from`, begin.toString());
                   previous.set(`filter.${fieldName}.to`, end.toString());
@@ -89,15 +91,17 @@ export function RangeFacetNavigationPart({
         ))}
       </div>
 
-      <Slider
-        value={difficulties}
-        onChange={handleChange}
-        min={0}
-        max={4000}
-        step={400}
-        marks
-        valueLabelDisplay="auto"
-      />
+      <div className="px-4">
+        <Slider
+          value={difficulties}
+          onChange={handleChange}
+          min={0}
+          max={4000}
+          step={400}
+          marks
+          valueLabelDisplay="auto"
+        />
+      </div>
     </div>
   );
 }

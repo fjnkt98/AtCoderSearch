@@ -30,10 +30,10 @@ export function SortOrder() {
   };
 
   return (
-    <div className="w-full lg:max-w-sm">
+    <div className="w-full">
       <select
         onChange={handleChange}
-        className="w-full appearance-none rounded-md border bg-white p-2.5 text-gray-900 shadow-sm outline-none focus:border-indigo-600"
+        className="w-full appearance-none rounded-md border bg-white px-2 py-1 text-gray-900 shadow-sm outline-none focus:border-indigo-600"
       >
         <option hidden>{sortKeyMapping.get(selected ?? "-score")}</option>
         <option value="-score">{sortKeyMapping.get("-score")}</option>
