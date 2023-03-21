@@ -261,4 +261,68 @@ mod test {
 
         assert_eq!(res.status(), 200);
     }
+
+    #[ignore]
+    #[rstest]
+    #[case("pZPcAlHuRZYkroZaOotJqmEsChRMDsQeycDQdqwjCWxQkClrzcvZdeggFaNSslXlktjUozDklVBEJiHYYzpkNhwmGBGbWieIdtIsiANyyCyicKejnFlgSkiWIbWkrfhFKkVqNaLceqZpdFBWREDiIeWRhLuloiXbanQHYdxSqvrYizuJMenLKMmPutwqNRSSNlijxUYfa")]
+    #[tokio::test]
+    async fn should_400_when_keyword_length_is_greater_than_200(#[case] keyword: &str) {
+        let uri =
+            Url::parse_with_params("https://localhost:8000/api/search", &[("keyword", keyword)])
+                .unwrap();
+
+        let req = Request::builder()
+            .uri(format!("/api/search?{}", uri.query().unwrap()))
+            .method(Method::GET)
+            .body(Body::empty())
+            .unwrap();
+        let res = create_app().await.oneshot(req).await.unwrap();
+
+        assert_eq!(res.status(), 400);
+    }
+
+    #[ignore]
+    #[rstest]
+    #[case(-1)]
+    #[case(0)]
+    #[case(201)]
+    #[tokio::test]
+    async fn should_400_when_limit_param_is_out_of_limitation(#[case] limit: i32) {
+        let uri = Url::parse_with_params(
+            "https://localhost:8000/api/search",
+            &[("limit", &limit.to_string())],
+        )
+        .unwrap();
+
+        let req = Request::builder()
+            .uri(format!("/api/search?{}", uri.query().unwrap()))
+            .method(Method::GET)
+            .body(Body::empty())
+            .unwrap();
+        let res = create_app().await.oneshot(req).await.unwrap();
+
+        assert_eq!(res.status(), 400);
+    }
+
+    #[ignore]
+    #[rstest]
+    #[case(-1)]
+    #[case(0)]
+    #[tokio::test]
+    async fn should_400_when_page_param_is_out_of_limitation(#[case] page: i32) {
+        let uri = Url::parse_with_params(
+            "https://localhost:8000/api/search",
+            &[("page", &page.to_string())],
+        )
+        .unwrap();
+
+        let req = Request::builder()
+            .uri(format!("/api/search?{}", uri.query().unwrap()))
+            .method(Method::GET)
+            .body(Body::empty())
+            .unwrap();
+        let res = create_app().await.oneshot(req).await.unwrap();
+
+        assert_eq!(res.status(), 400);
+    }
 }
