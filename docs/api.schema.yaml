@@ -34,7 +34,7 @@ paths:
           description: The page index of search results.
           required: false
         - in: query
-          name: filter[category][]
+          name: filter.category[]
           schema:
             type: array
             items:
@@ -43,13 +43,13 @@ paths:
           description: Filter by contest type. Multiple values are accepted. Set the value in the f[category][] key for each value.
           explode: true
         - in: query
-          name: f[difficulty][from]
+          name: filter.difficulty.from
           schema:
             type: integer
           example: 1000
           description: Filter by problem difficulty.
         - in: query
-          name: f[difficulty][to]
+          name: filter.difficulty.to
           schema:
             type: integer
           example: 2000
@@ -138,6 +138,25 @@ paths:
                 $ref: "#/components/schemas/SearchResponse"
 components:
   schemas:
+    # ----------------------------
+    # 検索結果のレスポンス
+    # ----------------------------
+    SearchResponse:
+      type: object
+      properties:
+        stats:
+          type: object
+          $ref: "#/components/schemas/Stats"
+        items:
+          type: array
+          items:
+            type: object
+            $ref: "#/components/schemas/Item"
+        message:
+          type: string
+      required:
+        - stats
+        - items
     # ------------------
     # 検索結果の統計情報
     # ------------------
@@ -160,62 +179,80 @@ components:
         count:
           type: integer
         # ファセット情報
+        params:
+          type: object
+          $ref: "#/components/schemas/SearchParams"
+
         facet:
           type: object
-          additionalProperties:
-            type: object
-            properties:
-              counts:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    key:
-                      type: string
-                    count:
-                      type: integer
-              range_info:
-                type: object
-                properties:
-                  start:
-                    type: string
-                  end:
-                    type: string
-                  gap:
-                    type: string
-                  before:
-                    type: string
-                  after:
-                    type: string
-                  between:
-                    type: string
-          example:
-            category:
-              counts:
-                - key: "ABC"
-                  count: 123
-                - key: "ARC"
-                  count: 123
-              range_info:
-            difficulty:
-              counts:
-                - key: "0 ~ 400"
-                  count: 123
-                - key: "400 ~ 800"
-                  count: 123
-              range_info:
-                start: "0"
-                end: "800"
-                gap: "400"
-                before: "0"
-                after: "0"
-                between: "123"
+          $ref: "#/components/schemas/FacetResult"
       required:
         - time
         - total
         - index
         - pages
         - count
+    # --------------------
+    # リクエストパラメータ
+    # --------------------
+    SearchParams:
+      type: object
+    # ------------------
+    # ファセット情報
+    # ------------------
+    FacetResult:
+      type: object
+      properties:
+        category:
+          type: object
+          $ref: "#/components/schemas/FieldFacetResultPart"
+        difficulty:
+          type: object
+          $ref: "#/components/schemas/RangeFacetResultPart"
+    # ------------------------
+    # フィールドファセット情報
+    # ------------------------
+    FieldFacetResultPart:
+      type: object
+      properties:
+        counts:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+              count:
+                type: integer
+    # ------------------
+    # 範囲ファセット情報
+    # ------------------
+    RangeFacetResultPart:
+      type: object
+      properties:
+        counts:
+          type: array
+          items:
+            type: object
+            properties:
+              begin:
+                type: string
+              end:
+                type: string
+              count:
+                type: integer
+        start:
+          type: string
+        end:
+          type: string
+        gap:
+          type: string
+        before:
+          type: string
+        after:
+          type: string
+        between:
+          type: string
     # -----------------------
     # ドキュメント
     # -----------------------
@@ -247,22 +284,3 @@ components:
           type: string
         category:
           type: string
-    # ----------------------------
-    # 検索結果のレスポンス(正常時)
-    # ----------------------------
-    SearchResponse:
-      type: object
-      properties:
-        stats:
-          type: object
-          $ref: "#/components/schemas/Stats"
-        items:
-          type: array
-          items:
-            type: object
-            $ref: "#/components/schemas/Item"
-        message:
-          type: string
-      required:
-        - stats
-        - items
