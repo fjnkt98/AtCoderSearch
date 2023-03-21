@@ -97,13 +97,19 @@ export function Problem({ item }: Props) {
         >
           {item.category}
         </div>
-        <div
-          className={`mx-1 rounded-full bg-gray-700 px-3 py-2 ${difficultyColor(
-            item.difficulty
-          )} select-none`}
-        >
-          {item.difficulty}
-        </div>
+        {(() => {
+          if (item.difficulty != null) {
+            return (
+              <div
+                className={`mx-1 rounded-full bg-gray-700 px-3 py-2 ${difficultyColor(
+                  item.difficulty
+                )} select-none`}
+              >
+                {item.difficulty}
+              </div>
+            );
+          }
+        })()}
       </div>
     </div>
   );
