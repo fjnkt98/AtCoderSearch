@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, createSearchParams } from "react-router-dom";
 import { FieldFacetNavigationPart } from "./FieldFacetNavigationPart";
+import { RangeFacetNavigationPart } from "./RangeFacetNavigationPart";
 import { useRecoilValue } from "recoil";
 import { searchResponseFacetSelector } from "../libs/searchResponseState";
 import { searchParamsStateSelector } from "../libs/searchParamsState";
@@ -11,6 +12,7 @@ export function FacetNavigation() {
     new Map<string, string>()
   );
   const facets = useRecoilValue(searchResponseFacetSelector);
+  console.log(params);
 
   const navigate = useNavigate();
 
@@ -21,7 +23,11 @@ export function FacetNavigation() {
         facet={facets.category}
         setParams={setParams}
       />
-
+      <RangeFacetNavigationPart
+        fieldName="difficulty"
+        facet={facets.difficulty}
+        setParams={setParams}
+      />
       <button
         className="my-1 mx-2 rounded-full bg-teal-800 py-2"
         onClick={() => {
