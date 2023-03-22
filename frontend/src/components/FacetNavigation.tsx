@@ -12,7 +12,6 @@ export function FacetNavigation() {
     new Map<string, string>()
   );
   const facets = useRecoilValue(searchResponseFacetSelector);
-  console.log(params);
 
   const navigate = useNavigate();
 
@@ -41,7 +40,6 @@ export function FacetNavigation() {
             filteredSearchParams.set(key, value);
           }
 
-          console.log(filteredSearchParams.toString());
           navigate(`/search?${filteredSearchParams.toString()}`);
         }}
       >
