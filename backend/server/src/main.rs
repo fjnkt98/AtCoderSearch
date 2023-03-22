@@ -89,12 +89,13 @@ async fn main() {
 }
 
 fn create_router(core: SolrCore) -> Router {
+    let origin = env::var("FRONTEND_ORIGIN_URL").unwrap_or(String::from("http://localhost:8080"));
     Router::new()
         .route("/api/search", get(search_with_qs).post(search_with_json))
         .layer(Extension(Arc::new(core)))
         .layer(
             CorsLayer::new()
-                .allow_origin(AllowOrigin::exact("http://localhost:8080".parse().unwrap()))
+                .allow_origin(AllowOrigin::exact(origin.parse().unwrap()))
                 .allow_methods(Any)
                 .allow_headers(vec![CONTENT_TYPE]),
         )
