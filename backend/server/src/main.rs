@@ -2,23 +2,20 @@ mod handlers;
 mod models;
 
 use crate::handlers::{search_with_json, search_with_qs};
-use axum::extract::Extension;
-use axum::routing::get;
-use axum::{Router, Server};
+use axum::{extract::Extension, routing::get, Router, Server};
 use dotenvy::dotenv;
 use hyper::header::CONTENT_TYPE;
-use solrust::client::core::SolrCore;
-use solrust::client::solr::SolrClient;
+use solrust::client::{core::SolrCore, solr::SolrClient};
 use std::env;
 use std::net::SocketAddr;
 use std::sync::Arc;
 use tower_http::cors::{AllowOrigin, Any, CorsLayer};
 use tracing_appender::rolling::{RollingFileAppender, Rotation};
-use tracing_subscriber::layer::SubscriberExt;
-use tracing_subscriber::Layer;
 use tracing_subscriber::{
     filter::{EnvFilter, LevelFilter},
-    fmt, Registry,
+    fmt,
+    layer::SubscriberExt,
+    Layer, Registry,
 };
 
 #[tokio::main]
