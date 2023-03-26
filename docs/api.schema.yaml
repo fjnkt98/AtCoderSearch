@@ -65,6 +65,15 @@ paths:
               - "-difficulty"
               - "-score"
             default: -score
+        - in: query
+          name: facet
+          schema:
+            type: array
+            items:
+              type: string
+              enum:
+                - "category"
+                - "difficulty"
       responses:
         200:
           description: "Search result"
@@ -123,6 +132,13 @@ paths:
                           type: integer
                         to:
                           type: integer
+                facet:
+                  type: array
+                  items:
+                    type: string
+                    enum:
+                      - "category"
+                      - "difficulty"
       responses:
         200:
           description: "Search result"
