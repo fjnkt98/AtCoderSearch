@@ -13,6 +13,24 @@ pub struct SearchResultResponse {
     pub message: Option<String>,
 }
 
+impl SearchResultResponse {
+    pub fn error(params: &SearchParams, message: &str) -> Self {
+        Self {
+            stats: SearchResultStats {
+                time: 0,
+                total: 0,
+                index: 0,
+                pages: 0,
+                count: 0,
+                params: params.clone(),
+                facet: FacetResult::empty(),
+            },
+            items: Vec::new(),
+            message: Some(message.to_string()),
+        }
+    }
+}
+
 /// 検索結果の統計情報
 /// 総ヒット数、表示開始位置、表示ドキュメント数、ファセット情報、処理時間等。
 /// エラー発生時のエラーメッセージもここに含まれる。
