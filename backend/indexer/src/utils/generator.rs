@@ -56,7 +56,7 @@ impl<'a> DocumentGenerator<'a> {
             buffer.push(record);
 
             if buffer.len() >= chunk_size {
-                suffix += chunk_size;
+                suffix += buffer.len();
                 let mut savedir = self.savedir.clone();
                 let task = tokio::spawn(async move {
                     let extractor = FullTextExtractor::new().unwrap();
@@ -68,6 +68,7 @@ impl<'a> DocumentGenerator<'a> {
                     if let Ok(documents) = documents {
                         let filename = format!("doc-{}.json", suffix.to_string());
                         savedir.push(filename);
+                        tracing::info!("Generate document file: {:?}", savedir);
 
                         let contents = serde_json::to_string_pretty(&documents)
                             .map_err(|e| GeneratingError::SerializeError(e))

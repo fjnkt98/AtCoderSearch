@@ -10,49 +10,49 @@ paths:
       description: Search problems
       parameters:
         - in: query
-          name: q
+          name: keyword
           schema:
             type: string
-          description: Search keyword
+            maxLength: 200
+          description: The search keyword.
           required: false
         - in: query
-          name: p
+          name: limit
           schema:
             type: integer
-            minimum: 0
+            minimum: 1
             maximum: 200
             default: 20
-          description: Number of search results which returned
+          description: Maximum number of search results per page.
           required: false
         - in: query
-          name: o
+          name: page
           schema:
             type: integer
-            minimum: 0
-            default: 0
-          description: Offset position from which to start returning search result
+            minimum: 1
+            default: 1
+          description: The page index of search results.
           required: false
         - in: query
-          name: f[category][]
+          name: filter.category
           schema:
-            type: array
-            items:
-              type: string
-          example: "ABC"
-          description: Multiple values are accepted. Set the value in the f[category][] key for each value.
-          explode: true
+            type: string
+          example: "ABC,ARC"
+          description: Filter by contest type. Multiple values can be specified by separating them with comma.
         - in: query
-          name: f[difficulty][from]
+          name: filter.difficulty.from
           schema:
             type: integer
           example: 1000
+          description: Filter by problem difficulty.
         - in: query
-          name: f[difficulty][to]
+          name: filter.difficulty.to
           schema:
             type: integer
           example: 2000
+          description: Filter by problem difficulty.
         - in: query
-          name: s
+          name: sort
           schema:
             type: string
             enum:
@@ -60,9 +60,14 @@ paths:
               - "-start_at"
               - "difficulty"
               - "-difficulty"
-              - "score"
               - "-score"
-            default: score
+            default: -score
+        - in: query
+          name: facet
+          schema:
+            type: string
+          example: "category,difficulty"
+          description: Specify the field of facet count. Multiple values can be specified by separating them with comma.
       responses:
         200:
           description: "Search result"
@@ -86,28 +91,28 @@ paths:
             schema:
               type: object
               properties:
-                q:
+                keyword:
                   type: string
-                p:
+                  maxLength: 200
+                limit:
                   type: integer
-                  minimum: 0
+                  minimum: 1
                   maximum: 200
                   default: 20
-                o:
+                page:
                   type: integer
-                  minimum: 0
-                  default: 0
-                s:
+                  minimum: 1
+                  default: 1
+                sort:
                   type: string
                   enum:
                     - "start_at"
                     - "-start_at"
                     - "difficulty"
                     - "-difficulty"
-                    - "score"
                     - "-score"
-                  default: score
-                f:
+                  default: -score
+                filter:
                   type: object
                   properties:
                     category:
@@ -121,6 +126,13 @@ paths:
                           type: integer
                         to:
                           type: integer
+                facet:
+                  type: array
+                  items:
+                    type: string
+                    enum:
+                      - "category"
+                      - "difficulty"
       responses:
         200:
           description: "Search result"
@@ -136,6 +148,25 @@ paths:
                 $ref: "#/components/schemas/SearchResponse"
 components:
   schemas:
+    # ----------------------------
+    # 検索結果のレスポンス
+    # ----------------------------
+    SearchResponse:
+      type: object
+      properties:
+        stats:
+          type: object
+          $ref: "#/components/schemas/Stats"
+        items:
+          type: array
+          items:
+            type: object
+            $ref: "#/components/schemas/Item"
+        message:
+          type: string
+      required:
+        - stats
+        - items
     # ------------------
     # 検索結果の統計情報
     # ------------------
@@ -145,26 +176,93 @@ components:
         # 検索処理時間
         time:
           type: integer
-        # メッセージ(エラー時に使用)
-        message:
-          type: string
         # 総検索ヒット数
         total:
           type: integer
-        # 返却開始位置
-        offset:
+        # 表示ページ番号
+        index:
           type: integer
-        # 返却数
-        amount:
+        # 総ページ数
+        pages:
+          type: integer
+        # 返却件数
+        count:
           type: integer
         # ファセット情報
+        params:
+          type: object
+          $ref: "#/components/schemas/SearchParams"
+
         facet:
           type: object
+          $ref: "#/components/schemas/FacetResult"
       required:
         - time
         - total
-        - offset
-        - amount
+        - index
+        - pages
+        - count
+    # --------------------
+    # リクエストパラメータ
+    # --------------------
+    SearchParams:
+      type: object
+    # ------------------
+    # ファセット情報
+    # ------------------
+    FacetResult:
+      type: object
+      properties:
+        category:
+          type: object
+          $ref: "#/components/schemas/FieldFacetResultPart"
+        difficulty:
+          type: object
+          $ref: "#/components/schemas/RangeFacetResultPart"
+    # ------------------------
+    # フィールドファセット情報
+    # ------------------------
+    FieldFacetResultPart:
+      type: object
+      properties:
+        counts:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+              count:
+                type: integer
+    # ------------------
+    # 範囲ファセット情報
+    # ------------------
+    RangeFacetResultPart:
+      type: object
+      properties:
+        counts:
+          type: array
+          items:
+            type: object
+            properties:
+              begin:
+                type: string
+              end:
+                type: string
+              count:
+                type: integer
+        start:
+          type: string
+        end:
+          type: string
+        gap:
+          type: string
+        before:
+          type: string
+        after:
+          type: string
+        between:
+          type: string
     # -----------------------
     # ドキュメント
     # -----------------------
@@ -196,20 +294,3 @@ components:
           type: string
         category:
           type: string
-    # ----------------------------
-    # 検索結果のレスポンス(正常時)
-    # ----------------------------
-    SearchResponse:
-      type: object
-      properties:
-        stats:
-          type: object
-          $ref: "#/components/schemas/Stats"
-        items:
-          type: array
-          items:
-            type: object
-            $ref: "#/components/schemas/Item"
-      required:
-        - stats
-        - items

@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS problems (
     title TEXT NOT NULL,
     url TEXT NOT NULL,
     html TEXT NOT NULL,
-    difficulty INTEGER NOT NULL
+    difficulty INTEGER
 );
 
 CREATE INDEX contest_id_index ON problems (contest_id);

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <schema name="atcoder" version="1.6">
-  <fieldType name="i32" class="solr.IntPointField" docValues="true" />
-  <fieldType name="i64" class="solr.LongPointField" docValues="true" />
-  <fieldType name="f32" class="solr.FloatPointField" docValues="true" />
-  <fieldType name="f64" class="solr.DoublePointField" docValues="true" />
+  <fieldType name="int32" class="solr.IntPointField" docValues="true" />
+  <fieldType name="int64" class="solr.LongPointField" docValues="true" />
+  <fieldType name="float32" class="solr.FloatPointField" docValues="true" />
+  <fieldType name="float64" class="solr.DoublePointField" docValues="true" />
   <fieldType name="String" class="solr.StrField" sortMissingLast="true" docValues="true" />
-  <fieldType name="bool" class="solr.BoolField" sortMissingLast="true" />
+  <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true" />
   <fieldType name="DateTime" class="solr.DatePointField" docValues="true" />
   <fieldType name="DateTimeRange" class="solr.DateRangeField" docValues="true" />
 
@@ -77,7 +77,7 @@
   </fieldType>
 
 
-  <field name="_version_" type="i64" indexed="false" stored="false" />
+  <field name="_version_" type="int64" indexed="false" stored="false" />
   <field name="null" type="Null" indexed="false" stored="false" />
 
   <uniqueKey>problem_id</uniqueKey>
@@ -88,9 +88,9 @@
   <field name="contest_title" type="String" indexed="true" stored="true" multiValued="false" />
   <field name="contest_url" type="String" indexed="false" stored="true" multiValued="false" />
 
-  <field name="difficulty" type="i32" indexed="true" stored="true" multiValued="false" />
-  <field name="start_at" type="DateTime" indexed="true" stored="true" required="true" multiValued="false" />
-  <field name="duration" type="i32" indexed="true" stored="true" required="true" multiValued="false" />
+  <field name="difficulty" type="int32" indexed="true" stored="true" multiValued="false" sortMissingLast="true" />
+  <field name="start_at" type="int64" indexed="true" stored="true" required="true" multiValued="false" />
+  <field name="duration" type="int64" indexed="true" stored="true" required="true" multiValued="false" />
   <field name="rate_change" type="String" indexed="true" stored="true" required="true" multiValued="false" />
   <field name="category" type="String" indexed="true" stored="true" required="true" multiValued="false" />
 

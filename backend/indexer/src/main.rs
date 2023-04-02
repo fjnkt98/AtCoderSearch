@@ -14,8 +14,13 @@ use sqlx::postgres::Postgres;
 use sqlx::Pool;
 use std::env;
 use std::path::PathBuf;
-use tracing_subscriber::filter::EnvFilter;
-use tracing_subscriber::fmt;
+use tracing_appender::rolling::{RollingFileAppender, Rotation};
+use tracing_subscriber::layer::SubscriberExt;
+use tracing_subscriber::Layer;
+use tracing_subscriber::{
+    filter::{EnvFilter, LevelFilter},
+    fmt, Registry,
+};
 
 #[derive(Debug, Parser)]
 #[command(name = "indexer")]
@@ -59,10 +64,31 @@ async fn main() -> Result<()> {
 
     let log_level = env::var("RUST_LOG").unwrap_or(String::from("info"));
     env::set_var("RUST_LOG", "info");
+    let create_filter = || {
+        EnvFilter::builder()
+            .with_default_directive(LevelFilter::INFO.into())
+            .from_env_lossy()
+            .add_directive(format!("indexer={}", log_level).parse().unwrap())
+            .add_directive(format!("solrust={}", log_level).parse().unwrap())
+    };
 
-    let filter =
-        EnvFilter::try_from_default_env()?.add_directive(format!("indexer={}", log_level).parse()?);
-    fmt().with_env_filter(filter).init();
+    let log_dir = env::var("LOG_DIRECTORY").unwrap_or(String::from("/var/tmp/atcoder/log"));
+
+    // システムログ(コンソールへ出力)
+    let layer1 = fmt::Layer::new().with_filter(create_filter());
+
+    // システムログ(ファイルへ出力)
+    let (file, _guard) = tracing_appender::non_blocking(RollingFileAppender::new(
+        Rotation::DAILY,
+        log_dir.clone(),
+        "indexer.log",
+    ));
+    let layer2 = fmt::Layer::new()
+        .with_writer(file)
+        .with_filter(create_filter());
+
+    let subscriber = Registry::default().with(layer1).with(layer2);
+    tracing::subscriber::set_global_default(subscriber).expect("Failed to set subscriber.");
 
     let database_url: String = env::var("DATABASE_URL").expect("DATABASE_URL must be configured.");
 
@@ -70,19 +96,6 @@ async fn main() -> Result<()> {
         .max_connections(5)
         .connect(&database_url)
         .await?;
-
-    let solr_host = env::var("SOLR_HOST").unwrap_or(String::from("http://localhost"));
-    let solr_port = env::var("SOLR_PORT")
-        .map(|v| v.parse::<u32>().unwrap())
-        .unwrap_or(8983u32);
-
-    let core_name = env::var("CORE_NAME").expect("CORE_NAME must be configured");
-
-    let solr = SolrClient::new(&solr_host, solr_port).expect("Failed to create solr client.");
-    let core = solr
-        .core(&core_name)
-        .await
-        .expect("Failed to create core client");
 
     match args.command {
         Commands::Crawl(args) => {
@@ -108,8 +121,10 @@ async fn main() -> Result<()> {
             let savedir = match args.path {
                 Some(path) => PathBuf::from(path),
                 None => {
-                    let path = env::var("DOCUMENT_SAVE_DIRECTORY")
-                        .expect("Default save directory does not configured");
+                    let path = env::var("DOCUMENT_SAVE_DIRECTORY").unwrap_or_else(|_| {
+                        tracing::error!("Documents save directory does not configured. Check and make sure DOCUMENT_SAVE_DIRECTORY environment variable.");
+                        panic!("Documents save directory does not configured. Check and make sure DOCUMENT_SAVE_DIRECTORY environment variable.");
+                    });
                     PathBuf::from(path)
                 }
             };
@@ -133,11 +148,27 @@ async fn main() -> Result<()> {
             }
         }
         Commands::Post(args) => {
+            let solr_host = env::var("SOLR_HOST").unwrap_or(String::from("http://localhost"));
+            let solr_port = env::var("SOLR_PORT")
+                .map(|v| v.parse::<u32>().unwrap())
+                .unwrap_or(8983u32);
+
+            let core_name = env::var("CORE_NAME").expect("CORE_NAME must be configured");
+
+            let solr =
+                SolrClient::new(&solr_host, solr_port).expect("Failed to create solr client.");
+            let core = solr
+                .core(&core_name)
+                .await
+                .expect("Failed to create core client");
+
             let savedir = match args.path {
                 Some(path) => PathBuf::from(path),
                 None => {
-                    let path = env::var("DOCUMENT_SAVE_DIRECTORY")
-                        .expect("Default save directory does not configured");
+                    let path = env::var("DOCUMENT_SAVE_DIRECTORY").unwrap_or_else(|e| {
+                        tracing::error!("Documents save directory does not configured. Check your DOCUMENT_SAVE_DIRECTORY environment variable. [{}]", e.to_string());
+                        panic!("Documents save directory does not configured. Check your DOCUMENT_SAVE_DIRECTORY environment variable. [{}]", e.to_string());
+                    });
                     PathBuf::from(path)
                 }
             };
@@ -154,44 +185,6 @@ async fn main() -> Result<()> {
             }
         }
     }
-
-    // let log_level = env::var("RUST_LOG").unwrap_or(String::from("info"));
-    // env::set_var("RUST_LOG", "info");
-
-    // let filter =
-    //     EnvFilter::try_from_default_env()?.add_directive(format!("indexer={}", log_level).parse()?);
-    // fmt().with_env_filter(filter).init();
-
-    // let database_url: String = env::var("DATABASE_URL").expect("DATABASE_URL must be configured.");
-
-    // let pool: Pool<Postgres> = sqlx::postgres::PgPoolOptions::new()
-    //     .max_connections(5)
-    //     .connect(&database_url)
-    //     .await?;
-
-    // let solr_host = env::var("SOLR_HOST").unwrap_or(String::from("http://localhost"));
-    // let solr_port = env::var("SOLR_PORT")
-    //     .map(|v| v.parse::<u32>().unwrap())
-    //     .unwrap_or(8983u32);
-
-    // let core_name = env::var("CORE_NAME").expect("CORE_NAME must be configured");
-
-    // let solr = SolrClient::new(&solr_host, solr_port).expect("Failed to create solr client.");
-    // let core = solr
-    //     .core(&core_name)
-    //     .await
-    //     .expect("Failed to create core client");
-
-    // let manager = IndexingManager::new(&pool, core);
-    // manager
-    //     .write()
-    //     .await
-    //     .expect("Failed to write JSON document.");
-
-    // manager
-    //     .post()
-    //     .await
-    //     .expect("Failed to post document to solr.");
 
     Ok(())
 }

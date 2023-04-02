@@ -34,10 +34,18 @@ impl DocumentUploader {
             .map_err(|e| UploadingError::FileOperationError(e))?
         {
             let path = file.path();
-            tracing::debug!("Loading file: {}", path.display());
             let core = self.core.clone();
             if let Some(extension) = path.extension() {
                 if extension == "json" {
+                    let metadata = file
+                        .metadata()
+                        .await
+                        .map_err(|e| UploadingError::FileOperationError(e))?;
+                    tracing::info!(
+                        "Processing file: {}, size: {}kB",
+                        path.display(),
+                        metadata.len() / 1024
+                    );
                     let task = tokio::spawn(async move {
                         let content = fs::read(path).await.unwrap();
                         core.post(content).await.unwrap();

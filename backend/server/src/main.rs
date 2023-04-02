@@ -2,21 +2,20 @@ mod handlers;
 mod models;
 
 use crate::handlers::{search_with_json, search_with_qs};
-use axum::extract::Extension;
-use axum::routing::get;
-use axum::{Router, Server};
+use axum::{extract::Extension, routing::get, Router, Server};
 use dotenvy::dotenv;
-use solrust::client::core::SolrCore;
-use solrust::client::solr::SolrClient;
+use hyper::header::CONTENT_TYPE;
+use solrust::client::{core::SolrCore, solr::SolrClient};
 use std::env;
 use std::net::SocketAddr;
 use std::sync::Arc;
+use tower_http::cors::{AllowOrigin, Any, CorsLayer};
 use tracing_appender::rolling::{RollingFileAppender, Rotation};
-use tracing_subscriber::prelude::__tracing_subscriber_SubscriberExt;
-use tracing_subscriber::Layer;
 use tracing_subscriber::{
     filter::{EnvFilter, LevelFilter},
-    fmt, Registry,
+    fmt,
+    layer::SubscriberExt,
+    Layer, Registry,
 };
 
 #[tokio::main]
@@ -83,16 +82,20 @@ async fn main() {
         .unwrap();
     let addr = SocketAddr::from(([0, 0, 0, 0], port));
     tracing::debug!("Server start at port {}", port);
-    Server::bind(&addr)
-        .serve(app.into_make_service())
-        .await
-        .unwrap();
+    let _ = Server::bind(&addr).serve(app.into_make_service()).await;
 }
 
 fn create_router(core: SolrCore) -> Router {
+    let origin = env::var("FRONTEND_ORIGIN_URL").unwrap_or(String::from("http://localhost:8080"));
     Router::new()
         .route("/api/search", get(search_with_qs).post(search_with_json))
         .layer(Extension(Arc::new(core)))
+        .layer(
+            CorsLayer::new()
+                .allow_origin(AllowOrigin::exact(origin.parse().unwrap()))
+                .allow_methods(Any)
+                .allow_headers(vec![CONTENT_TYPE]),
+        )
 }
 
 #[cfg(test)]
@@ -100,10 +103,13 @@ mod test {
     use super::*;
     use axum::{
         body::Body,
-        http::{header, Method, Request},
+        http::{Method, Request},
     };
+    use reqwest::Url;
+    use rstest::*;
     use tower::ServiceExt;
 
+    /// テスト用のヘルパーメソッド
     async fn create_app() -> Router {
         let solr_host = env::var("SOLR_HOST").unwrap_or(String::from("http://localhost"));
         let solr_port: u32 = (env::var("SOLR_PORT").unwrap_or(String::from("8983")))
@@ -120,80 +126,216 @@ mod test {
         create_router(core)
     }
 
+    #[ignore]
+    #[rstest]
+    #[case("")]
+    #[case("高橋")]
     #[tokio::test]
-    async fn get_default() {
+    async fn test_keyword(#[case] keyword: &str) {
+        let uri =
+            Url::parse_with_params("https://localhost:8000/api/search", &[("keyword", keyword)])
+                .unwrap();
+
         let req = Request::builder()
-            .uri("/api/search")
+            .uri(format!("/api/search?{}", uri.query().unwrap()))
             .method(Method::GET)
-            .body(Body::from(""))
+            .body(Body::empty())
             .unwrap();
         let res = create_app().await.oneshot(req).await.unwrap();
 
         assert_eq!(res.status(), 200);
     }
 
+    #[ignore]
+    #[rstest]
+    #[case("1")]
+    #[case("20")]
+    #[case("200")]
     #[tokio::test]
-    async fn post_default() {
+    async fn test_limit(#[case] limit: &str) {
+        let uri = Url::parse_with_params("https://localhost:8000/api/search", &[("limit", limit)])
+            .unwrap();
+
         let req = Request::builder()
-            .uri("/api/search")
-            .method(Method::POST)
-            .header(header::CONTENT_TYPE, mime::APPLICATION_JSON.as_ref())
-            .body(Body::from(r#"{}"#))
+            .uri(format!("/api/search?{}", uri.query().unwrap()))
+            .method(Method::GET)
+            .body(Body::empty())
             .unwrap();
         let res = create_app().await.oneshot(req).await.unwrap();
 
         assert_eq!(res.status(), 200);
     }
 
+    #[ignore]
+    #[rstest]
+    #[case("1")]
+    #[case("2")]
     #[tokio::test]
-    async fn post_with_q() {
+    async fn test_page(#[case] page: &str) {
+        let uri =
+            Url::parse_with_params("https://localhost:8000/api/search", &[("page", page)]).unwrap();
+
         let req = Request::builder()
-            .uri("/api/search")
-            .method(Method::POST)
-            .header(header::CONTENT_TYPE, mime::APPLICATION_JSON.as_ref())
-            .body(Body::from(r#"{"q": "高橋"}"#))
+            .uri(format!("/api/search?{}", uri.query().unwrap()))
+            .method(Method::GET)
+            .body(Body::empty())
             .unwrap();
         let res = create_app().await.oneshot(req).await.unwrap();
 
         assert_eq!(res.status(), 200);
     }
 
+    #[ignore]
+    #[rstest]
+    #[case("")]
+    #[case("ABC")]
+    #[case("Other Contests")]
+    #[case("ABC-Like")]
+    #[case("ABC,ARC")]
     #[tokio::test]
-    async fn post_with_p() {
+    async fn test_category(#[case] category: &str) {
+        let uri = Url::parse_with_params(
+            "https://localhost:8000/api/search",
+            &[("filter.category[]", category)],
+        )
+        .unwrap();
+
         let req = Request::builder()
-            .uri("/api/search")
-            .method(Method::POST)
-            .header(header::CONTENT_TYPE, mime::APPLICATION_JSON.as_ref())
-            .body(Body::from(r#"{"p": 200}"#))
+            .uri(format!("/api/search?{}", uri.query().unwrap()))
+            .method(Method::GET)
+            .body(Body::empty())
             .unwrap();
         let res = create_app().await.oneshot(req).await.unwrap();
 
         assert_eq!(res.status(), 200);
     }
 
+    #[ignore]
+    #[rstest]
+    #[case("-score")]
+    #[case("difficulty")]
+    #[case("-difficulty")]
+    #[case("start_at")]
+    #[case("-start_at")]
     #[tokio::test]
-    async fn should_return_error_when_p_is_greater_than_200() {
+    async fn test_sort(#[case] sort: &str) {
+        let uri =
+            Url::parse_with_params("https://localhost:8000/api/search", &[("sort", sort)]).unwrap();
+
         let req = Request::builder()
-            .uri("/api/search")
-            .method(Method::POST)
-            .header(header::CONTENT_TYPE, mime::APPLICATION_JSON.as_ref())
-            .body(Body::from(r#"{"p": 201}"#))
+            .uri(format!("/api/search?{}", uri.query().unwrap()))
+            .method(Method::GET)
+            .body(Body::empty())
+            .unwrap();
+        let res = create_app().await.oneshot(req).await.unwrap();
+
+        assert_eq!(res.status(), 200);
+    }
+
+    #[ignore]
+    #[rstest(
+        difficulty_from => ["400"],
+        difficulty_to => ["1200"],
+    )]
+    #[tokio::test]
+    async fn test_difficulty(difficulty_from: &str, difficulty_to: &str) {
+        let uri = Url::parse_with_params(
+            "https://localhost:8000/api/search",
+            &[
+                ("filter.difficulty.from", difficulty_from),
+                ("filter.difficulty.to", difficulty_to),
+            ],
+        )
+        .unwrap();
+
+        let req = Request::builder()
+            .uri(format!("/api/search?{}", uri.query().unwrap()))
+            .method(Method::GET)
+            .body(Body::empty())
+            .unwrap();
+        let res = create_app().await.oneshot(req).await.unwrap();
+
+        assert_eq!(res.status(), 200);
+    }
+
+    #[ignore]
+    #[rstest]
+    #[case("pZPcAlHuRZYkroZaOotJqmEsChRMDsQeycDQdqwjCWxQkClrzcvZdeggFaNSslXlktjUozDklVBEJiHYYzpkNhwmGBGbWieIdtIsiANyyCyicKejnFlgSkiWIbWkrfhFKkVqNaLceqZpdFBWREDiIeWRhLuloiXbanQHYdxSqvrYizuJMenLKMmPutwqNRSSNlijxUYfa")]
+    #[tokio::test]
+    async fn should_400_when_keyword_length_is_greater_than_200(#[case] keyword: &str) {
+        let uri =
+            Url::parse_with_params("https://localhost:8000/api/search", &[("keyword", keyword)])
+                .unwrap();
+
+        let req = Request::builder()
+            .uri(format!("/api/search?{}", uri.query().unwrap()))
+            .method(Method::GET)
+            .body(Body::empty())
             .unwrap();
         let res = create_app().await.oneshot(req).await.unwrap();
 
         assert_eq!(res.status(), 400);
     }
 
+    #[ignore]
+    #[rstest]
+    #[case(-1)]
+    #[case(0)]
+    #[case(201)]
     #[tokio::test]
-    async fn should_return_error_when_p_is_minus() {
+    async fn should_400_when_limit_param_is_out_of_limitation(#[case] limit: i32) {
+        let uri = Url::parse_with_params(
+            "https://localhost:8000/api/search",
+            &[("limit", &limit.to_string())],
+        )
+        .unwrap();
+
         let req = Request::builder()
-            .uri("/api/search")
-            .method(Method::POST)
-            .header(header::CONTENT_TYPE, mime::APPLICATION_JSON.as_ref())
-            .body(Body::from(r#"{"p": -1}"#))
+            .uri(format!("/api/search?{}", uri.query().unwrap()))
+            .method(Method::GET)
+            .body(Body::empty())
             .unwrap();
         let res = create_app().await.oneshot(req).await.unwrap();
 
         assert_eq!(res.status(), 400);
+    }
+
+    #[ignore]
+    #[rstest]
+    #[case(-1)]
+    #[case(0)]
+    #[tokio::test]
+    async fn should_400_when_page_param_is_out_of_limitation(#[case] page: i32) {
+        let uri = Url::parse_with_params(
+            "https://localhost:8000/api/search",
+            &[("page", &page.to_string())],
+        )
+        .unwrap();
+
+        let req = Request::builder()
+            .uri(format!("/api/search?{}", uri.query().unwrap()))
+            .method(Method::GET)
+            .body(Body::empty())
+            .unwrap();
+        let res = create_app().await.oneshot(req).await.unwrap();
+
+        assert_eq!(res.status(), 400);
+    }
+
+    #[ignore]
+    #[rstest]
+    #[case("facet=category")]
+    #[case("facet=difficulty")]
+    #[case("facet=category,difficulty")]
+    #[tokio::test]
+    async fn specify_facet_count_fields(#[case] params: &str) {
+        let req = Request::builder()
+            .uri(format!("/api/search?{}", params))
+            .method(Method::GET)
+            .body(Body::empty())
+            .unwrap();
+        let res = create_app().await.oneshot(req).await.unwrap();
+
+        assert_eq!(res.status(), 200);
     }
 }
