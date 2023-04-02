@@ -45,7 +45,7 @@ export function FacetNavigation(props: Props) {
   return (
     <div className="text-md relative z-[4000]">
       <div
-        className="flex cursor-pointer select-none flex-row items-center justify-between p-1.5"
+        className="border-1 flex cursor-pointer select-none flex-row items-center justify-between rounded-full border-[1px] border-solid border-slate-700 bg-zinc-900 px-3 py-2 shadow-sm hover:border-blue-400"
         onClick={() => setShowMenu((previous) => !previous)}
         ref={menuHeaderRef}
       >
@@ -54,9 +54,9 @@ export function FacetNavigation(props: Props) {
       </div>
 
       <div
-        className={`absolute top-7 ${
+        className={`absolute top-12 ${
           showMenu ? "" : "hidden"
-        } w-full border-2 bg-zinc-800 p-2`}
+        } w-full rounded-md bg-zinc-800 py-2 px-3 shadow-sm shadow-slate-400 transition-all duration-1000 ease-in-out`}
         ref={menuBodyRef}
       >
         {props.children}

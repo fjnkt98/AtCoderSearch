@@ -60,7 +60,7 @@ export function Problem({ item }: Props) {
   };
 
   return (
-    <div className="mx-2 my-5 min-w-[600px] rounded-2xl bg-neutral-900 px-2 py-4 text-slate-100 shadow-sm shadow-slate-700">
+    <div className="mx-2 my-2 w-full min-w-[800px] rounded-2xl bg-neutral-900 px-2 py-4 text-slate-100 shadow-sm shadow-slate-700">
       <div className="flex flex-row items-center">
         <a href={item.contest_url} target="_blank" rel="noreferrer">
           <img

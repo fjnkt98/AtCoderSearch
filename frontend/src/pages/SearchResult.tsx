@@ -43,12 +43,12 @@ export function SearchResult() {
         <PageNavigation />
       </div>
 
-      <div className="mx-auto mt-6 flex w-3/4 min-w-[600px] flex-col items-center justify-center border-2 text-slate-100">
-        <div className="flex w-full flex-row items-center justify-between">
-          <div className="mx-2 flex-1 border-2">
+      <div className="mx-auto my-2 flex w-3/4 min-w-[600px] flex-col items-center justify-center text-slate-100">
+        <div className="my-2 flex w-full max-w-[800px] flex-row items-center justify-between">
+          <div className="mx-2 flex-1">
             <SortOrder />
           </div>
-          <div className="mx-2 flex-1 border-2">
+          <div className="mx-2 flex-1">
             <FacetNavigation title="Category">
               <FieldFacetNavigationPart
                 fieldName="category"
@@ -56,7 +56,7 @@ export function SearchResult() {
               />
             </FacetNavigation>
           </div>
-          <div className="mx-2 flex-1 border-2">
+          <div className="mx-2 flex-1">
             <FacetNavigation title="Difficulty">
               <RangeFacetNavigationPart
                 fieldName="difficulty"

@@ -32,7 +32,7 @@ export function SortOrder() {
   return (
     <select
       onChange={handleChange}
-      className="text-md block cursor-pointer rounded-lg border-none bg-zinc-800 p-2 text-slate-400 placeholder-slate-400 outline-none"
+      className="text-md block w-full cursor-pointer rounded-full border-none bg-zinc-900 py-2 px-2 text-slate-100 placeholder-slate-100 outline-none outline-1 outline-slate-700 hover:outline-blue-400"
     >
       <option hidden>{sortKeyMapping.get(selected ?? "-score")}</option>
       <option value="-score">{sortKeyMapping.get("-score")}</option>
