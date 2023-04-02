@@ -14,12 +14,15 @@ export function FieldFacetNavigationPart({
   facet,
   setParams,
 }: Props) {
+  // 子要素のチェックボックスの情報を保持・管理するステート
+  // ステートの更新は子要素から行う
   const [checkboxState, setCheckboxState] = useState<
     [string, number, boolean][]
   >(facet.counts.map(({ key, count }) => [key, count, false]));
 
   const searchParams = useRecoilValue(searchParamsStateSelector);
   useEffect(() => {
+    // 検索パラメータからチェックボックスの選択状態を更新する
     const categories = (searchParams.get(`filter.${fieldName}`) ?? "").split(
       ","
     );
@@ -34,6 +37,7 @@ export function FieldFacetNavigationPart({
     );
   }, [facet]);
 
+  // 検索パラメータをセットするためのユーティリティ関数
   const setParam = (key: string, value: string) => {
     setParams((previousParams) => {
       previousParams.set(key, value);
@@ -41,6 +45,7 @@ export function FieldFacetNavigationPart({
     });
   };
 
+  // 検索パラメータを削除するためのユーティリティ関数
   const deleteParam = (key: string) => {
     setParams((previousParams) => {
       previousParams.delete(key);
@@ -48,12 +53,15 @@ export function FieldFacetNavigationPart({
     });
   };
 
+  // チェックボックスが更新されたら都度検索パラメータを更新する
   useEffect(() => {
+    // チェックボックスが選択されているキーをカンマで結合する
     const targetCategories = checkboxState
       .filter(([, , checked]) => checked)
       .map(([key, ,]) => key)
       .join(",");
 
+    // 何も選択されていない場合は検索パラメータをセットしない
     if (targetCategories !== "") {
       setParam(`filter.${fieldName}`, targetCategories);
     } else {
