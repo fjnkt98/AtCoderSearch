@@ -34,14 +34,11 @@ paths:
           description: The page index of search results.
           required: false
         - in: query
-          name: filter.category[]
+          name: filter.category
           schema:
-            type: array
-            items:
-              type: string
-          example: "ABC"
-          description: Filter by contest type. Multiple values are accepted. Set the value in the f[category][] key for each value.
-          explode: true
+            type: string
+          example: "ABC,ARC"
+          description: Filter by contest type. Multiple values can be specified by separating them with comma.
         - in: query
           name: filter.difficulty.from
           schema:
@@ -68,12 +65,9 @@ paths:
         - in: query
           name: facet
           schema:
-            type: array
-            items:
-              type: string
-              enum:
-                - "category"
-                - "difficulty"
+            type: string
+          example: "category,difficulty"
+          description: Specify the field of facet count. Multiple values can be specified by separating them with comma.
       responses:
         200:
           description: "Search result"
