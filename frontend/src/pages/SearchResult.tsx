@@ -49,7 +49,7 @@ export function SearchResult() {
             <SortOrder />
           </div>
           <div className="mx-2 flex-1">
-            <FacetNavigation title="Category">
+            <FacetNavigation title="コンテストの種類">
               <FieldFacetNavigationPart
                 fieldName="category"
                 facet={facets.category}
@@ -57,7 +57,7 @@ export function SearchResult() {
             </FacetNavigation>
           </div>
           <div className="mx-2 flex-1">
-            <FacetNavigation title="Difficulty">
+            <FacetNavigation title="難易度">
               <RangeFacetNavigationPart
                 fieldName="difficulty"
                 facet={facets.difficulty}

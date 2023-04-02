@@ -67,7 +67,7 @@ export function RangeFacetNavigationPart({ fieldName, facet }: Props) {
         />
       </div>
 
-      <div className="flex flex-row items-center justify-between">
+      <div className="flex flex-row items-center justify-between py-2">
         <button
           className="mx-2 rounded-full bg-blue-700 py-1 px-2 text-sm text-slate-100"
           onClick={() => {
@@ -106,7 +106,7 @@ export function RangeFacetNavigationPart({ fieldName, facet }: Props) {
             navigate(`/search?${filteredSearchParams.toString()}`);
           }}
         >
-          reset
+          Reset
         </button>
       </div>
     </div>

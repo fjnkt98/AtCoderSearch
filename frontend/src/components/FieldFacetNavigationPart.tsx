@@ -50,7 +50,7 @@ export function FieldFacetNavigationPart({ fieldName, facet }: Props) {
         ))}
       </div>
 
-      <div className="flex flex-row items-center justify-between">
+      <div className="flex flex-row items-center justify-between pt-3">
         <button
           className="mx-2 rounded-full bg-blue-700 py-1 px-2 text-sm text-slate-100"
           onClick={() => {
