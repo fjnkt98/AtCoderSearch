@@ -104,17 +104,6 @@ impl SearchParams {
     /// リクエストパラメータからSolrへのリクエストパラメータを生成するメソッド
     /// Solrへ送るパラメータはすべてここで生成する
     pub fn as_qs(&self) -> Vec<(String, String)> {
-        let category_facet = FieldFacetBuilder::new("category")
-            .min_count(0)
-            .sort(FieldFacetSortOrder::Index);
-        let difficulty_facet = RangeFacetBuilder::new(
-            "difficulty",
-            0.to_string(),
-            4000.to_string(),
-            400.to_string(),
-        )
-        .other(RangeFacetOtherOptions::All);
-
         let rows: u32 = self.limit.unwrap_or(20);
         let page: u32 = self.page.unwrap_or(1);
         let start: u32 = (page - 1) * rows;
@@ -125,9 +114,29 @@ impl SearchParams {
             .qf("text_ja text_en text_1gram")
             .q_alt(&QueryOperand::from("*:*"))
             .op(Operator::AND)
-            .sow(true)
-            .facet(&category_facet)
-            .facet(&difficulty_facet);
+            .sow(true);
+
+        if let Some(facet) = &self.facet {
+            for field in facet.iter() {
+                if field == "category" {
+                    let category_facet = FieldFacetBuilder::new("category")
+                        .min_count(0)
+                        .sort(FieldFacetSortOrder::Index);
+                    builder = builder.facet(&category_facet);
+                }
+                if field == "difficulty" {
+                    let difficulty_facet = RangeFacetBuilder::new(
+                        "difficulty",
+                        0.to_string(),
+                        4000.to_string(),
+                        400.to_string(),
+                    )
+                    .other(RangeFacetOtherOptions::All);
+
+                    builder = builder.facet(&difficulty_facet);
+                }
+            }
+        }
 
         if let Some(q) = &self.keyword {
             let q = RE.replace_all(q, r"\$0");
@@ -411,15 +420,6 @@ mod test {
         let expected = sorted(
             [
                 ("defType", "edismax"),
-                ("f.category.facet.mincount", "0"),
-                ("f.category.facet.sort", "index"),
-                ("f.difficulty.facet.range.end", "4000"),
-                ("f.difficulty.facet.range.gap", "400"),
-                ("f.difficulty.facet.range.other", "all"),
-                ("f.difficulty.facet.range.start", "0"),
-                ("facet", "true"),
-                ("facet.field", "category"),
-                ("facet.range", "difficulty"),
                 ("q.alt", "*:*"),
                 ("q.op", "AND"),
                 ("qf", "text_ja text_en text_1gram"),
@@ -450,15 +450,6 @@ mod test {
         let expected = sorted(
             [
                 ("defType", "edismax"),
-                ("f.category.facet.mincount", "0"),
-                ("f.category.facet.sort", "index"),
-                ("f.difficulty.facet.range.end", "4000"),
-                ("f.difficulty.facet.range.gap", "400"),
-                ("f.difficulty.facet.range.other", "all"),
-                ("f.difficulty.facet.range.start", "0"),
-                ("facet", "true"),
-                ("facet.field", "category"),
-                ("facet.range", "difficulty"),
                 ("q.alt", "*:*"),
                 ("q.op", "AND"),
                 ("qf", "text_ja text_en text_1gram"),
@@ -665,6 +656,76 @@ mod test {
             .filter(|(key, _)| key == "sort")
             .collect_vec();
         let expected = vec![("sort".to_string(), "score desc".to_string())];
+        assert_eq!(qs, expected);
+    }
+
+    #[test]
+    fn category_facet() {
+        let params = SearchParams {
+            keyword: None,
+            limit: None,
+            page: None,
+            filter: None,
+            sort: None,
+            facet: Some(vec![String::from("category")]),
+        };
+
+        let expected = sorted(
+            [
+                ("defType", "edismax"),
+                ("f.category.facet.mincount", "0"),
+                ("f.category.facet.sort", "index"),
+                ("facet", "true"),
+                ("facet.field", "category"),
+                ("q.alt", "*:*"),
+                ("q.op", "AND"),
+                ("qf", "text_ja text_en text_1gram"),
+                ("sow", "true"),
+                ("rows", "20"),
+                ("start", "0"),
+            ]
+            .into_iter()
+            .map(|(key, value)| (key.to_string(), value.to_string())),
+        )
+        .collect_vec();
+
+        let qs = sorted(params.as_qs().into_iter()).collect_vec();
+        assert_eq!(qs, expected);
+    }
+
+    #[test]
+    fn difficulty_facet() {
+        let params = SearchParams {
+            keyword: None,
+            limit: None,
+            page: None,
+            filter: None,
+            sort: None,
+            facet: Some(vec![String::from("difficulty")]),
+        };
+
+        let expected = sorted(
+            [
+                ("defType", "edismax"),
+                ("f.difficulty.facet.range.end", "4000"),
+                ("f.difficulty.facet.range.gap", "400"),
+                ("f.difficulty.facet.range.other", "all"),
+                ("f.difficulty.facet.range.start", "0"),
+                ("facet", "true"),
+                ("facet.range", "difficulty"),
+                ("q.alt", "*:*"),
+                ("q.op", "AND"),
+                ("qf", "text_ja text_en text_1gram"),
+                ("sow", "true"),
+                ("rows", "20"),
+                ("start", "0"),
+            ]
+            .into_iter()
+            .map(|(key, value)| (key.to_string(), value.to_string())),
+        )
+        .collect_vec();
+
+        let qs = sorted(params.as_qs().into_iter()).collect_vec();
         assert_eq!(qs, expected);
     }
 
