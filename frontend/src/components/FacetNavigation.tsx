@@ -1,50 +1,66 @@
-import { useState } from "react";
-import { useNavigate, createSearchParams } from "react-router-dom";
-import { FieldFacetNavigationPart } from "./FieldFacetNavigationPart";
-import { RangeFacetNavigationPart } from "./RangeFacetNavigationPart";
-import { useRecoilValue } from "recoil";
-import { searchResponseFacetSelector } from "../libs/searchResponseState";
-import { searchParamsStateSelector } from "../libs/searchParamsState";
+import { useEffect, useState, useRef } from "react";
+import { HiChevronDown } from "react-icons/hi";
 
-export function FacetNavigation() {
-  const searchParams = useRecoilValue(searchParamsStateSelector);
-  const [params, setParams] = useState<Map<string, string>>(
-    new Map<string, string>()
-  );
-  const facets = useRecoilValue(searchResponseFacetSelector);
+type Props = {
+  title: string;
+  children: React.ReactNode;
+};
 
-  const navigate = useNavigate();
+export function FacetNavigation(props: Props) {
+  // 絞り込みメニューのオンオフを管理するステート
+  const [showMenu, setShowMenu] = useState<boolean>(false);
+  // 絞り込みメニューを開くためのHTMLエレメントへの参照
+  const menuHeaderRef = useRef<HTMLDivElement>(null);
+  // 絞り込みメニュー本体のHTMLエレメントへの参照
+  const menuBodyRef = useRef<HTMLDivElement>(null);
+
+  // メニュー以外をクリックしたときにメニューを閉じるためのロジック
+  useEffect(() => {
+    // クリックイベントを検知する関数
+    const handleClickOutside = (event: MouseEvent) => {
+      // タイプガード
+      if (event.target instanceof Node) {
+        // - ヘッダとボディがあること
+        // - クリックされたのがヘッダでないこと
+        // - クリックされたのがボディでないこと
+        // 以上の条件をすべて満たす場合に「メニュー以外がクリックされた」と判定し、メニューを閉じる
+        if (
+          menuHeaderRef.current &&
+          menuBodyRef.current &&
+          !menuHeaderRef.current.contains(event.target) &&
+          !menuBodyRef.current.contains(event.target)
+        ) {
+          setShowMenu(false);
+        }
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [menuHeaderRef]);
 
   return (
-    <div className="my-4  flex min-w-[240px] flex-col rounded-xl bg-zinc-900 py-2 px-4">
-      <FieldFacetNavigationPart
-        fieldName="category"
-        facet={facets.category}
-        setParams={setParams}
-      />
-      <RangeFacetNavigationPart
-        fieldName="difficulty"
-        facet={facets.difficulty}
-        setParams={setParams}
-      />
-      <button
-        className="my-1 mx-2 rounded-full bg-teal-800 py-2"
-        onClick={() => {
-          const filteredSearchParams = createSearchParams();
-          for (const [key, value] of searchParams.entries()) {
-            if (!key.startsWith("filter")) {
-              filteredSearchParams.set(key, value);
-            }
-          }
-          for (const [key, value] of params.entries()) {
-            filteredSearchParams.set(key, value);
-          }
-
-          navigate(`/search?${filteredSearchParams.toString()}`);
-        }}
+    <div className="text-md relative z-[4000]">
+      <div
+        className="flex cursor-pointer select-none flex-row items-center justify-between p-1.5"
+        onClick={() => setShowMenu((previous) => !previous)}
+        ref={menuHeaderRef}
       >
-        絞り込む
-      </button>
+        <span className="text-md inline-block">{props.title}</span>
+        <HiChevronDown className={showMenu ? "rotate-180" : "rotate-0"} />
+      </div>
+
+      <div
+        className={`absolute top-7 ${
+          showMenu ? "" : "hidden"
+        } w-full border-2 bg-zinc-800 p-2`}
+        ref={menuBodyRef}
+      >
+        {props.children}
+      </div>
     </div>
   );
 }
