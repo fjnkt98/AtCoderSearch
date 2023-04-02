@@ -321,4 +321,21 @@ mod test {
 
         assert_eq!(res.status(), 400);
     }
+
+    #[ignore]
+    #[rstest]
+    #[case("facet=category")]
+    #[case("facet=difficulty")]
+    #[case("facet=category,difficulty")]
+    #[tokio::test]
+    async fn specify_facet_count_fields(#[case] params: &str) {
+        let req = Request::builder()
+            .uri(format!("/api/search?{}", params))
+            .method(Method::GET)
+            .body(Body::empty())
+            .unwrap();
+        let res = create_app().await.oneshot(req).await.unwrap();
+
+        assert_eq!(res.status(), 200);
+    }
 }
