@@ -2,7 +2,6 @@ import { ChangeEvent, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { searchParamsStateSelector } from "../libs/searchParamsState";
-import { HiChevronDown } from "react-icons/hi";
 
 const sortKeyMapping = new Map<string, string>([
   ["-score", "関連度順"],
@@ -33,7 +32,7 @@ export function SortOrder() {
   return (
     <select
       onChange={handleChange}
-      className="text-md m-2 block cursor-pointer rounded-lg border-none bg-zinc-800 p-2 text-slate-400 placeholder-slate-400 outline-none"
+      className="text-md block cursor-pointer rounded-lg border-none bg-zinc-800 p-2 text-slate-400 placeholder-slate-400 outline-none"
     >
       <option hidden>{sortKeyMapping.get(selected ?? "-score")}</option>
       <option value="-score">{sortKeyMapping.get("-score")}</option>
