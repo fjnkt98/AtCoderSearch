@@ -10,7 +10,6 @@ use once_cell::sync::Lazy;
 use regex::Regex;
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
-use serde_qs::Config;
 use solrust::querybuilder::{
     common::SolrCommonQueryBuilder,
     dismax::SolrDisMaxQueryBuilder,
@@ -31,7 +30,7 @@ static RE: Lazy<Regex> = Lazy::new(|| {
 
 /// 検索APIのクエリパラメータ
 /// クエリパラメータとJSONパラメータ兼用
-#[derive(Debug, Serialize, Deserialize, Clone, Validate)]
+#[derive(Debug, Serialize, Deserialize, Clone, Validate, PartialEq, Eq)]
 pub struct SearchParams {
     // 検索キーワード
     #[validate(length(max = 200))]
@@ -62,14 +61,14 @@ impl SearchParams {
 }
 
 /// fパラメータに指定できる値
-#[derive(Debug, Serialize, Deserialize, Clone, Validate)]
+#[derive(Debug, Serialize, Deserialize, Clone, Validate, PartialEq, Eq)]
 pub struct FilteringParameters {
     pub category: Option<Vec<String>>,
     pub difficulty: Option<RangeFilteringParameter<u32>>,
 }
 
 /// 範囲フィルタリングに指定できる値
-#[derive(Debug, Serialize, Deserialize, Clone, Validate)]
+#[derive(Debug, Serialize, Deserialize, Clone, Validate, PartialEq, Eq)]
 pub struct RangeFilteringParameter<T> {
     pub from: Option<T>,
     pub to: Option<T>,
@@ -256,7 +255,7 @@ where
 pub struct ValidatedSearchQueryParams<T>(pub T);
 
 /// クエリパラメータをパースした結果を格納し、SearchParams構造体へ変換するための中間構造体
-#[derive(Debug, Serialize, Deserialize, Validate)]
+#[derive(Debug, Serialize, Deserialize, Validate, PartialEq, Eq)]
 pub struct SearchQueryParams {
     #[validate(length(max = 200))]
     pub keyword: Option<String>,
@@ -265,7 +264,7 @@ pub struct SearchQueryParams {
     #[validate(range(min = 1))]
     pub page: Option<u32>,
     #[serde(alias = "filter.category")]
-    pub filter_category: Option<Vec<String>>,
+    pub filter_category: Option<String>,
     #[serde(alias = "filter.difficulty.from")]
     pub filter_difficulty_from: Option<u32>,
     #[serde(alias = "filter.difficulty.to")]
@@ -277,7 +276,14 @@ pub struct SearchQueryParams {
 impl Into<SearchParams> for SearchQueryParams {
     fn into(self) -> SearchParams {
         let filter = Some(FilteringParameters {
-            category: self.filter_category,
+            category: self.filter_category.and_then(|category| {
+                Some(
+                    category
+                        .split(',')
+                        .map(String::from)
+                        .collect::<Vec<String>>(),
+                )
+            }),
             difficulty: Some(RangeFilteringParameter {
                 from: self.filter_difficulty_from,
                 to: self.filter_difficulty_to,
@@ -302,9 +308,8 @@ where
     type Rejection = (StatusCode, Json<SearchResultResponse>);
 
     async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
-        let config = Config::new(0, false);
         let query = parts.uri.query().unwrap_or_default();
-        let value: T = config.deserialize_str(query).map_err(|rejection| {
+        let value: T = serde_urlencoded::from_str(query).map_err(|rejection| {
             tracing::error!("Parsing error: {}", rejection);
             let stats = SearchResultStats {
                 time: 0,
@@ -354,6 +359,7 @@ where
 mod test {
     use super::*;
     use itertools::{sorted, Itertools};
+    use rstest::*;
 
     /// すべてのパラメータがデフォルト値のときのテスト
     #[test]
@@ -616,5 +622,52 @@ mod test {
             .collect_vec();
         let expected = vec![("sort".to_string(), "score desc".to_string())];
         assert_eq!(qs, expected);
+    }
+
+    #[rstest]
+    #[case("keyword=", SearchQueryParams {keyword: Some(String::from("")), limit: None, page: None, filter_category: None, filter_difficulty_from: None, filter_difficulty_to: None, sort: None})]
+    #[case("keyword=hoge", SearchQueryParams {keyword: Some(String::from("hoge")), limit: None, page: None, filter_category: None, filter_difficulty_from: None, filter_difficulty_to: None, sort: None })]
+    #[case("limit=20", SearchQueryParams {keyword: None, limit: Some(20), page: None, filter_category: None, filter_difficulty_from: None, filter_difficulty_to: None, sort: None })]
+    #[case("page=2", SearchQueryParams {keyword: None, limit: None, page: Some(2), filter_category: None, filter_difficulty_from: None, filter_difficulty_to: None, sort: None })]
+    #[case("filter_category=ABC,ARC", SearchQueryParams {keyword: None, limit: None, page: None, filter_category: Some(String::from("ABC,ARC")), filter_difficulty_from: None, filter_difficulty_to: None, sort: None })]
+    #[case("filter_difficulty_from=800", SearchQueryParams {keyword: None, limit: None, page: None, filter_category: None, filter_difficulty_from: Some(800), filter_difficulty_to: None, sort: None })]
+    #[case("filter_difficulty_to=1000", SearchQueryParams {keyword: None, limit: None, page: None, filter_category: None, filter_difficulty_from: None, filter_difficulty_to: Some(1000), sort: None })]
+    #[case("sort=-score", SearchQueryParams {keyword: None, limit: None, page: None, filter_category: None, filter_difficulty_from: None, filter_difficulty_to: None, sort: Some(String::from("-score")) })]
+    fn deserialize_query_parameters(#[case] input: &str, #[case] expected: SearchQueryParams) {
+        let value = serde_urlencoded::from_str::<SearchQueryParams>(input);
+
+        assert!(value.is_ok());
+        assert_eq!(value.unwrap(), expected);
+    }
+
+    #[test]
+    fn convert_query_params_to_search_params() {
+        let query_params = SearchQueryParams {
+            keyword: Some(String::from("hoge")),
+            limit: Some(20),
+            page: None,
+            filter_category: Some(String::from("ABC,ARC")),
+            filter_difficulty_from: Some(800),
+            filter_difficulty_to: None,
+            sort: None,
+        };
+
+        let params: SearchParams = query_params.into();
+
+        let expected = SearchParams {
+            keyword: Some(String::from("hoge")),
+            limit: Some(20),
+            page: None,
+            filter: Some(FilteringParameters {
+                category: Some(vec![String::from("ABC"), String::from("ARC")]),
+                difficulty: Some(RangeFilteringParameter {
+                    from: Some(800),
+                    to: None,
+                }),
+            }),
+            sort: None,
+        };
+
+        assert_eq!(params, expected);
     }
 }
