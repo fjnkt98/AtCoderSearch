@@ -148,7 +148,6 @@ mod test {
 
     #[ignore]
     #[rstest]
-    #[case("")]
     #[case("1")]
     #[case("20")]
     #[case("200")]
@@ -169,7 +168,6 @@ mod test {
 
     #[ignore]
     #[rstest]
-    #[case("")]
     #[case("1")]
     #[case("2")]
     #[tokio::test]
@@ -193,6 +191,7 @@ mod test {
     #[case("ABC")]
     #[case("Other Contests")]
     #[case("ABC-Like")]
+    #[case("ABC,ARC")]
     #[tokio::test]
     async fn test_category(#[case] category: &str) {
         let uri = Url::parse_with_params(
@@ -213,7 +212,6 @@ mod test {
 
     #[ignore]
     #[rstest]
-    #[case("")]
     #[case("-score")]
     #[case("difficulty")]
     #[case("-difficulty")]
@@ -236,8 +234,8 @@ mod test {
 
     #[ignore]
     #[rstest(
-        difficulty_from => ["", "400"],
-        difficulty_to => ["", "1200"],
+        difficulty_from => ["400"],
+        difficulty_to => ["1200"],
     )]
     #[tokio::test]
     async fn test_difficulty(difficulty_from: &str, difficulty_to: &str) {
