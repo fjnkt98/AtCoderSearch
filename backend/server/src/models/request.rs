@@ -303,7 +303,7 @@ pub struct SearchQueryParams {
 
 fn validate_facet_field_str(value: &str) -> Result<(), ValidationError> {
     for value in value.split(',').into_iter() {
-        if value != "category" || value != "difficulty" {
+        if value != "category" && value != "difficulty" {
             return Err(ValidationError::new(
                 "Invalid facet field option. Select from category or difficulty.",
             ));
