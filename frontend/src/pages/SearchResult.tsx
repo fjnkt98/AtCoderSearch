@@ -3,25 +3,21 @@ import { apiHost } from "../libs/apiHost";
 import { Logo } from "../components/Logo";
 import { ProblemList } from "../components/ProblemList";
 import { SearchBar } from "../components/SearchBar";
-import { SideBar } from "../components/SideBar";
 import { useSearchParams } from "react-router-dom";
 import { SearchResponse } from "../types/response";
 import { PageNavigation } from "../components/PageNavigation";
+import { FieldFacetNavigationPart } from "../components/FieldFacetNavigationPart";
+import { RangeFacetNavigationPart } from "../components/RangeFacetNavigationPart";
 import { searchParamsState } from "../libs/searchParamsState";
-import {
-  searchResponseState,
-  searchResponseTotalSelector,
-  searchResponseCountSelector,
-  searchResponseTimeSelector,
-} from "../libs/searchResponseState";
+import { searchResponseState } from "../libs/searchResponseState";
 import { useRecoilState, useRecoilValue } from "recoil";
+import { SortOrder } from "../components/SortOrder";
+import { searchResponseFacetSelector } from "../libs/searchResponseState";
+import { FacetNavigation } from "../components/FacetNavigation";
 
 export function SearchResult() {
   const [, setSearchParams] = useRecoilState(searchParamsState);
   const [, setSearchResponse] = useRecoilState(searchResponseState);
-  const total = useRecoilValue(searchResponseTotalSelector);
-  const count = useRecoilValue(searchResponseCountSelector);
-  const time = useRecoilValue(searchResponseTimeSelector);
 
   const currentSearchParams = useSearchParams()[0];
 
@@ -35,9 +31,11 @@ export function SearchResult() {
     })();
   }, [currentSearchParams]);
 
+  const facets = useRecoilValue(searchResponseFacetSelector);
+
   return (
-    <div className="h-full w-full bg-zinc-800 text-slate-200">
-      <div className="sticky top-0 z-[5000] mx-auto flex w-full flex-col items-center justify-center bg-zinc-800 py-2 shadow-sm shadow-black">
+    <div className="h-full w-full bg-zinc-800 text-slate-100">
+      <div className="sticky top-0 z-[5000] mx-auto flex w-full flex-col items-center justify-center bg-zinc-800 py-2 shadow-sm shadow-gray-900">
         <div className="flex w-3/4 flex-row items-center justify-center gap-10">
           <Logo isBig={false} />
           <SearchBar />
@@ -45,18 +43,29 @@ export function SearchResult() {
         <PageNavigation />
       </div>
 
-      <div className="flex flex-col px-6 lg:flex-row">
-        <div className="mr-4 w-1/4 p-2">
-          <SideBar />
-        </div>
-        <div className="w-3/4">
-          <div className="mx-4 mt-6 text-slate-400">
-            {count}件/{total}件 約{time / 1000}秒
+      <div className="mx-auto mt-6 flex w-3/4 min-w-[600px] flex-col items-center justify-center border-2 text-slate-100">
+        <div className="flex w-full flex-row items-center justify-between">
+          <div className="mx-2 flex-1 border-2">
+            <SortOrder />
           </div>
-          <div>
-            <ProblemList />
+          <div className="mx-2 flex-1 border-2">
+            <FacetNavigation title="Category">
+              <FieldFacetNavigationPart
+                fieldName="category"
+                facet={facets.category}
+              />
+            </FacetNavigation>
+          </div>
+          <div className="mx-2 flex-1 border-2">
+            <FacetNavigation title="Difficulty">
+              <RangeFacetNavigationPart
+                fieldName="difficulty"
+                facet={facets.difficulty}
+              />
+            </FacetNavigation>
           </div>
         </div>
+        <ProblemList />
       </div>
     </div>
   );
