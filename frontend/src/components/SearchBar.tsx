@@ -17,6 +17,7 @@ export function SearchBar() {
     createSearchParams({
       limit: "20",
       page: "1",
+      facet: "category,difficulty",
     })
   );
 
