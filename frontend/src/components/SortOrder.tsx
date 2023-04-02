@@ -2,6 +2,7 @@ import { ChangeEvent, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { searchParamsStateSelector } from "../libs/searchParamsState";
+import { HiChevronDown } from "react-icons/hi";
 
 const sortKeyMapping = new Map<string, string>([
   ["-score", "関連度順"],
@@ -30,18 +31,16 @@ export function SortOrder() {
   };
 
   return (
-    <div className="w-full">
-      <select
-        onChange={handleChange}
-        className="w-full appearance-none rounded-md border bg-white px-2 py-1 text-gray-900 shadow-sm outline-none focus:border-indigo-600"
-      >
-        <option hidden>{sortKeyMapping.get(selected ?? "-score")}</option>
-        <option value="-score">{sortKeyMapping.get("-score")}</option>
-        <option value="difficulty">{sortKeyMapping.get("difficulty")}</option>
-        <option value="-difficulty">{sortKeyMapping.get("-difficulty")}</option>
-        <option value="start_at">{sortKeyMapping.get("start_at")}</option>
-        <option value="-start_at">{sortKeyMapping.get("-start_at")}</option>
-      </select>
-    </div>
+    <select
+      onChange={handleChange}
+      className="text-md m-2 block cursor-pointer rounded-lg border-none bg-zinc-800 p-2 text-slate-400 placeholder-slate-400 outline-none"
+    >
+      <option hidden>{sortKeyMapping.get(selected ?? "-score")}</option>
+      <option value="-score">{sortKeyMapping.get("-score")}</option>
+      <option value="difficulty">{sortKeyMapping.get("difficulty")}</option>
+      <option value="-difficulty">{sortKeyMapping.get("-difficulty")}</option>
+      <option value="start_at">{sortKeyMapping.get("start_at")}</option>
+      <option value="-start_at">{sortKeyMapping.get("-start_at")}</option>
+    </select>
   );
 }
