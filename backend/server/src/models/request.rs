@@ -46,6 +46,9 @@ pub struct SearchParams {
     // ソート順
     #[validate(custom = "validate_sort_option")]
     pub sort: Option<String>,
+    // ファセットカウントのフィールド
+    #[validate(custom = "validate_facet_field_vec")]
+    pub facet: Option<Vec<String>>,
 }
 
 impl SearchParams {
@@ -56,6 +59,7 @@ impl SearchParams {
             page: None,
             filter: None,
             sort: None,
+            facet: None,
         }
     }
 }
@@ -80,6 +84,19 @@ fn validate_sort_option(value: &str) -> Result<(), ValidationError> {
         "start_at" | "-start_at" | "difficulty" | "-difficulty" | "-score" => {}
         _ => return Err(ValidationError::new("Invalid sort field option. Select from start_at, -start_at, difficulty, -difficulty, -score.")),
     }
+    Ok(())
+}
+
+/// ファセットカウントのフィールドを限定するためのバリデーション関数
+fn validate_facet_field_vec(values: &[String]) -> Result<(), ValidationError> {
+    for value in values.iter() {
+        if value != "category" || value != "difficulty" {
+            return Err(ValidationError::new(
+                "Invalid facet field option. Select from category or difficulty.",
+            ));
+        }
+    }
+
     Ok(())
 }
 
@@ -271,6 +288,20 @@ pub struct SearchQueryParams {
     pub filter_difficulty_to: Option<u32>,
     #[validate(custom = "validate_sort_option")]
     pub sort: Option<String>,
+    #[validate(custom = "validate_facet_field_str")]
+    pub facet: Option<String>,
+}
+
+fn validate_facet_field_str(value: &str) -> Result<(), ValidationError> {
+    for value in value.split(',').into_iter() {
+        if value != "category" || value != "difficulty" {
+            return Err(ValidationError::new(
+                "Invalid facet field option. Select from category or difficulty.",
+            ));
+        }
+    }
+
+    Ok(())
 }
 
 impl Into<SearchParams> for SearchQueryParams {
@@ -295,6 +326,9 @@ impl Into<SearchParams> for SearchQueryParams {
             page: self.page,
             filter: filter,
             sort: self.sort,
+            facet: self.facet.and_then(|facet| {
+                Some(facet.split(',').map(String::from).collect::<Vec<String>>())
+            }),
         }
     }
 }
@@ -370,6 +404,7 @@ mod test {
             page: None,
             filter: None,
             sort: None,
+            facet: None,
         };
 
         let qs = sorted(params.as_qs()).collect_vec();
@@ -408,6 +443,7 @@ mod test {
             page: None,
             filter: None,
             sort: None,
+            facet: None,
         };
 
         let qs = sorted(params.as_qs()).collect_vec();
@@ -447,6 +483,7 @@ mod test {
             page: None,
             filter: None,
             sort: None,
+            facet: None,
         };
 
         let qs = params
@@ -469,6 +506,7 @@ mod test {
             page: Some(1),
             filter: None,
             sort: None,
+            facet: None,
         };
 
         let qs = params
@@ -490,6 +528,7 @@ mod test {
             page: Some(2),
             filter: None,
             sort: None,
+            facet: None,
         };
 
         let qs = params
@@ -514,6 +553,7 @@ mod test {
                 difficulty: None,
             }),
             sort: None,
+            facet: None,
         };
 
         let qs = params
@@ -542,6 +582,7 @@ mod test {
                 difficulty: None,
             }),
             sort: None,
+            facet: None,
         };
 
         let qs = params
@@ -572,6 +613,7 @@ mod test {
                 }),
             }),
             sort: None,
+            facet: None,
         };
 
         let qs = params
@@ -593,6 +635,7 @@ mod test {
             page: None,
             filter: None,
             sort: Some(String::from("start_at")),
+            facet: None,
         };
 
         let qs = params
@@ -613,6 +656,7 @@ mod test {
             page: None,
             filter: None,
             sort: Some(String::from("-score")),
+            facet: None,
         };
 
         let qs = params
@@ -625,14 +669,14 @@ mod test {
     }
 
     #[rstest]
-    #[case("keyword=", SearchQueryParams {keyword: Some(String::from("")), limit: None, page: None, filter_category: None, filter_difficulty_from: None, filter_difficulty_to: None, sort: None})]
-    #[case("keyword=hoge", SearchQueryParams {keyword: Some(String::from("hoge")), limit: None, page: None, filter_category: None, filter_difficulty_from: None, filter_difficulty_to: None, sort: None })]
-    #[case("limit=20", SearchQueryParams {keyword: None, limit: Some(20), page: None, filter_category: None, filter_difficulty_from: None, filter_difficulty_to: None, sort: None })]
-    #[case("page=2", SearchQueryParams {keyword: None, limit: None, page: Some(2), filter_category: None, filter_difficulty_from: None, filter_difficulty_to: None, sort: None })]
-    #[case("filter_category=ABC,ARC", SearchQueryParams {keyword: None, limit: None, page: None, filter_category: Some(String::from("ABC,ARC")), filter_difficulty_from: None, filter_difficulty_to: None, sort: None })]
-    #[case("filter_difficulty_from=800", SearchQueryParams {keyword: None, limit: None, page: None, filter_category: None, filter_difficulty_from: Some(800), filter_difficulty_to: None, sort: None })]
-    #[case("filter_difficulty_to=1000", SearchQueryParams {keyword: None, limit: None, page: None, filter_category: None, filter_difficulty_from: None, filter_difficulty_to: Some(1000), sort: None })]
-    #[case("sort=-score", SearchQueryParams {keyword: None, limit: None, page: None, filter_category: None, filter_difficulty_from: None, filter_difficulty_to: None, sort: Some(String::from("-score")) })]
+    #[case("keyword=", SearchQueryParams {keyword: Some(String::from("")), limit: None, page: None, filter_category: None, filter_difficulty_from: None, filter_difficulty_to: None, sort: None, facet: None})]
+    #[case("keyword=hoge", SearchQueryParams {keyword: Some(String::from("hoge")), limit: None, page: None, filter_category: None, filter_difficulty_from: None, filter_difficulty_to: None, sort: None, facet: None })]
+    #[case("limit=20", SearchQueryParams {keyword: None, limit: Some(20), page: None, filter_category: None, filter_difficulty_from: None, filter_difficulty_to: None, sort: None, facet: None })]
+    #[case("page=2", SearchQueryParams {keyword: None, limit: None, page: Some(2), filter_category: None, filter_difficulty_from: None, filter_difficulty_to: None, sort: None, facet: None })]
+    #[case("filter_category=ABC,ARC", SearchQueryParams {keyword: None, limit: None, page: None, filter_category: Some(String::from("ABC,ARC")), filter_difficulty_from: None, filter_difficulty_to: None, sort: None, facet: None})]
+    #[case("filter_difficulty_from=800", SearchQueryParams {keyword: None, limit: None, page: None, filter_category: None, filter_difficulty_from: Some(800), filter_difficulty_to: None, sort: None, facet: None })]
+    #[case("filter_difficulty_to=1000", SearchQueryParams {keyword: None, limit: None, page: None, filter_category: None, filter_difficulty_from: None, filter_difficulty_to: Some(1000), sort: None, facet: None })]
+    #[case("sort=-score", SearchQueryParams {keyword: None, limit: None, page: None, filter_category: None, filter_difficulty_from: None, filter_difficulty_to: None, sort: Some(String::from("-score")), facet: None})]
     fn deserialize_query_parameters(#[case] input: &str, #[case] expected: SearchQueryParams) {
         let value = serde_urlencoded::from_str::<SearchQueryParams>(input);
 
@@ -650,6 +694,7 @@ mod test {
             filter_difficulty_from: Some(800),
             filter_difficulty_to: None,
             sort: None,
+            facet: None,
         };
 
         let params: SearchParams = query_params.into();
@@ -666,6 +711,7 @@ mod test {
                 }),
             }),
             sort: None,
+            facet: None,
         };
 
         assert_eq!(params, expected);
