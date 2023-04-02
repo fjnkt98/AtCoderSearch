@@ -111,6 +111,7 @@ impl SearchParams {
         let mut builder = EDisMaxQueryBuilder::new()
             .rows(rows)
             .start(start)
+            .fl(String::from("problem_id,problem_title,problem_url,contest_id,contest_title,contest_url,difficulty,start_at,duration,rate_change,category"))
             .qf("text_ja text_en text_1gram")
             .q_alt(&QueryOperand::from("*:*"))
             .op(Operator::AND)
@@ -425,6 +426,7 @@ mod test {
                 ("q.alt", "*:*"),
                 ("q.op", "AND"),
                 ("qf", "text_ja text_en text_1gram"),
+                ("fl", "problem_id,problem_title,problem_url,contest_id,contest_title,contest_url,difficulty,start_at,duration,rate_change,category"),
                 ("sow", "true"),
                 ("rows", "20"),
                 ("start", "0"),
@@ -455,6 +457,7 @@ mod test {
                 ("q.alt", "*:*"),
                 ("q.op", "AND"),
                 ("qf", "text_ja text_en text_1gram"),
+                ("fl", "problem_id,problem_title,problem_url,contest_id,contest_title,contest_url,difficulty,start_at,duration,rate_change,category"),
                 ("sow", "true"),
                 ("rows", "20"),
                 ("start", "0"),
@@ -689,6 +692,7 @@ mod test {
                 ("q.alt", "*:*"),
                 ("q.op", "AND"),
                 ("qf", "text_ja text_en text_1gram"),
+                ("fl", "problem_id,problem_title,problem_url,contest_id,contest_title,contest_url,difficulty,start_at,duration,rate_change,category"),
                 ("sow", "true"),
                 ("rows", "20"),
                 ("start", "0"),
@@ -723,6 +727,7 @@ mod test {
                 ("facet", "true"),
                 ("facet.range", "{!ex=difficulty}difficulty"),
                 ("q.alt", "*:*"),
+                ("fl", "problem_id,problem_title,problem_url,contest_id,contest_title,contest_url,difficulty,start_at,duration,rate_change,category"),
                 ("q.op", "AND"),
                 ("qf", "text_ja text_en text_1gram"),
                 ("sow", "true"),
