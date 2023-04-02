@@ -122,7 +122,8 @@ impl SearchParams {
                     let category_facet = FieldFacetBuilder::new("category")
                         .min_count(0)
                         .sort(FieldFacetSortOrder::Index);
-                    builder = builder.facet(&category_facet);
+                    builder =
+                        builder.facet_with_local_params(&category_facet, &[("ex", "category")]);
                 }
                 if field == "difficulty" {
                     let difficulty_facet = RangeFacetBuilder::new(
@@ -133,7 +134,8 @@ impl SearchParams {
                     )
                     .other(RangeFacetOtherOptions::All);
 
-                    builder = builder.facet(&difficulty_facet);
+                    builder =
+                        builder.facet_with_local_params(&difficulty_facet, &[("ex", "difficulty")]);
                 }
             }
         }
@@ -162,7 +164,7 @@ impl SearchParams {
                         .map(|c| QueryOperand::from(PhraseQueryOperand::new("category", c)))
                         .collect::<Vec<QueryOperand>>(),
                 );
-                builder = builder.fq(&fq);
+                builder = builder.fq_with_local_params(&fq, &[("tag", "category")]);
             }
 
             if let Some(difficulty) = &f.difficulty {
@@ -175,7 +177,7 @@ impl SearchParams {
                         range = range.lt(to.to_string());
                     }
                     let fq = QueryOperand::from(range);
-                    builder = builder.fq(&fq);
+                    builder = builder.fq_with_local_params(&fq, &[("tag", "difficulty")]);
                 }
             }
         }
@@ -552,7 +554,10 @@ mod test {
             .into_iter()
             .filter(|(key, _)| key == "fq")
             .collect_vec();
-        let expected = vec![("fq".to_string(), r#"category:"ABC""#.to_string())];
+        let expected = vec![(
+            "fq".to_string(),
+            r#"{!tag=category}category:"ABC""#.to_string(),
+        )];
 
         assert_eq!(qs, expected);
     }
@@ -583,7 +588,8 @@ mod test {
             .collect_vec();
         let expected = vec![(
             "fq".to_string(),
-            r#"category:"ABC" OR category:"Other Contests" OR category:"ABC\-Like""#.to_string(),
+            r#"{!tag=category}category:"ABC" OR category:"Other Contests" OR category:"ABC\-Like""#
+                .to_string(),
         )];
 
         assert_eq!(qs, expected);
@@ -612,7 +618,10 @@ mod test {
             .into_iter()
             .filter(|(key, _)| key == "fq")
             .collect_vec();
-        let expected = vec![("fq".to_string(), r#"difficulty:[800 TO 1200}"#.to_string())];
+        let expected = vec![(
+            "fq".to_string(),
+            r#"{!tag=difficulty}difficulty:[800 TO 1200}"#.to_string(),
+        )];
 
         assert_eq!(qs, expected);
     }
@@ -676,7 +685,7 @@ mod test {
                 ("f.category.facet.mincount", "0"),
                 ("f.category.facet.sort", "index"),
                 ("facet", "true"),
-                ("facet.field", "category"),
+                ("facet.field", "{!ex=category}category"),
                 ("q.alt", "*:*"),
                 ("q.op", "AND"),
                 ("qf", "text_ja text_en text_1gram"),
@@ -712,7 +721,7 @@ mod test {
                 ("f.difficulty.facet.range.other", "all"),
                 ("f.difficulty.facet.range.start", "0"),
                 ("facet", "true"),
-                ("facet.range", "difficulty"),
+                ("facet.range", "{!ex=difficulty}difficulty"),
                 ("q.alt", "*:*"),
                 ("q.op", "AND"),
                 ("qf", "text_ja text_en text_1gram"),

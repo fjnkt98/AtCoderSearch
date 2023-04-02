@@ -1499,9 +1499,9 @@ dependencies = [
 
 [[package]]
 name = "solrust_derive_internals"
-version = "0.1.6"
+version = "0.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c3e96b7e1a256188fa405242383180edd63b90ac15c1b7cfb705908f4a633b2c"
+checksum = "c20a697a353096553237172eddaf0cbb5c5cf79d88bcd4afb3666d25c9c4c91d"
 dependencies = [
  "proc-macro2",
  "quote",
