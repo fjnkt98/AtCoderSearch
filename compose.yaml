@@ -19,6 +19,12 @@ services:
         condition: service_healthy
     networks:
       - atcoder
+    healthcheck:
+      test: ["CMD", "curl", "-sS", "http://localhost:8000/api/healthcheck"]
+      interval: 10s
+      timeout: 1s
+      retries: 3
+      start_period: 10s
 
   indexer:
     build:
@@ -89,10 +95,16 @@ services:
       dockerfile: middlewares/nginx/Dockerfile
       args:
         - API_HOST=http://localhost:8000
+    container_name: atcoder-search-web-server
     ports:
       - "80:80"
+    environment:
+      - API_HOST=http://api-server:8000
     networks:
       - atcoder
+    depends_on:
+      api-server:
+        condition: service_healthy
   
 networks:
   atcoder:

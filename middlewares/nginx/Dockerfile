@@ -7,6 +7,7 @@ WORKDIR /app
 
 ARG API_HOST
 ENV VITE_API_HOST ${API_HOST}
+ENV API_HOST ${API_HOST}
 
 COPY ./frontend/src ./src
 COPY ./frontend/package.json ./package.json
