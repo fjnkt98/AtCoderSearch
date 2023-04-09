@@ -122,3 +122,15 @@ async fn handle_request(
         }),
     ))
 }
+
+pub async fn healthcheck(Extension(core): Extension<Arc<SolrCore>>) -> impl IntoResponse {
+    if let Ok(response) = core.ping().await {
+        if response.status == "OK" {
+            return (StatusCode::OK, "OK");
+        } else {
+            return (StatusCode::INTERNAL_SERVER_ERROR, "ERROR");
+        }
+    } else {
+        return (StatusCode::INTERNAL_SERVER_ERROR, "ERROR");
+    }
+}

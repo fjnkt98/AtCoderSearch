@@ -1,7 +1,7 @@
 mod handlers;
 mod models;
 
-use crate::handlers::{search_with_json, search_with_qs};
+use crate::handlers::{healthcheck, search_with_json, search_with_qs};
 use axum::{extract::Extension, routing::get, Router, Server};
 use dotenvy::dotenv;
 use hyper::header::CONTENT_TYPE;
@@ -89,6 +89,7 @@ fn create_router(core: SolrCore) -> Router {
     let origin = env::var("FRONTEND_ORIGIN_URL").unwrap_or(String::from("http://localhost:8080"));
     Router::new()
         .route("/api/search", get(search_with_qs).post(search_with_json))
+        .route("/api/healthcheck", get(healthcheck))
         .layer(Extension(Arc::new(core)))
         .layer(
             CorsLayer::new()
@@ -336,6 +337,18 @@ mod test {
             .unwrap();
         let res = create_app().await.oneshot(req).await.unwrap();
 
+        assert_eq!(res.status(), 200);
+    }
+
+    #[ignore]
+    #[tokio::test]
+    async fn test_healthcheck_api() {
+        let req = Request::builder()
+            .uri("/api/healthcheck")
+            .method(Method::GET)
+            .body(Body::empty())
+            .unwrap();
+        let res = create_app().await.oneshot(req).await.unwrap();
         assert_eq!(res.status(), 200);
     }
 }
