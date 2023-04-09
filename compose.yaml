@@ -1,9 +1,9 @@
 services:
-  app:
+  api-server:
     build:
       context: ./backend/server
       dockerfile: Dockerfile
-    container_name: atcoder-search-app
+    container_name: atcoder-search-api-server
     ports:
       - "8000:8000"
     environment:
@@ -13,6 +13,7 @@ services:
       - SOLR_HOST=http://solr
       - SOLR_PORT=8983
       - RUST_LOG=debug
+      - FRONTEND_ORIGIN_URL=http://localhost
     depends_on:
       solr:
         condition: service_healthy
@@ -39,7 +40,7 @@ services:
       solr:
         condition: service_healthy
       postgresql:
-        condition: service_started
+        condition: service_healthy
     command: bash -c 'indexer generate && indexer post --optimize'
     networks:
       - atcoder
@@ -75,6 +76,23 @@ services:
       - type: bind
         source: ./dump.atcoder.sql
         target: /docker-entrypoint-initdb.d/dump.atcoder.sql
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "atcoder"]
+      interval: 10s
+      timeout: 1s
+      retries: 3
+      start_period: 10s
+
+  nginx:
+    build:
+      context: .
+      dockerfile: middlewares/nginx/Dockerfile
+      args:
+        - API_HOST=http://localhost:8000
+    ports:
+      - "80:80"
+    networks:
+      - atcoder
   
 networks:
   atcoder:
