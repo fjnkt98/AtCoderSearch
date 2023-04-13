@@ -10,25 +10,20 @@ use std::sync::Arc;
 use tokio::time::Instant;
 use uuid::Uuid;
 
-#[tracing::instrument(skip(core))]
 pub async fn search_with_qs(
     ValidatedSearchQueryParams(params): ValidatedSearchQueryParams<SearchQueryParams>,
     Extension(core): Extension<Arc<SolrCore>>,
 ) -> Result<impl IntoResponse, (StatusCode, Json<SearchResultResponse>)> {
-    tracing::info!("GET");
     Ok(handle_request(&params.into(), core).await?)
 }
 
-#[tracing::instrument(skip(core))]
 pub async fn search_with_json(
     Extension(core): Extension<Arc<SolrCore>>,
     ValidatedSearchJson(params): ValidatedSearchJson<SearchParams>,
 ) -> Result<impl IntoResponse, (StatusCode, Json<SearchResultResponse>)> {
-    tracing::info!("POST");
     Ok(handle_request(&params, core).await?)
 }
 
-#[tracing::instrument(target = "querylog", skip(core))]
 async fn handle_request(
     params: &SearchParams,
     core: Arc<SolrCore>,
@@ -68,40 +63,12 @@ async fn handle_request(
     let pages: u32 = (total + rows - 1) / rows;
 
     // キーワード検索のときのみロギングする
-    {
-        let params = params.clone();
-        let words = params.keyword.clone().and_then(|word| {
-            Some(
-                word.split_whitespace()
-                    .map(|word| word.to_string())
-                    .collect::<Vec<String>>(),
-            )
-        });
-        let page = params
-            .page
-            .and_then(|page| if page == 1 { Some(1) } else { None });
-        let sort = params.sort.and_then(|sort| {
-            if sort == String::from("-score") {
-                Some(sort)
-            } else {
-                None
-            }
-        });
-
-        if let (Some(words), Some(_page), Some(_sort), Some(_filter)) =
-            (words, page, sort, params.filter)
-        {
-            let word_type = if words.len() > 1 {
-                "multiple"
-            } else {
-                "single"
-            };
-            let uuid = Uuid::new_v4();
-            for (position, word) in words.iter().enumerate() {
-                tracing::info!(target: "querylog", "{} {} {} {} {}", uuid, word, response.response.num_found, position, word_type)
-            }
-        }
-    }
+    tracing::info!(
+        target: "querylog",
+        uuid=Uuid::new_v4().to_string(),
+        hits=response.response.num_found,
+        params=serde_json::to_string(&params).unwrap()
+    );
 
     let stats = SearchResultStats {
         time: Instant::now().duration_since(start_process).as_millis() as u32,
