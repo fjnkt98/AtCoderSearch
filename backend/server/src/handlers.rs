@@ -4,57 +4,44 @@ use axum::extract::Extension;
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::Json;
-use solrust::client::core::{SolrCore, SolrCoreError};
+use solrust::client::core::SolrCore;
 use solrust::types::response::SolrSelectResponse;
 use std::sync::Arc;
 use tokio::time::Instant;
 use uuid::Uuid;
 
+type SearchResponse = (StatusCode, Json<SearchResultResponse>);
+
 pub async fn search_with_qs(
     ValidatedSearchQueryParams(params): ValidatedSearchQueryParams<SearchQueryParams>,
     Extension(core): Extension<Arc<SolrCore>>,
-) -> Result<impl IntoResponse, (StatusCode, Json<SearchResultResponse>)> {
-    Ok(handle_request(&params.into(), core).await?)
+) -> SearchResponse {
+    let params: SearchParams = params.into();
+    match handle_request(&params, core).await {
+        Ok(res) => res,
+        Err(e) => (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(SearchResultResponse::error(&params, &e.to_string())),
+        ),
+    }
 }
 
 pub async fn search_with_json(
     Extension(core): Extension<Arc<SolrCore>>,
     ValidatedSearchJson(params): ValidatedSearchJson<SearchParams>,
-) -> Result<impl IntoResponse, (StatusCode, Json<SearchResultResponse>)> {
-    Ok(handle_request(&params, core).await?)
+) -> SearchResponse {
+    match handle_request(&params, core).await {
+        Ok(res) => res,
+        Err(e) => (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(SearchResultResponse::error(&params, &e.to_string())),
+        ),
+    }
 }
 
-async fn handle_request(
-    params: &SearchParams,
-    core: Arc<SolrCore>,
-) -> Result<impl IntoResponse, (StatusCode, Json<SearchResultResponse>)> {
+async fn handle_request(params: &SearchParams, core: Arc<SolrCore>) -> Result<SearchResponse> {
     let start_process = Instant::now();
-    let response: SolrSelectResponse<Document> = match core.select(&params.as_qs()).await {
-        Ok(response) => response,
-        Err(e) => match e {
-            SolrCoreError::RequestError(e) => {
-                tracing::error!("{}", e.to_string());
-                return Err((
-                    StatusCode::INTERNAL_SERVER_ERROR,
-                    Json(SearchResultResponse::error(&params, &e.to_string())),
-                ));
-            }
-            SolrCoreError::DeserializeError(e) => {
-                tracing::error!("{}", e.to_string());
-                return Err((
-                    StatusCode::INTERNAL_SERVER_ERROR,
-                    Json(SearchResultResponse::error(&params, &e.to_string())),
-                ));
-            }
-            SolrCoreError::UnexpectedError((code, msg)) => {
-                tracing::error!("{}:{}", code, msg);
-                return Err((
-                    StatusCode::BAD_REQUEST,
-                    Json(SearchResultResponse::error(&params, &msg)),
-                ));
-            }
-        },
-    };
+    let response: SolrSelectResponse<Document> = core.select(&params.as_qs()).await?;
 
     let total: u32 = response.response.num_found;
     let count: u32 = response.response.docs.len() as u32;
