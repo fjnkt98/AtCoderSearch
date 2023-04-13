@@ -6,16 +6,13 @@ use axum::{extract::Extension, routing::get, Router, Server};
 use dotenvy::dotenv;
 use hyper::header::CONTENT_TYPE;
 use solrust::client::{core::SolrCore, solr::SolrClient};
-use std::env;
 use std::net::SocketAddr;
 use std::sync::Arc;
+use std::{env, str::FromStr};
 use tower_http::cors::{AllowOrigin, Any, CorsLayer};
-use tracing_appender::rolling::{RollingFileAppender, Rotation};
 use tracing_subscriber::{
     filter::{EnvFilter, LevelFilter},
     fmt,
-    layer::SubscriberExt,
-    Layer, Registry,
 };
 
 #[tokio::main]
@@ -23,45 +20,20 @@ async fn main() {
     dotenv().ok();
 
     let log_level = env::var("RUST_LOG").unwrap_or(String::from("info"));
-    env::set_var("RUST_LOG", "info");
-    let create_filter = || {
-        EnvFilter::builder()
-            .with_default_directive(LevelFilter::INFO.into())
-            .from_env_lossy()
-            .add_directive(format!("solrust={}", log_level).parse().unwrap())
-            .add_directive(format!("server={}", log_level).parse().unwrap())
-            .add_directive("querylog=off".parse().unwrap())
-    };
+    let filter = EnvFilter::builder()
+        .with_default_directive(LevelFilter::from_str(&log_level).unwrap().into())
+        .from_env_lossy()
+        .add_directive("hyper=info".parse().unwrap());
 
-    let log_dir = env::var("LOG_DIRECTORY").unwrap_or(String::from("/var/tmp/atcoder/log"));
+    let format = fmt::format()
+        .with_level(true)
+        .with_target(true)
+        .with_ansi(false);
 
-    // システムログ(コンソールへ出力)
-    let layer1 = fmt::Layer::new().with_filter(create_filter());
-
-    // システムログ(ファイルへ出力)
-    let (file, _guard) = tracing_appender::non_blocking(RollingFileAppender::new(
-        Rotation::DAILY,
-        log_dir.clone(),
-        "atcoder.log",
-    ));
-    let layer2 = fmt::Layer::new()
-        .with_writer(file)
-        .with_filter(create_filter());
-    // クエリログ(ファイルへ出力)
-    let (file, _guard) = tracing_appender::non_blocking(RollingFileAppender::new(
-        Rotation::DAILY,
-        log_dir.clone(),
-        "query.log",
-    ));
-    let layer3 = fmt::Layer::new().with_writer(file).with_filter(
-        EnvFilter::builder()
-            .with_default_directive(LevelFilter::INFO.into())
-            .from_env_lossy()
-            .add_directive("querylog=info".parse().unwrap())
-            .add_directive("server=off".parse().unwrap()),
-    );
-
-    let subscriber = Registry::default().with(layer1).with(layer2).with(layer3);
+    let subscriber = tracing_subscriber::fmt()
+        .with_env_filter(filter)
+        .event_format(format)
+        .finish();
     tracing::subscriber::set_global_default(subscriber).expect("Failed to set subscriber.");
 
     let solr_host = env::var("SOLR_HOST").unwrap_or(String::from("http://localhost"));
