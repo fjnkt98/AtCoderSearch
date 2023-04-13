@@ -62,7 +62,7 @@ async fn handle_request(
     let index: u32 = (response.response.start / rows) + 1;
     let pages: u32 = (total + rows - 1) / rows;
 
-    // キーワード検索のときのみロギングする
+    // クエリログのロギング
     tracing::info!(
         target: "querylog",
         uuid=Uuid::new_v4().to_string(),
