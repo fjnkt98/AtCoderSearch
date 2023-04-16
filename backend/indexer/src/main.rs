@@ -156,6 +156,7 @@ async fn main() -> Result<()> {
                 Ok(v) => match v.parse::<u32>() {
                     Ok(port) => port,
                     Err(e) => {
+                        tracing::error!("Failed to parse SOLR_PORT into u32. [{}]", e.to_string());
                         bail!(e.to_string());
                     }
                 },
