@@ -36,25 +36,79 @@ async fn main() {
         .finish();
     tracing::subscriber::set_global_default(subscriber).expect("Failed to set subscriber.");
 
-    let solr_host = env::var("SOLR_HOST").unwrap_or(String::from("http://localhost"));
-    let solr_port: u32 = (env::var("SOLR_PORT").unwrap_or(String::from("8983")))
-        .parse()
-        .unwrap_or(8983);
-    let solr = SolrClient::new(&solr_host, solr_port).expect("Failed to create SolrClient instance. check that your Solr instance is running properly and that the SOLR_HOST and SOLR_PORT environment variable is set correctly.");
+    let solr_host = env::var("SOLR_HOST").unwrap_or_else(|_| {
+        tracing::info!("SOLR_HOST environment variable is not set. Default value `http://localhost` will be used.");
+        String::from("http://localhost")}
+    );
+    let solr_port = match env::var("SOLR_PORT") {
+        Ok(v) => match v.parse::<u32>() {
+            Ok(port) => port,
+            Err(e) => {
+                let message = format!(
+                    "Failed to parse SOLR_PORT value into u32. [{}]",
+                    e.to_string()
+                );
+                tracing::error!(message);
+                panic!("{}", message);
+            }
+        },
+        Err(_) => {
+            tracing::info!(
+                "SOLR_PORT environment variable is not set. Default value `8983` will be used."
+            );
+            8983u32
+        }
+    };
+    tracing::info!("Connect to Solr instance at {}:{}", solr_host, solr_port);
+    let solr = SolrClient::new(&solr_host, solr_port).unwrap_or_else(|e| {
+        let message = format!("{} Failed to create SolrClient instance. check that your Solr instance is running properly and that the SOLR_HOST and SOLR_PORT environment variable is set correctly.", e.to_string());
+        tracing::error!(message);
+        panic!("{}", message);
+    });
 
-    let core_name = env::var("CORE_NAME").unwrap_or(String::from("atcoder"));
+    let core_name = env::var("CORE_NAME").unwrap_or_else(|_| {
+        let message = "SOLR_HOST environment variable must be set.";
+        tracing::info!(message);
+        panic!("{}", message);
+    });
+    tracing::info!("Connect to Solr core {}", core_name);
     let core = solr
         .core(&core_name)
         .await
-        .expect("Failed to create SolrCore instance. Check that your Solr instance is running properly, that the CORE_NAME environment variable is set correctly, and that the specified core exists.");
+        .unwrap_or_else(|e| {
+            let message = format!("[{}] Failed to create SolrCore instance. Check that your Solr instance is running properly, that the CORE_NAME environment variable is set correctly, and that the specified core exists.", e.to_string());
+            tracing::error!(message);
+            panic!("{}", message);
+        });
+
     let app = create_router(core);
 
-    let port: u16 = (env::var("API_SERVER_LISTEN_PORT").unwrap_or(String::from("8000")))
-        .parse()
-        .unwrap();
+    let port: u16 = match env::var("API_SERVER_LISTEN_PORT") {
+        Ok(v) => match v.parse::<u16>() {
+            Ok(port) => port,
+            Err(e) => {
+                let message = format!(
+                    "Failed to parse API_SERVER_LISTEN_PORT into u16. [{}]",
+                    e.to_string()
+                );
+                tracing::error!(message);
+                panic!("{}", message);
+            }
+        },
+        Err(_) => {
+            tracing::info!(
+                "API_SERVER_LISTEN_PORT environment variable is not set. Default value `8000` will be used."
+            );
+            8000u16
+        }
+    };
+
     let addr = SocketAddr::from(([0, 0, 0, 0], port));
-    tracing::debug!("Server start at port {}", port);
-    let _ = Server::bind(&addr).serve(app.into_make_service()).await;
+    tracing::info!("Server start at port {}", port);
+    Server::bind(&addr)
+        .serve(app.into_make_service())
+        .await
+        .expect("Failed to bind server.");
 }
 
 fn create_router(core: SolrCore) -> Router {
