@@ -2,10 +2,10 @@ use crate::models::{
     contest::ContestJson,
     errors::CrawlingError,
     problem::{ProblemDifficulty, ProblemJson},
-    tables::{Contest, Problem},
+    tables::Contest,
 };
 use minify_html::{minify, Cfg};
-use reqwest::header::ACCEPT_ENCODING;
+use reqwest::{header::ACCEPT_ENCODING, Client};
 use sqlx::{
     postgres::{PgRow, Postgres},
     Pool, Row,
@@ -181,59 +181,20 @@ impl<'a> ProblemCrawler<'a> {
     /// クロール間隔は300msにしてある。
     ///
     /// - target: クロール対象の問題のリスト
-    pub async fn crawl(
-        &self,
-        target: &Vec<ProblemJson>,
-        crawl_interval: u64,
-    ) -> Result<Vec<Problem>> {
-        let client = reqwest::Client::new();
+    pub async fn crawl(&self, url: &str, client: &Client, config: &Cfg) -> Result<String> {
+        tracing::info!("Crawl {}", url);
+        let html = client
+            .get(url)
+            .send()
+            .await
+            .map_err(|e| CrawlingError::RequestError(e))?
+            .bytes()
+            .await
+            .map_err(|e| CrawlingError::RequestError(e))?;
+        let html =
+            String::from_utf8(minify(&html, config)).map_err(|e| CrawlingError::ParseError(e))?;
 
-        let config = Cfg {
-            do_not_minify_doctype: true,
-            ensure_spec_compliant_unquoted_attribute_values: false,
-            keep_closing_tags: true,
-            keep_html_and_head_opening_tags: false,
-            keep_spaces_between_attributes: false,
-            keep_comments: false,
-            minify_css: true,
-            minify_js: true,
-            remove_bangs: false,
-            remove_processing_instructions: false,
-        };
-
-        let mut problems: Vec<Problem> = Vec::new();
-        for problem in target.iter() {
-            let url = format!(
-                "https://atcoder.jp/contests/{}/tasks/{}",
-                problem.contest_id, problem.id
-            );
-            let html = client
-                .get(&url)
-                .send()
-                .await
-                .map_err(|e| CrawlingError::RequestError(e))?
-                .bytes()
-                .await
-                .map_err(|e| CrawlingError::RequestError(e))?;
-            let html = String::from_utf8(minify(&html, &config))
-                .map_err(|e| CrawlingError::ParseError(e))?;
-
-            problems.push(Problem {
-                id: problem.id.clone(),
-                contest_id: problem.contest_id.clone(),
-                problem_index: problem.problem_index.clone(),
-                name: problem.name.clone(),
-                title: problem.title.clone(),
-                url: url,
-                html: html,
-            });
-
-            tracing::info!("Problem {} is collected.", problem.id);
-
-            time::sleep(Duration::from_millis(crawl_interval)).await;
-        }
-
-        Ok(problems)
+        Ok(html)
     }
 
     /// AtCoder Problemsから得た一覧情報とデータベースにある情報を比較し、
@@ -290,15 +251,34 @@ impl<'a> ProblemCrawler<'a> {
     }
 
     /// 問題データをデータベースに格納するメソッド
-    pub async fn save(&self, problems: &Vec<Problem>) -> Result<()> {
-        let mut tx = self.pool.begin().await?;
+    pub async fn save(&self, targets: &Vec<ProblemJson>, duration: Duration) -> Result<()> {
+        let config = Cfg {
+            do_not_minify_doctype: true,
+            ensure_spec_compliant_unquoted_attribute_values: false,
+            keep_closing_tags: true,
+            keep_html_and_head_opening_tags: false,
+            keep_spaces_between_attributes: false,
+            keep_comments: false,
+            minify_css: true,
+            minify_js: true,
+            remove_bangs: false,
+            remove_processing_instructions: false,
+        };
+        let client = Client::new();
 
         let difficulties = self.get_difficulties().await?;
 
-        for problem in problems.iter() {
+        for problem in targets.iter() {
+            let mut tx = self.pool.begin().await?;
+
             let difficulty = difficulties
                 .get(&problem.id)
                 .and_then(|difficulty| difficulty.difficulty);
+            let url = format!(
+                "https://atcoder.jp/contests/{}/tasks/{}",
+                problem.contest_id, problem.id
+            );
+            let html = self.crawl(&url, &client, &config).await?;
 
             let result = sqlx::query(r"
                 MERGE INTO problems
@@ -317,21 +297,26 @@ impl<'a> ProblemCrawler<'a> {
                 .bind(&problem.problem_index)
                 .bind(&problem.name)
                 .bind(&problem.title)
-                .bind(&problem.url)
-                .bind(&problem.html)
+                .bind(&url)
+                .bind(html)
                 .bind(difficulty)
                 .execute(&mut tx)
                 .await;
 
-            if let Err(e) = result {
-                tx.rollback().await?;
-                return Err(CrawlingError::SqlExecutionError(e));
+            match result {
+                Ok(_) => {
+                    tracing::info!("Problem {} was saved.", problem.id);
+                    tx.commit().await?;
+                }
+                Err(e) => {
+                    tracing::error!("An error occurred at {:?}", problem.id);
+                    tx.rollback().await?;
+                    return Err(CrawlingError::SqlExecutionError(e));
+                }
             }
 
-            tracing::info!("Problem {} was saved.", problem.id);
+            time::sleep(duration).await;
         }
-
-        tx.commit().await?;
 
         Ok(())
     }
@@ -340,16 +325,14 @@ impl<'a> ProblemCrawler<'a> {
     ///
     /// - allがtrueのときはすべての問題を対象にクロールを行う
     /// - allがfalseのときは差分取得のみを行う
-    pub async fn run(&self, all: bool) -> Result<()> {
-        let target = if all {
+    pub async fn run(&self, all: bool, duration: Duration) -> Result<()> {
+        let targets = if all {
             self.get_problem_list().await?
         } else {
             self.detect_diff().await?
         };
 
-        let problems = self.crawl(&target, 1000).await?;
-
-        self.save(&problems).await?;
+        self.save(&targets, duration).await?;
 
         Ok(())
     }

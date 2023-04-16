@@ -15,6 +15,7 @@ use sqlx::postgres::Postgres;
 use sqlx::Pool;
 use std::env;
 use std::path::PathBuf;
+use tokio::time::Duration;
 use tracing_subscriber::{
     filter::{EnvFilter, LevelFilter},
     fmt,
@@ -108,7 +109,8 @@ async fn main() -> Result<()> {
             })?;
 
             let crawler = ProblemCrawler::new(&pool);
-            crawler.run(args.all).await.with_context(|| {
+            let duration = Duration::from_millis(1000);
+            crawler.run(args.all, duration).await.with_context(|| {
                 let message = "Failed to crawl and save problem information [{}]";
                 tracing::error!(message);
                 message
