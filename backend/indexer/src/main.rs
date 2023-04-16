@@ -2,11 +2,12 @@ mod models;
 mod utils;
 
 use std::ffi::OsString;
+use std::str::FromStr;
 
 use crate::utils::crawlers::{ContestCrawler, ProblemCrawler};
 use crate::utils::generator::DocumentGenerator;
 use crate::utils::uploader::DocumentUploader;
-use anyhow::{bail, Result};
+use anyhow::{bail, Context, Result};
 use clap::{Args, Parser, Subcommand};
 use dotenvy::dotenv;
 use solrust::client::solr::SolrClient;
@@ -14,12 +15,10 @@ use sqlx::postgres::Postgres;
 use sqlx::Pool;
 use std::env;
 use std::path::PathBuf;
-use tracing_appender::rolling::{RollingFileAppender, Rotation};
-use tracing_subscriber::layer::SubscriberExt;
-use tracing_subscriber::Layer;
+use tokio::time::Duration;
 use tracing_subscriber::{
     filter::{EnvFilter, LevelFilter},
-    fmt, Registry,
+    fmt,
 };
 
 #[derive(Debug, Parser)]
@@ -63,80 +62,81 @@ async fn main() -> Result<()> {
     let args = Cli::parse();
 
     let log_level = env::var("RUST_LOG").unwrap_or(String::from("info"));
-    env::set_var("RUST_LOG", "info");
-    let create_filter = || {
-        EnvFilter::builder()
-            .with_default_directive(LevelFilter::INFO.into())
-            .from_env_lossy()
-            .add_directive(format!("indexer={}", log_level).parse().unwrap())
-            .add_directive(format!("solrust={}", log_level).parse().unwrap())
-    };
+    let filter = EnvFilter::builder()
+        .with_default_directive(
+            LevelFilter::from_str(&log_level)
+                .expect("Cannot parse specified log level!")
+                .into(),
+        )
+        .from_env_lossy();
 
-    let log_dir = env::var("LOG_DIRECTORY").unwrap_or(String::from("/var/tmp/atcoder/log"));
+    let format = fmt::format()
+        .with_level(true)
+        .with_target(true)
+        .with_ansi(false)
+        .with_thread_ids(true);
 
-    // システムログ(コンソールへ出力)
-    let layer1 = fmt::Layer::new().with_filter(create_filter());
+    let subscriber = tracing_subscriber::fmt()
+        .with_env_filter(filter)
+        .event_format(format)
+        .finish();
+    tracing::subscriber::set_global_default(subscriber)
+        .with_context(|| "Failed to set subscriber.")?;
 
-    // システムログ(ファイルへ出力)
-    let (file, _guard) = tracing_appender::non_blocking(RollingFileAppender::new(
-        Rotation::DAILY,
-        log_dir.clone(),
-        "indexer.log",
-    ));
-    let layer2 = fmt::Layer::new()
-        .with_writer(file)
-        .with_filter(create_filter());
-
-    let subscriber = Registry::default().with(layer1).with(layer2);
-    tracing::subscriber::set_global_default(subscriber).expect("Failed to set subscriber.");
-
-    let database_url: String = env::var("DATABASE_URL").expect("DATABASE_URL must be configured.");
+    let database_url: String = env::var("DATABASE_URL").with_context(|| {
+        let message = "DATABASE_URL must be configured.";
+        tracing::error!(message);
+        message
+    })?;
 
     let pool: Pool<Postgres> = sqlx::postgres::PgPoolOptions::new()
         .max_connections(5)
         .connect(&database_url)
-        .await?;
+        .await
+        .with_context(|| {
+            let message = "Failed to create database connection pool.";
+            tracing::error!(message);
+            message
+        })?;
 
     match args.command {
         Commands::Crawl(args) => {
             let crawler = ContestCrawler::new(&pool);
-            if let Err(e) = crawler.run().await {
-                tracing::error!(
-                    "Failed to crawl and save contest information [{}]",
-                    e.to_string()
-                );
-                bail!(e.to_string());
-            }
+            crawler.run().await.with_context(|| {
+                let message = "Failed to crawl and save contest information.";
+                tracing::error!(message);
+                message
+            })?;
 
             let crawler = ProblemCrawler::new(&pool);
-            if let Err(e) = crawler.run(args.all).await {
-                tracing::error!(
-                    "Failed to crawl and save problem information [{}]",
-                    e.to_string()
-                );
-                bail!(e.to_string());
-            }
+            let duration = Duration::from_millis(1000);
+            crawler.run(args.all, duration).await.with_context(|| {
+                let message = "Failed to crawl and save problem information [{}]";
+                tracing::error!(message);
+                message
+            })?;
         }
         Commands::Generate(args) => {
-            let savedir = match args.path {
-                Some(path) => PathBuf::from(path),
-                None => {
-                    let path = env::var("DOCUMENT_SAVE_DIRECTORY").unwrap_or_else(|_| {
-                        tracing::error!("Documents save directory does not configured. Check and make sure DOCUMENT_SAVE_DIRECTORY environment variable.");
-                        panic!("Documents save directory does not configured. Check and make sure DOCUMENT_SAVE_DIRECTORY environment variable.");
-                    });
-                    PathBuf::from(path)
-                }
-            };
+            let savedir = args.path.and_then(|path| Some(PathBuf::from(path))).or_else(|| {
+                let path = env::var("DOCUMENT_SAVE_DIRECTORY").with_context(|| {
+                    let message = "Documents save directory does not configured. Check and make sure DOCUMENT_SAVE_DIRECTORY environment variable.";
+                    tracing::error!(message);
+                    message
+                }).ok()?;
+                Some(PathBuf::from(path))
+            }).with_context(|| "Failed to set document save dir.")?;
+            tracing::info!("Documents will be saved into {:?}.", savedir);
+
             let generator = DocumentGenerator::new(&pool, &savedir);
             tracing::info!("Delete existing documents");
-            if let Err(e) = generator.truncate().await {
+            generator.truncate().await.or_else(|e| {
                 tracing::error!(
                     "Failed to delete existing json documents [{}]",
                     e.to_string()
                 );
                 bail!(e.to_string());
-            }
+            })?;
+            tracing::info!("Start to generate documents");
             match generator.generate(1000).await {
                 Ok(()) => {
                     tracing::info!("Successfully generate documents");
@@ -148,41 +148,59 @@ async fn main() -> Result<()> {
             }
         }
         Commands::Post(args) => {
-            let solr_host = env::var("SOLR_HOST").unwrap_or(String::from("http://localhost"));
-            let solr_port = env::var("SOLR_PORT")
-                .map(|v| v.parse::<u32>().unwrap())
-                .unwrap_or(8983u32);
-
-            let core_name = env::var("CORE_NAME").expect("CORE_NAME must be configured");
-
-            let solr =
-                SolrClient::new(&solr_host, solr_port).expect("Failed to create solr client.");
-            let core = solr
-                .core(&core_name)
-                .await
-                .expect("Failed to create core client");
-
-            let savedir = match args.path {
-                Some(path) => PathBuf::from(path),
-                None => {
-                    let path = env::var("DOCUMENT_SAVE_DIRECTORY").unwrap_or_else(|e| {
-                        tracing::error!("Documents save directory does not configured. Check your DOCUMENT_SAVE_DIRECTORY environment variable. [{}]", e.to_string());
-                        panic!("Documents save directory does not configured. Check your DOCUMENT_SAVE_DIRECTORY environment variable. [{}]", e.to_string());
-                    });
-                    PathBuf::from(path)
+            let solr_host = env::var("SOLR_HOST").unwrap_or_else(|_| {
+                tracing::info!("SOLR_HOST environment variable is not set. Default value `http://localhost` will be used.");
+                String::from("http://localhost")
+            });
+            let solr_port = match env::var("SOLR_PORT") {
+                Ok(v) => match v.parse::<u32>() {
+                    Ok(port) => port,
+                    Err(e) => {
+                        tracing::error!("Failed to parse SOLR_PORT into u32. [{}]", e.to_string());
+                        bail!(e.to_string());
+                    }
+                },
+                Err(_) => {
+                    tracing::info!("SOLR_PORT environment variable is not set. Default value `8983` will be used.");
+                    8983u32
                 }
             };
+
+            let core_name = env::var("CORE_NAME").with_context(|| {
+                let message = "CORE_NAME must be configured";
+                tracing::error!(message);
+                message
+            })?;
+
+            let solr = SolrClient::new(&solr_host, solr_port).with_context(|| {
+                let message = "Failed to create Solr client.";
+                tracing::error!(message);
+                message
+            })?;
+            let core = solr.core(&core_name).await.with_context(|| {
+                let message = "Failed to create Solr core client";
+                tracing::error!(message);
+                message
+            })?;
+
+            let savedir = args.path.and_then(|path| Some(PathBuf::from(path))).or_else(|| {
+                let path = env::var("DOCUMENT_SAVE_DIRECTORY").with_context(|| {
+                    let message = "Documents save directory does not configured. Check and make sure DOCUMENT_SAVE_DIRECTORY environment variable.";
+                    tracing::error!(message);
+                    message
+                }).ok()?;
+                Some(PathBuf::from(path))
+            }).with_context(|| "Failed to set document save dir.")?;
+            tracing::info!("Target documents are in {:?}", savedir);
+
             let uploader = DocumentUploader::new(&savedir, &core);
             tracing::info!("Start to post documents");
-            match uploader.upload(args.optimize).await {
-                Ok(()) => {
-                    tracing::info!("Successfully post documents")
-                }
-                Err(e) => {
-                    tracing::error!("Failed to post documents");
-                    bail!(e.to_string());
-                }
-            }
+            uploader.upload(args.optimize).await.with_context(|| {
+                let message = "Failed to post documents";
+                tracing::error!(message);
+                message
+            })?;
+            tracing::info!("Successfully post documents");
         }
     }
 
