@@ -1,14 +1,17 @@
-use crate::models::contest::ContestJson;
-use crate::models::errors::CrawlingError;
-use crate::models::problem::{ProblemDifficulty, ProblemJson};
-use crate::models::tables::{Contest, Problem};
+use crate::models::{
+    contest::ContestJson,
+    errors::CrawlingError,
+    problem::{ProblemDifficulty, ProblemJson},
+    tables::{Contest, Problem},
+};
 use minify_html::{minify, Cfg};
 use reqwest::header::ACCEPT_ENCODING;
-use sqlx::postgres::{PgRow, Postgres};
-use sqlx::{Pool, Row};
+use sqlx::{
+    postgres::{PgRow, Postgres},
+    Pool, Row,
+};
 use std::collections::{HashMap, HashSet};
-use tokio::time;
-use tokio::time::Duration;
+use tokio::time::{self, Duration};
 
 type Result<T> = std::result::Result<T, CrawlingError>;
 
@@ -27,6 +30,7 @@ impl<'a> ContestCrawler<'a> {
 
     /// AtCoderProblemsからコンテスト情報を取得するメソッド
     pub async fn get_contest_list(&self) -> Result<Vec<ContestJson>> {
+        tracing::info!("Start to retrieve contests information from AtCoder Problems.");
         let client = reqwest::Client::new();
 
         let response = client
@@ -44,12 +48,17 @@ impl<'a> ContestCrawler<'a> {
 
         let contests: Vec<ContestJson> =
             serde_json::from_str(&json).map_err(|e| CrawlingError::DeserializeError(e))?;
+        tracing::info!(
+            "{} contests information successfully retrieved.",
+            contests.len()
+        );
 
         Ok(contests)
     }
 
     /// AtCoderProblemsから取得したコンテスト情報からデータベースへ格納する用のモデルを作って返すメソッド
     pub async fn crawl(&self) -> Result<Vec<Contest>> {
+        tracing::info!("Start to crawl contests information.");
         let contests: Vec<Contest> = self
             .get_contest_list()
             .await?
@@ -63,6 +72,10 @@ impl<'a> ContestCrawler<'a> {
                 category: contest.categorize(),
             })
             .collect();
+        tracing::info!(
+            "{} contests information successfully crawled.",
+            contests.len()
+        );
 
         Ok(contests)
     }
@@ -73,11 +86,13 @@ impl<'a> ContestCrawler<'a> {
     /// コンテスト情報の存在判定にIDを使用し、IDが存在すればUPDATE、IDが存在しなければINSERTを実行する
     /// UPDATE時はすべての情報をUPDATEするようにしている
     pub async fn save(&self, contests: &Vec<Contest>) -> Result<()> {
+        tracing::info!("Start to save contests information.");
         // トランザクション開始
         let mut tx = self.pool.begin().await?;
 
         // 各コンテスト情報を一つずつ処理する
         for contest in contests.iter() {
+            tracing::info!("Start to save {} into database...", contest.id);
             let result = sqlx::query("
                 MERGE INTO contests
                 USING
@@ -101,14 +116,16 @@ impl<'a> ContestCrawler<'a> {
 
             // エラーが発生したらトランザクションをロールバックしてエラーを早期リターンする
             if let Err(e) = result {
+                tracing::error!("An error occurred at saving {:?}.", contest);
                 tx.rollback().await?;
                 return Err(CrawlingError::SqlExecutionError(e));
             }
 
-            tracing::debug!("Contest {} was saved.", contest.id);
+            tracing::info!("Contest {} was saved.", contest.id);
         }
 
         tx.commit().await?;
+        tracing::info!("{} contests successfully saved.", contests.len());
 
         Ok(())
     }
