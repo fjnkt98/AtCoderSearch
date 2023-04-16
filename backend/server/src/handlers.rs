@@ -19,10 +19,19 @@ pub async fn search_with_qs(
     let params: SearchParams = params.into();
     match handle_request(&params, core).await {
         Ok(res) => res,
-        Err(e) => (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(SearchResultResponse::error(&params, &e.to_string())),
-        ),
+        Err(e) => {
+            tracing::error!(
+                "message: {}, params: {}",
+                e.to_string(),
+                serde_json::to_string(&params).unwrap_or(String::from(
+                    "Couldn't serialize the request parameters into JSON!"
+                ))
+            );
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(SearchResultResponse::error(&params, &e.to_string())),
+            )
+        }
     }
 }
 
@@ -32,10 +41,19 @@ pub async fn search_with_json(
 ) -> SearchResponse {
     match handle_request(&params, core).await {
         Ok(res) => res,
-        Err(e) => (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(SearchResultResponse::error(&params, &e.to_string())),
-        ),
+        Err(e) => {
+            tracing::error!(
+                "message: {}, params: {}",
+                e.to_string(),
+                serde_json::to_string(&params).unwrap_or(String::from(
+                    "Couldn't serialize the request parameters into JSON!"
+                ))
+            );
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(SearchResultResponse::error(&params, &e.to_string())),
+            )
+        }
     }
 }
 
