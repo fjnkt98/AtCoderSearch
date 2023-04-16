@@ -4,6 +4,7 @@ use axum::extract::Extension;
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::Json;
+use percent_encoding::{utf8_percent_encode, NON_ALPHANUMERIC};
 use solrust::client::core::SolrCore;
 use solrust::types::response::SolrSelectResponse;
 use std::sync::Arc;
@@ -67,13 +68,19 @@ async fn handle_request(params: &SearchParams, core: Arc<SolrCore>) -> Result<Se
     let index: u32 = (response.response.start / rows) + 1;
     let pages: u32 = (total + rows - 1) / rows;
 
-    // クエリログのロギング
-    tracing::info!(
-        target: "querylog",
-        uuid=Uuid::new_v4().to_string(),
-        hits=response.response.num_found,
-        params=serde_json::to_string(&params).unwrap()
-    );
+    {
+        // クエリログのロギング
+        let mut encoded_params = params.clone();
+        encoded_params.keyword = encoded_params
+            .keyword
+            .and_then(|keyword| Some(utf8_percent_encode(&keyword, NON_ALPHANUMERIC).to_string()));
+        tracing::info!(
+            target: "querylog",
+            uuid=Uuid::new_v4().to_string(),
+            hits=response.response.num_found,
+            params=serde_json::to_string(&encoded_params).unwrap()
+        );
+    }
 
     let stats = SearchResultStats {
         time: Instant::now().duration_since(start_process).as_millis() as u32,

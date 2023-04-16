@@ -1396,6 +1396,7 @@ dependencies = [
  "itertools",
  "mime",
  "once_cell",
+ "percent-encoding",
  "regex",
  "reqwest",
  "rstest",
