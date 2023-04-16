@@ -136,6 +136,7 @@ async fn main() -> Result<()> {
                 );
                 bail!(e.to_string());
             })?;
+            tracing::info!("Start to generate documents");
             match generator.generate(1000).await {
                 Ok(()) => {
                     tracing::info!("Successfully generate documents");
