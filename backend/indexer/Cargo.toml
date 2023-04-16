@@ -6,7 +6,7 @@ version = "0.1.0"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-anyhow = "^1.0"
+anyhow = {version = "^1.0", features = ["backtrace"]}
 chrono = {version = "^0.4", features = ["serde"]}
 clap = {version = "^4.0.32", features = ["derive"]}
 dotenvy = "^0.15"
