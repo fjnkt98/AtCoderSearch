@@ -1,5 +1,5 @@
 # docker build -t atcoder-search-frontend -f middlewares/nginx/Dockerfile --build-arg API_HOST=http://localhost:8000 .
-# docker run -p 80:80 --rm -d --name atcoder-search-frontend atcoder-search-frontend
+# docker run -p 80:80 --rm -d --name atcoder-search-frontend -e API_HOST=http://localhost:8000 atcoder-search-frontend
 
 FROM node:18 AS builder
 
@@ -18,6 +18,7 @@ COPY ./frontend/tailwind.config.cjs ./tailwind.config.cjs
 COPY ./frontend/tsconfig.json ./tsconfig.json
 COPY ./frontend/tsconfig.node.json ./tsconfig.node.json
 COPY ./frontend/vite.config.ts ./vite.config.ts
+COPY ./frontend/AtCoderSearchLogo.svg ./AtCoderSearchLogo.svg
 
 RUN npm install
 
