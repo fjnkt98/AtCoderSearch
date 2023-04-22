@@ -1,3 +1,6 @@
+# docker build -t atcoder-search-server .
+# docker run --rm --name server atcoder-search-server server
+
 FROM rust:1.66 AS builder
 
 WORKDIR /server
