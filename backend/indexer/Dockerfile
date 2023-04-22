@@ -1,11 +1,12 @@
+# docker build -t atcoder-search-indexer .
+# docker run --rm --name indexer atcoder-search-indexer indexer generate
+
 FROM rust:1.66 AS builder
 
 WORKDIR /indexer
 
 COPY Cargo.toml Cargo.toml
 COPY ./src ./src
-
-ENV DATABASE_URL postgres://atcoder:atcoder@localhost:5432/atcoder
 
 RUN cargo build --release
 
