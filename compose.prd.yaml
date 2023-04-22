@@ -1,0 +1,111 @@
+services:
+  api-server:
+    image: public.ecr.aws/i7b3c8d9/atcoder-search-server:0.1.0
+    container_name: atcoder-search-server
+    ports:
+      - "8000:8000"
+    environment:
+      - API_SERVER_LISTEN_PORT=8000
+      - CORE_NAME=atcoder
+      - SOLR_HOST=http://solr
+      - SOLR_PORT=8983
+      - RUST_LOG=info
+      - RUST_BACKTRACE=1
+      - FRONTEND_ORIGIN_URL=http://localhost
+    depends_on:
+      solr:
+        condition: service_healthy
+    networks:
+      - atcoder
+    healthcheck:
+      test: ["CMD", "curl", "-sS", "http://localhost:8000/api/healthcheck"]
+      interval: 60s
+      timeout: 1s
+      retries: 3
+      start_period: 10s
+
+  # indexer:
+  #   image: public.ecr.aws/i7b3c8d9/atcoder-search-indexer:0.1.0
+  #   container_name: atcoder-search-indexer
+  #   environment:
+  #     - CORE_NAME=atcoder
+  #     - DATABASE_SCHEMA_FILE=/schema.sql
+  #     - DATABASE_URL=postgres://atcoder:atcoder@postgresql:5432/atcoder
+  #     - DOCUMENT_SAVE_DIRECTORY=/var/tmp
+  #     - PGDATABASE=atcoder
+  #     - PGHOST=postgresql
+  #     - PGPORT=5432
+  #     - PGUSER=atcoder
+  #     - RUST_LOG=info
+  #     - SOLR_HOST=http://solr
+  #     - SOLR_PORT=8983
+  #   depends_on:
+  #     solr:
+  #       condition: service_healthy
+  #     postgresql:
+  #       condition: service_healthy
+  #   command: bash -c 'indexer generate && indexer post --optimize'
+  #   networks:
+  #     - atcoder
+      
+  solr:
+    image: public.ecr.aws/i7b3c8d9/atcoder-search-solr:0.1.0
+    container_name: atcoder-search-solr
+    ports:
+      - "8983:8983"
+    networks:
+      - atcoder
+    healthcheck:
+      test: ["CMD", "curl", "-sS", "http://localhost:8983/solr/atcoder/admin/ping"]
+      interval: 60s
+      timeout: 1s
+      retries: 3
+      start_period: 10s
+
+  postgresql:
+    image: postgres:15
+    container_name: atcoder-search-postgresql
+    environment:
+      - POSTGRES_DB=atcoder
+      - POSTGRES_USER=atcoder
+      - POSTGRES_PASSWORD=atcoder
+    ports:
+      - "5432:5432"
+    networks:
+      - atcoder
+    volumes:
+      - type: volume
+        source: dbdata
+        target: /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "atcoder"]
+      interval: 10s
+      timeout: 1s
+      retries: 3
+      start_period: 10s
+
+  nginx:
+    image: public.ecr.aws/i7b3c8d9/atcoder-search-nginx:0.1.0
+    container_name: atcoder-search-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - API_HOST=http://api-server:8000
+    networks:
+      - atcoder
+    depends_on:
+      api-server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "service", "nginx", "status"]
+      interval: 60s
+      timeout: 1s
+      retries: 3
+      start_period: 10s
+  
+networks:
+  atcoder:
+
+volumes:
+  dbdata:
