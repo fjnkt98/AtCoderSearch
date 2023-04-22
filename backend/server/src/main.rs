@@ -10,6 +10,7 @@ use std::net::SocketAddr;
 use std::sync::Arc;
 use std::{env, str::FromStr};
 use tower_http::cors::{AllowOrigin, Any, CorsLayer};
+use tracing_appender::rolling::{RollingFileAppender, Rotation};
 use tracing_subscriber::{
     filter::{EnvFilter, LevelFilter},
     fmt,
@@ -25,15 +26,25 @@ async fn main() {
         .from_env_lossy()
         .add_directive("hyper=info".parse().unwrap());
 
+    let log_dir = env::var("LOG_DIRECTORY").unwrap_or(String::from("/var/tmp/atcoder/log"));
+    let (file, _guard) = tracing_appender::non_blocking(RollingFileAppender::new(
+        Rotation::DAILY,
+        log_dir.clone(),
+        "server.log",
+    ));
+
     let format = fmt::format()
         .with_level(true)
         .with_target(true)
         .with_ansi(false);
 
     let subscriber = tracing_subscriber::fmt()
+        .with_timer(fmt::time::LocalTime::rfc_3339())
+        .with_writer(file)
         .with_env_filter(filter)
         .event_format(format)
         .finish();
+
     tracing::subscriber::set_global_default(subscriber).expect("Failed to set subscriber.");
 
     let solr_host = env::var("SOLR_HOST").unwrap_or_else(|_| {
