@@ -19,7 +19,7 @@ services:
       - atcoder
     healthcheck:
       test: ["CMD", "curl", "-sS", "http://localhost:8000/api/healthcheck"]
-      interval: 60s
+      interval: 10s
       timeout: 1s
       retries: 3
       start_period: 10s
@@ -57,7 +57,7 @@ services:
       - atcoder
     healthcheck:
       test: ["CMD", "curl", "-sS", "http://localhost:8983/solr/atcoder/admin/ping"]
-      interval: 60s
+      interval: 10s
       timeout: 1s
       retries: 3
       start_period: 10s
