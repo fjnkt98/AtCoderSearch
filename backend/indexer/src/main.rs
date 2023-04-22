@@ -16,7 +16,6 @@ use sqlx::Pool;
 use std::env;
 use std::path::PathBuf;
 use tokio::time::Duration;
-use tracing_appender::rolling::{RollingFileAppender, Rotation};
 use tracing_subscriber::{
     filter::{EnvFilter, LevelFilter},
     fmt,
@@ -71,14 +70,6 @@ async fn main() -> Result<()> {
         )
         .from_env_lossy();
 
-    let log_dir =
-        env::var("LOG_DIRECTORY").expect("LOG_DIRECTORY environment variable must be set.");
-    let (file, _guard) = tracing_appender::non_blocking(RollingFileAppender::new(
-        Rotation::DAILY,
-        log_dir.clone(),
-        "indexer.log",
-    ));
-
     let format = fmt::format()
         .with_level(true)
         .with_target(true)
@@ -86,12 +77,9 @@ async fn main() -> Result<()> {
         .with_thread_ids(true);
 
     let subscriber = tracing_subscriber::fmt()
-        .with_timer(fmt::time::LocalTime::rfc_3339())
-        .with_writer(file)
         .with_env_filter(filter)
         .event_format(format)
         .finish();
-
     tracing::subscriber::set_global_default(subscriber)
         .with_context(|| "Failed to set subscriber.")?;
 
