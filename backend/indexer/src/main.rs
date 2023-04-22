@@ -14,7 +14,9 @@ use solrust::client::solr::SolrClient;
 use sqlx::postgres::Postgres;
 use sqlx::Pool;
 use std::env;
+use std::ffi::OsStr;
 use std::path::PathBuf;
+use std::process::Command;
 use tokio::time::Duration;
 use tracing_subscriber::{
     filter::{EnvFilter, LevelFilter},
@@ -33,9 +35,16 @@ struct Cli {
 }
 #[derive(Debug, Subcommand)]
 enum Commands {
+    Migrate(MigrateArgs),
     Crawl(CrawlArgs),
     Generate(GenerateArgs),
     Post(PostArgs),
+}
+
+#[derive(Debug, Args)]
+struct MigrateArgs {
+    #[arg(short = 'n', long = "dry-run")]
+    dry_run: bool,
 }
 
 #[derive(Debug, Args)]
@@ -100,6 +109,68 @@ async fn main() -> Result<()> {
         })?;
 
     match args.command {
+        Commands::Migrate(args) => {
+            let user = env::var("PGUSER").with_context(|| {
+                let message = "PGUSER environment variable is not set.";
+                tracing::error!(message);
+                message
+            })?;
+            let password = env::var("PGPASSWORD").with_context(|| {
+                let message = "PGPASSWORD environment variable is not set.";
+                tracing::error!(message);
+                message
+            })?;
+            let host = env::var("PGHOST").with_context(|| {
+                let message = "PGHOST environment variable is not set.";
+                tracing::error!(message);
+                message
+            })?;
+            let port = env::var("PGPORT").with_context(|| {
+                let message = "PGPORT environment variable is not set.";
+                tracing::error!(message);
+                message
+            })?;
+            let database = env::var("PGDATABASE").with_context(|| {
+                let message = "PGDATABASE environment variable is not set.";
+                tracing::error!(message);
+                message
+            })?;
+            let schema = env::var("DATABASE_SCHEMA_FILE").with_context(|| {
+                let message = "DATABASE_SCHEMA_FILE environment variable is not set.";
+                tracing::error!(message);
+                message
+            })?;
+
+            let mut command = Command::new("psqldef");
+            command
+                .arg(format!("--user={}", user))
+                .arg(format!("--password={}", password))
+                .arg(format!("--host={}", host))
+                .arg(format!("--port={}", port))
+                .arg(format!("--file={}", schema))
+                .arg(format!("{}", database));
+            if args.dry_run {
+                command.arg("--dry-run");
+            }
+            tracing::info!(
+                "Execute psqldef with args: {:?}",
+                command.get_args().collect::<Vec<&OsStr>>()
+            );
+
+            match command.output() {
+                Ok(output) => {
+                    tracing::info!(
+                        "{}",
+                        String::from_utf8(output.stdout)
+                            .expect("Couldn't parse psqldef output log into String!")
+                    );
+                }
+                Err(e) => {
+                    tracing::error!("Migration failed. {}", e.to_string());
+                    bail!(e.to_string());
+                }
+            }
+        }
         Commands::Crawl(args) => {
             let crawler = ContestCrawler::new(&pool);
             crawler.run().await.with_context(|| {
