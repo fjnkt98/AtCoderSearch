@@ -3,9 +3,9 @@ services:
     image: public.ecr.aws/i7b3c8d9/atcoder-search-server:0.1.0
     container_name: atcoder-search-server
     ports:
-      - "8000:8000"
+      - "8080:8080"
     environment:
-      - API_SERVER_LISTEN_PORT=8000
+      - API_SERVER_LISTEN_PORT=8080
       - CORE_NAME=atcoder
       - SOLR_HOST=http://solr
       - SOLR_PORT=8983
@@ -18,7 +18,7 @@ services:
     networks:
       - atcoder
     healthcheck:
-      test: ["CMD", "curl", "-sS", "http://localhost:8000/api/healthcheck"]
+      test: ["CMD", "curl", "-sS", "http://localhost:8080/api/healthcheck"]
       interval: 10s
       timeout: 1s
       retries: 3
@@ -67,7 +67,7 @@ services:
       - "80:80"
       - "443:443"
     environment:
-      - API_HOST=http://api-server:8000
+      - API_HOST=http://api-server:8080
     networks:
       - atcoder
     depends_on:
