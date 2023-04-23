@@ -22,31 +22,7 @@ services:
       interval: 10s
       timeout: 1s
       retries: 3
-      start_period: 10s
-
-  # indexer:
-  #   image: public.ecr.aws/i7b3c8d9/atcoder-search-indexer:0.1.0
-  #   container_name: atcoder-search-indexer
-  #   environment:
-  #     - CORE_NAME=atcoder
-  #     - DATABASE_SCHEMA_FILE=/schema.sql
-  #     - DATABASE_URL=postgres://atcoder:atcoder@postgresql:5432/atcoder
-  #     - DOCUMENT_SAVE_DIRECTORY=/var/tmp
-  #     - PGDATABASE=atcoder
-  #     - PGHOST=postgresql
-  #     - PGPORT=5432
-  #     - PGUSER=atcoder
-  #     - RUST_LOG=info
-  #     - SOLR_HOST=http://solr
-  #     - SOLR_PORT=8983
-  #   depends_on:
-  #     solr:
-  #       condition: service_healthy
-  #     postgresql:
-  #       condition: service_healthy
-  #   command: bash -c 'indexer generate && indexer post --optimize'
-  #   networks:
-  #     - atcoder
+      start_period: 30s
       
   solr:
     image: public.ecr.aws/i7b3c8d9/atcoder-search-solr:0.1.0
@@ -60,7 +36,7 @@ services:
       interval: 10s
       timeout: 1s
       retries: 3
-      start_period: 10s
+      start_period: 30s
 
   postgresql:
     image: postgres:15
@@ -82,7 +58,7 @@ services:
       interval: 10s
       timeout: 1s
       retries: 3
-      start_period: 10s
+      start_period: 30s
 
   nginx:
     image: public.ecr.aws/i7b3c8d9/atcoder-search-nginx:0.1.0
@@ -102,7 +78,7 @@ services:
       interval: 60s
       timeout: 1s
       retries: 3
-      start_period: 10s
+      start_period: 30s
   
 networks:
   atcoder:
