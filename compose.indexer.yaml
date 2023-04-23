@@ -1,0 +1,44 @@
+services:
+  updateindex:
+    image: public.ecr.aws/i7b3c8d9/atcoder-search-indexer:0.1.0
+    container_name: atcoder-search-indexer
+    environment:
+      - CORE_NAME=atcoder
+      - DATABASE_SCHEMA_FILE=/schema.sql
+      - DATABASE_URL=postgres://atcoder:atcoder@postgresql:5432/atcoder
+      - DOCUMENT_SAVE_DIRECTORY=/var/tmp
+      - PGDATABASE=atcoder
+      - PGHOST=postgresql
+      - PGPASSWORD=atcoder
+      - PGPORT=5432
+      - PGUSER=atcoder
+      - RUST_LOG=info
+      - SOLR_HOST=http://solr
+      - SOLR_PORT=8983
+    command: bash -c 'indexer generate && indexer post --optimize'
+    networks:
+      - atcoder
+
+  migrate:
+    image: public.ecr.aws/i7b3c8d9/atcoder-search-indexer:0.1.0
+    container_name: atcoder-search-migrator
+    environment:
+      - CORE_NAME=atcoder
+      - DATABASE_SCHEMA_FILE=/schema.sql
+      - DATABASE_URL=postgres://atcoder:atcoder@postgresql:5432/atcoder
+      - DOCUMENT_SAVE_DIRECTORY=/var/tmp
+      - PGDATABASE=atcoder
+      - PGHOST=postgresql
+      - PGPASSWORD=atcoder
+      - PGPORT=5432
+      - PGUSER=atcoder
+      - RUST_LOG=info
+      - SOLR_HOST=http://solr
+      - SOLR_PORT=8983
+    command: bash -c 'indexer migrate'
+    networks:
+      - atcoder
+  
+networks:
+  atcoder:
+    external: true
