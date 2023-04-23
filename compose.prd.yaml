@@ -34,7 +34,7 @@ services:
     healthcheck:
       test: ["CMD", "curl", "-sS", "http://localhost:8983/solr/atcoder/admin/ping"]
       interval: 10s
-      timeout: 1s
+      timeout: 3s
       retries: 3
       start_period: 60s
 
