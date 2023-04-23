@@ -15,7 +15,7 @@ services:
       - RUST_LOG=info
       - SOLR_HOST=http://solr
       - SOLR_PORT=8983
-    command: bash -c 'indexer generate && indexer post --optimize'
+    command: bash -c 'indexer crawl && indexer generate && indexer post --optimize'
     networks:
       - atcoder
 
