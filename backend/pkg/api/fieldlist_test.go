@@ -1,4 +1,4 @@
-package api
+package atcoder_search
 
 import "testing"
 

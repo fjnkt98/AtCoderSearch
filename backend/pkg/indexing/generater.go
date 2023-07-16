@@ -1,4 +1,4 @@
-package indexing
+package atcoder_search
 
 import (
 	"encoding/json"
