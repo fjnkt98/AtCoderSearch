@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<schema name="atcoder" version="1.6">
-  <fieldType name="int32" class="solr.IntPointField" docValues="true" />
-  <fieldType name="int64" class="solr.LongPointField" docValues="true" />
-  <fieldType name="float32" class="solr.FloatPointField" docValues="true" />
-  <fieldType name="float64" class="solr.DoublePointField" docValues="true" />
+<schema name="problems" version="1.6">
+  <fieldType name="i32" class="solr.IntPointField" docValues="true" />
+  <fieldType name="i64" class="solr.LongPointField" docValues="true" />
+  <fieldType name="f32" class="solr.FloatPointField" docValues="true" />
+  <fieldType name="f64" class="solr.DoublePointField" docValues="true" />
   <fieldType name="String" class="solr.StrField" sortMissingLast="true" docValues="true" />
-  <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true" />
+  <fieldType name="bool" class="solr.BoolField" sortMissingLast="true" />
   <fieldType name="DateTime" class="solr.DatePointField" docValues="true" />
   <fieldType name="DateTimeRange" class="solr.DateRangeField" docValues="true" />
 
@@ -38,6 +38,30 @@
     </analyzer>
   </fieldType>
 
+  <fieldType name="TextReading" class="solr.TextField" positionIncrementGap="100" autoGeneratePhraseQueries="false">
+    <analyzer type="index">
+      <tokenizer class="solr.JapaneseTokenizerFactory" mode="search" userDictionary="lang/ja/userdict.txt" userDictionaryEncoding="UTF-8" discardPunctuation="true" discardCompoundToken="false" />
+      <filter class="solr.JapanesePartOfSpeechStopFilterFactory" tags="lang/ja/stoptags.txt" />
+      <filter class="solr.CJKWidthFilterFactory" />
+      <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/ja/stopwords.txt" />
+      <filter class="solr.JapaneseReadingFormFilterFactory" useRomaji="false" />
+      <filter class="solr.JapaneseKatakanaStemFilterFactory" minimumLength="4" />
+      <filter class="solr.EnglishMinimalStemFilterFactory" />
+      <filter class="solr.LowerCaseFilterFactory" />
+    </analyzer>
+
+    <analyzer type="query">
+      <tokenizer class="solr.JapaneseTokenizerFactory" mode="search" userDictionary="lang/ja/userdict.txt" userDictionaryEncoding="UTF-8" discardPunctuation="true" discardCompoundToken="false" />
+      <filter class="solr.JapanesePartOfSpeechStopFilterFactory" tags="lang/ja/stoptags.txt" />
+      <filter class="solr.CJKWidthFilterFactory" />
+      <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/ja/stopwords.txt" />
+      <filter class="solr.JapaneseReadingFormFilterFactory" useRomaji="false" />
+      <filter class="solr.JapaneseKatakanaStemFilterFactory" minimumLength="4" />
+      <filter class="solr.EnglishMinimalStemFilterFactory" />
+      <filter class="solr.LowerCaseFilterFactory" />
+    </analyzer>
+  </fieldType>
+
   <fieldType name="TextEn" class="solr.TextField" positionIncrementGap="100" autoGeneratePhraseQueries="false">
     <analyzer type="index">
       <tokenizer class="solr.StandardTokenizerFactory" />
@@ -63,21 +87,20 @@
     <analyzer type="index">
       <tokenizer class="solr.NGramTokenizerFactory" minGramSize="1" maxGramSize="1" />
       <filter class="solr.CJKWidthFilterFactory" />
-      <filter class="solr.WordDelimiterGraphFilterFactory" />
-      <filter class="solr.FlattenGraphFilterFactory" />
+      <!-- <filter class="solr.WordDelimiterGraphFilterFactory" />
+      <filter class="solr.FlattenGraphFilterFactory" /> -->
       <filter class="solr.LowerCaseFilterFactory" />
     </analyzer>
     <analyzer type="query">
       <tokenizer class="solr.NGramTokenizerFactory" minGramSize="1" maxGramSize="1" />
       <filter class="solr.CJKWidthFilterFactory" />
-      <filter class="solr.WordDelimiterGraphFilterFactory" />
-      <filter class="solr.FlattenGraphFilterFactory" />
+      <!-- <filter class="solr.WordDelimiterGraphFilterFactory" />
+      <filter class="solr.FlattenGraphFilterFactory" /> -->
       <filter class="solr.LowerCaseFilterFactory" />
     </analyzer>
   </fieldType>
 
-
-  <field name="_version_" type="int64" indexed="false" stored="false" />
+  <field name="_version_" type="i64" indexed="false" stored="false" />
   <field name="null" type="Null" indexed="false" stored="false" />
 
   <uniqueKey>problem_id</uniqueKey>
@@ -88,28 +111,28 @@
   <field name="contest_title" type="String" indexed="true" stored="true" multiValued="false" />
   <field name="contest_url" type="String" indexed="false" stored="true" multiValued="false" />
 
-  <field name="difficulty" type="int32" indexed="true" stored="true" multiValued="false" sortMissingLast="true" />
-  <field name="start_at" type="int64" indexed="true" stored="true" required="true" multiValued="false" />
-  <field name="duration" type="int64" indexed="true" stored="true" required="true" multiValued="false" />
+  <field name="difficulty" type="i32" indexed="true" stored="true" multiValued="false" sortMissingLast="true" />
+  <field name="is_experimental" type="bool" indexed="true" stored="true" multiValued="false" sortMissingLast="true" />
+  <field name="start_at" type="DateTime" indexed="true" stored="true" required="true" multiValued="false" />
+  <field name="duration" type="i64" indexed="true" stored="true" required="true" multiValued="false" />
   <field name="rate_change" type="String" indexed="true" stored="true" required="true" multiValued="false" />
   <field name="category" type="String" indexed="true" stored="true" required="true" multiValued="false" />
 
   <field name="statement_ja" type="TextJa" indexed="true" stored="true" multiValued="true" />
   <field name="statement_en" type="TextEn" indexed="true" stored="true" multiValued="true" />
 
+  <!-- facet -->
+  <field name="color" type="String" indexed="true" stored="true" required="false" multiValued="false" />
+
   <field name="text_ja" type="TextJa" indexed="true" stored="true" multiValued="true" />
+  <field name="text_reading" type="TextReading" indexed="true" stored="true" multiValued="true" />
   <field name="text_en" type="TextEn" indexed="true" stored="true" multiValued="true" />
   <field name="text_1gram" type="Text1Gram" indexed="true" stored="true" multiValued="true" />
 
-  <copyField source="statement_ja" dest="text_ja" />
-  <copyField source="statement_ja" dest="text_1gram" />
-  <copyField source="statement_en" dest="text_en" />
-  <copyField source="statement_en" dest="text_1gram" />
-
-  <copyField source="problem_title" dest="text_ja" />
-  <copyField source="problem_title" dest="text_en" />
-  <copyField source="problem_title" dest="text_1gram" />
-
-  <copyField source="contest_title" dest="text_ja" />
-  <copyField source="contest_title" dest="text_1gram" />
+  <dynamicField name="*__text_ja" type="TextJa" indexed="true" stored="false" multiValued="true" />
+  <dynamicField name="*__text_reading" type="TextReading" indexed="true" stored="false" multiValued="true" />
+  <dynamicField name="*__text_en" type="TextEn" indexed="true" stored="false" multiValued="true" />
+  <copyField source="*__text_ja" dest="text_ja" />
+  <copyField source="*__text_reading" dest="text_reading" />
+  <copyField source="*__text_en" dest="text_en" />
 </schema>
