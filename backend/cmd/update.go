@@ -1,6 +1,5 @@
 /*
 Copyright © 2023 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
@@ -21,11 +20,17 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		if foo, err := cmd.Flags().GetBool("foo"); err == nil {
+			fmt.Println(foo)
+		} else {
+			fmt.Println(err.Error())
+		}
 		fmt.Println("update called")
 	},
 }
 
 func init() {
+	updateCmd.PersistentFlags().BoolP("foo", "f", false, "")
 	rootCmd.AddCommand(updateCmd)
 
 	// Here you will define your flags and configuration settings.

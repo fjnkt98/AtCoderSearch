@@ -1,39 +1,53 @@
 package cmd
 
 import (
+	"fjnkt98/atcodersearch/atcodersearch/common"
+	"fjnkt98/atcodersearch/solr"
 	"log"
+	"os"
 
 	"github.com/spf13/cobra"
 )
 
 var postCmd = &cobra.Command{
-	Use:   "post <domain>",
+	Use:   "post",
 	Short: "Post document JSON files into Solr core",
 	Long:  "Post document JSON files into Solr core",
+}
+
+var postProblemCmd = &cobra.Command{
+	Use:   "problem",
+	Short: "Post document JSON files into problem core",
+	Long:  "Post document JSON files into problem core",
 	Run: func(cmd *cobra.Command, args []string) {
-		if len(args) == 0 {
-			log.Fatal("arg `domain` is mandatory")
+		saveDir, err := GetSaveDir(cmd, "problem")
+		if err != nil {
+			log.Fatal(err.Error())
 		}
 
-		domain := args[0]
-		switch domain {
-		case "problems":
-			log.Println("generate problems")
-		case "users":
-			log.Println("generate users")
-		case "recommends":
-			log.Println("generate recommends")
-		default:
-			log.Fatalf(
-				"%s is invalid.\nvariety of domain is below:\n- problems\n- users\n- recommends",
-				domain,
-			)
+		solrURL := os.Getenv("SOLR_HOST")
+		if solrURL == "" {
+			log.Fatalln("environment variable `SOLR_HOST` must be set.")
+		}
+		core, err := solr.NewSolrCore[any, any]("problem", solrURL)
+		if err != nil {
+			log.Fatalf("failed to create `problem` core: %s", err.Error())
+		}
+
+		uploader := common.NewDefaultDocumentUploader(core, saveDir)
+		optimize, err := cmd.Flags().GetBool("optimize")
+		if err != nil {
+			log.Fatalf("failed to get value of `optimize` flag: %s", err.Error())
+		}
+		if err := uploader.PostDocument(optimize, 1); err != nil {
+			log.Fatal(err.Error())
 		}
 	},
 }
 
 func init() {
-	postCmd.Flags().BoolP("optimize", "o", false, "When true, send optimize request to Solr")
-	postCmd.Flags().String("save-dir", "", "Directory path at which generated documents will be saved")
+	postCmd.PersistentFlags().BoolP("optimize", "o", false, "When true, send optimize request to Solr")
+	postCmd.PersistentFlags().String("save-dir", "", "Directory path at which generated documents will be saved")
+	postCmd.AddCommand(postProblemCmd)
 	rootCmd.AddCommand(postCmd)
 }

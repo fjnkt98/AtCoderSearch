@@ -45,7 +45,7 @@ func (core *SolrCore[D, F]) Ping() (SolrPingResponse, error) {
 		return SolrPingResponse{}, fmt.Errorf("ping request failed: %s", err.Error())
 	} else {
 		if res.StatusCode != http.StatusOK {
-			return SolrPingResponse{}, fmt.Errorf("ping returns non-ok response: %s: ", err.Error())
+			return SolrPingResponse{}, fmt.Errorf("ping returns non-ok response: %s: ", res.Status)
 		}
 
 		var pingResponse SolrPingResponse
@@ -74,7 +74,7 @@ func (core *SolrCore[D, F]) Status() (SolrCoreStatus, error) {
 		return SolrCoreStatus{}, fmt.Errorf("status request failed: %s", err.Error())
 	} else {
 		if res.StatusCode != http.StatusOK {
-			return SolrCoreStatus{}, fmt.Errorf("solr returns non-ok response: %s", err.Error())
+			return SolrCoreStatus{}, fmt.Errorf("solr returns non-ok response: %s", res.Status)
 		}
 
 		var coreStatus SolrCoreList
@@ -114,7 +114,7 @@ func (core *SolrCore[D, F]) Reload() (SolrSimpleResponse, error) {
 		}
 
 		if res.StatusCode != http.StatusOK {
-			return reloadResponse, fmt.Errorf("solr returns non-ok response: %s", err.Error())
+			return reloadResponse, fmt.Errorf("solr returns non-ok response: %+v", reloadResponse)
 		} else {
 			return reloadResponse, nil
 		}
@@ -140,7 +140,7 @@ func (core *SolrCore[D, F]) Select(params url.Values) (SolrSelectResponse[D, F],
 		}
 
 		if res.StatusCode != http.StatusOK {
-			return selectResponse, fmt.Errorf("select returns non-ok response: %s", err.Error())
+			return selectResponse, fmt.Errorf("select returns non-ok response: %+v", selectResponse)
 		} else {
 			return selectResponse, nil
 		}
@@ -164,7 +164,7 @@ func (core *SolrCore[D, F]) Post(body io.Reader, contentType string) (SolrSimple
 		}
 
 		if res.StatusCode != http.StatusOK {
-			return response, fmt.Errorf("post returns non-ok response: %s", err.Error())
+			return response, fmt.Errorf("post returns non-ok response: %+v", response)
 		} else {
 			return response, nil
 		}
@@ -173,20 +173,20 @@ func (core *SolrCore[D, F]) Post(body io.Reader, contentType string) (SolrSimple
 
 func (core *SolrCore[D, F]) Commit() (SolrSimpleResponse, error) {
 	body := strings.NewReader(`{"commit": {}}`)
-	return core.Post(body, "json")
+	return core.Post(body, "application/json")
 }
 
 func (core *SolrCore[D, F]) Optimize() (SolrSimpleResponse, error) {
 	body := strings.NewReader(`{"optimize": {}}`)
-	return core.Post(body, "json")
+	return core.Post(body, "application/json")
 }
 
 func (core *SolrCore[D, F]) Rollback() (SolrSimpleResponse, error) {
 	body := strings.NewReader(`{"rollback": {}}`)
-	return core.Post(body, "json")
+	return core.Post(body, "application/json")
 }
 
 func (core *SolrCore[D, F]) Truncate() (SolrSimpleResponse, error) {
 	body := strings.NewReader(`{"delete":{"query": "*:*"}}`)
-	return core.Post(body, "json")
+	return core.Post(body, "application/json")
 }

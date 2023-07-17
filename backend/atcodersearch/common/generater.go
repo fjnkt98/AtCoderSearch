@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/fs"
 	"log"
 	"os"
 	"path/filepath"
@@ -44,24 +43,23 @@ func NewDefaultDocumentGenerator(saveDir string, reader RowReader) DefaultDocume
 }
 
 func (g *DefaultDocumentGenerator) Clean() error {
+	files, err := filepath.Glob(filepath.Join(g.saveDir, "doc-*.json"))
+	if err != nil {
+		return err
+	}
+
+	if len(files) == 0 {
+		return nil
+	}
+
 	log.Printf("Start to delete existing document files in `%s`", g.saveDir)
-	return filepath.WalkDir(g.saveDir, func(path string, entry fs.DirEntry, err error) error {
-		if err != nil {
+	for _, file := range files {
+		log.Printf("Delete existing file `%s`", file)
+		if err := os.Remove(file); err != nil {
 			return err
 		}
-
-		if entry.IsDir() {
-			return filepath.SkipDir
-		}
-
-		if !entry.IsDir() && filepath.Ext(path) == ".json" {
-			log.Printf("Delete existing file `%s`", path)
-			if err := os.Remove(path); err != nil {
-				return err
-			}
-		}
-		return nil
-	})
+	}
+	return nil
 }
 
 func (g *DefaultDocumentGenerator) ConvertDocument(ctx context.Context, rx <-chan ToDocument, tx chan<- Document) error {
