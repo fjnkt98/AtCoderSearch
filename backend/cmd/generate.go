@@ -43,7 +43,7 @@ var generateProblemCmd = &cobra.Command{
 	Long:  "Generate problem document JSON files",
 	Run: func(cmd *cobra.Command, args []string) {
 		generator := problem.NewProblemDocumentGenerator(getDB(), getSaveDir(cmd))
-		if err := generator.Run(); err != nil {
+		if err := generator.Run(1000, 10); err != nil {
 			log.Fatal(err.Error())
 		}
 	},

@@ -14,18 +14,18 @@ import (
 var extractor = NewFullTextExtractor()
 
 type Row struct {
-	ProblemID      string
-	ProblemTitle   string
-	ProblemURL     string
-	ContestID      string
-	ContestTitle   string
-	StartAt        int64
-	Duration       int64
-	RateChange     string
-	Category       string
-	HTML           string
-	Difficulty     *int
-	IsExperimental bool
+	ProblemID      string `db:"problem_id"`
+	ProblemTitle   string `db:"problem_title"`
+	ProblemURL     string `db:"problem_url"`
+	ContestID      string `db:"contest_id"`
+	ContestTitle   string `db:"contest_title"`
+	StartAt        int64  `db:"start_at"`
+	Duration       int64  `db:"duration"`
+	RateChange     string `db:"rate_change"`
+	Category       string `db:"category"`
+	HTML           string `db:"html"`
+	Difficulty     *int   `db:"difficulty"`
+	IsExperimental bool   `db:"is_experimental"`
 }
 
 func (r Row) ToDocument() (common.Document, error) {
@@ -87,7 +87,7 @@ type ProblemRowReader struct {
 }
 
 func (r *ProblemRowReader) ReadRows(ctx context.Context, tx chan<- common.ToDocument) error {
-	rows, err := r.db.Query(`
+	rows, err := r.db.Queryx(`
 	SELECT
 		"problems"."problem_id" AS "problem_id",
 		"problems"."title" AS "problem_title",
@@ -100,7 +100,7 @@ func (r *ProblemRowReader) ReadRows(ctx context.Context, tx chan<- common.ToDocu
 		"contests"."category" AS "category",
 		"problems"."html" AS "html",
 		"difficulties"."difficulty" AS "difficulty",
-		"difficulties"."is_experimental" AS "is_experimental"
+		COALESCE("difficulties"."is_experimental", FALSE) AS "is_experimental"
 	FROM
 		"problems"
 		JOIN "contests" ON "problems"."contest_id" = "contests"."contest_id"
@@ -110,20 +110,21 @@ func (r *ProblemRowReader) ReadRows(ctx context.Context, tx chan<- common.ToDocu
 		return err
 	}
 	defer rows.Close()
+	defer close(tx)
 
-loop:
-	for {
+	for rows.Next() {
 		select {
 		case <-ctx.Done():
+			log.Println("ReadRows canceled.")
 			return nil
 		default:
-			if !rows.Next() {
-				break loop
-			}
 			var row Row
-			if err := rows.Scan(&row); err != nil {
-				tx <- row
+			err := rows.StructScan(&row)
+			if err != nil {
+				log.Printf("failed to scan row: %s", err.Error())
+				return err
 			}
+			tx <- row
 		}
 	}
 
@@ -140,13 +141,13 @@ func NewProblemDocumentGenerator(db *sqlx.DB, saveDir string) ProblemDocumentGen
 	}
 }
 
-func (g *ProblemDocumentGenerator) Run() error {
+func (g *ProblemDocumentGenerator) Run(chunkSize int, concurrency int) error {
 	if err := g.Clean(); err != nil {
 		log.Printf("failed to clean existing document files: %s", err.Error())
 		return err
 	}
 
-	if err := g.Generate(1000); err != nil {
+	if err := g.Generate(chunkSize, concurrency); err != nil {
 		log.Printf("failed to generate documents: %s", err.Error())
 		return err
 	}

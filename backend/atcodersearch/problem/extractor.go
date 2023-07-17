@@ -2,7 +2,6 @@ package problem
 
 import (
 	"io"
-	"log"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
@@ -36,7 +35,6 @@ func (f *FullTextExtractor) Extract(html io.Reader) ([]string, []string, error) 
 	textJa := make([]string, 0)
 	textEn := make([]string, 0)
 
-	log.Println("start")
 	if ja := doc.Find("span.lang-ja"); ja != nil {
 		ja.Find("section").Each(func(_ int, section *goquery.Selection) {
 			if h3 := section.Find("h3").Text(); strings.Contains(h3, "問題") {

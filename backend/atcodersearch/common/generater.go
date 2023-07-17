@@ -156,7 +156,7 @@ loop:
 	return nil
 }
 
-func (g *DefaultDocumentGenerator) Generate(chunkSize int) error {
+func (g *DefaultDocumentGenerator) Generate(chunkSize int, concurrency int) error {
 	rowChannel := make(chan ToDocument, chunkSize)
 	docChannel := make(chan Document, chunkSize)
 
@@ -169,13 +169,13 @@ func (g *DefaultDocumentGenerator) Generate(chunkSize int) error {
 		return nil
 	})
 	eg.Go(func() error { return g.reader.ReadRows(ctx, rowChannel) })
-	eg.Go(func() error {
-		defer wg.Done()
-		return g.SaveDocument(ctx, docChannel, g.saveDir, chunkSize)
-	})
-	for i := 0; i < 4; i++ {
+	eg.Go(func() error { return g.SaveDocument(ctx, docChannel, g.saveDir, chunkSize) })
+	for i := 0; i < concurrency; i++ {
 		wg.Add(1)
-		eg.Go(func() error { return g.ConvertDocument(ctx, rowChannel, docChannel) })
+		eg.Go(func() error {
+			defer wg.Done()
+			return g.ConvertDocument(ctx, rowChannel, docChannel)
+		})
 	}
 
 	if err := eg.Wait(); err != nil {
