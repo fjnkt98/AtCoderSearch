@@ -1,6 +1,7 @@
 package acs
 
 import (
+	acs "fjnkt98/atcodersearch/atcodersearch/common"
 	"fmt"
 	"log"
 	"strings"
@@ -33,7 +34,13 @@ func (r *Row) ToDocument() (ProblemIndex, error) {
 
 	contestURL := fmt.Sprintf("https://atcoder.jp/contests/%s", r.ContestID)
 	startAt := time.Unix(r.StartAt, 0)
-	color := "black"
+
+	var color string
+	if r.Difficulty == nil {
+		color = "black"
+	} else {
+		color = acs.RateToColor(*r.Difficulty)
+	}
 
 	return ProblemIndex{
 		ProblemID:      r.ProblemID,
