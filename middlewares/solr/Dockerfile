@@ -11,9 +11,9 @@ ENV LANG ja_JP.UTF-8
 RUN ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
 ENV SOLR_TIMEZONE = "JST"
 
-COPY --chown=solr:solr ./problems /var/solr/data/problems
-COPY --chown=solr:solr ./recommends /var/solr/data/recommends
-COPY --chown=solr:solr ./users /var/solr/data/users
+COPY --chown=solr:solr ./problem /var/solr/data/problem
+COPY --chown=solr:solr ./recommend /var/solr/data/recommend
+COPY --chown=solr:solr ./user /var/solr/data/user
 COPY --chown=solr:solr ./dict/lucene-analysis-kuromoji-9.3.0-unidic-2.1.2.jar /opt/solr/server/solr-webapp/webapp/WEB-INF/lib/lucene-analysis-kuromoji-9.3.0.jar
 
 USER solr
