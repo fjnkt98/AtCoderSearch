@@ -83,7 +83,7 @@
     </analyzer>
   </fieldType>
 
-  <fieldType name="Text1Gram" class="solr.TextField" positionIncrementGap="100" autoGeneratePhraseQueries="true">
+  <fieldType name="TextUniGram" class="solr.TextField" positionIncrementGap="100" autoGeneratePhraseQueries="true">
     <analyzer type="index">
       <tokenizer class="solr.NGramTokenizerFactory" minGramSize="1" maxGramSize="1" />
       <filter class="solr.CJKWidthFilterFactory" />
@@ -118,8 +118,8 @@
   <field name="rate_change" type="String" indexed="true" stored="true" required="true" multiValued="false" />
   <field name="category" type="String" indexed="true" stored="true" required="true" multiValued="false" />
 
-  <field name="statement_ja" type="TextJa" indexed="true" stored="true" multiValued="true" />
-  <field name="statement_en" type="TextEn" indexed="true" stored="true" multiValued="true" />
+  <field name="statement_ja" type="String" indexed="true" stored="true" multiValued="true" />
+  <field name="statement_en" type="String" indexed="true" stored="true" multiValued="true" />
 
   <!-- facet -->
   <field name="color" type="String" indexed="true" stored="true" required="false" multiValued="false" />
@@ -127,12 +127,25 @@
   <field name="text_ja" type="TextJa" indexed="true" stored="true" multiValued="true" />
   <field name="text_reading" type="TextReading" indexed="true" stored="true" multiValued="true" />
   <field name="text_en" type="TextEn" indexed="true" stored="true" multiValued="true" />
-  <field name="text_1gram" type="Text1Gram" indexed="true" stored="true" multiValued="true" />
+  <field name="text_unigram" type="TextUniGram" indexed="true" stored="true" multiValued="true" />
 
   <dynamicField name="*__text_ja" type="TextJa" indexed="true" stored="false" multiValued="true" />
   <dynamicField name="*__text_reading" type="TextReading" indexed="true" stored="false" multiValued="true" />
   <dynamicField name="*__text_en" type="TextEn" indexed="true" stored="false" multiValued="true" />
-  <copyField source="*__text_ja" dest="text_ja" />
-  <copyField source="*__text_reading" dest="text_reading" />
-  <copyField source="*__text_en" dest="text_en" />
+  <dynamicField name="*__text_unigram" type="TextUniGram" indexed="true" stored="false" multiValued="true" />
+
+  <copyField source="problem_title" dest="problem_title__text_ja" />
+  <copyField source="problem_title" dest="problem_title__text_en" />
+  <copyField source="problem_title" dest="text_ja" />
+  <copyField source="problem_title" dest="text_en" />
+  <copyField source="contest_title" dest="contest_title__text_ja" />
+  <copyField source="contest_title" dest="contest_title__text_en" />
+  <copyField source="contest_title" dest="text_ja" />
+  <copyField source="contest_title" dest="text_en" />
+  <copyField source="statement_ja" dest="statement_ja__text_ja" />
+  <copyField source="statement_ja" dest="statement_ja__text_reading" />
+  <copyField source="statement_ja" dest="text_ja" />
+  <copyField source="statement_ja" dest="text_reading" />
+  <copyField source="statement_en" dest="statement_en__text_en" />
+  <copyField source="statement_en" dest="text_en" />
 </schema>
