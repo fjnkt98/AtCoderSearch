@@ -1,4 +1,4 @@
-package acs
+package problem
 
 import (
 	acs "fjnkt98/atcodersearch/atcodersearch/common"
