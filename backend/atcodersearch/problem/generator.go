@@ -65,21 +65,21 @@ func (r Row) ToDocument() (common.Document, error) {
 }
 
 type ProblemDocument struct {
-	ProblemID      string
-	ProblemTitle   string
-	ProblemURL     string
-	ContestID      string
-	ContestURL     string
-	ContestTitle   string
-	Color          string
-	StartAt        time.Time
-	Duration       int64
-	RateChange     string
-	Category       string
-	Difficulty     *int
-	IsExperimental bool
-	StatementJa    []string
-	StatementEn    []string
+	ProblemID      string    `json:"problem_id"`
+	ProblemTitle   string    `json:"problem_title"`
+	ProblemURL     string    `json:"problem_url"`
+	ContestID      string    `json:"contest_id"`
+	ContestTitle   string    `json:"contest_title"`
+	ContestURL     string    `json:"contest_url"`
+	Color          string    `json:"color"`
+	StartAt        time.Time `json:"start_at"`
+	Duration       int64     `json:"duration"`
+	RateChange     string    `json:"rate_change"`
+	Category       string    `json:"category"`
+	Difficulty     *int      `json:"difficulty"`
+	IsExperimental bool      `json:"is_experimental"`
+	StatementJa    []string  `json:"statement_ja"`
+	StatementEn    []string  `json:"statement_en"`
 }
 
 type ProblemRowReader struct {
