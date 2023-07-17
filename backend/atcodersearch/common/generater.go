@@ -50,6 +50,10 @@ func (g *DefaultDocumentGenerator) Clean() error {
 			return err
 		}
 
+		if entry.IsDir() {
+			return filepath.SkipDir
+		}
+
 		if !entry.IsDir() && filepath.Ext(path) == ".json" {
 			log.Printf("Delete existing file `%s`", path)
 			if err := os.Remove(path); err != nil {
