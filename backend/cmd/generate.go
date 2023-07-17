@@ -1,38 +1,68 @@
 package cmd
 
 import (
+	"fjnkt98/atcodersearch/atcodersearch/problem"
 	"log"
+	"os"
 
+	"github.com/jmoiron/sqlx"
 	"github.com/spf13/cobra"
 )
 
+func getSaveDir(cmd *cobra.Command) string {
+	var saveDir string
+	if s, err := cmd.Flags().GetString("save-dir"); err != nil {
+		saveDir = s
+	} else if dir := os.Getenv("DOCUMENT_SAVE_DIRECTORY"); dir != "" {
+		saveDir = dir
+	} else {
+		log.Fatal("couldn't determine document save directory")
+	}
+
+	return saveDir
+}
+
+func getDB() *sqlx.DB {
+	dsn := os.Getenv("DATABASE_URL")
+	db, err := sqlx.Open("postgres", dsn)
+	if err != nil {
+		log.Fatalf("failed to open database: %s", err.Error())
+	}
+	return db
+}
+
 var generateCmd = &cobra.Command{
-	Use:   "generate <domain>",
+	Use:   "generate",
 	Short: "Generate document JSON files",
 	Long:  "Generate document JSON files",
-	Run: func(cmd *cobra.Command, args []string) {
-		if len(args) == 0 {
-			log.Fatal("arg `domain` is mandatory")
-		}
+}
 
-		domain := args[0]
-		switch domain {
-		case "problems":
-			log.Println("generate problems")
-		case "users":
-			log.Println("generate users")
-		case "recommends":
-			log.Println("generate recommends")
-		default:
-			log.Fatalf(
-				"%s is invalid.\nvariety of domain is below:\n- problems\n- users\n- recommends",
-				domain,
-			)
+var generateProblemCmd = &cobra.Command{
+	Use:   "problem",
+	Short: "Generate problem document JSON files",
+	Long:  "Generate problem document JSON files",
+	Run: func(cmd *cobra.Command, args []string) {
+		generator := problem.NewProblemDocumentGenerator(getDB(), getSaveDir(cmd))
+		if err := generator.Run(); err != nil {
+			log.Fatal(err.Error())
 		}
 	},
 }
 
+// var generateUserCmd = &cobra.Command{
+// 	Use:   "user",
+// 	Short: "Generate user document JSON files",
+// 	Long:  "Generate user document JSON files",
+// 	Run: func(cmd *cobra.Command, args []string) {
+// 		generator := problem.NewProblemDocumentGenerator(getDB(), getSaveDir(cmd))
+// 		if err := generator.Run(); err != nil {
+// 			log.Fatal(err.Error())
+// 		}
+// 	},
+// }
+
 func init() {
-	generateCmd.Flags().String("save-dir", "", "Directory path at which generated documents will be saved")
+	generateCmd.PersistentFlags().String("save-dir", "", "Directory path at which generated documents will be saved")
+	generateCmd.AddCommand(generateProblemCmd)
 	rootCmd.AddCommand(generateCmd)
 }
