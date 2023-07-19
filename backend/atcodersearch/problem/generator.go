@@ -3,6 +3,7 @@ package problem
 import (
 	"context"
 	"fjnkt98/atcodersearch/atcodersearch/common"
+	"fjnkt98/atcodersearch/solr"
 	"fmt"
 	"log"
 	"strings"
@@ -36,7 +37,7 @@ func (r Row) ToDocument() (common.Document, error) {
 	}
 
 	contestURL := fmt.Sprintf("https://atcoder.jp/contests/%s", r.ContestID)
-	startAt := time.Unix(r.StartAt, 0)
+	startAt := solr.IntoSolrDateTime(time.Unix(r.StartAt, 0))
 
 	var color string
 	if r.Difficulty == nil {
@@ -65,21 +66,21 @@ func (r Row) ToDocument() (common.Document, error) {
 }
 
 type ProblemDocument struct {
-	ProblemID      string    `json:"problem_id"`
-	ProblemTitle   string    `json:"problem_title"`
-	ProblemURL     string    `json:"problem_url"`
-	ContestID      string    `json:"contest_id"`
-	ContestTitle   string    `json:"contest_title"`
-	ContestURL     string    `json:"contest_url"`
-	Color          string    `json:"color"`
-	StartAt        time.Time `json:"start_at"`
-	Duration       int64     `json:"duration"`
-	RateChange     string    `json:"rate_change"`
-	Category       string    `json:"category"`
-	Difficulty     *int      `json:"difficulty"`
-	IsExperimental bool      `json:"is_experimental"`
-	StatementJa    []string  `json:"statement_ja"`
-	StatementEn    []string  `json:"statement_en"`
+	ProblemID      string                `json:"problem_id"`
+	ProblemTitle   string                `json:"problem_title"`
+	ProblemURL     string                `json:"problem_url"`
+	ContestID      string                `json:"contest_id"`
+	ContestTitle   string                `json:"contest_title"`
+	ContestURL     string                `json:"contest_url"`
+	Color          string                `json:"color"`
+	StartAt        solr.IntoSolrDateTime `json:"start_at"`
+	Duration       int64                 `json:"duration"`
+	RateChange     string                `json:"rate_change"`
+	Category       string                `json:"category"`
+	Difficulty     *int                  `json:"difficulty"`
+	IsExperimental bool                  `json:"is_experimental"`
+	StatementJa    []string              `json:"statement_ja"`
+	StatementEn    []string              `json:"statement_en"`
 }
 
 type ProblemRowReader struct {
