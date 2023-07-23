@@ -118,8 +118,8 @@
   <field name="rate_change" type="String" indexed="true" stored="true" required="true" multiValued="false" />
   <field name="category" type="String" indexed="true" stored="true" required="true" multiValued="false" />
 
-  <field name="statement_ja" type="String" indexed="true" stored="true" multiValued="true" />
-  <field name="statement_en" type="String" indexed="true" stored="true" multiValued="true" />
+  <field name="statement_ja" type="TextJa" indexed="true" stored="false" multiValued="true" />
+  <field name="statement_en" type="TextEn" indexed="true" stored="false" multiValued="true" />
 
   <!-- facet -->
   <field name="color" type="String" indexed="true" stored="true" required="false" multiValued="false" />
