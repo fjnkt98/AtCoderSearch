@@ -13,37 +13,21 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-type Document interface{}
-
 type ToDocument interface {
-	ToDocument() (Document, error)
+	ToDocument() (any, error)
 }
 
 type RowReader interface {
 	ReadRows(ctx context.Context, tx chan<- ToDocument) error
 }
 
-type DocumentGenerator interface {
+type DocumentGenerator[D any] interface {
 	Clean() error
 	Generate(chunkSize int) error
-	ConvertDocument(ctx context.Context, rx <-chan Document, tx chan<- Document) error
-	SaveDocument(ctx context.Context, rx <-chan Document) error
 }
 
-type DefaultDocumentGenerator struct {
-	saveDir string
-	reader  RowReader
-}
-
-func NewDefaultDocumentGenerator(saveDir string, reader RowReader) DefaultDocumentGenerator {
-	return DefaultDocumentGenerator{
-		saveDir,
-		reader,
-	}
-}
-
-func (g *DefaultDocumentGenerator) Clean() error {
-	files, err := filepath.Glob(filepath.Join(g.saveDir, "doc-*.json"))
+func CleanDocument(saveDir string) error {
+	files, err := filepath.Glob(filepath.Join(saveDir, "doc-*.json"))
 	if err != nil {
 		return err
 	}
@@ -52,17 +36,17 @@ func (g *DefaultDocumentGenerator) Clean() error {
 		return nil
 	}
 
-	log.Printf("Start to delete existing document files in `%s`", g.saveDir)
+	log.Printf("Start to delete existing document files in `%s`", saveDir)
 	for _, file := range files {
 		log.Printf("Delete existing file `%s`", file)
 		if err := os.Remove(file); err != nil {
-			return err
+			return fmt.Errorf("failed to remove file `%s`: %s", file, err.Error())
 		}
 	}
 	return nil
 }
 
-func (g *DefaultDocumentGenerator) ConvertDocument(ctx context.Context, rx <-chan ToDocument, tx chan<- Document) error {
+func ConvertDocument(ctx context.Context, rx <-chan ToDocument, tx chan<- any) error {
 loop:
 	for {
 		select {
@@ -92,21 +76,19 @@ loop:
 	return nil
 }
 
-func (g *DefaultDocumentGenerator) SaveDocument(ctx context.Context, rx <-chan Document, saveDir string, chunkSize int) error {
+func SaveDocument[D any](ctx context.Context, rx <-chan D, saveDir string, chunkSize int) error {
 	suffix := 0
 	buffer := make([]any, 0, chunkSize)
 
 	writeDocument := func(documents []any, filePath string) error {
 		file, err := os.Create(filePath)
 		if err != nil {
-			log.Printf("failed to open file `%s`: %s", filePath, err.Error())
-			return err
+			return fmt.Errorf("failed to open file `%s`: %s", filePath, err.Error())
 		}
 		defer file.Close()
 
 		if err := json.NewEncoder(file).Encode(buffer); err != nil {
-			log.Printf("failed to write into document file `%s`: %s", filePath, err.Error())
-			return err
+			return fmt.Errorf("failed to write into document file `%s`: %s", filePath, err.Error())
 		}
 		return nil
 	}
@@ -158,9 +140,9 @@ loop:
 	return nil
 }
 
-func (g *DefaultDocumentGenerator) Generate(chunkSize int, concurrency int) error {
+func GenerateDocument(reader RowReader, saveDir string, chunkSize int, concurrency int) error {
 	rowChannel := make(chan ToDocument, chunkSize)
-	docChannel := make(chan Document, chunkSize)
+	docChannel := make(chan any, chunkSize)
 
 	eg, ctx := errgroup.WithContext(context.Background())
 	var wg sync.WaitGroup
@@ -170,19 +152,18 @@ func (g *DefaultDocumentGenerator) Generate(chunkSize int, concurrency int) erro
 		close(docChannel)
 		return nil
 	})
-	eg.Go(func() error { return g.reader.ReadRows(ctx, rowChannel) })
-	eg.Go(func() error { return g.SaveDocument(ctx, docChannel, g.saveDir, chunkSize) })
+	eg.Go(func() error { return reader.ReadRows(ctx, rowChannel) })
+	eg.Go(func() error { return SaveDocument(ctx, docChannel, saveDir, chunkSize) })
 	for i := 0; i < concurrency; i++ {
 		wg.Add(1)
 		eg.Go(func() error {
 			defer wg.Done()
-			return g.ConvertDocument(ctx, rowChannel, docChannel)
+			return ConvertDocument(ctx, rowChannel, docChannel)
 		})
 	}
 
 	if err := eg.Wait(); err != nil {
-		log.Printf("failed to generate document: %s", err.Error())
-		return err
+		return fmt.Errorf("failed to generate document: %s", err.Error())
 	}
 
 	return nil

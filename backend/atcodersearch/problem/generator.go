@@ -29,7 +29,7 @@ type Row struct {
 	IsExperimental bool   `db:"is_experimental"`
 }
 
-func (r Row) ToDocument() (common.Document, error) {
+func (r Row) ToDocument() (any, error) {
 	statementJa, statementEn, err := extractor.Extract(strings.NewReader(r.HTML))
 	if err != nil {
 		log.Printf("failed to extract statement at problem `%s`: %s", r.ProblemID, err.Error())
@@ -133,23 +133,37 @@ func (r *ProblemRowReader) ReadRows(ctx context.Context, tx chan<- common.ToDocu
 }
 
 type ProblemDocumentGenerator struct {
-	common.DefaultDocumentGenerator
+	saveDir string
+	reader  *ProblemRowReader
 }
 
 func NewProblemDocumentGenerator(db *sqlx.DB, saveDir string) ProblemDocumentGenerator {
 	return ProblemDocumentGenerator{
-		common.NewDefaultDocumentGenerator(saveDir, &ProblemRowReader{db: db}),
+		saveDir: saveDir,
+		reader:  &ProblemRowReader{db: db},
 	}
+}
+
+func (g *ProblemDocumentGenerator) Clean() error {
+	if err := common.CleanDocument(g.saveDir); err != nil {
+		return fmt.Errorf("failed to delete problem document files in `%s`: %s", g.saveDir, err.Error())
+	}
+	return nil
+}
+
+func (g *ProblemDocumentGenerator) Generate(chunkSize int, concurrency int) error {
+	if err := common.GenerateDocument(g.reader, g.saveDir, chunkSize, concurrency); err != nil {
+		return fmt.Errorf("failed to generate problem document files: %s", err.Error())
+	}
+	return nil
 }
 
 func (g *ProblemDocumentGenerator) Run(chunkSize int, concurrency int) error {
 	if err := g.Clean(); err != nil {
-		log.Printf("failed to clean existing document files: %s", err.Error())
 		return err
 	}
 
 	if err := g.Generate(chunkSize, concurrency); err != nil {
-		log.Printf("failed to generate documents: %s", err.Error())
 		return err
 	}
 	return nil
