@@ -11,8 +11,8 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-type DocumentUploader[D any, F any] interface {
-	PostDocument(core solr.SolrCore[D, F], saveDir string, optimize bool) error
+type DocumentUploader interface {
+	PostDocument(core solr.SolrCore[any, any], saveDir string, optimize bool) error
 }
 
 type DefaultDocumentUploader struct {
@@ -76,17 +76,16 @@ func (u *DefaultDocumentUploader) PostDocument(optimize bool, concurrency int) e
 	close(ch)
 
 	if err := eg.Wait(); err != nil {
-		log.Printf("failed to post documents: %s", err.Error())
-		return err
+		return fmt.Errorf("failed to post documents: %s", err.Error())
 	}
 
 	if optimize {
 		if _, err := u.core.Optimize(); err != nil {
-			log.Printf("failed to optimize index: %s", err.Error())
+			return fmt.Errorf("failed to optimize index: %s", err.Error())
 		}
 	} else {
 		if _, err := u.core.Commit(); err != nil {
-			log.Printf("failed to optimize index: %s", err.Error())
+			return fmt.Errorf("failed to commit index: %s", err.Error())
 		}
 	}
 
