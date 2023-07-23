@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
@@ -149,14 +150,18 @@ func (c *ContestCrawler) Save(contests []ContestJSON) error {
 }
 
 func (c *ContestCrawler) Run() error {
+	log.Println("Start to fetch contest list.")
 	contests, err := c.FetchContestList()
 	if err != nil {
 		return fmt.Errorf("failed to fetch contest list: %w", err)
 	}
+	log.Println("Finish fetching contest list.")
 
+	log.Println("Start to save contest list.")
 	if err := c.Save(contests); err != nil {
 		return fmt.Errorf("failed to save contests: %w", err)
 	}
+	log.Println("Finish saving contest list.")
 
 	return nil
 }
@@ -273,6 +278,7 @@ func (c *ProblemCrawler) Save(problemJSONs []ProblemJSON, duration int) error {
 			HTML:         HTML,
 		}
 
+		log.Printf("save `%s`", problem.ProblemID)
 		if _, err := tx.Exec(`
 			MERGE INTO "problems"
 			USING
@@ -368,17 +374,23 @@ func (c *ProblemCrawler) Run(all bool, duration int) error {
 	var targets []ProblemJSON
 	var err error
 	if all {
+		log.Println("Start to fetch all problem list.")
 		targets, err = c.FetchProblemList()
+		log.Println("Finish fetching all problem list.")
 	} else {
+		log.Println("Start to fetch new problem list.")
 		targets, err = c.DetectDiff()
+		log.Println("Finish fetching new problem list.")
 	}
 	if err != nil {
 		return fmt.Errorf("failed to fetch problem list: %w", err)
 	}
 
+	log.Println("Start to save problem list.")
 	if err := c.Save(targets, duration); err != nil {
 		return fmt.Errorf("failed to save problem: %w", err)
 	}
+	log.Println("Finish saving problem list.")
 	return nil
 }
 
@@ -541,14 +553,18 @@ func (c *DifficultyCrawler) Save(difficulties map[string]DifficultyJSON) error {
 }
 
 func (c *DifficultyCrawler) Run() error {
+	log.Println("Start to fetch difficulty list.")
 	difficulties, err := c.FetchDifficulties()
 	if err != nil {
 		return fmt.Errorf("failed to fetch difficulties: %w", err)
 	}
+	log.Println("Finish fetching difficulty list.")
 
+	log.Println("Start to save difficulty list.")
 	if err := c.Save(difficulties); err != nil {
 		return fmt.Errorf("failed to save difficulties: %w", err)
 	}
+	log.Println("Finish saving difficulty list.")
 
 	return nil
 }
