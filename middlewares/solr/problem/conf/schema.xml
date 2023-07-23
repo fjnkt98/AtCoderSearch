@@ -124,10 +124,10 @@
   <!-- facet -->
   <field name="color" type="String" indexed="true" stored="true" required="false" multiValued="false" />
 
-  <field name="text_ja" type="TextJa" indexed="true" stored="true" multiValued="true" />
-  <field name="text_reading" type="TextReading" indexed="true" stored="true" multiValued="true" />
-  <field name="text_en" type="TextEn" indexed="true" stored="true" multiValued="true" />
-  <field name="text_unigram" type="TextUniGram" indexed="true" stored="true" multiValued="true" />
+  <field name="text_ja" type="TextJa" indexed="true" stored="false" multiValued="true" />
+  <field name="text_reading" type="TextReading" indexed="true" stored="false" multiValued="true" />
+  <field name="text_en" type="TextEn" indexed="true" stored="false" multiValued="true" />
+  <field name="text_unigram" type="TextUniGram" indexed="true" stored="false" multiValued="true" />
 
   <dynamicField name="*__text_ja" type="TextJa" indexed="true" stored="false" multiValued="true" />
   <dynamicField name="*__text_reading" type="TextReading" indexed="true" stored="false" multiValued="true" />
