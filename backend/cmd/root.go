@@ -7,7 +7,7 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "AtCoderSearch",
+	Use:   "atcodersearch",
 	Short: "root command for AtCoder Search",
 	Long:  "root command for AtCoder Search",
 }

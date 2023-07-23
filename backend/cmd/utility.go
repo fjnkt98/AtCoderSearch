@@ -43,7 +43,12 @@ func GetDB() *sqlx.DB {
 	dsn := os.Getenv("DATABASE_URL")
 	db, err := sqlx.Open("postgres", dsn)
 	if err != nil {
-		log.Fatalf("failed to open database: %s", err.Error())
+		log.Fatalf("failed to open database: %w", err)
 	}
+
+	if err := db.Ping(); err != nil {
+		log.Fatalf("failed to connect database: %w", err)
+	}
+
 	return db
 }
