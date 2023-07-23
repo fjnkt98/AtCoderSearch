@@ -54,6 +54,7 @@ func (c *ContestCrawler) Save(contests []ContestJSON) error {
 	if err != nil {
 		return fmt.Errorf("failed to start transaction to save contest information: %s", err.Error())
 	}
+	defer tx.Rollback()
 
 	for _, contestJSON := range contests {
 		contest := Contest{
@@ -135,9 +136,6 @@ func (c *ContestCrawler) Save(contests []ContestJSON) error {
 			contest.Category,
 		)
 		if err != nil {
-			if err := tx.Rollback(); err != nil {
-				return fmt.Errorf("failed to rollback transaction: %w", err)
-			}
 			return fmt.Errorf("failed to save contest information %+v: %w", contest, err)
 		}
 	}
@@ -434,6 +432,7 @@ func (c *DifficultyCrawler) Save(difficulties map[string]DifficultyJSON) error {
 	if err != nil {
 		return fmt.Errorf("failed to start transaction: %w", err)
 	}
+	defer tx.Rollback()
 
 	for problemID, difficultyJSON := range difficulties {
 		difficulty := Difficulty{
@@ -538,9 +537,6 @@ func (c *DifficultyCrawler) Save(difficulties map[string]DifficultyJSON) error {
 			difficulty.IrtUsers,
 			difficulty.IsExperimental,
 		); err != nil {
-			if txErr := tx.Rollback(); txErr != nil {
-				return fmt.Errorf("failed to rollback transaction which cause error `%w`: %w", err, txErr)
-			}
 			return fmt.Errorf("failed to save difficulty `%+v`: %w", difficulty, err)
 		}
 	}
