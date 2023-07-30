@@ -6,6 +6,7 @@ package cmd
 import (
 	"fjnkt98/atcodersearch/atcodersearch/common"
 	"fjnkt98/atcodersearch/atcodersearch/problem"
+	"fjnkt98/atcodersearch/atcodersearch/user"
 	"fjnkt98/atcodersearch/solr"
 	"log"
 	"os"
@@ -100,6 +101,72 @@ var updateProblemCmd = &cobra.Command{
 	},
 }
 
+var updateUserCmd = &cobra.Command{
+	Use:   "user",
+	Short: "update user index",
+	Long:  "update user index",
+	Run: func(cmd *cobra.Command, args []string) {
+		saveDir, err := GetSaveDir(cmd, "user")
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+
+		db := GetDB()
+		skipFetch, err := cmd.Flags().GetBool("skip-fetch")
+		if err != nil {
+			log.Fatalf("failed to get flag `--skip-fetch`: %s", err.Error())
+		}
+
+		if !skipFetch {
+			duration, err := cmd.Flags().GetInt("duration")
+			if err != nil {
+				log.Fatalf("failed to get flag `duration`: %s", err.Error())
+			}
+			crawler := user.NewUserCrawler(db)
+			if err := crawler.Run(duration); err != nil {
+				log.Fatalf("failed to save user information: %s", err.Error())
+			}
+		}
+
+		generator := user.NewDocumentGenerator(db, saveDir)
+		chunkSize, err := cmd.Flags().GetInt("chunk-size")
+		if err != nil {
+			log.Fatalf("failed to get flag `--chunk-size`: %s", err.Error())
+		}
+		generateConcurrency, err := cmd.Flags().GetInt("generate-concurrent")
+		if err != nil {
+			log.Fatalf("failed to get flag `--generate-concurrent`: %s", err.Error())
+		}
+
+		if err := generator.Run(chunkSize, generateConcurrency); err != nil {
+			log.Fatalf("failed to generate document: %s", err.Error())
+		}
+
+		postConcurrency, err := cmd.Flags().GetInt("post-concurrent")
+		if err != nil {
+			log.Fatalf("failed to get flag `--post-concurrent`: %s", err.Error())
+		}
+
+		solrURL := os.Getenv("SOLR_HOST")
+		if solrURL == "" {
+			log.Fatalln("environment variable `SOLR_HOST` must be set.")
+		}
+		core, err := solr.NewSolrCore[any, any]("user", solrURL)
+		if err != nil {
+			log.Fatalf("failed to create `user` core: %s", err.Error())
+		}
+
+		uploader := common.NewDefaultDocumentUploader(core, saveDir)
+		optimize, err := cmd.Flags().GetBool("optimize")
+		if err != nil {
+			log.Fatalf("failed to get value of `optimize` flag: %s", err.Error())
+		}
+		if err := uploader.PostDocument(optimize, postConcurrency); err != nil {
+			log.Fatalf("failed to post documents: %s", err.Error())
+		}
+	},
+}
+
 func init() {
 	updateCmd.PersistentFlags().String("save-dir", "", "Directory path at which generated documents will be saved.")
 	updateCmd.PersistentFlags().BoolP("skip-fetch", "f", false, "Skip crawling if true.")
@@ -111,6 +178,9 @@ func init() {
 	updateProblemCmd.Flags().Int("duration", 1000, "Duration[ms] in crawling problem")
 	updateProblemCmd.Flags().BoolP("all", "a", false, "Crawl all problems if true.")
 
+	updateUserCmd.Flags().Int("duration", 1000, "Duration[ms] in crawling problem")
+
 	updateCmd.AddCommand(updateProblemCmd)
+	updateCmd.AddCommand(updateUserCmd)
 	rootCmd.AddCommand(updateCmd)
 }
