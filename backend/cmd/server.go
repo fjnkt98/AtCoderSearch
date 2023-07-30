@@ -16,16 +16,19 @@ var serverCmd = &cobra.Command{
 	Short: "Launch API server",
 	Long:  "Launch API server",
 	Run: func(cmd *cobra.Command, args []string) {
-		solrURL := os.Getenv("SOLR_URL")
-		parsedSolrURL, err := url.Parse(solrURL)
+		solrHost := os.Getenv("SOLR_HOST")
+		if solrHost == "" {
+			log.Fatalln("SOLR_HOST must be set.")
+		}
+		parsedSolrURL, err := url.Parse(solrHost)
 		if err != nil {
-			log.Fatalf("invalid Solr URL was given: %s\n", solrURL)
+			log.Fatalf("invalid Solr URL was given: %s", solrHost)
 		}
 		solrBaseURL := url.URL{Scheme: parsedSolrURL.Scheme, Host: parsedSolrURL.Host}
 
 		problemCoreName := os.Getenv("PROBLEMS_CORE_NAME")
 		if problemCoreName == "" {
-			log.Fatalf("PROBLEMS_CORE_NAME must be set.")
+			log.Fatalln("PROBLEMS_CORE_NAME must be set.")
 		}
 
 		problemSearcher, err := problem.NewProblemSearcher(solrBaseURL.String(), problemCoreName)
@@ -33,7 +36,7 @@ var serverCmd = &cobra.Command{
 			log.Fatalf("failed to instantiate problems searcher: %s", err.Error())
 		}
 
-		http.HandleFunc("/api/search", problemSearcher.HandleSearchProblem)
+		http.HandleFunc("/api/search/problem", problemSearcher.HandleSearchProblem)
 
 		port := os.Getenv("API_SERVER_LISTEN_PORT")
 		if port == "" {

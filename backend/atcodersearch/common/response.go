@@ -1,7 +1,9 @@
 package common
 
+import "time"
+
 type SearchResultResponse[D any] struct {
-	Stats   SearchResultStats `json:"status,omitempty"`
+	Stats   SearchResultStats `json:"stats,omitempty"`
 	Items   []D               `json:"items"`
 	Message string            `json:"message,omitempty"`
 }
@@ -23,8 +25,9 @@ func NewErrorResponse[D any](msg string, params any) SearchResultResponse[D] {
 }
 
 type QueryLog struct {
-	Domain string `json:"domain"`
-	Time   uint   `json:"time"`
-	Hits   uint   `json:"hits"`
-	Params any    `json:"params"`
+	RequestAt time.Time `json:"request_at"`
+	Domain    string    `json:"domain"`
+	Time      uint      `json:"time"`
+	Hits      uint      `json:"hits"`
+	Params    any       `json:"params"`
 }

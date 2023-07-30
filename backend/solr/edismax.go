@@ -24,8 +24,8 @@ func NewEDisMaxQueryBuilder() *EDisMaxQueryBuilder {
 	}
 }
 
-func (b *EDisMaxQueryBuilder) Build() string {
-	return b.inner.Encode()
+func (b *EDisMaxQueryBuilder) Build() url.Values {
+	return b.inner
 }
 
 func (b *EDisMaxQueryBuilder) Sort(sort string) *EDisMaxQueryBuilder {
@@ -33,12 +33,12 @@ func (b *EDisMaxQueryBuilder) Sort(sort string) *EDisMaxQueryBuilder {
 	return b
 }
 
-func (b *EDisMaxQueryBuilder) Start(start uint32) *EDisMaxQueryBuilder {
+func (b *EDisMaxQueryBuilder) Start(start uint) *EDisMaxQueryBuilder {
 	b.inner.Set("start", strconv.Itoa(int(start)))
 	return b
 }
 
-func (b *EDisMaxQueryBuilder) Rows(rows uint32) *EDisMaxQueryBuilder {
+func (b *EDisMaxQueryBuilder) Rows(rows uint) *EDisMaxQueryBuilder {
 	b.inner.Set("rows", strconv.Itoa(int(rows)))
 	return b
 }
@@ -90,7 +90,7 @@ func (b *EDisMaxQueryBuilder) Qf(qf string) *EDisMaxQueryBuilder {
 	return b
 }
 
-func (b *EDisMaxQueryBuilder) Qs(qs uint32) *EDisMaxQueryBuilder {
+func (b *EDisMaxQueryBuilder) Qs(qs uint) *EDisMaxQueryBuilder {
 	b.inner.Set("qs", strconv.Itoa(int(qs)))
 	return b
 }
@@ -159,7 +159,7 @@ func (b *EDisMaxQueryBuilder) Pf2(pf2 string) *EDisMaxQueryBuilder {
 	return b
 }
 
-func (b *EDisMaxQueryBuilder) Ps2(ps2 uint32) *EDisMaxQueryBuilder {
+func (b *EDisMaxQueryBuilder) Ps2(ps2 uint) *EDisMaxQueryBuilder {
 	b.inner.Set("ps2", strconv.Itoa(int(ps2)))
 	return b
 }
@@ -169,7 +169,7 @@ func (b *EDisMaxQueryBuilder) Pf3(pf3 string) *EDisMaxQueryBuilder {
 	return b
 }
 
-func (b *EDisMaxQueryBuilder) Ps3(ps3 uint32) *EDisMaxQueryBuilder {
+func (b *EDisMaxQueryBuilder) Ps3(ps3 uint) *EDisMaxQueryBuilder {
 	b.inner.Set("ps3", strconv.Itoa(int(ps3)))
 	return b
 }

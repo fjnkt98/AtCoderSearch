@@ -1,7 +1,6 @@
 package common
 
 import (
-	"fmt"
 	"reflect"
 	"strings"
 	"sync"
@@ -17,10 +16,10 @@ func NewFieldLister() *FieldLister {
 	}
 }
 
-func (f *FieldLister) FieldList(doc any) (string, error) {
+func (f *FieldLister) FieldList(doc any) string {
 	ty := reflect.TypeOf(doc)
 	if ty.Kind() != reflect.Struct {
-		return "", fmt.Errorf("%T is not a struct", doc)
+		return ""
 	}
 
 	fieldList, ok := f.cache.Get(ty)
@@ -45,7 +44,7 @@ func (f *FieldLister) FieldList(doc any) (string, error) {
 		f.cache.Set(ty, fieldList)
 	}
 
-	return fieldList, nil
+	return fieldList
 }
 
 type cache struct {

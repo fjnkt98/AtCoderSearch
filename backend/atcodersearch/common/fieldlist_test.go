@@ -13,10 +13,7 @@ func TestFieldList(t *testing.T) {
 	lister := NewFieldLister()
 	doc := SampleDocument{}
 
-	fieldList, err := lister.FieldList(doc)
-	if err != nil {
-		t.Errorf("test failed: %s", err.Error())
-	}
+	fieldList := lister.FieldList(doc)
 	expected := "id,name,grade,class"
 
 	if fieldList != expected {
