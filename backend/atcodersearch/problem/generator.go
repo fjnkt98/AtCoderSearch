@@ -29,7 +29,7 @@ type Row struct {
 	IsExperimental bool   `db:"is_experimental"`
 }
 
-func (r Row) ToDocument() (any, error) {
+func (r *Row) ToDocument() (any, error) {
 	statementJa, statementEn, err := extractor.Extract(strings.NewReader(r.HTML))
 	if err != nil {
 		log.Printf("failed to extract statement at problem `%s`: %s", r.ProblemID, err.Error())
@@ -125,7 +125,7 @@ func (r *ProblemRowReader) ReadRows(ctx context.Context, tx chan<- common.ToDocu
 				log.Printf("failed to scan row: %s", err.Error())
 				return err
 			}
-			tx <- row
+			tx <- &row
 		}
 	}
 
@@ -151,19 +151,19 @@ func (g *ProblemDocumentGenerator) Clean() error {
 	return nil
 }
 
-func (g *ProblemDocumentGenerator) Generate(chunkSize int, concurrency int) error {
-	if err := common.GenerateDocument(g.reader, g.saveDir, chunkSize, concurrency); err != nil {
+func (g *ProblemDocumentGenerator) Generate(chunkSize int, concurrent int) error {
+	if err := common.GenerateDocument(g.reader, g.saveDir, chunkSize, concurrent); err != nil {
 		return fmt.Errorf("failed to generate problem document files: %s", err.Error())
 	}
 	return nil
 }
 
-func (g *ProblemDocumentGenerator) Run(chunkSize int, concurrency int) error {
+func (g *ProblemDocumentGenerator) Run(chunkSize int, concurrent int) error {
 	if err := g.Clean(); err != nil {
 		return err
 	}
 
-	if err := g.Generate(chunkSize, concurrency); err != nil {
+	if err := g.Generate(chunkSize, concurrent); err != nil {
 		return err
 	}
 	return nil

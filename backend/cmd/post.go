@@ -39,7 +39,11 @@ var postProblemCmd = &cobra.Command{
 		if err != nil {
 			log.Fatalf("failed to get value of `optimize` flag: %s", err.Error())
 		}
-		if err := uploader.PostDocument(optimize, 1); err != nil {
+		concurrent, err := cmd.Flags().GetInt("concurrent")
+		if err != nil {
+			log.Fatalf("failed to get value of `concurrent` flag: %s", err.Error())
+		}
+		if err := uploader.PostDocument(optimize, concurrent); err != nil {
 			log.Fatal(err.Error())
 		}
 	},
@@ -48,6 +52,7 @@ var postProblemCmd = &cobra.Command{
 func init() {
 	postCmd.PersistentFlags().BoolP("optimize", "o", false, "When true, send optimize request to Solr")
 	postCmd.PersistentFlags().String("save-dir", "", "Directory path at which generated documents will be saved")
+	postCmd.PersistentFlags().Int("concurrent", 3, "Concurrent number of document upload processes")
 	postCmd.AddCommand(postProblemCmd)
 	rootCmd.AddCommand(postCmd)
 }

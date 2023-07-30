@@ -66,18 +66,18 @@ var updateProblemCmd = &cobra.Command{
 		if err != nil {
 			log.Fatalf("failed to get flag `--chunk-size`: %s", err.Error())
 		}
-		generateConcurrency, err := cmd.Flags().GetInt("generate-concurrency")
+		generateConcurrency, err := cmd.Flags().GetInt("generate-concurrent")
 		if err != nil {
-			log.Fatalf("failed to get flag `--generate-concurrency`: %s", err.Error())
+			log.Fatalf("failed to get flag `--generate-concurrent`: %s", err.Error())
 		}
 
 		if err := generator.Run(chunkSize, generateConcurrency); err != nil {
 			log.Fatalf("failed to generate document: %s", err.Error())
 		}
 
-		postConcurrency, err := cmd.Flags().GetInt("post-concurrency")
+		postConcurrency, err := cmd.Flags().GetInt("post-concurrent")
 		if err != nil {
-			log.Fatalf("failed to get flag `--post-concurrency`: %s", err.Error())
+			log.Fatalf("failed to get flag `--post-concurrent`: %s", err.Error())
 		}
 
 		solrURL := os.Getenv("SOLR_HOST")
@@ -105,8 +105,8 @@ func init() {
 	updateCmd.PersistentFlags().BoolP("skip-fetch", "f", false, "Skip crawling if true.")
 	updateCmd.PersistentFlags().BoolP("optimize", "o", false, "Optimize index if true.")
 	updateCmd.PersistentFlags().Int("chunk-size", 1000, "Number of documents to write in 1 file.")
-	updateCmd.PersistentFlags().Int("generate-concurrency", 6, "Concurrency of generating documents.")
-	updateCmd.PersistentFlags().Int("post-concurrency", 4, "Concurrency of uploading documents.")
+	updateCmd.PersistentFlags().Int("generate-concurrent", 6, "Number of concurrent document generation processes")
+	updateCmd.PersistentFlags().Int("post-concurrent", 4, "Number of concurrent document upload processes")
 
 	updateProblemCmd.Flags().Int("duration", 1000, "Duration[ms] in crawling problem")
 	updateProblemCmd.Flags().BoolP("all", "a", false, "Crawl all problems if true.")

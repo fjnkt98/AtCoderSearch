@@ -140,7 +140,7 @@ loop:
 	return nil
 }
 
-func GenerateDocument(reader RowReader, saveDir string, chunkSize int, concurrency int) error {
+func GenerateDocument(reader RowReader, saveDir string, chunkSize int, concurrent int) error {
 	rowChannel := make(chan ToDocument, chunkSize)
 	docChannel := make(chan any, chunkSize)
 
@@ -154,7 +154,7 @@ func GenerateDocument(reader RowReader, saveDir string, chunkSize int, concurren
 	})
 	eg.Go(func() error { return reader.ReadRows(ctx, rowChannel) })
 	eg.Go(func() error { return SaveDocument(ctx, docChannel, saveDir, chunkSize) })
-	for i := 0; i < concurrency; i++ {
+	for i := 0; i < concurrent; i++ {
 		wg.Add(1)
 		eg.Go(func() error {
 			defer wg.Done()

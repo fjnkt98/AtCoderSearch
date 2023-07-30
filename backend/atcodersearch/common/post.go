@@ -27,7 +27,7 @@ func NewDefaultDocumentUploader(core solr.SolrCore[any, any], saveDir string) De
 	}
 }
 
-func (u *DefaultDocumentUploader) PostDocument(optimize bool, concurrency int) error {
+func (u *DefaultDocumentUploader) PostDocument(optimize bool, concurrent int) error {
 	log.Printf("Start to post documents in `%s`", u.saveDir)
 	paths, err := filepath.Glob(filepath.Join(u.saveDir, "doc-*.json"))
 	if err != nil {
@@ -37,7 +37,7 @@ func (u *DefaultDocumentUploader) PostDocument(optimize bool, concurrency int) e
 	ch := make(chan string, len(paths))
 
 	eg, ctx := errgroup.WithContext(context.Background())
-	for i := 0; i < concurrency; i++ {
+	for i := 0; i < concurrent; i++ {
 		eg.Go(func() error {
 		loop:
 			for {

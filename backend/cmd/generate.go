@@ -24,7 +24,11 @@ var generateProblemCmd = &cobra.Command{
 		}
 
 		generator := problem.NewProblemDocumentGenerator(GetDB(), saveDir)
-		if err := generator.Run(1000, 10); err != nil {
+		concurrent, err := cmd.Flags().GetInt("concurrent")
+		if err != nil {
+			log.Fatalf("failed to get value of `concurrent` flag: %s", err.Error())
+		}
+		if err := generator.Run(1000, concurrent); err != nil {
 			log.Fatal(err.Error())
 		}
 	},
@@ -44,6 +48,8 @@ var generateProblemCmd = &cobra.Command{
 
 func init() {
 	generateCmd.PersistentFlags().String("save-dir", "", "Directory path at which generated documents will be saved")
+	generateCmd.PersistentFlags().Int("concurrent", 10, "Concurrent number of document generation processes")
 	generateCmd.AddCommand(generateProblemCmd)
+
 	rootCmd.AddCommand(generateCmd)
 }
