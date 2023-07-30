@@ -276,3 +276,21 @@ func search(core *solr.SolrCore[Response, FacetCounts], params SearchParams) (in
 
 	return http.StatusOK, result
 }
+
+func (s *Searcher) Liveness() (bool, error) {
+	ping, err := s.core.Ping()
+	if err != nil {
+		return false, err
+	}
+
+	return ping.Status == "OK", nil
+}
+
+func (s *Searcher) Readiness() (bool, error) {
+	status, err := s.core.Status()
+	if err != nil {
+		return false, err
+	}
+
+	return status.Index.NumDocs != 0, nil
+}
