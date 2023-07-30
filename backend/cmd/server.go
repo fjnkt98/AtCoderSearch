@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fjnkt98/atcodersearch/atcodersearch/problem"
+	"fjnkt98/atcodersearch/atcodersearch/user"
 	"fmt"
 	"log"
 	"net/http"
@@ -37,8 +38,33 @@ var serverCmd = &cobra.Command{
 			log.Fatalf("failed to instantiate problem searcher: %s", err.Error())
 		}
 
+		// User searcher configuration
+		userCoreName := os.Getenv("USER_CORE_NAME")
+		if userCoreName == "" {
+			log.Fatalln("USER_CORE_NAME must be set.")
+		}
+		userSearcher, err := user.NewSearcher(solrBaseURL.String(), userCoreName)
+		if err != nil {
+			log.Fatalf("failed to instantiate user searcher: %s", err.Error())
+		}
+
 		// API handler registration
 		http.HandleFunc("/api/search/problem", problemSearcher.HandleSearch)
+		http.HandleFunc("/api/search/user", userSearcher.HandleSearch)
+		http.HandleFunc("/api/liveness", func(w http.ResponseWriter, r *http.Request) {
+			if problemSearcher.Liveness() && userSearcher.Liveness() {
+				w.WriteHeader(http.StatusOK)
+			} else {
+				w.WriteHeader(http.StatusInternalServerError)
+			}
+		})
+		http.HandleFunc("/api/readiness", func(w http.ResponseWriter, r *http.Request) {
+			if problemSearcher.Readiness() && userSearcher.Readiness() {
+				w.WriteHeader(http.StatusOK)
+			} else {
+				w.WriteHeader(http.StatusInternalServerError)
+			}
+		})
 
 		// Launch server
 		port := os.Getenv("API_SERVER_LISTEN_PORT")
