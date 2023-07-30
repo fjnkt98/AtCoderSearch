@@ -246,9 +246,8 @@ func searchProblem(core *solr.SolrCore[ProblemResponse, FacetCounts], params Pro
 	query := params.ToQuery()
 	res, err := core.Select(query)
 	if err != nil {
-		msg := fmt.Sprintf("ERROR: failed to request to solr with %+v, from %+v: %s", query, params, err.Error())
-		log.Println(msg)
-		return 500, NewErrorResponse(msg, params)
+		log.Printf("ERROR: failed to request to solr with %+v, from %+v: %s", query, params, err.Error())
+		return 500, NewErrorResponse("internal error", params)
 	}
 
 	rows, _ := strconv.Atoi(query.Get("rows"))
