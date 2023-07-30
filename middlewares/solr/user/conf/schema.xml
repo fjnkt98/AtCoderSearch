@@ -41,6 +41,7 @@
   <field name="crown" type="String" indexed="true" stored="true" required="false" multiValued="false" docValues="true" />
   <field name="join_count" type="i32" indexed="true" stored="true" required="false" multiValued="false" docValues="true" />
   <field name="rank" type="i32" indexed="true" stored="true" required="false" multiValued="false" docValues="true" />
+  <field name="active_rank" type="i32" indexed="true" stored="true" required="false" multiValued="false" docValues="true" />
   <field name="wins" type="i32" indexed="true" stored="true" required="false" multiValued="false" docValues="true" />
 
   <!-- facet -->
@@ -48,4 +49,12 @@
   <field name="highest_color" type="String" indexed="true" stored="true" required="false" multiValued="false" docValues="true" />
   <field name="period" type="String" indexed="true" stored="true" required="false" multiValued="false" docValues="true" />
   <field name="join_count_grade" type="String" indexed="true" stored="true" required="false" multiValued="false" docValues="true" />
+
+  <field name="text_unigram" type="TextUniGram" indexed="true" stored="false" multiValued="true" />
+  <dynamicField name="*__text_unigram" type="TextUniGram" indexed="true" stored="false" multiValued="true" />
+
+  <copyField source="user_name" dest="user_name__text_unigram" />
+  <copyField source="user_name" dest="text_unigram" />
+  <copyField source="affiliation" dest="affiliation__text_unigram" />
+  <copyField source="affiliation" dest="text_unigram" />
 </schema>

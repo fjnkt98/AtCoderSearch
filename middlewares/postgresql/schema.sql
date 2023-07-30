@@ -45,6 +45,7 @@ CREATE TABLE "users" (
     "crown" text,
     "join_count" integer NOT NULL,
     "rank" integer NOT NULL,
+    "active_rank" integer,
     "wins" integer NOT NULL,
     "created_at" timestamp WITH time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     "updated_at" timestamp WITH time zone DEFAULT CURRENT_TIMESTAMP NOT NULL

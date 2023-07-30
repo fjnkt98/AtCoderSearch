@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fjnkt98/atcodersearch/atcodersearch/problem"
+	"fjnkt98/atcodersearch/atcodersearch/user"
 	"log"
 
 	"github.com/spf13/cobra"
@@ -44,10 +45,29 @@ var crawlProblemCmd = &cobra.Command{
 	},
 }
 
+var crawlUserCmd = &cobra.Command{
+	Use:   "user",
+	Short: "Crawl and save user information",
+	Long:  "Crawl and save user information",
+	Run: func(cmd *cobra.Command, args []string) {
+		db := GetDB()
+		crawler := user.NewUserCrawler(db)
+		duration, err := cmd.Flags().GetInt("duration")
+		if err != nil {
+			log.Fatalf("failed to get value of `duration` flag: %s", err.Error())
+		}
+
+		if err := crawler.Run(duration); err != nil {
+			log.Fatalf("failed to save contest information: %s", err.Error())
+		}
+	},
+}
+
 func init() {
 	crawlProblemCmd.Flags().BoolP("all", "a", false, "When true, crawl all problems")
-	crawlProblemCmd.Flags().Int("duration", 1000, "Duration[ms] in crawling problem")
+	crawlCmd.PersistentFlags().Int("duration", 1000, "Duration[ms] in crawling problem")
 
 	crawlCmd.AddCommand(crawlProblemCmd)
+	crawlCmd.AddCommand(crawlUserCmd)
 	rootCmd.AddCommand(crawlCmd)
 }
