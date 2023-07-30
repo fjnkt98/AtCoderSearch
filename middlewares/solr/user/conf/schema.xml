@@ -32,7 +32,7 @@
   <field name="null" type="Null" indexed="false" stored="false" />
 
   <uniqueKey>user_name</uniqueKey>
-  <field name="user_name" type="TextUniGram" indexed="true" stored="true" required="true" multiValued="false" docValues="false" />
+  <field name="user_name" type="String" indexed="true" stored="true" required="true" multiValued="false" docValues="false" />
   <field name="rating" type="i32" indexed="true" stored="true" required="true" multiValued="false" docValues="true" />
   <field name="highest_rating" type="i32" indexed="true" stored="true" required="false" multiValued="false" docValues="true" />
   <field name="affiliation" type="String" indexed="true" stored="true" required="false" multiValued="false" docValues="true" />
