@@ -7,8 +7,8 @@ import (
 
 type SolrResponseHeader struct {
 	ZkConnected map[string]any `json:"zkConnected"`
-	Status      uint32         `json:"status"`
-	QTime       uint32
+	Status      uint           `json:"status"`
+	QTime       uint
 	Params      map[string]any `json:"params"`
 }
 
@@ -20,7 +20,7 @@ type SolrPingResponse struct {
 type SolrErrorInfo struct {
 	Metadata []string `json:"metadata"`
 	Msg      string   `json:"msg"`
-	Code     uint32   `json:"code"`
+	Code     uint     `json:"code"`
 }
 
 type LuceneInfo struct {
@@ -89,19 +89,19 @@ type SolrSelectResponse[D any, F any] struct {
 }
 
 type SolrSelectBody[D any] struct {
-	NumFound      uint32 `json:"numFound"`
-	Start         uint32 `json:"start"`
-	NumFoundExact bool   `json:"numFoundExact"`
-	Docs          []D    `json:"docs"`
+	NumFound      uint `json:"numFound"`
+	Start         uint `json:"start"`
+	NumFoundExact bool `json:"numFoundExact"`
+	Docs          []D  `json:"docs"`
 }
 
 type BucketElement interface {
-	int | int32 | int64 | uint32 | uint64 | float32 | float64 | time.Time | string
+	int | int32 | int64 | uint | uint64 | float32 | float64 | time.Time | string
 }
 
 type Bucket[T BucketElement] struct {
-	Val   T      `json:"val"`
-	Count uint32 `json:"count"`
+	Val   T    `json:"val"`
+	Count uint `json:"count"`
 }
 
 type SolrTermFacetCount struct {
@@ -116,7 +116,7 @@ type SolrRangeFacetCount[T BucketElement] struct {
 }
 
 type SolrRangeFacetCountInfo struct {
-	Count uint32 `json:"count"`
+	Count uint `json:"count"`
 }
 
 type SolrQueryFacetCount struct {
