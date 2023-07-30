@@ -23,7 +23,7 @@ var validate = validator.New()
 var decoder = schema.NewDecoder()
 var lister = common.NewFieldLister()
 
-type ProblemSearchParams struct {
+type SearchParams struct {
 	Keyword string        `validate:"lte=200" json:"keyword,omitempty"`
 	Limit   uint          `validate:"lte=200" json:"limit,omitempty"`
 	Page    uint          `json:"page,omitempty"`
@@ -32,10 +32,10 @@ type ProblemSearchParams struct {
 	Facet   []string      `validate:"dive,oneof=category color" json:"facet,omitempty"`
 }
 
-func (p *ProblemSearchParams) ToQuery() url.Values {
+func (p *SearchParams) ToQuery() url.Values {
 	return solr.NewEDisMaxQueryBuilder().
 		Facet(p.facet()).
-		Fl(lister.FieldList(ProblemResponse{})).
+		Fl(lister.FieldList(Response{})).
 		Fq(p.fq()).
 		Op("AND").
 		Q(solr.Sanitize(norm.NFKC.String(p.Keyword))).
@@ -47,14 +47,14 @@ func (p *ProblemSearchParams) ToQuery() url.Values {
 		Build()
 }
 
-func (p *ProblemSearchParams) rows() uint {
+func (p *SearchParams) rows() uint {
 	if p.Limit == 0 {
 		return 20
 	}
 	return p.Limit
 }
 
-func (p *ProblemSearchParams) start() uint {
+func (p *SearchParams) start() uint {
 	if p.Page == 0 {
 		return 0
 	}
@@ -62,7 +62,7 @@ func (p *ProblemSearchParams) start() uint {
 	return (p.Page - 1) / p.rows()
 }
 
-func (p *ProblemSearchParams) sort() string {
+func (p *SearchParams) sort() string {
 	if p.Sort == "" {
 		return "score desc"
 	}
@@ -73,7 +73,7 @@ func (p *ProblemSearchParams) sort() string {
 	}
 }
 
-func (p *ProblemSearchParams) facet() string {
+func (p *SearchParams) facet() string {
 	facets := make(map[string]any)
 
 	for _, f := range p.Facet {
@@ -98,7 +98,7 @@ func (p *ProblemSearchParams) facet() string {
 	return string(facet)
 }
 
-func (p *ProblemSearchParams) fq() []string {
+func (p *SearchParams) fq() []string {
 	if p.Filter == nil {
 		return make([]string, 0)
 	}
@@ -125,7 +125,7 @@ type FilterParams struct {
 	Difficulty common.RangeFilterParam `json:"difficulty,omitempty"`
 }
 
-type ProblemResponse struct {
+type Response struct {
 	ProblemID    string                `json:"problem_id" solr:"problem_id"`
 	ProblemTitle string                `json:"problem_title" solr:"problem_title"`
 	ProblemURL   string                `json:"problem_url" solr:"problem_url"`
@@ -179,31 +179,31 @@ func NewFacetResponse(facet FacetCounts) FacetResponse {
 	}
 }
 
-type ProblemSearcher struct {
-	core *solr.SolrCore[ProblemResponse, FacetCounts]
+type Searcher struct {
+	core *solr.SolrCore[Response, FacetCounts]
 }
 
-func NewProblemSearcher(baseURL string, coreName string) (ProblemSearcher, error) {
-	core, err := solr.NewSolrCore[ProblemResponse, FacetCounts](coreName, baseURL)
+func NewSearcher(baseURL string, coreName string) (Searcher, error) {
+	core, err := solr.NewSolrCore[Response, FacetCounts](coreName, baseURL)
 	if err != nil {
-		return ProblemSearcher{}, fmt.Errorf("failed to create problem searcher: %w", err)
+		return Searcher{}, fmt.Errorf("failed to create problem searcher: %w", err)
 	}
 
 	decoder.IgnoreUnknownKeys(true)
 	decoder.RegisterConverter([]string{}, func(input string) reflect.Value {
 		return reflect.ValueOf(strings.Split(input, ","))
 	})
-	searcher := ProblemSearcher{
+	searcher := Searcher{
 		core: &core,
 	}
 	return searcher, nil
 }
 
-func NewErrorResponse(msg string, params any) common.SearchResultResponse[ProblemResponse] {
-	return common.NewErrorResponse[ProblemResponse](msg, params)
+func NewErrorResponse(msg string, params any) common.SearchResultResponse[Response] {
+	return common.NewErrorResponse[Response](msg, params)
 }
 
-func (s *ProblemSearcher) HandleSearchProblem(w http.ResponseWriter, r *http.Request) {
+func (s *Searcher) HandleSearch(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
 		w.Header().Set("Content-Type", "application/json; charset=utf8")
@@ -217,7 +217,7 @@ func (s *ProblemSearcher) HandleSearchProblem(w http.ResponseWriter, r *http.Req
 			return
 		}
 
-		var params ProblemSearchParams
+		var params SearchParams
 		if err := decoder.Decode(&params, query); err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			log.Printf("ERROR: failed to decode request parameter `%s`: %s", r.URL.RawQuery, err.Error())
@@ -232,7 +232,7 @@ func (s *ProblemSearcher) HandleSearchProblem(w http.ResponseWriter, r *http.Req
 			return
 		}
 
-		code, res := searchProblem(s.core, params)
+		code, res := search(s.core, params)
 		w.WriteHeader(code)
 		encoder.Encode(res)
 	default:
@@ -240,7 +240,7 @@ func (s *ProblemSearcher) HandleSearchProblem(w http.ResponseWriter, r *http.Req
 	}
 }
 
-func searchProblem(core *solr.SolrCore[ProblemResponse, FacetCounts], params ProblemSearchParams) (int, common.SearchResultResponse[ProblemResponse]) {
+func search(core *solr.SolrCore[Response, FacetCounts], params SearchParams) (int, common.SearchResultResponse[Response]) {
 	startTime := time.Now()
 
 	query := params.ToQuery()
@@ -252,7 +252,7 @@ func searchProblem(core *solr.SolrCore[ProblemResponse, FacetCounts], params Pro
 
 	rows, _ := strconv.Atoi(query.Get("rows"))
 
-	result := common.SearchResultResponse[ProblemResponse]{
+	result := common.SearchResultResponse[Response]{
 		Stats: common.SearchResultStats{
 			Time:   uint(time.Since(startTime).Milliseconds()),
 			Total:  res.Response.NumFound,

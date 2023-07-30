@@ -33,7 +33,7 @@ func (r *Row) ToDocument() (any, error) {
 	statementJa, statementEn, err := extractor.Extract(strings.NewReader(r.HTML))
 	if err != nil {
 		log.Printf("failed to extract statement at problem `%s`: %s", r.ProblemID, err.Error())
-		return ProblemDocument{}, err
+		return Document{}, err
 	}
 
 	contestURL := fmt.Sprintf("https://atcoder.jp/contests/%s", r.ContestID)
@@ -46,7 +46,7 @@ func (r *Row) ToDocument() (any, error) {
 		color = common.RateToColor(*r.Difficulty)
 	}
 
-	return ProblemDocument{
+	return Document{
 		ProblemID:      r.ProblemID,
 		ProblemURL:     r.ProblemURL,
 		ProblemTitle:   r.ProblemTitle,
@@ -65,7 +65,7 @@ func (r *Row) ToDocument() (any, error) {
 	}, nil
 }
 
-type ProblemDocument struct {
+type Document struct {
 	ProblemID      string                `json:"problem_id"`
 	ProblemTitle   string                `json:"problem_title"`
 	ProblemURL     string                `json:"problem_url"`
@@ -83,11 +83,11 @@ type ProblemDocument struct {
 	StatementEn    []string              `json:"statement_en"`
 }
 
-type ProblemRowReader struct {
+type RowReader struct {
 	db *sqlx.DB
 }
 
-func (r *ProblemRowReader) ReadRows(ctx context.Context, tx chan<- common.ToDocument) error {
+func (r *RowReader) ReadRows(ctx context.Context, tx chan<- common.ToDocument) error {
 	rows, err := r.db.Queryx(`
 	SELECT
 		"problems"."problem_id" AS "problem_id",
@@ -132,33 +132,33 @@ func (r *ProblemRowReader) ReadRows(ctx context.Context, tx chan<- common.ToDocu
 	return nil
 }
 
-type ProblemDocumentGenerator struct {
+type DocumentGenerator struct {
 	saveDir string
-	reader  *ProblemRowReader
+	reader  *RowReader
 }
 
-func NewProblemDocumentGenerator(db *sqlx.DB, saveDir string) ProblemDocumentGenerator {
-	return ProblemDocumentGenerator{
+func NewDocumentGenerator(db *sqlx.DB, saveDir string) DocumentGenerator {
+	return DocumentGenerator{
 		saveDir: saveDir,
-		reader:  &ProblemRowReader{db: db},
+		reader:  &RowReader{db: db},
 	}
 }
 
-func (g *ProblemDocumentGenerator) Clean() error {
+func (g *DocumentGenerator) Clean() error {
 	if err := common.CleanDocument(g.saveDir); err != nil {
 		return fmt.Errorf("failed to delete problem document files in `%s`: %s", g.saveDir, err.Error())
 	}
 	return nil
 }
 
-func (g *ProblemDocumentGenerator) Generate(chunkSize int, concurrent int) error {
+func (g *DocumentGenerator) Generate(chunkSize int, concurrent int) error {
 	if err := common.GenerateDocument(g.reader, g.saveDir, chunkSize, concurrent); err != nil {
 		return fmt.Errorf("failed to generate problem document files: %s", err.Error())
 	}
 	return nil
 }
 
-func (g *ProblemDocumentGenerator) Run(chunkSize int, concurrent int) error {
+func (g *DocumentGenerator) Run(chunkSize int, concurrent int) error {
 	if err := g.Clean(); err != nil {
 		return err
 	}

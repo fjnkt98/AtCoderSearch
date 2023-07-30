@@ -31,12 +31,12 @@ var serverCmd = &cobra.Command{
 			log.Fatalln("PROBLEMS_CORE_NAME must be set.")
 		}
 
-		problemSearcher, err := problem.NewProblemSearcher(solrBaseURL.String(), problemCoreName)
+		problemSearcher, err := problem.NewSearcher(solrBaseURL.String(), problemCoreName)
 		if err != nil {
 			log.Fatalf("failed to instantiate problems searcher: %s", err.Error())
 		}
 
-		http.HandleFunc("/api/search/problem", problemSearcher.HandleSearchProblem)
+		http.HandleFunc("/api/search/problem", problemSearcher.HandleSearch)
 
 		port := os.Getenv("API_SERVER_LISTEN_PORT")
 		if port == "" {

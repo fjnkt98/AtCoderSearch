@@ -23,7 +23,7 @@ var generateProblemCmd = &cobra.Command{
 			log.Fatal(err.Error())
 		}
 
-		generator := problem.NewProblemDocumentGenerator(GetDB(), saveDir)
+		generator := problem.NewDocumentGenerator(GetDB(), saveDir)
 		concurrent, err := cmd.Flags().GetInt("concurrent")
 		if err != nil {
 			log.Fatalf("failed to get value of `concurrent` flag: %s", err.Error())

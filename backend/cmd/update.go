@@ -61,7 +61,7 @@ var updateProblemCmd = &cobra.Command{
 			}
 		}
 
-		generator := problem.NewProblemDocumentGenerator(db, saveDir)
+		generator := problem.NewDocumentGenerator(db, saveDir)
 		chunkSize, err := cmd.Flags().GetInt("chunk-size")
 		if err != nil {
 			log.Fatalf("failed to get flag `--chunk-size`: %s", err.Error())
