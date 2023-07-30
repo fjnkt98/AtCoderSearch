@@ -16,6 +16,7 @@ var serverCmd = &cobra.Command{
 	Short: "Launch API server",
 	Long:  "Launch API server",
 	Run: func(cmd *cobra.Command, args []string) {
+		// Solr common configuration
 		solrHost := os.Getenv("SOLR_HOST")
 		if solrHost == "" {
 			log.Fatalln("SOLR_HOST must be set.")
@@ -26,18 +27,20 @@ var serverCmd = &cobra.Command{
 		}
 		solrBaseURL := url.URL{Scheme: parsedSolrURL.Scheme, Host: parsedSolrURL.Host}
 
+		// Problem searcher configuration
 		problemCoreName := os.Getenv("PROBLEMS_CORE_NAME")
 		if problemCoreName == "" {
 			log.Fatalln("PROBLEMS_CORE_NAME must be set.")
 		}
-
 		problemSearcher, err := problem.NewSearcher(solrBaseURL.String(), problemCoreName)
 		if err != nil {
 			log.Fatalf("failed to instantiate problems searcher: %s", err.Error())
 		}
 
+		// API handler registration
 		http.HandleFunc("/api/search/problem", problemSearcher.HandleSearch)
 
+		// Launch server
 		port := os.Getenv("API_SERVER_LISTEN_PORT")
 		if port == "" {
 			port = "8000"
