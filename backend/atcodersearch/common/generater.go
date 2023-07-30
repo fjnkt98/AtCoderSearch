@@ -13,12 +13,12 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-type ToDocument interface {
-	ToDocument() (any, error)
+type ToDocument[D any] interface {
+	ToDocument() (D, error)
 }
 
-type RowReader interface {
-	ReadRows(ctx context.Context, tx chan<- ToDocument) error
+type RowReader[R ToDocument[D], D any] interface {
+	ReadRows(ctx context.Context, tx chan<- R) error
 }
 
 type DocumentGenerator[D any] interface {
@@ -40,13 +40,13 @@ func CleanDocument(saveDir string) error {
 	for _, file := range files {
 		log.Printf("Delete existing file `%s`", file)
 		if err := os.Remove(file); err != nil {
-			return fmt.Errorf("failed to remove file `%s`: %s", file, err.Error())
+			return fmt.Errorf("failed to remove file `%s`: %w", file, err)
 		}
 	}
 	return nil
 }
 
-func ConvertDocument(ctx context.Context, rx <-chan ToDocument, tx chan<- any) error {
+func ConvertDocument[R ToDocument[D], D any](ctx context.Context, rx <-chan R, tx chan<- D) error {
 loop:
 	for {
 		select {
@@ -67,7 +67,7 @@ loop:
 
 			d, err := row.ToDocument()
 			if err != nil {
-				return fmt.Errorf("failed to convert from row into document: %s", err.Error())
+				return fmt.Errorf("failed to convert from row into document: %w", err)
 			}
 
 			tx <- d
@@ -83,12 +83,12 @@ func SaveDocument[D any](ctx context.Context, rx <-chan D, saveDir string, chunk
 	writeDocument := func(documents []any, filePath string) error {
 		file, err := os.Create(filePath)
 		if err != nil {
-			return fmt.Errorf("failed to open file `%s`: %s", filePath, err.Error())
+			return fmt.Errorf("failed to open file `%s`: %w", filePath, err)
 		}
 		defer file.Close()
 
 		if err := json.NewEncoder(file).Encode(buffer); err != nil {
-			return fmt.Errorf("failed to write into document file `%s`: %s", filePath, err.Error())
+			return fmt.Errorf("failed to write into document file `%s`: %w", filePath, err)
 		}
 		return nil
 	}
@@ -140,9 +140,9 @@ loop:
 	return nil
 }
 
-func GenerateDocument(reader RowReader, saveDir string, chunkSize int, concurrent int) error {
-	rowChannel := make(chan ToDocument, chunkSize)
-	docChannel := make(chan any, chunkSize)
+func GenerateDocument[R ToDocument[D], D any](reader RowReader[R, D], saveDir string, chunkSize int, concurrent int) error {
+	rowChannel := make(chan R, chunkSize)
+	docChannel := make(chan D, chunkSize)
 
 	eg, ctx := errgroup.WithContext(context.Background())
 	var wg sync.WaitGroup
@@ -158,12 +158,12 @@ func GenerateDocument(reader RowReader, saveDir string, chunkSize int, concurren
 		wg.Add(1)
 		eg.Go(func() error {
 			defer wg.Done()
-			return ConvertDocument(ctx, rowChannel, docChannel)
+			return ConvertDocument[R, D](ctx, rowChannel, docChannel)
 		})
 	}
 
 	if err := eg.Wait(); err != nil {
-		return fmt.Errorf("failed to generate document: %s", err.Error())
+		return fmt.Errorf("failed to generate document: %w", err)
 	}
 
 	return nil

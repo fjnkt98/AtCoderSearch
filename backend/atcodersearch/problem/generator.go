@@ -29,11 +29,10 @@ type Row struct {
 	IsExperimental bool   `db:"is_experimental"`
 }
 
-func (r *Row) ToDocument() (any, error) {
+func (r *Row) ToDocument() (Document, error) {
 	statementJa, statementEn, err := extractor.Extract(strings.NewReader(r.HTML))
 	if err != nil {
-		log.Printf("failed to extract statement at problem `%s`: %s", r.ProblemID, err.Error())
-		return Document{}, err
+		return Document{}, fmt.Errorf("failed to extract statement at problem `%s`: %w", r.ProblemID, err)
 	}
 
 	contestURL := fmt.Sprintf("https://atcoder.jp/contests/%s", r.ContestID)
@@ -83,12 +82,12 @@ type Document struct {
 	StatementEn    []string              `json:"statement_en"`
 }
 
-type RowReader struct {
+type RowReader[R common.ToDocument[D], D any] struct {
 	db *sqlx.DB
 }
 
-func (r *RowReader) ReadRows(ctx context.Context, tx chan<- common.ToDocument) error {
-	rows, err := r.db.Queryx(`
+func (r *RowReader[R, D]) ReadRows(ctx context.Context, tx chan<- *Row) error {
+	sql := `
 	SELECT
 		"problems"."problem_id" AS "problem_id",
 		"problems"."title" AS "problem_title",
@@ -105,10 +104,11 @@ func (r *RowReader) ReadRows(ctx context.Context, tx chan<- common.ToDocument) e
 	FROM
 		"problems"
 		JOIN "contests" ON "problems"."contest_id" = "contests"."contest_id"
-		LEFT JOIN "difficulties" ON "problems"."problem_id" = "difficulties"."problem_id"`,
-	)
+		LEFT JOIN "difficulties" ON "problems"."problem_id" = "difficulties"."problem_id"
+	`
+	rows, err := r.db.Queryx(sql)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to read rows with %s:  %w", sql, err)
 	}
 	defer rows.Close()
 	defer close(tx)
@@ -122,8 +122,7 @@ func (r *RowReader) ReadRows(ctx context.Context, tx chan<- common.ToDocument) e
 			var row Row
 			err := rows.StructScan(&row)
 			if err != nil {
-				log.Printf("failed to scan row: %s", err.Error())
-				return err
+				return fmt.Errorf("failed to scan row: %w", err)
 			}
 			tx <- &row
 		}
@@ -134,26 +133,26 @@ func (r *RowReader) ReadRows(ctx context.Context, tx chan<- common.ToDocument) e
 
 type DocumentGenerator struct {
 	saveDir string
-	reader  *RowReader
+	reader  *RowReader[*Row, Document]
 }
 
 func NewDocumentGenerator(db *sqlx.DB, saveDir string) DocumentGenerator {
 	return DocumentGenerator{
 		saveDir: saveDir,
-		reader:  &RowReader{db: db},
+		reader:  &RowReader[*Row, Document]{db: db},
 	}
 }
 
 func (g *DocumentGenerator) Clean() error {
 	if err := common.CleanDocument(g.saveDir); err != nil {
-		return fmt.Errorf("failed to delete problem document files in `%s`: %s", g.saveDir, err.Error())
+		return fmt.Errorf("failed to delete problem document files in `%s`: %w", g.saveDir, err)
 	}
 	return nil
 }
 
 func (g *DocumentGenerator) Generate(chunkSize int, concurrent int) error {
-	if err := common.GenerateDocument(g.reader, g.saveDir, chunkSize, concurrent); err != nil {
-		return fmt.Errorf("failed to generate problem document files: %s", err.Error())
+	if err := common.GenerateDocument[*Row, Document](g.reader, g.saveDir, chunkSize, concurrent); err != nil {
+		return fmt.Errorf("failed to generate problem document files: %w", err)
 	}
 	return nil
 }
