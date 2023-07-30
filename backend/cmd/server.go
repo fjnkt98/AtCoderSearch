@@ -28,13 +28,13 @@ var serverCmd = &cobra.Command{
 		solrBaseURL := url.URL{Scheme: parsedSolrURL.Scheme, Host: parsedSolrURL.Host}
 
 		// Problem searcher configuration
-		problemCoreName := os.Getenv("PROBLEMS_CORE_NAME")
+		problemCoreName := os.Getenv("PROBLEM_CORE_NAME")
 		if problemCoreName == "" {
-			log.Fatalln("PROBLEMS_CORE_NAME must be set.")
+			log.Fatalln("PROBLEM_CORE_NAME must be set.")
 		}
 		problemSearcher, err := problem.NewSearcher(solrBaseURL.String(), problemCoreName)
 		if err != nil {
-			log.Fatalf("failed to instantiate problems searcher: %s", err.Error())
+			log.Fatalf("failed to instantiate problem searcher: %s", err.Error())
 		}
 
 		// API handler registration
