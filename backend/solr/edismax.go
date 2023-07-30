@@ -29,6 +29,9 @@ func (b *EDisMaxQueryBuilder) Build() url.Values {
 }
 
 func (b *EDisMaxQueryBuilder) Sort(sort string) *EDisMaxQueryBuilder {
+	if sort == "" {
+		return b
+	}
 	b.inner.Set("sort", sort)
 	return b
 }
@@ -50,6 +53,9 @@ func (b *EDisMaxQueryBuilder) Fq(fq []string) *EDisMaxQueryBuilder {
 	return b
 }
 func (b *EDisMaxQueryBuilder) Fl(fl string) *EDisMaxQueryBuilder {
+	if fl == "" {
+		return b
+	}
 	b.inner.Set("fl", fl)
 	return b
 }
@@ -61,31 +67,49 @@ func (b *EDisMaxQueryBuilder) Debug() *EDisMaxQueryBuilder {
 }
 
 func (b *EDisMaxQueryBuilder) Wt(wt string) *EDisMaxQueryBuilder {
+	if wt == "" {
+		return b
+	}
 	b.inner.Set("wt", wt)
 	return b
 }
 
 func (b *EDisMaxQueryBuilder) Facet(facet string) *EDisMaxQueryBuilder {
+	if facet == "" {
+		return b
+	}
 	b.inner.Set("json.facet", facet)
 	return b
 }
 
 func (b *EDisMaxQueryBuilder) Op(op string) *EDisMaxQueryBuilder {
+	if op == "" {
+		return b
+	}
 	b.inner.Set("q.op", op)
 	return b
 }
 
 func (b *EDisMaxQueryBuilder) Df(df string) *EDisMaxQueryBuilder {
+	if df == "" {
+		return b
+	}
 	b.inner.Set("df", df)
 	return b
 }
 
 func (b *EDisMaxQueryBuilder) Q(q string) *EDisMaxQueryBuilder {
+	if q == "" {
+		return b
+	}
 	b.inner.Set("q", q)
 	return b
 }
 
 func (b *EDisMaxQueryBuilder) Qf(qf string) *EDisMaxQueryBuilder {
+	if qf == "" {
+		return b
+	}
 	b.inner.Set("qf", qf)
 	return b
 }
@@ -96,16 +120,25 @@ func (b *EDisMaxQueryBuilder) Qs(qs uint) *EDisMaxQueryBuilder {
 }
 
 func (b *EDisMaxQueryBuilder) Pf(pf string) *EDisMaxQueryBuilder {
+	if pf == "" {
+		return b
+	}
 	b.inner.Set("pf", pf)
 	return b
 }
 
 func (b *EDisMaxQueryBuilder) Mm(mm string) *EDisMaxQueryBuilder {
+	if mm == "" {
+		return b
+	}
 	b.inner.Set("mm", mm)
 	return b
 }
 
 func (b *EDisMaxQueryBuilder) QAlt(q string) *EDisMaxQueryBuilder {
+	if q == "" {
+		return b
+	}
 	b.inner.Set("q.alt", q)
 	return b
 }
@@ -155,6 +188,9 @@ func (b *EDisMaxQueryBuilder) LowerCaseOperators(flag bool) *EDisMaxQueryBuilder
 }
 
 func (b *EDisMaxQueryBuilder) Pf2(pf2 string) *EDisMaxQueryBuilder {
+	if pf2 == "" {
+		return b
+	}
 	b.inner.Set("pf2", pf2)
 	return b
 }
@@ -165,6 +201,9 @@ func (b *EDisMaxQueryBuilder) Ps2(ps2 uint) *EDisMaxQueryBuilder {
 }
 
 func (b *EDisMaxQueryBuilder) Pf3(pf3 string) *EDisMaxQueryBuilder {
+	if pf3 == "" {
+		return b
+	}
 	b.inner.Set("pf3", pf3)
 	return b
 }
@@ -184,6 +223,9 @@ func (b *EDisMaxQueryBuilder) StopWords(flag bool) *EDisMaxQueryBuilder {
 }
 
 func (b *EDisMaxQueryBuilder) Uf(uf string) *EDisMaxQueryBuilder {
+	if uf == "" {
+		return b
+	}
 	b.inner.Set("uf", uf)
 	return b
 }
