@@ -10,10 +10,9 @@ type SampleDocument struct {
 }
 
 func TestFieldList(t *testing.T) {
-	lister := NewFieldLister()
 	doc := SampleDocument{}
 
-	fieldList := lister.FieldList(doc)
+	fieldList := FieldList(doc)
 	expected := "id,name,grade,class"
 
 	if fieldList != expected {

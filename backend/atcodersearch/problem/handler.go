@@ -19,10 +19,6 @@ import (
 	"github.com/gorilla/schema"
 )
 
-var validate = validator.New()
-var decoder = schema.NewDecoder()
-var lister = common.NewFieldLister()
-
 type SearchParams struct {
 	Keyword string        `validate:"lte=200" json:"keyword,omitempty"`
 	Limit   uint          `validate:"lte=200" json:"limit,omitempty"`
@@ -35,10 +31,11 @@ type SearchParams struct {
 func (p *SearchParams) ToQuery() url.Values {
 	return solr.NewEDisMaxQueryBuilder().
 		Facet(p.facet()).
-		Fl(lister.FieldList(Response{})).
+		Fl(common.FieldList(Response{})).
 		Fq(p.fq()).
 		Op("AND").
 		Q(solr.Sanitize(norm.NFKC.String(p.Keyword))).
+		QAlt("*:*").
 		Qf("text_ja text_en text_reading").
 		Rows(p.rows()).
 		Sort(p.sort()).
@@ -180,7 +177,9 @@ func NewFacetResponse(facet FacetCounts) FacetResponse {
 }
 
 type Searcher struct {
-	core *solr.SolrCore[Response, FacetCounts]
+	core      *solr.SolrCore[Response, FacetCounts]
+	validator *validator.Validate
+	decoder   *schema.Decoder
 }
 
 func NewSearcher(baseURL string, coreName string) (Searcher, error) {
@@ -189,12 +188,17 @@ func NewSearcher(baseURL string, coreName string) (Searcher, error) {
 		return Searcher{}, fmt.Errorf("failed to create problem searcher: %w", err)
 	}
 
+	validator := validator.New()
+	decoder := schema.NewDecoder()
 	decoder.IgnoreUnknownKeys(true)
 	decoder.RegisterConverter([]string{}, func(input string) reflect.Value {
 		return reflect.ValueOf(strings.Split(input, ","))
 	})
+
 	searcher := Searcher{
-		core: &core,
+		core:      &core,
+		validator: validator,
+		decoder:   decoder,
 	}
 	return searcher, nil
 }
@@ -218,14 +222,14 @@ func (s *Searcher) HandleSearch(w http.ResponseWriter, r *http.Request) {
 		}
 
 		var params SearchParams
-		if err := decoder.Decode(&params, query); err != nil {
+		if err := s.decoder.Decode(&params, query); err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			log.Printf("ERROR: failed to decode request parameter `%s`: %s", r.URL.RawQuery, err.Error())
 			encoder.Encode(NewErrorResponse(fmt.Sprintf("failed to decode request parameter `%s`", r.URL.RawQuery), nil))
 			return
 		}
 
-		if err := validate.Struct(params); err != nil {
+		if err := s.validator.Struct(params); err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			log.Printf("ERROR: validation error: %+v, `%s`: %s", params, r.URL.RawQuery, err.Error())
 			encoder.Encode(NewErrorResponse(fmt.Sprintf("validation error: %+v, `%s`: %s", params, r.URL.RawQuery, err.Error()), nil))
