@@ -90,7 +90,7 @@ var crawlSubmissionCmd = &cobra.Command{
 		}
 
 		log.Println("Start to crawl submissions")
-		if err := crawler.Run(int64(duration)); err != nil {
+		if err := crawler.Run(int64(duration), 0); err != nil {
 			log.Fatalf("failed to save submissions: %s", err.Error())
 		}
 	},
