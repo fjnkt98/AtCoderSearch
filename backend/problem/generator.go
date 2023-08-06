@@ -2,7 +2,7 @@ package problem
 
 import (
 	"context"
-	"fjnkt98/atcodersearch/atcodersearch/common"
+	"fjnkt98/atcodersearch/acs"
 	"fjnkt98/atcodersearch/solr"
 	"fmt"
 	"log"
@@ -42,7 +42,7 @@ func (r *Row) ToDocument() (Document, error) {
 	if r.Difficulty == nil {
 		color = "black"
 	} else {
-		color = common.RateToColor(*r.Difficulty)
+		color = acs.RateToColor(*r.Difficulty)
 	}
 
 	return Document{
@@ -82,7 +82,7 @@ type Document struct {
 	StatementEn    []string              `json:"statement_en"`
 }
 
-type RowReader[R common.ToDocument[D], D any] struct {
+type RowReader[R acs.ToDocument[D], D any] struct {
 	db *sqlx.DB
 }
 
@@ -144,14 +144,14 @@ func NewDocumentGenerator(db *sqlx.DB, saveDir string) DocumentGenerator {
 }
 
 func (g *DocumentGenerator) Clean() error {
-	if err := common.CleanDocument(g.saveDir); err != nil {
+	if err := acs.CleanDocument(g.saveDir); err != nil {
 		return fmt.Errorf("failed to delete problem document files in `%s`: %w", g.saveDir, err)
 	}
 	return nil
 }
 
 func (g *DocumentGenerator) Generate(chunkSize int, concurrent int) error {
-	if err := common.GenerateDocument[*Row, Document](g.reader, g.saveDir, chunkSize, concurrent); err != nil {
+	if err := acs.GenerateDocument[*Row, Document](g.reader, g.saveDir, chunkSize, concurrent); err != nil {
 		return fmt.Errorf("failed to generate problem document files: %w", err)
 	}
 	return nil

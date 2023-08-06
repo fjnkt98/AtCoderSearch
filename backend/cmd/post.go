@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"fjnkt98/atcodersearch/atcodersearch/common"
+	"fjnkt98/atcodersearch/acs"
 	"fjnkt98/atcodersearch/solr"
 	"log"
 	"os"
@@ -34,7 +34,7 @@ var postProblemCmd = &cobra.Command{
 			log.Fatalf("failed to create `problem` core: %s", err.Error())
 		}
 
-		uploader := common.NewDefaultDocumentUploader(core, saveDir)
+		uploader := acs.NewDefaultDocumentUploader(core, saveDir)
 		optimize, err := cmd.Flags().GetBool("optimize")
 		if err != nil {
 			log.Fatalf("failed to get value of `optimize` flag: %s", err.Error())
@@ -68,7 +68,7 @@ var postUserCmd = &cobra.Command{
 			log.Fatalf("failed to create `user` core: %s", err.Error())
 		}
 
-		uploader := common.NewDefaultDocumentUploader(core, saveDir)
+		uploader := acs.NewDefaultDocumentUploader(core, saveDir)
 		optimize, err := cmd.Flags().GetBool("optimize")
 		if err != nil {
 			log.Fatalf("failed to get value of `optimize` flag: %s", err.Error())

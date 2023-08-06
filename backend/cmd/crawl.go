@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"fjnkt98/atcodersearch/atcodersearch/problem"
-	"fjnkt98/atcodersearch/atcodersearch/user"
+	"fjnkt98/atcodersearch/problem"
+	"fjnkt98/atcodersearch/user"
 	"log"
 
 	"github.com/spf13/cobra"

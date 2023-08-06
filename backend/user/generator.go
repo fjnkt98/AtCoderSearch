@@ -2,7 +2,7 @@ package user
 
 import (
 	"context"
-	"fjnkt98/atcodersearch/atcodersearch/common"
+	"fjnkt98/atcodersearch/acs"
 	"fmt"
 	"log"
 
@@ -20,8 +20,8 @@ func grade(c uint) string {
 }
 
 func (u *User) ToDocument() (Document, error) {
-	color := common.RateToColor(u.Rating)
-	highestColor := common.RateToColor(u.HighestRating)
+	color := acs.RateToColor(u.Rating)
+	highestColor := acs.RateToColor(u.HighestRating)
 	var period string
 	if u.BirthYear != nil {
 		period = fmt.Sprintf("%d0's", *u.BirthYear/10)
@@ -64,7 +64,7 @@ type Document struct {
 	JoinCountGrade string  `json:"join_count_grade"`
 }
 
-type RowReader[R common.ToDocument[D], D any] struct {
+type RowReader[R acs.ToDocument[D], D any] struct {
 	db *sqlx.DB
 }
 
@@ -123,14 +123,14 @@ func NewDocumentGenerator(db *sqlx.DB, saveDir string) DocumentGenerator {
 }
 
 func (g *DocumentGenerator) Clean() error {
-	if err := common.CleanDocument(g.saveDir); err != nil {
+	if err := acs.CleanDocument(g.saveDir); err != nil {
 		return fmt.Errorf("failed to delete problem document files in `%s`: %w", g.saveDir, err)
 	}
 	return nil
 }
 
 func (g *DocumentGenerator) Generate(chunkSize int, concurrent int) error {
-	if err := common.GenerateDocument[*User, Document](g.reader, g.saveDir, chunkSize, concurrent); err != nil {
+	if err := acs.GenerateDocument[*User, Document](g.reader, g.saveDir, chunkSize, concurrent); err != nil {
 		return fmt.Errorf("failed to generate problem document files: %w", err)
 	}
 	return nil

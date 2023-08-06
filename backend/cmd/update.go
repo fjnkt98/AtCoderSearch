@@ -4,10 +4,10 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"fjnkt98/atcodersearch/atcodersearch/common"
-	"fjnkt98/atcodersearch/atcodersearch/problem"
-	"fjnkt98/atcodersearch/atcodersearch/user"
+	"fjnkt98/atcodersearch/acs"
+	"fjnkt98/atcodersearch/problem"
 	"fjnkt98/atcodersearch/solr"
+	"fjnkt98/atcodersearch/user"
 	"log"
 	"os"
 
@@ -90,7 +90,7 @@ var updateProblemCmd = &cobra.Command{
 			log.Fatalf("failed to create `problem` core: %s", err.Error())
 		}
 
-		uploader := common.NewDefaultDocumentUploader(core, saveDir)
+		uploader := acs.NewDefaultDocumentUploader(core, saveDir)
 		optimize, err := cmd.Flags().GetBool("optimize")
 		if err != nil {
 			log.Fatalf("failed to get value of `optimize` flag: %s", err.Error())
@@ -156,7 +156,7 @@ var updateUserCmd = &cobra.Command{
 			log.Fatalf("failed to create `user` core: %s", err.Error())
 		}
 
-		uploader := common.NewDefaultDocumentUploader(core, saveDir)
+		uploader := acs.NewDefaultDocumentUploader(core, saveDir)
 		optimize, err := cmd.Flags().GetBool("optimize")
 		if err != nil {
 			log.Fatalf("failed to get value of `optimize` flag: %s", err.Error())

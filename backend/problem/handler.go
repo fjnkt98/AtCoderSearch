@@ -1,8 +1,8 @@
-package user
+package problem
 
 import (
 	"encoding/json"
-	"fjnkt98/atcodersearch/atcodersearch/common"
+	"fjnkt98/atcodersearch/acs"
 	"fjnkt98/atcodersearch/solr"
 	"fmt"
 	"log"
@@ -24,19 +24,19 @@ type SearchParams struct {
 	Limit   uint          `validate:"lte=200" json:"limit,omitempty"`
 	Page    uint          `json:"page,omitempty"`
 	Filter  *FilterParams `json:"filter,omitempty"`
-	Sort    string        `validate:"omitempty,oneof=-score rating -rating birth_year -birth_year" json:"sort,omitempty"`
-	Facet   []string      `validate:"dive,oneof=color birth_year join_count country" json:"facet,omitempty"`
+	Sort    string        `validate:"omitempty,oneof=-score start_at -start_at difficulty -difficulty" json:"sort,omitempty"`
+	Facet   []string      `validate:"dive,oneof=category color" json:"facet,omitempty"`
 }
 
 func (p *SearchParams) ToQuery() url.Values {
 	return solr.NewEDisMaxQueryBuilder().
 		Facet(p.facet()).
-		Fl(common.FieldList(Response{})).
+		Fl(acs.FieldList(Response{})).
 		Fq(p.fq()).
 		Op("AND").
 		Q(solr.Sanitize(norm.NFKC.String(p.Keyword))).
 		QAlt("*:*").
-		Qf("text_unigram").
+		Qf("text_ja text_en text_reading").
 		Rows(p.rows()).
 		Sort(p.sort()).
 		Sow(true).
@@ -61,7 +61,7 @@ func (p *SearchParams) start() uint {
 
 func (p *SearchParams) sort() string {
 	if p.Sort == "" {
-		return "rating desc"
+		return "score desc"
 	}
 	if strings.HasPrefix(p.Sort, "-") {
 		return fmt.Sprintf("%s desc", p.Sort[1:])
@@ -70,22 +70,13 @@ func (p *SearchParams) sort() string {
 	}
 }
 
-var FACET_MAP = map[string]string{
-	"birth_year": "period",
-	"join_count": "join_count_grade",
-}
-
 func (p *SearchParams) facet() string {
 	facets := make(map[string]any)
 
 	for _, f := range p.Facet {
-		field, ok := FACET_MAP[f]
-		if !ok {
-			field = f
-		}
 		facets[f] = map[string]any{
 			"type":     "terms",
-			"field":    field,
+			"field":    f,
 			"limit":    -1,
 			"mincount": 0,
 			"sort":     "index",
@@ -111,57 +102,50 @@ func (p *SearchParams) fq() []string {
 
 	fq := make([]string, 0)
 
-	countries := make([]string, 0, len(p.Filter.Country))
-	for _, c := range p.Filter.Country {
+	categories := make([]string, 0, len(p.Filter.Category))
+	for _, c := range p.Filter.Category {
 		category := solr.Sanitize(c)
 		if c == "" {
 			continue
 		}
-		countries = append(countries, category)
+		categories = append(categories, category)
 	}
 
-	fq = append(fq, fmt.Sprintf("{!tag=country}country:(%s)", strings.Join(countries, " OR ")))
-	fq = append(fq, fmt.Sprintf("{!tag=rating}rating:%s", p.Filter.Rating.ToRange()))
-	fq = append(fq, fmt.Sprintf("{!tag=birth_year}birth_year:%s", p.Filter.BirthYear.ToRange()))
-	fq = append(fq, fmt.Sprintf("{!tag=join_count}join_count:%s", p.Filter.JoinCount.ToRange()))
+	fq = append(fq, fmt.Sprintf("{!tag=category}category:(%s)", strings.Join(categories, " OR ")))
+	fq = append(fq, fmt.Sprintf("{!tag=difficulty}difficulty:%s", p.Filter.Difficulty.ToRange()))
 
 	return fq
 }
 
 type FilterParams struct {
-	Rating    common.RangeFilterParam `json:"rating,omitempty"`
-	BirthYear common.RangeFilterParam `json:"birth_year,omitempty"`
-	JoinCount common.RangeFilterParam `json:"join_count,omitempty"`
-	Country   []string                `json:"country,omitempty"`
+	Category   []string             `json:"category,omitempty"`
+	Difficulty acs.RangeFilterParam `json:"difficulty,omitempty"`
 }
 
 type Response struct {
-	UserName      string  `json:"user_name" solr:"user_name"`
-	Rating        int     `json:"rating" solr:"rating"`
-	HighestRating int     `json:"highest_rating" solr:"highest_rating"`
-	Affiliation   *string `json:"affiliation" solr:"affiliation"`
-	BirthYear     *uint   `json:"birth_year" solr:"birth_year"`
-	Country       *string `json:"country" solr:"country"`
-	Crown         *string `json:"crown" solr:"crown"`
-	JoinCount     uint    `json:"join_count" solr:"join_count"`
-	Rank          uint    `json:"rank" solr:"rank"`
-	ActiveRank    *uint   `json:"active_rank" solr:"active_rank"`
-	Wins          uint    `json:"wins"  solr:"wins"`
-	Color         string  `json:"color" solr:"color"`
+	ProblemID    string                `json:"problem_id" solr:"problem_id"`
+	ProblemTitle string                `json:"problem_title" solr:"problem_title"`
+	ProblemURL   string                `json:"problem_url" solr:"problem_url"`
+	ContestID    string                `json:"contest_id" solr:"contest_id"`
+	ContestTitle string                `json:"contest_title" solr:"contest_title"`
+	ContestURL   string                `json:"contest_url" solr:"contest_url"`
+	Difficulty   *int                  `json:"difficulty" solr:"difficulty"`
+	Color        *string               `json:"color" solr:"color"`
+	StartAt      solr.FromSolrDateTime `json:"start_at" solr:"start_at"`
+	Duration     int                   `json:"duration" solr:"duration"`
+	RateChange   string                `json:"rate_change" solr:"rate_change"`
+	Category     string                `json:"category" solr:"category"`
 }
 
 type FacetCounts struct {
-	Color     solr.SolrTermFacetCount `json:"color"`
-	BirthYear solr.SolrTermFacetCount `json:"birth_year"`
-	JoinCount solr.SolrTermFacetCount `json:"join_count"`
-	Country   solr.SolrTermFacetCount `json:"country"`
+	// Count    uint                    `json:"count"`
+	Category solr.SolrTermFacetCount `json:"category"`
+	Color    solr.SolrTermFacetCount `json:"color"`
 }
 
 type FacetResponse struct {
-	Color     []FacetPart `json:"color,omitempty"`
-	BirthYear []FacetPart `json:"birth_year,omitempty"`
-	JoinCount []FacetPart `json:"join_count,omitempty"`
-	Country   []FacetPart `json:"country,omitempty"`
+	Category []FacetPart `json:"category"`
+	Color    []FacetPart `json:"color"`
 }
 
 type FacetPart struct {
@@ -170,6 +154,14 @@ type FacetPart struct {
 }
 
 func NewFacetResponse(facet FacetCounts) FacetResponse {
+	category := make([]FacetPart, len(facet.Category.Buckets))
+	for i, b := range facet.Category.Buckets {
+		category[i] = FacetPart{
+			Label: b.Val,
+			Count: b.Count,
+		}
+	}
+
 	color := make([]FacetPart, len(facet.Color.Buckets))
 	for i, b := range facet.Color.Buckets {
 		color[i] = FacetPart{
@@ -178,35 +170,9 @@ func NewFacetResponse(facet FacetCounts) FacetResponse {
 		}
 	}
 
-	birthYear := make([]FacetPart, len(facet.BirthYear.Buckets))
-	for i, b := range facet.BirthYear.Buckets {
-		birthYear[i] = FacetPart{
-			Label: b.Val,
-			Count: b.Count,
-		}
-	}
-
-	joinCount := make([]FacetPart, len(facet.JoinCount.Buckets))
-	for i, b := range facet.JoinCount.Buckets {
-		joinCount[i] = FacetPart{
-			Label: b.Val,
-			Count: b.Count,
-		}
-	}
-
-	country := make([]FacetPart, len(facet.Country.Buckets))
-	for i, b := range facet.Country.Buckets {
-		country[i] = FacetPart{
-			Label: b.Val,
-			Count: b.Count,
-		}
-	}
-
 	return FacetResponse{
-		Color:     color,
-		BirthYear: birthYear,
-		JoinCount: joinCount,
-		Country:   country,
+		Category: category,
+		Color:    color,
 	}
 }
 
@@ -219,7 +185,7 @@ type Searcher struct {
 func NewSearcher(baseURL string, coreName string) (Searcher, error) {
 	core, err := solr.NewSolrCore[Response, FacetCounts](coreName, baseURL)
 	if err != nil {
-		return Searcher{}, fmt.Errorf("failed to create user searcher: %w", err)
+		return Searcher{}, fmt.Errorf("failed to create problem searcher: %w", err)
 	}
 
 	validator := validator.New()
@@ -237,8 +203,8 @@ func NewSearcher(baseURL string, coreName string) (Searcher, error) {
 	return searcher, nil
 }
 
-func NewErrorResponse(msg string, params any) common.SearchResultResponse[Response] {
-	return common.NewErrorResponse[Response](msg, params)
+func NewErrorResponse(msg string, params any) acs.SearchResultResponse[Response] {
+	return acs.NewErrorResponse[Response](msg, params)
 }
 
 func (s *Searcher) HandleSearch(w http.ResponseWriter, r *http.Request) {
@@ -278,7 +244,7 @@ func (s *Searcher) HandleSearch(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func search(core *solr.SolrCore[Response, FacetCounts], params SearchParams) (int, common.SearchResultResponse[Response]) {
+func search(core *solr.SolrCore[Response, FacetCounts], params SearchParams) (int, acs.SearchResultResponse[Response]) {
 	startTime := time.Now()
 
 	query := params.ToQuery()
@@ -290,8 +256,8 @@ func search(core *solr.SolrCore[Response, FacetCounts], params SearchParams) (in
 
 	rows, _ := strconv.Atoi(query.Get("rows"))
 
-	result := common.SearchResultResponse[Response]{
-		Stats: common.SearchResultStats{
+	result := acs.SearchResultResponse[Response]{
+		Stats: acs.SearchResultStats{
 			Time:   uint(time.Since(startTime).Milliseconds()),
 			Total:  res.Response.NumFound,
 			Index:  (res.Response.Start / uint(rows)) + 1,
@@ -302,9 +268,9 @@ func search(core *solr.SolrCore[Response, FacetCounts], params SearchParams) (in
 		},
 		Items: res.Response.Docs,
 	}
-	querylog := common.QueryLog{
+	querylog := acs.QueryLog{
 		RequestAt: startTime,
-		Domain:    "user",
+		Domain:    "problem",
 		Time:      result.Stats.Time,
 		Hits:      res.Response.NumFound,
 		Params:    params,

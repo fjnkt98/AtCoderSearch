@@ -1,4 +1,4 @@
-package common
+package acs
 
 func RateToColor(rate int) string {
 	if rate < 0 {
