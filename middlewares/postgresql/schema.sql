@@ -96,3 +96,10 @@ CREATE TABLE "update_history" (
 CREATE INDEX "update_history_started_at_index" ON "update_history" ("started_at");
 
 CREATE INDEX "update_history_domain_index" ON "update_history" ("domain");
+
+CREATE TABLE "submission_crawl_history" (
+    "contest_id" text NOT NULL,
+    "start_at" timestamp WITH time zone NOT NULL
+);
+
+CREATE INDEX "submission_crawl_history_contest_id_start_at_index" ON "submission_crawl_history" ("contest_id", "start_at");
