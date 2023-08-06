@@ -82,3 +82,17 @@ CREATE TABLE "category_relationships" (
 CREATE INDEX "category_relationships_from_index" ON "category_relationships" ("from");
 
 CREATE INDEX "category_relationships_to_index" ON "category_relationships" ("to");
+
+CREATE TABLE "update_history" (
+    "id" bigserial NOT NULL,
+    "domain" text NOT NULL,
+    "started_at" timestamp WITH time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "finished_at" timestamp WITH time zone NOT NULL,
+    "status" text NOT NULL,
+    "options" json NOT NULL,
+    PRIMARY KEY ("id")
+);
+
+CREATE INDEX "update_history_started_at_index" ON "update_history" ("started_at");
+
+CREATE INDEX "update_history_domain_index" ON "update_history" ("domain");
