@@ -26,7 +26,10 @@ func (c *Crawler) getContestIDs() ([]string, error) {
 	SELECT
 		"contest_id"
 	FROM
-		"contests";
+		"contests"
+	WHERE
+		"category" IN ('ABC', 'ARC', 'AGC', 'ARC-Like', 'ABC-Like')
+		;
 	`)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get contests id from `contests` table: %w", err)
@@ -43,25 +46,6 @@ func (c *Crawler) getContestIDs() ([]string, error) {
 	}
 
 	return ids, nil
-}
-
-func (c *Crawler) getLatestEpoch(contestID string) (int64, error) {
-	row := c.db.QueryRow(`
-	SELECT
-		MAX(epoch_second)
-	FROM
-		submissions
-	WHERE
-		contest_id = $1
-	`,
-		contestID,
-	)
-	var latest int64
-	if err := row.Scan(&latest); err != nil {
-		return 0, fmt.Errorf("failed to scan row: %w", err)
-	}
-
-	return latest, nil
 }
 
 func (c *Crawler) crawl(contestID string, period int64, duration int64) error {
@@ -137,14 +121,13 @@ func (c *Crawler) save(submissions []atcoder.Submission) error {
 	return nil
 }
 
-func (c *Crawler) Run(duration int64) error {
+func (c *Crawler) Run(duration int64, period int64) error {
 	ids, err := c.getContestIDs()
 	if err != nil {
 		return err
 	}
 
 	for _, id := range ids {
-		period, err := c.getLatestEpoch(id)
 		if err != nil {
 			return fmt.Errorf("failed to get latest epoch second of the contest `%s`: %w", id, err)
 		}
