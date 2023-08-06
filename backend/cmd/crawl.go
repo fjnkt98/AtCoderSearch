@@ -1,9 +1,12 @@
 package cmd
 
 import (
+	"fjnkt98/atcodersearch/atcoder"
 	"fjnkt98/atcodersearch/problem"
+	"fjnkt98/atcodersearch/submission"
 	"fjnkt98/atcodersearch/user"
 	"log"
+	"os"
 
 	"github.com/spf13/cobra"
 )
@@ -58,7 +61,37 @@ var crawlUserCmd = &cobra.Command{
 		}
 
 		if err := crawler.Run(duration); err != nil {
-			log.Fatalf("failed to save contest information: %s", err.Error())
+			log.Fatalf("failed to save user information: %s", err.Error())
+		}
+	},
+}
+
+var crawlSubmissionCmd = &cobra.Command{
+	Use:   "submission",
+	Short: "Crawl and save submissions",
+	Long:  "Crawl and save submissions",
+	Run: func(cmd *cobra.Command, args []string) {
+		db := GetDB()
+
+		username := os.Getenv("ATCODER_USER_NAME")
+		password := os.Getenv("ATCODER_USER_PASSWORD")
+
+		log.Println("Login to AtCoder...")
+		client, err := atcoder.NewAtCoderClient(username, password)
+		if err != nil {
+			log.Fatalf("failed to login atcoder: %s", err.Error())
+		}
+		log.Println("Successfully logged in to AtCoder.")
+
+		crawler := submission.NewCrawler(client, db)
+		duration, err := cmd.Flags().GetInt("duration")
+		if err != nil {
+			log.Fatalf("failed to get value of `duration` flag: %s", err.Error())
+		}
+
+		log.Println("Start to crawl submissions")
+		if err := crawler.Run(int64(duration)); err != nil {
+			log.Fatalf("failed to save submissions: %s", err.Error())
 		}
 	},
 }
@@ -69,5 +102,6 @@ func init() {
 
 	crawlCmd.AddCommand(crawlProblemCmd)
 	crawlCmd.AddCommand(crawlUserCmd)
+	crawlCmd.AddCommand(crawlSubmissionCmd)
 	rootCmd.AddCommand(crawlCmd)
 }

@@ -112,6 +112,12 @@ func (c *AtCoderClient) FetchSubmissionList(contestID string, page uint) (Submis
 	if err != nil {
 		return SubmissionList{}, fmt.Errorf("failed to scrape submission list from html at page %d of the contest `%s`: %w", page, contestID, err)
 	}
+	submissions := make([]Submission, len(list.Submissions))
+	for i, s := range list.Submissions {
+		s.ContestID = contestID
+		submissions[i] = s
+	}
+	list.Submissions = submissions
 
 	return list, nil
 }
@@ -174,16 +180,17 @@ func scrapeSubmissions(html io.Reader) (SubmissionList, error) {
 				s.Length = uint64(length)
 			case 6:
 				s.Result = td.Text()
-			case 7:
-				t := td.Text()
-				t = strings.TrimSuffix(t, "ms")
-				t = strings.TrimSpace(t)
-				et, _ := strconv.ParseUint(t, 10, 64)
-				s.ExecutionTime = &et
-			case 9:
+			case 7, 9:
 				a := td.Find("td > a")
 				if href, ok := a.Attr("href"); ok {
 					s.ID, _ = strconv.ParseInt(path.Base(href), 10, 64)
+				} else {
+					t := td.Text()
+					t = strings.TrimSuffix(t, "ms")
+					t = strings.TrimSpace(t)
+					et, _ := strconv.ParseUint(t, 10, 64)
+					s.ExecutionTime = &et
+
 				}
 			}
 		})
