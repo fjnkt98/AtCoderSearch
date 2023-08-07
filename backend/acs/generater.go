@@ -10,7 +10,15 @@ import (
 	"sync"
 
 	_ "github.com/lib/pq"
+	"github.com/morikuni/failure"
 	"golang.org/x/sync/errgroup"
+)
+
+const (
+	FileOperationError failure.StringCode = "FileOperationError"
+	ConvertError       failure.StringCode = "ConvertError"
+	WriteError         failure.StringCode = "WriteError"
+	GenerateError      failure.StringCode = "GenerateError"
 )
 
 type ToDocument[D any] interface {
@@ -29,7 +37,7 @@ type DocumentGenerator[D any] interface {
 func CleanDocument(saveDir string) error {
 	files, err := filepath.Glob(filepath.Join(saveDir, "doc-*.json"))
 	if err != nil {
-		return err
+		return failure.Translate(err, FileOperationError, failure.Context{"directory": saveDir}, failure.Message("failed to glob the directory"))
 	}
 
 	if len(files) == 0 {
@@ -40,7 +48,7 @@ func CleanDocument(saveDir string) error {
 	for _, file := range files {
 		log.Printf("Delete existing file `%s`", file)
 		if err := os.Remove(file); err != nil {
-			return fmt.Errorf("failed to remove file `%s`: %w", file, err)
+			return failure.Translate(err, FileOperationError, failure.Context{"file": file}, failure.Message("failed to delete the file"))
 		}
 	}
 	return nil
@@ -67,7 +75,7 @@ loop:
 
 			d, err := row.ToDocument()
 			if err != nil {
-				return fmt.Errorf("failed to convert from row into document: %w", err)
+				return failure.Translate(err, ConvertError, failure.Message("failed to convert document"))
 			}
 
 			tx <- d
@@ -83,12 +91,12 @@ func SaveDocument[D any](ctx context.Context, rx <-chan D, saveDir string, chunk
 	writeDocument := func(documents []any, filePath string) error {
 		file, err := os.Create(filePath)
 		if err != nil {
-			return fmt.Errorf("failed to open file `%s`: %w", filePath, err)
+			return failure.Translate(err, FileOperationError, failure.Context{"file": filePath}, failure.Message("failed to open the file"))
 		}
 		defer file.Close()
 
 		if err := json.NewEncoder(file).Encode(buffer); err != nil {
-			return fmt.Errorf("failed to write into document file `%s`: %w", filePath, err)
+			return failure.Translate(err, FileOperationError, failure.Context{"file": filePath}, failure.Message("failed to write the file"))
 		}
 		return nil
 	}
@@ -118,7 +126,7 @@ loop:
 
 				log.Printf("Generate document file: %s", filePath)
 				if err := writeDocument(buffer, filePath); err != nil {
-					return err
+					return failure.Wrap(err)
 				}
 
 				buffer = buffer[:0]
@@ -131,7 +139,7 @@ loop:
 
 		log.Printf("Generate document file: %s", filePath)
 		if err := writeDocument(buffer, filePath); err != nil {
-			return err
+			return failure.Wrap(err)
 		}
 
 		buffer = buffer[:0]
@@ -163,7 +171,7 @@ func GenerateDocument[R ToDocument[D], D any](reader RowReader[R, D], saveDir st
 	}
 
 	if err := eg.Wait(); err != nil {
-		return fmt.Errorf("failed to generate document: %w", err)
+		return failure.Wrap(err)
 	}
 
 	return nil
