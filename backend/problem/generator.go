@@ -30,7 +30,7 @@ type Row struct {
 	IsExperimental bool   `db:"is_experimental"`
 }
 
-func (r *Row) ToDocument() (Document, error) {
+func (r Row) ToDocument() (Document, error) {
 	statementJa, statementEn, err := extractor.Extract(strings.NewReader(r.HTML))
 	if err != nil {
 		return Document{}, failure.Translate(err, ExtractError, failure.Context{"problemID": r.ProblemID}, failure.Message("failed to extract statement at problem `%s`"))
@@ -87,7 +87,7 @@ type RowReader[R acs.ToDocument[D], D any] struct {
 	db *sqlx.DB
 }
 
-func (r *RowReader[R, D]) ReadRows(ctx context.Context, tx chan<- *Row) error {
+func (r *RowReader[R, D]) ReadRows(ctx context.Context, tx chan<- Row) error {
 	sql := `
 	SELECT
 		"problems"."problem_id" AS "problem_id",
@@ -125,7 +125,7 @@ func (r *RowReader[R, D]) ReadRows(ctx context.Context, tx chan<- *Row) error {
 			if err != nil {
 				return failure.Translate(err, DBError, failure.Message("failed to scan row"))
 			}
-			tx <- &row
+			tx <- row
 		}
 	}
 
@@ -134,13 +134,13 @@ func (r *RowReader[R, D]) ReadRows(ctx context.Context, tx chan<- *Row) error {
 
 type DocumentGenerator struct {
 	saveDir string
-	reader  *RowReader[*Row, Document]
+	reader  *RowReader[Row, Document]
 }
 
 func NewDocumentGenerator(db *sqlx.DB, saveDir string) DocumentGenerator {
 	return DocumentGenerator{
 		saveDir: saveDir,
-		reader:  &RowReader[*Row, Document]{db: db},
+		reader:  &RowReader[Row, Document]{db: db},
 	}
 }
 
@@ -152,7 +152,7 @@ func (g *DocumentGenerator) Clean() error {
 }
 
 func (g *DocumentGenerator) Generate(chunkSize int, concurrent int) error {
-	if err := acs.GenerateDocument[*Row, Document](g.reader, g.saveDir, chunkSize, concurrent); err != nil {
+	if err := acs.GenerateDocument[Row, Document](g.reader, g.saveDir, chunkSize, concurrent); err != nil {
 		return failure.Wrap(err)
 	}
 	return nil

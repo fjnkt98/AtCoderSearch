@@ -20,7 +20,7 @@ func grade(c uint) string {
 	}
 }
 
-func (u *User) ToDocument() (Document, error) {
+func (u User) ToDocument() (Document, error) {
 	color := acs.RateToColor(u.Rating)
 	highestColor := acs.RateToColor(u.HighestRating)
 	var period string
@@ -69,7 +69,7 @@ type RowReader[R acs.ToDocument[D], D any] struct {
 	db *sqlx.DB
 }
 
-func (r *RowReader[R, D]) ReadRows(ctx context.Context, tx chan<- *User) error {
+func (r *RowReader[R, D]) ReadRows(ctx context.Context, tx chan<- User) error {
 	sql := `
 	SELECT
 		"user_name",
@@ -104,7 +104,7 @@ func (r *RowReader[R, D]) ReadRows(ctx context.Context, tx chan<- *User) error {
 			if err != nil {
 				return failure.Translate(err, DBError, failure.Message("failed to scan row"))
 			}
-			tx <- &row
+			tx <- row
 		}
 	}
 
@@ -113,13 +113,13 @@ func (r *RowReader[R, D]) ReadRows(ctx context.Context, tx chan<- *User) error {
 
 type DocumentGenerator struct {
 	saveDir string
-	reader  *RowReader[*User, Document]
+	reader  *RowReader[User, Document]
 }
 
 func NewDocumentGenerator(db *sqlx.DB, saveDir string) DocumentGenerator {
 	return DocumentGenerator{
 		saveDir: saveDir,
-		reader:  &RowReader[*User, Document]{db: db},
+		reader:  &RowReader[User, Document]{db: db},
 	}
 }
 
@@ -131,7 +131,7 @@ func (g *DocumentGenerator) Clean() error {
 }
 
 func (g *DocumentGenerator) Generate(chunkSize int, concurrent int) error {
-	if err := acs.GenerateDocument[*User, Document](g.reader, g.saveDir, chunkSize, concurrent); err != nil {
+	if err := acs.GenerateDocument[User, Document](g.reader, g.saveDir, chunkSize, concurrent); err != nil {
 		return failure.Wrap(err)
 	}
 	return nil
