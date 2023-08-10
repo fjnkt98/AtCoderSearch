@@ -8,4 +8,5 @@ const (
 	WriteError         failure.StringCode = "WriteError"
 	GenerateError      failure.StringCode = "GenerateError"
 	PostError          failure.StringCode = "PostError"
+	Interrupt          failure.StringCode = "Interrupt"
 )

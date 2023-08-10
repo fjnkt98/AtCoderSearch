@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/signal"
 	"path/filepath"
 	"sync"
 
@@ -141,6 +142,8 @@ loop:
 	return nil
 }
 
+type msg struct{}
+
 func GenerateDocument[R ToDocument[D], D any](reader RowReader[R, D], saveDir string, chunkSize int, concurrent int) error {
 	rowChannel := make(chan R, chunkSize)
 	docChannel := make(chan D, chunkSize)
@@ -148,9 +151,23 @@ func GenerateDocument[R ToDocument[D], D any](reader RowReader[R, D], saveDir st
 	eg, ctx := errgroup.WithContext(context.Background())
 	var wg sync.WaitGroup
 
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt)
+	finish := make(chan msg, 1)
+
+	eg.Go(func() error {
+		select {
+		case <-quit:
+			log.Print("generate interrupted")
+			return failure.New(Interrupt, failure.Message("generate interrupted"))
+		case <-finish:
+			return nil
+		}
+	})
 	eg.Go(func() error {
 		wg.Wait()
-		close(docChannel)
+		finish <- msg{}
+		defer close(docChannel)
 		return nil
 	})
 	eg.Go(func() error { return reader.ReadRows(ctx, rowChannel) })

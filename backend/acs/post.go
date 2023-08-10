@@ -5,7 +5,9 @@ import (
 	"fjnkt98/atcodersearch/solr"
 	"log"
 	"os"
+	"os/signal"
 	"path/filepath"
+	"sync"
 
 	"github.com/morikuni/failure"
 	"golang.org/x/sync/errgroup"
@@ -37,12 +39,50 @@ func (u *DefaultDocumentUploader) PostDocument(optimize bool, concurrent int) er
 	ch := make(chan string, len(paths))
 
 	eg, ctx := errgroup.WithContext(context.Background())
+	var wg sync.WaitGroup
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt)
+	finish := make(chan msg, 1)
+
+	eg.Go(func() error {
+		select {
+		case <-quit:
+			log.Print("post interrupted")
+			return failure.New(Interrupt, failure.Message("post interrupted"))
+		case <-finish:
+			return nil
+		}
+	})
+	eg.Go(func() error {
+		wg.Wait()
+		finish <- msg{}
+		return nil
+	})
+
+	f := func(p string) error {
+		file, err := os.Open(p)
+		if err != nil {
+			return failure.Translate(err, FileOperationError, failure.Messagef("failed to open file `%s`", p))
+		}
+		defer file.Close()
+		if _, err := u.core.Post(file, "application/json"); err != nil {
+			return failure.Translate(err, PostError, failure.Messagef("failed to open file `%s`", p))
+		}
+
+		return nil
+	}
+
 	for i := 0; i < concurrent; i++ {
+		wg.Add(1)
 		eg.Go(func() error {
+			defer wg.Done()
+
 		loop:
 			for {
 				select {
 				case <-ctx.Done():
+					log.Print("post canceled")
 					return nil
 				case path, ok := <-ch:
 					if !ok {
@@ -50,32 +90,31 @@ func (u *DefaultDocumentUploader) PostDocument(optimize bool, concurrent int) er
 					}
 					select {
 					case <-ctx.Done():
+						log.Print("post canceled")
 						return nil
 					default:
 					}
 
 					log.Printf("Post document `%s`", path)
-					file, err := os.Open(path)
-					if err != nil {
-						return failure.Translate(err, FileOperationError, failure.Messagef("failed to open file `%s`", path))
-					}
-
-					if _, err := u.core.Post(file, "application/json"); err != nil {
-						return failure.Translate(err, PostError, failure.Messagef("failed to open file `%s`", path))
+					if err := f(path); err != nil {
+						return failure.Wrap(err)
 					}
 				}
 			}
-
 			return nil
 		})
 	}
 
-	for _, path := range paths {
-		ch <- path
-	}
-	close(ch)
+	eg.Go(func() error {
+		for _, path := range paths {
+			ch <- path
+		}
+		close(ch)
+		return nil
+	})
 
 	if err := eg.Wait(); err != nil {
+		defer u.core.Rollback()
 		return failure.Wrap(err)
 	}
 
