@@ -3,11 +3,11 @@ package acs
 import (
 	"context"
 	"fjnkt98/atcodersearch/solr"
-	"fmt"
 	"log"
 	"os"
 	"path/filepath"
 
+	"github.com/morikuni/failure"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -31,7 +31,7 @@ func (u *DefaultDocumentUploader) PostDocument(optimize bool, concurrent int) er
 	log.Printf("Start to post documents in `%s`", u.saveDir)
 	paths, err := filepath.Glob(filepath.Join(u.saveDir, "doc-*.json"))
 	if err != nil {
-		return fmt.Errorf("failed to get document files at `%s`: %s", u.saveDir, err.Error())
+		return failure.Translate(err, PostError, failure.Messagef("failed to get document files at `%s`", u.saveDir))
 	}
 
 	ch := make(chan string, len(paths))
@@ -57,11 +57,11 @@ func (u *DefaultDocumentUploader) PostDocument(optimize bool, concurrent int) er
 					log.Printf("Post document `%s`", path)
 					file, err := os.Open(path)
 					if err != nil {
-						return fmt.Errorf("failed to open file `%s`: %s", path, err.Error())
+						return failure.Translate(err, FileOperationError, failure.Messagef("failed to open file `%s`", path))
 					}
 
 					if _, err := u.core.Post(file, "application/json"); err != nil {
-						return fmt.Errorf("failed to post file `%s`: %s", path, err.Error())
+						return failure.Translate(err, PostError, failure.Messagef("failed to open file `%s`", path))
 					}
 				}
 			}
@@ -76,16 +76,16 @@ func (u *DefaultDocumentUploader) PostDocument(optimize bool, concurrent int) er
 	close(ch)
 
 	if err := eg.Wait(); err != nil {
-		return fmt.Errorf("failed to post documents: %s", err.Error())
+		return failure.Wrap(err)
 	}
 
 	if optimize {
 		if _, err := u.core.Optimize(); err != nil {
-			return fmt.Errorf("failed to optimize index: %s", err.Error())
+			return failure.Translate(err, PostError, failure.Message("failed to optimize index"))
 		}
 	} else {
 		if _, err := u.core.Commit(); err != nil {
-			return fmt.Errorf("failed to commit index: %s", err.Error())
+			return failure.Translate(err, PostError, failure.Message("failed to commit index"))
 		}
 	}
 

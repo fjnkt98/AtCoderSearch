@@ -14,13 +14,6 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-const (
-	FileOperationError failure.StringCode = "FileOperationError"
-	ConvertError       failure.StringCode = "ConvertError"
-	WriteError         failure.StringCode = "WriteError"
-	GenerateError      failure.StringCode = "GenerateError"
-)
-
 type ToDocument[D any] interface {
 	ToDocument() (D, error)
 }
