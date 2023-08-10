@@ -14,6 +14,17 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/morikuni/failure"
+)
+
+const (
+	CookieInitializeError failure.StringCode = "CookieInitializeError"
+	LoginError            failure.StringCode = "LoginError"
+	InvalidURL            failure.StringCode = "InvalidURL"
+	RequestCreationError  failure.StringCode = "RequestCreationError"
+	RequestExecutionError failure.StringCode = "RequestExecutionError"
+	ScrapeError           failure.StringCode = "ScrapeError"
+	ReadError             failure.StringCode = "ReadError"
 )
 
 type AtCoderClient struct {
@@ -23,7 +34,7 @@ type AtCoderClient struct {
 func NewAtCoderClient(username string, password string) (AtCoderClient, error) {
 	jar, err := cookiejar.New(&cookiejar.Options{})
 	if err != nil {
-		return AtCoderClient{}, fmt.Errorf("failed to create cookie jar: %w", err)
+		return AtCoderClient{}, failure.Translate(err, CookieInitializeError, failure.Message("failed to create cookie jar"))
 	}
 
 	client := http.Client{
@@ -32,12 +43,12 @@ func NewAtCoderClient(username string, password string) (AtCoderClient, error) {
 
 	req, err := http.NewRequest(http.MethodGet, "https://atcoder.jp/login", nil)
 	if err != nil {
-		return AtCoderClient{}, fmt.Errorf("failed to create new request to get login csrf token: %w", err)
+		return AtCoderClient{}, failure.Translate(err, LoginError, failure.Context{"url": "https://atcoder.jp/login"}, failure.Message("failed to create new request to get login csrf token"))
 	}
 
 	res, err := client.Do(req)
 	if err != nil {
-		return AtCoderClient{}, fmt.Errorf("failed to request to get login csrf token: %w", err)
+		return AtCoderClient{}, failure.Translate(err, LoginError, failure.Context{"url": "https://atcoder.jp/login"}, failure.Message("failed to request to get login csrf token"))
 	}
 	defer res.Body.Close()
 	buf := new(bytes.Buffer)
@@ -53,13 +64,13 @@ func NewAtCoderClient(username string, password string) (AtCoderClient, error) {
 
 	req, err = http.NewRequest(http.MethodPost, "https://atcoder.jp/login", strings.NewReader(params.Encode()))
 	if err != nil {
-		return AtCoderClient{}, fmt.Errorf("failed to create new request to login to atcoder: %w", err)
+		return AtCoderClient{}, failure.Translate(err, LoginError, failure.Context{"url": "https://atcoder.jp/login"}, failure.Message("failed to create new request to login to atcoder"))
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	res, err = client.Do(req)
 	if err != nil || (res.StatusCode/100) != 2 {
-		return AtCoderClient{}, fmt.Errorf("login authentication to atcoder failed: %w", err)
+		return AtCoderClient{}, failure.Translate(err, LoginError, failure.Context{"url": "https://atcoder.jp/login"}, failure.Message("login authentication to atcoder failed"))
 	}
 
 	return AtCoderClient{client: client}, nil
@@ -80,22 +91,22 @@ func extractCSRFToken(body string) string {
 func (c *AtCoderClient) FetchSubmissionList(contestID string, page uint) (SubmissionList, error) {
 	p, err := url.JoinPath("https://atcoder.jp", "contests", contestID, "submissions")
 	if err != nil {
-		return SubmissionList{}, fmt.Errorf("invalid contestID `%s` was given: %w", contestID, err)
+		return SubmissionList{}, failure.Translate(err, InvalidURL, failure.Context{"contestID": contestID}, failure.Message("invalid contestID was given"))
 	}
 	u, err := url.Parse(p)
 	if err != nil {
-		return SubmissionList{}, fmt.Errorf("invalid contestID `%s` was given: %w", contestID, err)
+		return SubmissionList{}, failure.Translate(err, InvalidURL, failure.Context{"contestID": contestID}, failure.Message("invalid contestID was given"))
 	}
 	u.RawQuery = fmt.Sprintf("page=%d", page)
 
 	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
 	if err != nil {
-		return SubmissionList{}, fmt.Errorf("failed to create new request to get submissions html at page %d of the contest `%s`: %w", page, contestID, err)
+		return SubmissionList{}, failure.Translate(err, RequestCreationError, failure.Context{"url": u.String(), "page": strconv.Itoa(int(page)), "contestID": contestID}, failure.Message("failed to create new request to get submissions html"))
 	}
 
 	res, err := c.client.Do(req)
 	if err != nil {
-		return SubmissionList{}, fmt.Errorf("failed to get submissions html at page %d of the contest `%s`: %w", page, contestID, err)
+		return SubmissionList{}, failure.Translate(err, RequestExecutionError, failure.Context{"url": u.String(), "page": strconv.Itoa(int(page)), "contestID": contestID}, failure.Message("failed to get submissions html at page %d of the contest `%s`"))
 	}
 	if res.StatusCode == http.StatusNotFound {
 		return SubmissionList{
@@ -104,13 +115,13 @@ func (c *AtCoderClient) FetchSubmissionList(contestID string, page uint) (Submis
 		}, nil
 	}
 	if res.StatusCode != http.StatusOK {
-		return SubmissionList{}, fmt.Errorf("non-ok status returned at page %d of the contest `%s`: %w", page, contestID, err)
+		return SubmissionList{}, failure.Translate(err, RequestExecutionError, failure.Context{"url": u.String(), "page": strconv.Itoa(int(page)), "contestID": contestID}, failure.Message("non-ok status returned at page %d of the contest `%s`"))
 	}
 
 	defer res.Body.Close()
 	list, err := scrapeSubmissions(res.Body)
 	if err != nil {
-		return SubmissionList{}, fmt.Errorf("failed to scrape submission list from html at page %d of the contest `%s`: %w", page, contestID, err)
+		return SubmissionList{}, failure.Translate(err, ScrapeError, failure.Context{}, failure.Messagef("failed to scrape submission list from html at page %d of the contest `%s`", page, contestID))
 	}
 	submissions := make([]Submission, len(list.Submissions))
 	for i, s := range list.Submissions {
@@ -125,7 +136,7 @@ func (c *AtCoderClient) FetchSubmissionList(contestID string, page uint) (Submis
 func scrapeSubmissions(html io.Reader) (SubmissionList, error) {
 	doc, err := goquery.NewDocumentFromReader(html)
 	if err != nil {
-		return SubmissionList{}, fmt.Errorf("failed to read html from reader: %w", err)
+		return SubmissionList{}, failure.Translate(err, ReadError, failure.Message("failed to read html from reader"))
 	}
 
 	var maxPage uint
@@ -146,12 +157,8 @@ func scrapeSubmissions(html io.Reader) (SubmissionList, error) {
 		}
 	})
 
-	tbody := doc.Find("tbody")
-	if tbody == nil {
-		return SubmissionList{}, fmt.Errorf("failed to read html from reader: %w", err)
-	}
 	submissions := make([]Submission, 0)
-	tbody.Find("tr").Each(func(_ int, tr *goquery.Selection) {
+	doc.Find("tbody").Find("tr").Each(func(_ int, tr *goquery.Selection) {
 		var s Submission
 		tr.Find("td").Each(func(j int, td *goquery.Selection) {
 			switch j {

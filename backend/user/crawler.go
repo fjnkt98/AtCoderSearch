@@ -1,7 +1,6 @@
 package user
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"net/url"
@@ -9,6 +8,7 @@ import (
 	"time"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/morikuni/failure"
 )
 
 type UserCrawler struct {
@@ -35,18 +35,18 @@ func (c *UserCrawler) Crawl(index int) ([]User, error) {
 	log.Printf("Crawling active user ranking page %s", u.String())
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create request: %w", err)
+		return nil, failure.Translate(err, RequestCreationError, failure.Context{"url": u.String()}, failure.Message("failed to create request"))
 	}
 
 	res, err := c.client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("request failed: %w", err)
+		return nil, failure.Translate(err, RequestExecutionError, failure.Context{"url": u.String()}, failure.Message("request failed"))
 	}
 
 	defer res.Body.Close()
 	users, err := Scrape(res.Body)
 	if err != nil {
-		return nil, fmt.Errorf("failed to scrape active user information: %w", err)
+		return nil, failure.Translate(err, ScrapeError, failure.Context{"url": u.String()}, failure.Message("failed to scrape active user information"))
 	}
 	return users, nil
 }
@@ -54,7 +54,7 @@ func (c *UserCrawler) Crawl(index int) ([]User, error) {
 func (c *UserCrawler) Save(users []User) error {
 	tx, err := c.db.Beginx()
 	if err != nil {
-		return fmt.Errorf("failed to start transaction to save user information: %w", err)
+		return failure.Translate(err, DBError, failure.Message("failed to start transaction to save user information"))
 	}
 	defer tx.Rollback()
 
@@ -162,11 +162,11 @@ func (c *UserCrawler) Save(users []User) error {
 			user.Wins,
 		)
 		if err != nil {
-			return fmt.Errorf("failed to save user information %+v: %w", user, err)
+			return failure.Translate(err, DBError, failure.Context{"user": user.UserName}, failure.Message("failed to save user information"))
 		}
 	}
 	if err := tx.Commit(); err != nil {
-		return fmt.Errorf("failed to commit transaction to save user information: %w", err)
+		return failure.Translate(err, DBError, failure.Message("failed to commit transaction to save user information"))
 	}
 
 	return nil
@@ -179,7 +179,7 @@ loop:
 	for i := 0; ; i++ {
 		users, err := c.Crawl(i)
 		if err != nil {
-			return fmt.Errorf("failed to crawl active user information: %w", err)
+			return failure.Wrap(err)
 		}
 
 		if len(users) == 0 {
@@ -187,7 +187,7 @@ loop:
 		}
 
 		if err := c.Save(users); err != nil {
-			return fmt.Errorf("failed to save active user information: %w", err)
+			return failure.Wrap(err)
 		}
 
 		time.Sleep(time.Duration(duration) * time.Millisecond)

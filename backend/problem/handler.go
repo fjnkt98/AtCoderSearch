@@ -17,6 +17,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/schema"
+	"github.com/morikuni/failure"
 )
 
 type SearchParams struct {
@@ -185,7 +186,7 @@ type Searcher struct {
 func NewSearcher(baseURL string, coreName string) (Searcher, error) {
 	core, err := solr.NewSolrCore[Response, FacetCounts](coreName, baseURL)
 	if err != nil {
-		return Searcher{}, fmt.Errorf("failed to create problem searcher: %w", err)
+		return Searcher{}, failure.Translate(err, SearcherInitializeError, failure.Context{"baseURL": baseURL, "coreName": coreName}, failure.Message("failed to create problem searcher"))
 	}
 
 	validator := validator.New()

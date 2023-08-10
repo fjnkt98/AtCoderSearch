@@ -1,7 +1,6 @@
 package user
 
 import (
-	"fmt"
 	"io"
 	"path"
 	"regexp"
@@ -9,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/morikuni/failure"
 )
 
 var RANK_RE, _ = regexp.Compile(`\((\d+)\)`)
@@ -16,16 +16,11 @@ var RANK_RE, _ = regexp.Compile(`\((\d+)\)`)
 func Scrape(html io.Reader) ([]User, error) {
 	doc, err := goquery.NewDocumentFromReader(html)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read html from reader: %w", err)
-	}
-
-	table := doc.Find(".table > tbody")
-	if table == nil {
-		return nil, fmt.Errorf("failed to retrieve `table` element from html")
+		return nil, failure.Translate(err, ReadError, failure.Message("failed to read html from reader"))
 	}
 
 	users := make([]User, 0)
-	table.Find("tr").Each(func(i int, tr *goquery.Selection) {
+	doc.Find(".table > tbody").Find("tr").Each(func(i int, tr *goquery.Selection) {
 		var user User
 		tr.Find("td").Each(func(j int, td *goquery.Selection) {
 			switch j {

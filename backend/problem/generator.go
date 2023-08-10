@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/morikuni/failure"
 )
 
 var extractor = NewFullTextExtractor()
@@ -32,7 +33,7 @@ type Row struct {
 func (r *Row) ToDocument() (Document, error) {
 	statementJa, statementEn, err := extractor.Extract(strings.NewReader(r.HTML))
 	if err != nil {
-		return Document{}, fmt.Errorf("failed to extract statement at problem `%s`: %w", r.ProblemID, err)
+		return Document{}, failure.Translate(err, ExtractError, failure.Context{"problemID": r.ProblemID}, failure.Message("failed to extract statement at problem `%s`"))
 	}
 
 	contestURL := fmt.Sprintf("https://atcoder.jp/contests/%s", r.ContestID)
@@ -108,7 +109,7 @@ func (r *RowReader[R, D]) ReadRows(ctx context.Context, tx chan<- *Row) error {
 	`
 	rows, err := r.db.Queryx(sql)
 	if err != nil {
-		return fmt.Errorf("failed to read rows with %s:  %w", sql, err)
+		return failure.Translate(err, DBError, failure.Context{"sql": sql}, failure.Message("failed to read rows"))
 	}
 	defer rows.Close()
 	defer close(tx)
@@ -122,7 +123,7 @@ func (r *RowReader[R, D]) ReadRows(ctx context.Context, tx chan<- *Row) error {
 			var row Row
 			err := rows.StructScan(&row)
 			if err != nil {
-				return fmt.Errorf("failed to scan row: %w", err)
+				return failure.Translate(err, DBError, failure.Message("failed to scan row"))
 			}
 			tx <- &row
 		}
@@ -145,25 +146,25 @@ func NewDocumentGenerator(db *sqlx.DB, saveDir string) DocumentGenerator {
 
 func (g *DocumentGenerator) Clean() error {
 	if err := acs.CleanDocument(g.saveDir); err != nil {
-		return fmt.Errorf("failed to delete problem document files in `%s`: %w", g.saveDir, err)
+		return failure.Translate(err, FileOperationError, failure.Context{"directory": g.saveDir}, failure.Message("failed to delete problem document files in `%s`"))
 	}
 	return nil
 }
 
 func (g *DocumentGenerator) Generate(chunkSize int, concurrent int) error {
 	if err := acs.GenerateDocument[*Row, Document](g.reader, g.saveDir, chunkSize, concurrent); err != nil {
-		return fmt.Errorf("failed to generate problem document files: %w", err)
+		return failure.Wrap(err)
 	}
 	return nil
 }
 
 func (g *DocumentGenerator) Run(chunkSize int, concurrent int) error {
 	if err := g.Clean(); err != nil {
-		return err
+		return failure.Wrap(err)
 	}
 
 	if err := g.Generate(chunkSize, concurrent); err != nil {
-		return err
+		return failure.Wrap(err)
 	}
 	return nil
 }

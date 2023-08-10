@@ -10,6 +10,7 @@ import (
 
 	mapset "github.com/deckarep/golang-set/v2"
 	"github.com/jmoiron/sqlx"
+	"github.com/morikuni/failure"
 	"github.com/tdewolff/minify"
 	"github.com/tdewolff/minify/html"
 )
@@ -31,19 +32,19 @@ func NewContestCrawler(db *sqlx.DB) ContestCrawler {
 func (c *ContestCrawler) FetchContestList() ([]ContestJSON, error) {
 	req, err := http.NewRequest("GET", c.targetURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create request: %s", err.Error())
+		return nil, failure.Translate(err, RequestCreationError, failure.Context{"url": c.targetURL}, failure.Message("failed to create request"))
 	}
 	req.Header.Set("ACCEPT_ENCODING", "gzip")
 
 	res, err := c.client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("request failed: %s", err.Error())
+		return nil, failure.Translate(err, RequestExecutionError, failure.Context{"url": c.targetURL}, failure.Message("request failed"))
 	}
 
 	defer res.Body.Close()
 	var contests []ContestJSON
 	if err := json.NewDecoder(res.Body).Decode(&contests); err != nil {
-		return nil, fmt.Errorf("failed to decode JSON into ContestJSON: %s", err.Error())
+		return nil, failure.Translate(err, DecodeError, failure.Message("failed to decode JSON into ContestJSON"))
 	}
 
 	return contests, nil
@@ -52,7 +53,7 @@ func (c *ContestCrawler) FetchContestList() ([]ContestJSON, error) {
 func (c *ContestCrawler) Save(contests []ContestJSON) error {
 	tx, err := c.db.Beginx()
 	if err != nil {
-		return fmt.Errorf("failed to start transaction to save contest information: %s", err.Error())
+		return failure.Translate(err, DBError, failure.Message("failed to start transaction to save contest information"))
 	}
 	defer tx.Rollback()
 
@@ -136,12 +137,12 @@ func (c *ContestCrawler) Save(contests []ContestJSON) error {
 			contest.Category,
 		)
 		if err != nil {
-			return fmt.Errorf("failed to save contest information %+v: %w", contest, err)
+			return failure.Translate(err, DBError, failure.Context{"contestID": contest.ContestID}, failure.Message("failed to save contest information"))
 		}
 	}
 
 	if err := tx.Commit(); err != nil {
-		return fmt.Errorf("failed to commit transaction: %w", err)
+		return failure.Translate(err, DBError, failure.Message("failed to commit transaction"))
 	}
 
 	return nil
@@ -151,13 +152,13 @@ func (c *ContestCrawler) Run() error {
 	log.Println("Start to fetch contest list.")
 	contests, err := c.FetchContestList()
 	if err != nil {
-		return fmt.Errorf("failed to fetch contest list: %w", err)
+		return failure.Wrap(err)
 	}
 	log.Println("Finish fetching contest list.")
 
 	log.Println("Start to save contest list.")
 	if err := c.Save(contests); err != nil {
-		return fmt.Errorf("failed to save contests: %w", err)
+		return failure.Wrap(err)
 	}
 	log.Println("Finish saving contest list.")
 
@@ -185,19 +186,19 @@ func NewProblemCrawler(db *sqlx.DB) ProblemCrawler {
 func (c *ProblemCrawler) FetchProblemList() ([]ProblemJSON, error) {
 	req, err := http.NewRequest("GET", c.targetURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create request: %w", err)
+		return nil, failure.Translate(err, RequestCreationError, failure.Context{"url": c.targetURL}, failure.Message("failed to create request"))
 	}
 	req.Header.Set("ACCEPT_ENCODING", "gzip")
 
 	res, err := c.client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("failed to request `%s`: %w", c.targetURL, err)
+		return nil, failure.Translate(err, RequestExecutionError, failure.Context{"url": c.targetURL}, failure.Message("request failed"))
 	}
 
 	defer res.Body.Close()
 	var problems []ProblemJSON
 	if err := json.NewDecoder(res.Body).Decode(&problems); err != nil {
-		return nil, fmt.Errorf("failed to decode JSON into ProblemJSON: %w", err)
+		return nil, failure.Translate(err, DecodeError, failure.Message("failed to decode JSON into ProblemJSON"))
 	}
 
 	return problems, nil
@@ -206,17 +207,17 @@ func (c *ProblemCrawler) FetchProblemList() ([]ProblemJSON, error) {
 func (c *ProblemCrawler) Crawl(URL string) (string, error) {
 	req, err := http.NewRequest("GET", URL, nil)
 	if err != nil {
-		return "", fmt.Errorf("failed to create request to `%s`: %w", URL, err)
+		return "", failure.Translate(err, RequestCreationError, failure.Context{"url": c.targetURL}, failure.Message("failed to create request"))
 	}
 	res, err := c.client.Do(req)
 	if err != nil {
-		return "", fmt.Errorf("failed to request to `%s`: %w", URL, err)
+		return "", failure.Translate(err, RequestExecutionError, failure.Context{"url": c.targetURL}, failure.Message("request failed"))
 	}
 
 	var buf bytes.Buffer
 	defer res.Body.Close()
 	if err := c.minifier.Minify("text/html", &buf, res.Body); err != nil {
-		return "", fmt.Errorf("error occurred in minifying html of `%s`: %w", URL, err)
+		return "", failure.Translate(err, MinifyHTMLError, failure.Context{"url": c.targetURL}, failure.Message("error occurred in minifying html"))
 	}
 
 	return buf.String(), nil
@@ -227,20 +228,20 @@ func (c *ProblemCrawler) DetectDiff() ([]ProblemJSON, error) {
 
 	rows, err := c.db.Queryx(`SELECT "problem_id" FROM "problems"`)
 	if err != nil {
-		return nil, fmt.Errorf("failed to select problems id: %w", err)
+		return nil, failure.Translate(err, DBError, failure.Message("failed to select problems id"))
 	}
 
 	for rows.Next() {
 		var id string
 		if err := rows.Scan(&id); err != nil {
-			return nil, fmt.Errorf("failed to scan problem_id: %w", err)
+			return nil, failure.Translate(err, DBError, failure.Message("failed to scan problem_id"))
 		}
 		exists.Add(id)
 	}
 
 	problems, err := c.FetchProblemList()
 	if err != nil {
-		return nil, err
+		return nil, failure.Wrap(err)
 	}
 
 	targetProblems := make([]ProblemJSON, 0, len(problems))
@@ -257,13 +258,14 @@ func (c *ProblemCrawler) Save(problemJSONs []ProblemJSON, duration int) error {
 	for _, problemJSON := range problemJSONs {
 		tx, err := c.db.Beginx()
 		if err != nil {
-			return fmt.Errorf("failed to start transaction: %w", err)
+			return failure.Translate(err, DBError, failure.Message("failed to start transaction"))
 		}
+		defer tx.Rollback()
 
-		URL := fmt.Sprintf("https://atcoder.jp/contests/%s/tasks/%s", problemJSON.ContestID, problemJSON.ID)
-		HTML, err := c.Crawl(URL)
+		url := fmt.Sprintf("https://atcoder.jp/contests/%s/tasks/%s", problemJSON.ContestID, problemJSON.ID)
+		HTML, err := c.Crawl(url)
 		if err != nil {
-			return fmt.Errorf("failed to crawl problem `%s`: %w", problemJSON.ID, err)
+			return failure.Translate(err, DBError, failure.Context{"url": url}, failure.Message("failed to crawl problem"))
 		}
 
 		problem := Problem{
@@ -272,7 +274,7 @@ func (c *ProblemCrawler) Save(problemJSONs []ProblemJSON, duration int) error {
 			ProblemIndex: problemJSON.ProblemIndex,
 			Name:         problemJSON.Name,
 			Title:        problemJSON.Title,
-			URL:          URL,
+			URL:          url,
 			HTML:         HTML,
 		}
 
@@ -353,13 +355,10 @@ func (c *ProblemCrawler) Save(problemJSONs []ProblemJSON, duration int) error {
 			problem.URL,
 			problem.HTML,
 		); err != nil {
-			if txErr := tx.Rollback(); txErr != nil {
-				return fmt.Errorf("failed to rollback transaction which cause error `%w`: %w", err, txErr)
-			}
-			return fmt.Errorf("failed to save problem `%s`: %w", problem.ProblemID, err)
+			return failure.Translate(err, DBError, failure.Context{"problemID": problem.ProblemID}, failure.Message("failed to save problem"))
 		}
 		if err := tx.Commit(); err != nil {
-			return fmt.Errorf("failed to commit to save problem `%s`: %w", problem.ProblemID, err)
+			return failure.Translate(err, DBError, failure.Context{"problemID": problem.ProblemID}, failure.Message("failed to commit to save problem `%s`"))
 		}
 
 		time.Sleep(time.Duration(duration) * time.Millisecond)
@@ -381,12 +380,12 @@ func (c *ProblemCrawler) Run(all bool, duration int) error {
 		log.Println("Finish fetching new problem list.")
 	}
 	if err != nil {
-		return fmt.Errorf("failed to fetch problem list: %w", err)
+		return failure.Wrap(err)
 	}
 
 	log.Println("Start to save problem list.")
 	if err := c.Save(targets, duration); err != nil {
-		return fmt.Errorf("failed to save problem: %w", err)
+		return failure.Wrap(err)
 	}
 	log.Println("Finish saving problem list.")
 	return nil
@@ -409,19 +408,19 @@ func NewDifficultyCrawler(db *sqlx.DB) DifficultyCrawler {
 func (c *DifficultyCrawler) FetchDifficulties() (map[string]DifficultyJSON, error) {
 	req, err := http.NewRequest("GET", c.targetURL, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create request: %w", err)
+		return nil, failure.Translate(err, RequestCreationError, failure.Context{"url": c.targetURL}, failure.Message("failed to create request"))
 	}
 	req.Header.Set("ACCEPT_ENCODING", "gzip")
 
 	res, err := c.client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("request failed: %s", err)
+		return nil, failure.Translate(err, RequestExecutionError, failure.Context{"url": c.targetURL}, failure.Message("request failed"))
 	}
 
 	defer res.Body.Close()
 	var difficulties map[string]DifficultyJSON
 	if err := json.NewDecoder(res.Body).Decode(&difficulties); err != nil {
-		return nil, fmt.Errorf("failed to decode JSON into DifficultyJSON: %s", err.Error())
+		return nil, failure.Translate(err, DecodeError, failure.Message("failed to decode JSON into DifficultyJSON"))
 	}
 
 	return difficulties, nil
@@ -430,7 +429,7 @@ func (c *DifficultyCrawler) FetchDifficulties() (map[string]DifficultyJSON, erro
 func (c *DifficultyCrawler) Save(difficulties map[string]DifficultyJSON) error {
 	tx, err := c.db.Beginx()
 	if err != nil {
-		return fmt.Errorf("failed to start transaction: %w", err)
+		return failure.Translate(err, DBError, failure.Message("failed to start transaction"))
 	}
 	defer tx.Rollback()
 
@@ -537,12 +536,12 @@ func (c *DifficultyCrawler) Save(difficulties map[string]DifficultyJSON) error {
 			difficulty.IrtUsers,
 			difficulty.IsExperimental,
 		); err != nil {
-			return fmt.Errorf("failed to save difficulty `%+v`: %w", difficulty, err)
+			return failure.Translate(err, DBError, failure.Context{"problemID": difficulty.ProblemID}, failure.Message("failed to save difficulty"))
 		}
 	}
 
 	if err := tx.Commit(); err != nil {
-		return fmt.Errorf("failed to commit transaction: %w", err)
+		return failure.Translate(err, DBError, failure.Message("failed to commit transaction"))
 	}
 
 	return nil
@@ -552,13 +551,13 @@ func (c *DifficultyCrawler) Run() error {
 	log.Println("Start to fetch difficulty list.")
 	difficulties, err := c.FetchDifficulties()
 	if err != nil {
-		return fmt.Errorf("failed to fetch difficulties: %w", err)
+		return failure.Wrap(err)
 	}
 	log.Println("Finish fetching difficulty list.")
 
 	log.Println("Start to save difficulty list.")
 	if err := c.Save(difficulties); err != nil {
-		return fmt.Errorf("failed to save difficulties: %w", err)
+		return failure.Wrap(err)
 	}
 	log.Println("Finish saving difficulty list.")
 

@@ -2,13 +2,13 @@ package cmd
 
 import (
 	"errors"
-	"fmt"
 	"log"
 	"os"
 	"path/filepath"
 	"time"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/morikuni/failure"
 	"github.com/spf13/cobra"
 )
 
@@ -27,13 +27,13 @@ func GetSaveDir(cmd *cobra.Command, domain string) (string, error) {
 		if os.IsNotExist(err) {
 			log.Printf("The directory `%s` doesn't exists, so attempt to create it.", saveDir)
 			if err := os.Mkdir(saveDir, os.ModePerm); err != nil {
-				return "", fmt.Errorf("failed to create directory `%s`: %s", saveDir, err.Error())
+				return "", failure.Translate(err, FileOperationError, failure.Context{"directory": saveDir}, failure.Message("failed to create directory"))
 			} else {
 				log.Printf("The directory `%s` was successfully created.", saveDir)
 				return saveDir, nil
 			}
 		} else {
-			return "", fmt.Errorf("failed to get stat directory `%s`: %s", saveDir, err.Error())
+			return "", failure.Translate(err, FileOperationError, failure.Context{"directory": saveDir}, failure.Message("failed to get stat directory"))
 		}
 	} else {
 		return saveDir, nil
@@ -73,7 +73,7 @@ func NewUpdateHistory(db *sqlx.DB, domain string, options string) UpdateHistory 
 func (h *UpdateHistory) save(status string) error {
 	tx, err := h.db.Beginx()
 	if err != nil {
-		return fmt.Errorf("failed to start transaction to save update history: %w", err)
+		return failure.Translate(err, DBError, failure.Message("failed to start transaction to save update history"))
 	}
 	defer tx.Rollback()
 
@@ -85,11 +85,11 @@ func (h *UpdateHistory) save(status string) error {
 		status,
 		h.Options,
 	); err != nil {
-		return fmt.Errorf("failed to exec sql to save update history : %w", err)
+		return failure.Translate(err, DBError, failure.Message("failed to exec sql to save update history"))
 	}
 
 	if err := tx.Commit(); err != nil {
-		return fmt.Errorf("failed to commit transaction to save update history: %w", err)
+		return failure.Translate(err, DBError, failure.Message("failed to commit transaction to save update history"))
 	}
 
 	return nil
