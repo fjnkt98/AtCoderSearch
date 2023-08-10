@@ -115,7 +115,7 @@ func (c *AtCoderClient) FetchSubmissionList(contestID string, page uint) (Submis
 		}, nil
 	}
 	if res.StatusCode != http.StatusOK {
-		return SubmissionList{}, failure.Translate(err, RequestExecutionError, failure.Context{"url": u.String(), "page": strconv.Itoa(int(page)), "contestID": contestID}, failure.Message("non-ok status returned at page %d of the contest `%s`"))
+		return SubmissionList{}, failure.New(RequestExecutionError, failure.Context{"url": u.String(), "page": strconv.Itoa(int(page)), "contestID": contestID}, failure.Message("non-ok status returned at page %d of the contest `%s`"))
 	}
 
 	defer res.Body.Close()

@@ -55,7 +55,7 @@ func (c *SolrCore[D, F]) Ping() (SolrPingResponse, error) {
 		return SolrPingResponse{}, failure.Translate(err, RequestExecutionError, failure.Context{"url": c.pingURL.String()}, failure.Message("ping failed"))
 	} else {
 		if res.StatusCode != http.StatusOK {
-			return SolrPingResponse{}, failure.Translate(err, NotOK, failure.Context{"url": c.pingURL.String()}, failure.Message("ping failed"))
+			return SolrPingResponse{}, failure.New(NotOK, failure.Context{"url": c.pingURL.String()}, failure.Message("ping failed"))
 		}
 
 		var pingResponse SolrPingResponse
@@ -84,7 +84,7 @@ func (c *SolrCore[D, F]) Status() (SolrCoreStatus, error) {
 		return SolrCoreStatus{}, failure.Translate(err, RequestExecutionError, failure.Context{"url": u.String()}, failure.Message("status request failed"))
 	} else {
 		if res.StatusCode != http.StatusOK {
-			return SolrCoreStatus{}, failure.Translate(err, NotOK, failure.Context{"url": u.String()}, failure.Message("couldn't get core status"))
+			return SolrCoreStatus{}, failure.New(NotOK, failure.Context{"url": u.String()}, failure.Message("couldn't get core status"))
 		}
 
 		var coreStatus SolrCoreList

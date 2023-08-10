@@ -21,12 +21,12 @@ import (
 )
 
 type SearchParams struct {
-	Keyword string        `validate:"lte=200" json:"keyword,omitempty"`
-	Limit   uint          `validate:"lte=200" json:"limit,omitempty"`
-	Page    uint          `json:"page,omitempty"`
-	Filter  *FilterParams `json:"filter,omitempty"`
-	Sort    string        `validate:"omitempty,oneof=-score rating -rating birth_year -birth_year" json:"sort,omitempty"`
-	Facet   []string      `validate:"dive,oneof=color birth_year join_count country" json:"facet,omitempty"`
+	Keyword string        `validate:"lte=200" json:"keyword,omitempty" schema:"keyword"`
+	Limit   uint          `validate:"lte=200" json:"limit,omitempty" schema:"limit"`
+	Page    uint          `json:"page,omitempty" schema:"page"`
+	Filter  *FilterParams `json:"filter,omitempty" schema:"filter"`
+	Sort    string        `validate:"omitempty,oneof=-score rating -rating birth_year -birth_year" json:"sort,omitempty" schema:"sort"`
+	Facet   []string      `validate:"dive,oneof=color birth_year join_count country" json:"facet,omitempty" schema:"facet"`
 }
 
 func (p *SearchParams) ToQuery() url.Values {
@@ -130,10 +130,10 @@ func (p *SearchParams) fq() []string {
 }
 
 type FilterParams struct {
-	Rating    acs.IntegerRange[int] `json:"rating,omitempty"`
-	BirthYear acs.IntegerRange[int] `json:"birth_year,omitempty"`
-	JoinCount acs.IntegerRange[int] `json:"join_count,omitempty"`
-	Country   []string              `json:"country,omitempty"`
+	Rating    acs.IntegerRange[int] `json:"rating,omitempty" schema:"rating"`
+	BirthYear acs.IntegerRange[int] `json:"birth_year,omitempty" schema:"birth_year"`
+	JoinCount acs.IntegerRange[int] `json:"join_count,omitempty" schema:"join_count"`
+	Country   []string              `json:"country,omitempty" schema:"country"`
 }
 
 type Response struct {
