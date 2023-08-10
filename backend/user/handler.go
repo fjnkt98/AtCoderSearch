@@ -130,10 +130,10 @@ func (p *SearchParams) fq() []string {
 }
 
 type FilterParams struct {
-	Rating    acs.RangeFilterParam `json:"rating,omitempty"`
-	BirthYear acs.RangeFilterParam `json:"birth_year,omitempty"`
-	JoinCount acs.RangeFilterParam `json:"join_count,omitempty"`
-	Country   []string             `json:"country,omitempty"`
+	Rating    acs.IntegerRange[int] `json:"rating,omitempty"`
+	BirthYear acs.IntegerRange[int] `json:"birth_year,omitempty"`
+	JoinCount acs.IntegerRange[int] `json:"join_count,omitempty"`
+	Country   []string              `json:"country,omitempty"`
 }
 
 type Response struct {

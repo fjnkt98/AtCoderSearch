@@ -120,7 +120,7 @@ func (p *SearchParams) fq() []string {
 
 type FilterParams struct {
 	Category   []string             `json:"category,omitempty"`
-	Difficulty acs.RangeFilterParam `json:"difficulty,omitempty"`
+	Difficulty acs.IntegerRange[int] `json:"difficulty,omitempty"`
 }
 
 type Response struct {

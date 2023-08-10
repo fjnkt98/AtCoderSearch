@@ -15,6 +15,7 @@ import (
 
 type Row struct {
 	atcoder.Submission
+	Category string `db:"category"`
 }
 
 func (r Row) ToDocument() (Document, error) {
@@ -24,9 +25,11 @@ func (r Row) ToDocument() (Document, error) {
 	return Document{
 		ID:            id,
 		SubmissionID:  r.ID,
+		EpochSecond:   r.EpochSecond,
 		SubmittedAt:   solr.IntoSolrDateTime(dt),
 		ProblemID:     r.ProblemID,
 		ContestID:     r.ContestID,
+		Category:      r.Category,
 		UserID:        r.UserID,
 		Language:      r.Language,
 		Point:         r.Point,
@@ -39,9 +42,11 @@ func (r Row) ToDocument() (Document, error) {
 type Document struct {
 	ID            string                `json:"id"`
 	SubmissionID  int64                 `json:"submission_id"`
+	EpochSecond   int64                 `json:"epoch_second"`
 	SubmittedAt   solr.IntoSolrDateTime `json:"submitted_at"`
 	ProblemID     string                `json:"problem_id"`
 	ContestID     string                `json:"contest_id"`
+	Category      string                `json:"category"`
 	UserID        string                `json:"user_id"`
 	Language      string                `json:"language"`
 	Point         float64               `json:"point"`
@@ -61,6 +66,7 @@ func (r *RowReader[R, D]) ReadRows(ctx context.Context, tx chan<- Row) error {
 		"epoch_second",
 		"problem_id",
 		"contest_id",
+		"category",
 		"user_id",
 		"language",
 		"point",
@@ -69,6 +75,7 @@ func (r *RowReader[R, D]) ReadRows(ctx context.Context, tx chan<- Row) error {
 		"execution_time"
 	FROM
 		"submissions"
+		LEFT JOIN "contests" USING("contest_id")
 	`
 	rows, err := r.db.Queryx(sql)
 	if err != nil {

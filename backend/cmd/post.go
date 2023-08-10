@@ -83,11 +83,46 @@ var postUserCmd = &cobra.Command{
 	},
 }
 
+var postSubmissionCmd = &cobra.Command{
+	Use:   "submission",
+	Short: "Post document JSON files into submission core",
+	Long:  "Post document JSON files into submission core",
+	Run: func(cmd *cobra.Command, args []string) {
+		saveDir, err := GetSaveDir(cmd, "submission")
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+
+		solrURL := os.Getenv("SOLR_HOST")
+		if solrURL == "" {
+			log.Fatalln("environment variable `SOLR_HOST` must be set.")
+		}
+		core, err := solr.NewSolrCore[any, any]("submission", solrURL)
+		if err != nil {
+			log.Fatalf("failed to create `user` core: %s", err.Error())
+		}
+
+		uploader := acs.NewDefaultDocumentUploader(core, saveDir)
+		optimize, err := cmd.Flags().GetBool("optimize")
+		if err != nil {
+			log.Fatalf("failed to get value of `optimize` flag: %s", err.Error())
+		}
+		concurrent, err := cmd.Flags().GetInt("concurrent")
+		if err != nil {
+			log.Fatalf("failed to get value of `concurrent` flag: %s", err.Error())
+		}
+		if err := uploader.PostDocument(optimize, concurrent); err != nil {
+			log.Fatal(err.Error())
+		}
+	},
+}
+
 func init() {
 	postCmd.PersistentFlags().BoolP("optimize", "o", false, "When true, send optimize request to Solr")
 	postCmd.PersistentFlags().String("save-dir", "", "Directory path at which generated documents will be saved")
 	postCmd.PersistentFlags().Int("concurrent", 3, "Concurrent number of document upload processes")
 	postCmd.AddCommand(postProblemCmd)
 	postCmd.AddCommand(postUserCmd)
+	postCmd.AddCommand(postSubmissionCmd)
 	rootCmd.AddCommand(postCmd)
 }

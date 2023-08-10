@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fjnkt98/atcodersearch/problem"
+	"fjnkt98/atcodersearch/submission"
 	"fjnkt98/atcodersearch/user"
 	"fmt"
 	"log"
@@ -29,28 +30,27 @@ var serverCmd = &cobra.Command{
 		solrBaseURL := url.URL{Scheme: parsedSolrURL.Scheme, Host: parsedSolrURL.Host}
 
 		// Problem searcher configuration
-		problemCoreName := os.Getenv("PROBLEM_CORE_NAME")
-		if problemCoreName == "" {
-			log.Fatalln("PROBLEM_CORE_NAME must be set.")
-		}
-		problemSearcher, err := problem.NewSearcher(solrBaseURL.String(), problemCoreName)
+		problemSearcher, err := problem.NewSearcher(solrBaseURL.String(), "problem")
 		if err != nil {
 			log.Fatalf("failed to instantiate problem searcher: %s", err.Error())
 		}
 
 		// User searcher configuration
-		userCoreName := os.Getenv("USER_CORE_NAME")
-		if userCoreName == "" {
-			log.Fatalln("USER_CORE_NAME must be set.")
-		}
-		userSearcher, err := user.NewSearcher(solrBaseURL.String(), userCoreName)
+		userSearcher, err := user.NewSearcher(solrBaseURL.String(), "user")
 		if err != nil {
 			log.Fatalf("failed to instantiate user searcher: %s", err.Error())
+		}
+
+		// Submission searcher configuration
+		submissionSearcher, err := submission.NewSearcher(solrBaseURL.String(), "submission")
+		if err != nil {
+			log.Fatalf("failed to instantiate submission searcher: %s", err.Error())
 		}
 
 		// API handler registration
 		http.HandleFunc("/api/search/problem", problemSearcher.HandleSearch)
 		http.HandleFunc("/api/search/user", userSearcher.HandleSearch)
+		http.HandleFunc("/api/search/submission", submissionSearcher.HandleSearch)
 		http.HandleFunc("/api/liveness", func(w http.ResponseWriter, r *http.Request) {
 			if problemSearcher.Liveness() && userSearcher.Liveness() {
 				w.WriteHeader(http.StatusOK)
