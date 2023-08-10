@@ -97,7 +97,7 @@ func (c *SolrCore[D, F]) Status() (SolrCoreStatus, error) {
 		if ok {
 			return status, nil
 		} else {
-			return SolrCoreStatus{}, failure.Translate(err, CoreNotFound, failure.Context{"url": u.String()}, failure.Messagef("the core `%s` doesn't exists", c.Name))
+			return SolrCoreStatus{}, failure.New(CoreNotFound, failure.Context{"url": u.String()}, failure.Messagef("the core `%s` doesn't exists", c.Name))
 		}
 	}
 }
@@ -124,7 +124,7 @@ func (core *SolrCore[D, F]) Reload() (SolrSimpleResponse, error) {
 		}
 
 		if res.StatusCode != http.StatusOK {
-			return SolrSimpleResponse{}, failure.Translate(err, NotOK, failure.Context{"url": u.String()}, failure.Messagef("failed to reload core: %s", reloadResponse.Error.Msg))
+			return SolrSimpleResponse{}, failure.New(NotOK, failure.Context{"url": u.String()}, failure.Messagef("failed to reload core: %s", reloadResponse.Error.Msg))
 		} else {
 			return reloadResponse, nil
 		}
@@ -150,7 +150,7 @@ func (core *SolrCore[D, F]) Select(params url.Values) (SolrSelectResponse[D, F],
 		}
 
 		if res.StatusCode != http.StatusOK {
-			return SolrSelectResponse[D, F]{}, failure.Translate(err, NotOK, failure.Context{"url": u.String()}, failure.Messagef("select request failed: %s", selectResponse.Error.Msg))
+			return SolrSelectResponse[D, F]{}, failure.New(NotOK, failure.Context{"url": u.String()}, failure.Messagef("select request failed: %s", selectResponse.Error.Msg))
 		} else {
 			return selectResponse, nil
 		}
@@ -174,7 +174,7 @@ func (core *SolrCore[D, F]) Post(body io.Reader, contentType string) (SolrSimple
 		}
 
 		if res.StatusCode != http.StatusOK {
-			return SolrSimpleResponse{}, failure.Translate(err, DecodeError, failure.Context{"url": core.postURL.String(), "Content-Type": contentType}, failure.Messagef("post failed: %s", response.Error.Msg))
+			return SolrSimpleResponse{}, failure.New(NotOK, failure.Context{"url": core.postURL.String(), "Content-Type": contentType}, failure.Messagef("post failed: %s", response.Error.Msg))
 		} else {
 			return response, nil
 		}
