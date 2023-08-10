@@ -5,6 +5,7 @@ import (
 	"fjnkt98/atcodersearch/acs"
 	"fjnkt98/atcodersearch/atcoder"
 	"fjnkt98/atcodersearch/solr"
+	"fmt"
 	"log"
 	"time"
 
@@ -16,10 +17,12 @@ type Row struct {
 	atcoder.Submission
 }
 
-func (r *Row) ToDocument() (Document, error) {
+func (r Row) ToDocument() (Document, error) {
 	dt := time.Unix(r.EpochSecond, 0)
+	id := fmt.Sprintf("%s-%d", r.ContestID, r.ID)
 
 	return Document{
+		ID:            id,
 		SubmissionID:  r.ID,
 		SubmittedAt:   solr.IntoSolrDateTime(dt),
 		ProblemID:     r.ProblemID,
@@ -34,6 +37,7 @@ func (r *Row) ToDocument() (Document, error) {
 }
 
 type Document struct {
+	ID            string                `json:"id"`
 	SubmissionID  int64                 `json:"submission_id"`
 	SubmittedAt   solr.IntoSolrDateTime `json:"submitted_at"`
 	ProblemID     string                `json:"problem_id"`
@@ -50,7 +54,7 @@ type RowReader[R acs.ToDocument[D], D any] struct {
 	db *sqlx.DB
 }
 
-func (r *RowReader[R, D]) ReadRows(ctx context.Context, tx chan<- *Row) error {
+func (r *RowReader[R, D]) ReadRows(ctx context.Context, tx chan<- Row) error {
 	sql := `
 	SELECT
 		"id",
@@ -84,7 +88,7 @@ func (r *RowReader[R, D]) ReadRows(ctx context.Context, tx chan<- *Row) error {
 			if err != nil {
 				return failure.Translate(err, DBError, failure.Message("failed to scan row"))
 			}
-			tx <- &row
+			tx <- row
 		}
 	}
 
@@ -93,13 +97,13 @@ func (r *RowReader[R, D]) ReadRows(ctx context.Context, tx chan<- *Row) error {
 
 type DocumentGenerator struct {
 	saveDir string
-	reader  *RowReader[*Row, Document]
+	reader  *RowReader[Row, Document]
 }
 
 func NewDocumentGenerator(db *sqlx.DB, saveDir string) DocumentGenerator {
 	return DocumentGenerator{
 		saveDir: saveDir,
-		reader:  &RowReader[*Row, Document]{db: db},
+		reader:  &RowReader[Row, Document]{db: db},
 	}
 }
 
@@ -111,7 +115,7 @@ func (g *DocumentGenerator) Clean() error {
 }
 
 func (g *DocumentGenerator) Generate(chunkSize int, concurrent int) error {
-	if err := acs.GenerateDocument[*Row, Document](g.reader, g.saveDir, chunkSize, concurrent); err != nil {
+	if err := acs.GenerateDocument[Row, Document](g.reader, g.saveDir, chunkSize, concurrent); err != nil {
 		return failure.Wrap(err)
 	}
 	return nil
