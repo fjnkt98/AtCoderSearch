@@ -25,25 +25,25 @@ var crawlProblemCmd = &cobra.Command{
 		db := GetDB()
 		contestCrawler := problem.NewContestCrawler(db)
 		if err := contestCrawler.Run(); err != nil {
-			log.Fatalf("failed to save contest information: %s", err.Error())
+			log.Fatalf("failed to save contest information: %+v", err)
 		}
 
 		difficultyCrawler := problem.NewDifficultyCrawler(db)
 		if err := difficultyCrawler.Run(); err != nil {
-			log.Fatalf("failed to save difficulty information: %s", err.Error())
+			log.Fatalf("failed to save difficulty information: %+v", err)
 		}
 
 		all, err := cmd.Flags().GetBool("all")
 		if err != nil {
-			log.Fatalf("failed to get flag `all`: %s", err.Error())
+			log.Fatalf("failed to get flag `all`: %+v", err)
 		}
 		duration, err := cmd.Flags().GetInt("duration")
 		if err != nil {
-			log.Fatalf("failed to get flag `duration`: %s", err.Error())
+			log.Fatalf("failed to get flag `duration`: %+v", err)
 		}
 		problemCrawler := problem.NewProblemCrawler(db)
 		if err := problemCrawler.Run(all, duration); err != nil {
-			log.Fatalf("failed to save problem information: %s", err.Error())
+			log.Fatalf("failed to save problem information: %+v", err)
 		}
 	},
 }
@@ -57,11 +57,11 @@ var crawlUserCmd = &cobra.Command{
 		crawler := user.NewUserCrawler(db)
 		duration, err := cmd.Flags().GetInt("duration")
 		if err != nil {
-			log.Fatalf("failed to get value of `duration` flag: %s", err.Error())
+			log.Fatalf("failed to get value of `duration` flag: %+v", err)
 		}
 
 		if err := crawler.Run(duration); err != nil {
-			log.Fatalf("failed to save user information: %s", err.Error())
+			log.Fatalf("failed to save user information: %+v", err)
 		}
 	},
 }
@@ -79,19 +79,19 @@ var crawlSubmissionCmd = &cobra.Command{
 		log.Println("Login to AtCoder...")
 		client, err := atcoder.NewAtCoderClient(username, password)
 		if err != nil {
-			log.Fatalf("failed to login atcoder: %s", err.Error())
+			log.Fatalf("failed to login atcoder: %+v", err)
 		}
 		log.Println("Successfully logged in to AtCoder.")
 
 		crawler := submission.NewCrawler(client, db)
 		duration, err := cmd.Flags().GetInt("duration")
 		if err != nil {
-			log.Fatalf("failed to get value of `duration` flag: %s", err.Error())
+			log.Fatalf("failed to get value of `duration` flag: %+v", err)
 		}
 
 		log.Println("Start to crawl submissions")
-		if err := crawler.Run(int64(duration), 0); err != nil {
-			log.Fatalf("failed to save submissions: %s", err.Error())
+		if err := crawler.Run(duration); err != nil {
+			log.Fatalf("failed to save submissions: %+v", err)
 		}
 	},
 }

@@ -32,19 +32,19 @@ var serverCmd = &cobra.Command{
 		// Problem searcher configuration
 		problemSearcher, err := problem.NewSearcher(solrBaseURL.String(), "problem")
 		if err != nil {
-			log.Fatalf("failed to instantiate problem searcher: %s", err.Error())
+			log.Fatalf("failed to instantiate problem searcher: %+v", err)
 		}
 
 		// User searcher configuration
 		userSearcher, err := user.NewSearcher(solrBaseURL.String(), "user")
 		if err != nil {
-			log.Fatalf("failed to instantiate user searcher: %s", err.Error())
+			log.Fatalf("failed to instantiate user searcher: %+v", err)
 		}
 
 		// Submission searcher configuration
 		submissionSearcher, err := submission.NewSearcher(solrBaseURL.String(), "submission")
 		if err != nil {
-			log.Fatalf("failed to instantiate submission searcher: %s", err.Error())
+			log.Fatalf("failed to instantiate submission searcher: %+v", err)
 		}
 
 		// API handler registration

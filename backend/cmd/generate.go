@@ -28,10 +28,10 @@ var generateProblemCmd = &cobra.Command{
 		generator := problem.NewDocumentGenerator(GetDB(), saveDir)
 		concurrent, err := cmd.Flags().GetInt("concurrent")
 		if err != nil {
-			log.Fatalf("failed to get value of `concurrent` flag: %s", err.Error())
+			log.Fatalf("failed to get value of `concurrent` flag: %+v", err)
 		}
 		if err := generator.Run(1000, concurrent); err != nil {
-			log.Fatal(err.Error())
+			log.Fatalf("%+v", err)
 		}
 	},
 }
@@ -43,15 +43,15 @@ var generateUserCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		saveDir, err := GetSaveDir(cmd, "user")
 		if err != nil {
-			log.Fatal(err.Error())
+			log.Fatalf("%+v", err)
 		}
 		generator := user.NewDocumentGenerator(GetDB(), saveDir)
 		concurrent, err := cmd.Flags().GetInt("concurrent")
 		if err != nil {
-			log.Fatalf("failed to get value of `concurrent` flag: %s", err.Error())
+			log.Fatalf("failed to get value of `concurrent` flag: %+v", err)
 		}
 		if err := generator.Run(1000, concurrent); err != nil {
-			log.Fatal(err.Error())
+			log.Fatalf("%+v", err)
 		}
 	},
 }
@@ -63,15 +63,15 @@ var generateSubmissionCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		saveDir, err := GetSaveDir(cmd, "submission")
 		if err != nil {
-			log.Fatal(err.Error())
+			log.Fatalf("%+v", err)
 		}
 		generator := submission.NewDocumentGenerator(GetDB(), saveDir)
 		concurrent, err := cmd.Flags().GetInt("concurrent")
 		if err != nil {
-			log.Fatalf("failed to get value of `concurrent` flag: %s", err.Error())
+			log.Fatalf("failed to get value of `concurrent` flag: %+v", err)
 		}
 		if err := generator.Run(100000, concurrent); err != nil {
-			log.Fatal(err.Error())
+			log.Fatalf("%+v", err)
 		}
 	},
 }
