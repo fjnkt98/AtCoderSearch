@@ -48,18 +48,15 @@ func (u *DefaultDocumentUploader) PostDocument(optimize bool, concurrent int) er
 	eg.Go(func() error {
 		select {
 		case <-quit:
-			log.Print("post interrupted")
+			log.Print("post interrupted.")
 			return failure.New(Interrupt, failure.Message("post interrupted"))
+		case <-ctx.Done():
+			log.Print("interrupt observer canceled.")
+			return nil
 		case <-finish:
 			return nil
 		}
 	})
-	eg.Go(func() error {
-		wg.Wait()
-		finish <- msg{}
-		return nil
-	})
-
 	f := func(p string) error {
 		file, err := os.Open(p)
 		if err != nil {
@@ -113,19 +110,33 @@ func (u *DefaultDocumentUploader) PostDocument(optimize bool, concurrent int) er
 		return nil
 	})
 
-	if err := eg.Wait(); err != nil {
-		defer u.core.Rollback()
-		return failure.Wrap(err)
-	}
+	eg.Go(func() error {
+		wg.Wait()
 
-	if optimize {
-		if _, err := u.core.Optimize(); err != nil {
-			return failure.Translate(err, PostError, failure.Message("failed to optimize index"))
+		select {
+		case <-ctx.Done():
+			log.Print("post canceled. start rollback")
+			if _, err := u.core.Rollback(); err != nil {
+				return failure.Translate(err, PostError, failure.Message("failed to rollback index"))
+			}
+		default:
+			if optimize {
+				if _, err := u.core.Optimize(); err != nil {
+					return failure.Translate(err, PostError, failure.Message("failed to optimize index"))
+				}
+			} else {
+				if _, err := u.core.Commit(); err != nil {
+					return failure.Translate(err, PostError, failure.Message("failed to commit index"))
+				}
+			}
 		}
-	} else {
-		if _, err := u.core.Commit(); err != nil {
-			return failure.Translate(err, PostError, failure.Message("failed to commit index"))
-		}
+
+		finish <- msg{}
+		return nil
+	})
+
+	if err := eg.Wait(); err != nil {
+		return failure.Wrap(err)
 	}
 
 	return nil
