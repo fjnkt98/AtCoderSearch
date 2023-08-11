@@ -112,28 +112,33 @@ func (p *SearchParams) fq() []string {
 
 	fq := make([]string, 0)
 
-	countries := make([]string, 0, len(p.Filter.Country))
-	for _, c := range p.Filter.Country {
-		category := solr.Sanitize(c)
-		if c == "" {
-			continue
-		}
-		countries = append(countries, category)
+	if c := acs.SanitizeStrings(p.Filter.Country); len(c) != 0 {
+		fq = append(fq, fmt.Sprintf("{!tag=country}country:(%s)", strings.Join(c, " OR ")))
 	}
-
-	fq = append(fq, fmt.Sprintf("{!tag=country}country:(%s)", strings.Join(countries, " OR ")))
-	fq = append(fq, fmt.Sprintf("{!tag=rating}rating:%s", p.Filter.Rating.ToRange()))
-	fq = append(fq, fmt.Sprintf("{!tag=birth_year}birth_year:%s", p.Filter.BirthYear.ToRange()))
-	fq = append(fq, fmt.Sprintf("{!tag=join_count}join_count:%s", p.Filter.JoinCount.ToRange()))
+	if p.Filter.Rating != nil {
+		if r := p.Filter.Rating.ToRange(); r != "" {
+			fq = append(fq, fmt.Sprintf("{!tag=rating}rating:%s", r))
+		}
+	}
+	if p.Filter.BirthYear != nil {
+		if r := p.Filter.BirthYear.ToRange(); r != "" {
+			fq = append(fq, fmt.Sprintf("{!tag=birth_year}birth_year:%s", p.Filter.BirthYear.ToRange()))
+		}
+	}
+	if p.Filter.JoinCount != nil {
+		if r := p.Filter.JoinCount.ToRange(); r != "" {
+			fq = append(fq, fmt.Sprintf("{!tag=join_count}join_count:%s", p.Filter.JoinCount.ToRange()))
+		}
+	}
 
 	return fq
 }
 
 type FilterParams struct {
-	Rating    acs.IntegerRange[int] `json:"rating,omitempty" schema:"rating"`
-	BirthYear acs.IntegerRange[int] `json:"birth_year,omitempty" schema:"birth_year"`
-	JoinCount acs.IntegerRange[int] `json:"join_count,omitempty" schema:"join_count"`
-	Country   []string              `json:"country,omitempty" schema:"country"`
+	Rating    *acs.IntegerRange[int] `json:"rating,omitempty" schema:"rating"`
+	BirthYear *acs.IntegerRange[int] `json:"birth_year,omitempty" schema:"birth_year"`
+	JoinCount *acs.IntegerRange[int] `json:"join_count,omitempty" schema:"join_count"`
+	Country   []string               `json:"country,omitempty" schema:"country"`
 }
 
 type Response struct {
