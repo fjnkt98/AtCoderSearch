@@ -19,11 +19,11 @@ import (
 )
 
 type SearchParams struct {
-	Limit  uint          `validate:"lte=200" json:"limit,omitempty" schema:"limit"`
+	Limit  uint          `json:"limit,omitempty" schema:"limit" validate:"lte=200"`
 	Page   uint          `json:"page,omitempty" schema:"page"`
 	Filter *FilterParams `json:"filter,omitempty" schema:"filter"`
-	Sort   string        `validate:"omitempty,oneof=-score execution_time -execution_time submitted_at -submitted_at point -point length -length" json:"sort,omitempty" schema:"sort"`
-	Facet  []string      `validate:"dive,oneof=problem_id user_id language length result execution_time" json:"facet,omitempty" schema:"facet"`
+	Sort   string        `json:"sort,omitempty" schema:"sort" validate:"omitempty,oneof=-score execution_time -execution_time submitted_at -submitted_at point -point length -length"`
+	Facet  []string      `json:"facet,omitempty" schema:"facet" validate:"dive,oneof=problem_id user_id language length result execution_time"`
 }
 
 func (p *SearchParams) ToQuery() url.Values {
@@ -119,16 +119,6 @@ func (p *SearchParams) facet() string {
 	return string(facet)
 }
 
-func sanitizeStrings(s []string) []string {
-	sanitized := make([]string, 0, len(s))
-	for _, e := range s {
-		if e := solr.Sanitize(e); e != "" {
-			sanitized = append(sanitized, e)
-		}
-	}
-	return sanitized
-}
-
 func (p *SearchParams) fq() []string {
 	fq := make([]string, 0)
 	if p.Filter == nil {
@@ -144,34 +134,42 @@ func (p *SearchParams) fq() []string {
 	}
 
 	if p.Filter.EpochSecond != nil {
-		fq = append(fq, fmt.Sprintf("{!tag=epoch_second}epoch_second:%s", p.Filter.EpochSecond.ToRange()))
+		if r := p.Filter.EpochSecond.ToRange(); r != "" {
+			fq = append(fq, fmt.Sprintf("{!tag=epoch_second}epoch_second:%s", r))
+		}
 	}
 	if p.Filter.Point != nil {
-		fq = append(fq, fmt.Sprintf("{!tag=point}point:%s", p.Filter.Point.ToRange()))
+		if r := p.Filter.Point.ToRange(); r != "" {
+			fq = append(fq, fmt.Sprintf("{!tag=point}point:%s", r))
+		}
 	}
 	if p.Filter.Length != nil {
-		fq = append(fq, fmt.Sprintf("{!tag=length}length:%s", p.Filter.Length.ToRange()))
+		if r := p.Filter.Length.ToRange(); r != "" {
+			fq = append(fq, fmt.Sprintf("{!tag=length}length:%s", r))
+		}
 	}
 	if p.Filter.ExecutionTime != nil {
-		fq = append(fq, fmt.Sprintf("{!tag=execution_time}execution_time:%s", p.Filter.ExecutionTime.ToRange()))
+		if r := p.Filter.ExecutionTime.ToRange(); r != "" {
+			fq = append(fq, fmt.Sprintf("{!tag=execution_time}execution_time:%s", r))
+		}
 	}
 
-	if expr := strings.Join(sanitizeStrings(p.Filter.ProblemID), " OR "); expr != "" {
+	if expr := strings.Join(acs.SanitizeStrings(p.Filter.ProblemID), " OR "); expr != "" {
 		fq = append(fq, fmt.Sprintf("{!tag=problem_id}problem_id:(%s)", expr))
 	}
-	if expr := strings.Join(sanitizeStrings(p.Filter.ContestID), " OR "); expr != "" {
+	if expr := strings.Join(acs.SanitizeStrings(p.Filter.ContestID), " OR "); expr != "" {
 		fq = append(fq, fmt.Sprintf("{!tag=contest_id}contest_id:(%s)", expr))
 	}
-	if expr := strings.Join(sanitizeStrings(p.Filter.Category), " OR "); expr != "" {
+	if expr := strings.Join(acs.SanitizeStrings(p.Filter.Category), " OR "); expr != "" {
 		fq = append(fq, fmt.Sprintf("{!tag=category}category:(%s)", expr))
 	}
-	if expr := strings.Join(sanitizeStrings(p.Filter.UserID), " OR "); expr != "" {
+	if expr := strings.Join(acs.SanitizeStrings(p.Filter.UserID), " OR "); expr != "" {
 		fq = append(fq, fmt.Sprintf("{!tag=user_id}user_id:(%s)", expr))
 	}
-	if expr := strings.Join(sanitizeStrings(p.Filter.Language), " OR "); expr != "" {
+	if expr := strings.Join(acs.SanitizeStrings(p.Filter.Language), " OR "); expr != "" {
 		fq = append(fq, fmt.Sprintf("{!tag=language}language:(%s)", expr))
 	}
-	if expr := strings.Join(sanitizeStrings(p.Filter.Result), " OR "); expr != "" {
+	if expr := strings.Join(acs.SanitizeStrings(p.Filter.Result), " OR "); expr != "" {
 		fq = append(fq, fmt.Sprintf("{!tag=result}result:(%s)", expr))
 	}
 
@@ -270,7 +268,7 @@ func (s *Searcher) HandleSearch(w http.ResponseWriter, r *http.Request) {
 		if err := s.validator.Struct(params); err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			log.Printf("ERROR: validation error: %+v, `%s`: %s", params, r.URL.RawQuery, err.Error())
-			encoder.Encode(NewErrorResponse(fmt.Sprintf("validation error: %+v, `%s`: %s", params, r.URL.RawQuery, err.Error()), nil))
+			encoder.Encode(NewErrorResponse(fmt.Sprintf("validation error, `%s`: %s", r.URL.RawQuery, err.Error()), params))
 			return
 		}
 
