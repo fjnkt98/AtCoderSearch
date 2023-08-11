@@ -21,12 +21,12 @@ import (
 )
 
 type SearchParams struct {
-	Keyword string        `validate:"lte=200" json:"keyword,omitempty"`
-	Limit   uint          `validate:"lte=200" json:"limit,omitempty"`
-	Page    uint          `json:"page,omitempty"`
-	Filter  *FilterParams `json:"filter,omitempty"`
-	Sort    string        `validate:"omitempty,oneof=-score start_at -start_at difficulty -difficulty" json:"sort,omitempty"`
-	Facet   []string      `validate:"dive,oneof=category color" json:"facet,omitempty"`
+	Keyword string        `json:"keyword,omitempty" schema:"keyword" validate:"lte=200"`
+	Limit   uint          `json:"limit,omitempty" schema:"limit" validate:"lte=200"`
+	Page    uint          `json:"page,omitempty" schema:"page"`
+	Filter  *FilterParams `json:"filter,omitempty" schema:"filter"`
+	Sort    string        `json:"sort,omitempty" schema:"sort" validate:"omitempty,oneof=-score start_at -start_at difficulty -difficulty"`
+	Facet   []string      `json:"facet,omitempty" schema:"facet" validate:"dive,oneof=category color"`
 }
 
 func (p *SearchParams) ToQuery() url.Values {
@@ -89,7 +89,7 @@ func (p *SearchParams) facet() string {
 
 	facet, err := json.Marshal(facets)
 	if err != nil {
-		log.Printf("WARN: failed to marshal json.facet parameter from %+v", p.Facet)
+		log.Printf("WARN: failed to marshal json.facet parameter from %v", p.Facet)
 		return ""
 	}
 
@@ -103,24 +103,21 @@ func (p *SearchParams) fq() []string {
 
 	fq := make([]string, 0)
 
-	categories := make([]string, 0, len(p.Filter.Category))
-	for _, c := range p.Filter.Category {
-		category := solr.Sanitize(c)
-		if c == "" {
-			continue
-		}
-		categories = append(categories, category)
+	if c := acs.SanitizeStrings(p.Filter.Category); len(c) != 0 {
+		fq = append(fq, fmt.Sprintf("{!tag=category}category:(%s)", strings.Join(c, " OR ")))
 	}
-
-	fq = append(fq, fmt.Sprintf("{!tag=category}category:(%s)", strings.Join(categories, " OR ")))
-	fq = append(fq, fmt.Sprintf("{!tag=difficulty}difficulty:%s", p.Filter.Difficulty.ToRange()))
+	if p.Filter.Difficulty != nil {
+		if r := p.Filter.Difficulty.ToRange(); r != "" {
+			fq = append(fq, fmt.Sprintf("{!tag=difficulty}difficulty:%s", r))
+		}
+	}
 
 	return fq
 }
 
 type FilterParams struct {
-	Category   []string             `json:"category,omitempty"`
-	Difficulty acs.IntegerRange[int] `json:"difficulty,omitempty"`
+	Category   []string               `json:"category,omitempty" schema:"category"`
+	Difficulty *acs.IntegerRange[int] `json:"difficulty,omitempty" schema:"difficulty"`
 }
 
 type Response struct {
@@ -145,8 +142,8 @@ type FacetCounts struct {
 }
 
 type FacetResponse struct {
-	Category []FacetPart `json:"category"`
-	Color    []FacetPart `json:"color"`
+	Category []FacetPart `json:"category,omitempty"`
+	Color    []FacetPart `json:"color,omitempty"`
 }
 
 type FacetPart struct {
@@ -154,17 +151,17 @@ type FacetPart struct {
 	Count uint   `json:"count"`
 }
 
-func NewFacetResponse(facet FacetCounts) FacetResponse {
-	category := make([]FacetPart, len(facet.Category.Buckets))
-	for i, b := range facet.Category.Buckets {
+func (f *FacetCounts) Into() FacetResponse {
+	category := make([]FacetPart, len(f.Category.Buckets))
+	for i, b := range f.Category.Buckets {
 		category[i] = FacetPart{
 			Label: b.Val,
 			Count: b.Count,
 		}
 	}
 
-	color := make([]FacetPart, len(facet.Color.Buckets))
-	for i, b := range facet.Color.Buckets {
+	color := make([]FacetPart, len(f.Color.Buckets))
+	for i, b := range f.Color.Buckets {
 		color[i] = FacetPart{
 			Label: b.Val,
 			Count: b.Count,
@@ -233,7 +230,7 @@ func (s *Searcher) HandleSearch(w http.ResponseWriter, r *http.Request) {
 		if err := s.validator.Struct(params); err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			log.Printf("ERROR: validation error: %+v, `%s`: %s", params, r.URL.RawQuery, err.Error())
-			encoder.Encode(NewErrorResponse(fmt.Sprintf("validation error: %+v, `%s`: %s", params, r.URL.RawQuery, err.Error()), nil))
+			encoder.Encode(NewErrorResponse(fmt.Sprintf("validation error `%s`: %s", r.URL.RawQuery, err.Error()), params))
 			return
 		}
 
@@ -264,8 +261,8 @@ func search(core *solr.SolrCore[Response, FacetCounts], params SearchParams) (in
 			Index:  (res.Response.Start / uint(rows)) + 1,
 			Count:  uint(len(res.Response.Docs)),
 			Pages:  (res.Response.NumFound + uint(rows) - 1) / uint(rows),
-			Params: &params,
-			Facet:  NewFacetResponse(*res.FacetCounts),
+			Params: params,
+			Facet:  res.FacetCounts.Into(),
 		},
 		Items: res.Response.Docs,
 	}

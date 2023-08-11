@@ -170,33 +170,33 @@ type FacetPart struct {
 	Count uint   `json:"count"`
 }
 
-func NewFacetResponse(facet FacetCounts) FacetResponse {
-	color := make([]FacetPart, len(facet.Color.Buckets))
-	for i, b := range facet.Color.Buckets {
+func (f *FacetCounts) Into() FacetResponse {
+	color := make([]FacetPart, len(f.Color.Buckets))
+	for i, b := range f.Color.Buckets {
 		color[i] = FacetPart{
 			Label: b.Val,
 			Count: b.Count,
 		}
 	}
 
-	birthYear := make([]FacetPart, len(facet.BirthYear.Buckets))
-	for i, b := range facet.BirthYear.Buckets {
+	birthYear := make([]FacetPart, len(f.BirthYear.Buckets))
+	for i, b := range f.BirthYear.Buckets {
 		birthYear[i] = FacetPart{
 			Label: b.Val,
 			Count: b.Count,
 		}
 	}
 
-	joinCount := make([]FacetPart, len(facet.JoinCount.Buckets))
-	for i, b := range facet.JoinCount.Buckets {
+	joinCount := make([]FacetPart, len(f.JoinCount.Buckets))
+	for i, b := range f.JoinCount.Buckets {
 		joinCount[i] = FacetPart{
 			Label: b.Val,
 			Count: b.Count,
 		}
 	}
 
-	country := make([]FacetPart, len(facet.Country.Buckets))
-	for i, b := range facet.Country.Buckets {
+	country := make([]FacetPart, len(f.Country.Buckets))
+	for i, b := range f.Country.Buckets {
 		country[i] = FacetPart{
 			Label: b.Val,
 			Count: b.Count,
@@ -267,7 +267,7 @@ func (s *Searcher) HandleSearch(w http.ResponseWriter, r *http.Request) {
 		if err := s.validator.Struct(params); err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			log.Printf("ERROR: validation error: %+v, `%s`: %s", params, r.URL.RawQuery, err.Error())
-			encoder.Encode(NewErrorResponse(fmt.Sprintf("validation error: %+v, `%s`: %s", params, r.URL.RawQuery, err.Error()), nil))
+			encoder.Encode(NewErrorResponse(fmt.Sprintf("validation error `%s`: %s", r.URL.RawQuery, err.Error()), params))
 			return
 		}
 
@@ -298,8 +298,8 @@ func search(core *solr.SolrCore[Response, FacetCounts], params SearchParams) (in
 			Index:  (res.Response.Start / uint(rows)) + 1,
 			Count:  uint(len(res.Response.Docs)),
 			Pages:  (res.Response.NumFound + uint(rows) - 1) / uint(rows),
-			Params: &params,
-			Facet:  NewFacetResponse(*res.FacetCounts),
+			Params: params,
+			Facet:  res.FacetCounts.Into(),
 		},
 		Items: res.Response.Docs,
 	}

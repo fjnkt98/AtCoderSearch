@@ -84,8 +84,8 @@ type SolrSimpleResponse struct {
 type SolrSelectResponse[D any, F any] struct {
 	Header      SolrResponseHeader `json:"responseHeader"`
 	Response    SolrSelectBody[D]  `json:"response"`
-	FacetCounts *F                 `json:"facets"`
-	Error       *SolrErrorInfo     `json:"error"`
+	FacetCounts F                 `json:"facets"`
+	Error       SolrErrorInfo     `json:"error"`
 }
 
 type SolrSelectBody[D any] struct {
