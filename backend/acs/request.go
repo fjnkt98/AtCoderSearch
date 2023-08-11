@@ -4,6 +4,7 @@ import (
 	"fjnkt98/atcodersearch/solr"
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 
 	"golang.org/x/exp/constraints"
@@ -88,4 +89,14 @@ func (r *DateRange) ToRange() string {
 	}
 
 	return fmt.Sprintf("[%s TO %s]", from, to)
+}
+
+func SanitizeStrings(s []string) []string {
+	sanitized := make([]string, 0, len(s))
+	for _, e := range s {
+		if e := strings.TrimSpace(solr.Sanitize(e)); e != "" {
+			sanitized = append(sanitized, e)
+		}
+	}
+	return sanitized
 }
