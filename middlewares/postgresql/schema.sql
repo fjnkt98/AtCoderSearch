@@ -84,6 +84,7 @@ CREATE INDEX "category_relationships_from_index" ON "category_relationships" ("f
 CREATE INDEX "category_relationships_to_index" ON "category_relationships" ("to");
 
 CREATE TABLE "update_history" (
+    "id" bigserial NOT NULL,
     "domain" text NOT NULL,
     "started_at" timestamp WITH time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     "finished_at" timestamp WITH time zone NOT NULL,
@@ -99,7 +100,7 @@ CREATE INDEX "update_history_domain_index" ON "update_history" ("domain");
 CREATE TABLE "submission_crawl_history" (
     "id" bigserial NOT NULL,
     "contest_id" text NOT NULL,
-    "start_at" timestamp WITH time zone NOT NULL
+    "started_at" timestamp WITH time zone NOT NULL
 );
 
 CREATE INDEX "submission_crawl_history_contest_id_start_at_index" ON "submission_crawl_history" ("contest_id", "start_at");

@@ -1,6 +1,8 @@
 package submission
 
 import (
+	"database/sql"
+	"errors"
 	"fjnkt98/atcodersearch/atcoder"
 	"log"
 	"strconv"
@@ -49,45 +51,16 @@ func (c *Crawler) getContestIDs() ([]string, error) {
 	return ids, nil
 }
 
-func (c *Crawler) crawl(contestID string, period int64, duration int64) error {
-	log.Printf("fetch submissions at page %d of the contest `%s`", 1, contestID)
-	list, err := c.client.FetchSubmissionList(contestID, 1)
-	if err != nil {
-		return failure.Translate(err, CrawlError, failure.Context{"contestID": contestID}, failure.Message("failed to crawl submissions"))
-	}
-
-	if err := c.save(list.Submissions); err != nil {
-		return failure.Translate(err, DBError, failure.Context{"contestID": contestID}, failure.Message("failed to save submissions"))
-	}
-
-	time.Sleep(time.Duration(duration) * time.Millisecond)
-
-	for i := 2; i <= int(list.MaxPage); i++ {
-		log.Printf("fetch submissions at page %d of the contest `%s`", i, contestID)
-		list, err = c.client.FetchSubmissionList(contestID, uint(i))
-		if err != nil {
-			return failure.Translate(err, CrawlError, failure.Context{"contestID": contestID}, failure.Message("failed to crawl submissions"))
-		}
-
-		if err := c.save(list.Submissions); err != nil {
-			return failure.Translate(err, DBError, failure.Context{"contestID": contestID}, failure.Message("failed to save submissions"))
-		}
-		time.Sleep(time.Duration(duration) * time.Millisecond)
-	}
-
-	return nil
-}
-
-func (c *Crawler) save(submissions []atcoder.Submission) error {
+func (c *Crawler) crawl(contestID string, period int64, duration int) error {
 	tx, err := c.db.Beginx()
 	if err != nil {
 		return failure.Translate(err, DBError, failure.Message("failed to start transaction to save submission"))
 	}
 	defer tx.Rollback()
 
-	for _, s := range submissions {
-		log.Printf("save submission %v", s)
-		if _, err := tx.Exec(`
+	save := func(submissions []atcoder.Submission) error {
+		for _, s := range submissions {
+			if _, err := tx.Exec(`
 			INSERT INTO "submissions" VALUES(
 				$1::bigint,
 				$2::bigint,
@@ -101,19 +74,49 @@ func (c *Crawler) save(submissions []atcoder.Submission) error {
 				$10::bigint
 			)
 			ON CONFLICT DO NOTHING;`,
-			s.ID,
-			s.EpochSecond,
-			s.ProblemID,
-			s.ContestID,
-			s.UserID,
-			s.Language,
-			s.Point,
-			s.Length,
-			s.Result,
-			s.ExecutionTime,
-		); err != nil {
-			return failure.Translate(err, DBError, failure.Context{"contestID": s.ContestID, "id": strconv.Itoa(int(s.ID))}, failure.Message("failed to exec sql to save submission"))
+				s.ID,
+				s.EpochSecond,
+				s.ProblemID,
+				s.ContestID,
+				s.UserID,
+				s.Language,
+				s.Point,
+				s.Length,
+				s.Result,
+				s.ExecutionTime,
+			); err != nil {
+				return failure.Translate(err, DBError, failure.Context{"contestID": s.ContestID, "id": strconv.Itoa(int(s.ID))}, failure.Message("failed to exec sql to save submission"))
+			}
 		}
+		return nil
+	}
+
+	list, err := c.client.FetchSubmissionList(contestID, 1)
+	if err != nil {
+		return failure.Translate(err, CrawlError, failure.Context{"contestID": contestID}, failure.Message("failed to crawl submissions"))
+	}
+	if err := save(list.Submissions); err != nil {
+		return failure.Wrap(err)
+	}
+
+	time.Sleep(time.Duration(duration) * time.Millisecond)
+
+	for i := 2; i <= int(list.MaxPage); i++ {
+		log.Printf("fetch submissions at page %d of the contest `%s`", i, contestID)
+		list, err = c.client.FetchSubmissionList(contestID, uint(i))
+		if err != nil {
+			return failure.Translate(err, CrawlError, failure.Context{"contestID": contestID}, failure.Message("failed to crawl submissions"))
+		}
+
+		if list.Submissions[0].EpochSecond < period {
+			log.Printf("All submissions after page `%d` have been crawled. Break crawling the contest `%s`", i, contestID)
+			break
+		}
+
+		if err := save(list.Submissions); err != nil {
+			return failure.Wrap(err)
+		}
+		time.Sleep(time.Duration(duration) * time.Millisecond)
 	}
 
 	if err := tx.Commit(); err != nil {
@@ -123,19 +126,83 @@ func (c *Crawler) save(submissions []atcoder.Submission) error {
 	return nil
 }
 
-func (c *Crawler) Run(duration int64, period int64) error {
+func (c *Crawler) Run(duration int) error {
 	ids, err := c.getContestIDs()
 	if err != nil {
 		return err
 	}
 
 	for _, id := range ids {
+		history := NewCrawlHistory(c.db, id)
+		period, err := history.GetLatestHistory()
 		if err != nil {
 			return failure.Wrap(err)
 		}
-		if err := c.crawl(id, period, duration); err != nil {
+		if err := c.crawl(id, period.Unix(), duration); err != nil {
 			return failure.Wrap(err)
 		}
+		history.Finish()
+	}
+
+	return nil
+}
+
+type CrawlHistory struct {
+	db        *sqlx.DB
+	StartedAt time.Time
+	ContestID string
+}
+
+func NewCrawlHistory(db *sqlx.DB, contestID string) CrawlHistory {
+	return CrawlHistory{
+		db:        db,
+		StartedAt: time.Now(),
+		ContestID: contestID,
+	}
+}
+
+func (h *CrawlHistory) GetLatestHistory() (time.Time, error) {
+	rows, err := h.db.Query(
+		`SELECT "started_at" FROM "submission_crawl_history" WHERE "contest_id" = $1::text ORDER BY "started_at" DESC LIMIT 1;`,
+		h.ContestID,
+	)
+	if err != nil {
+		return time.Time{}, failure.Translate(err, DBError, failure.Message("failed to get latest crawl history"))
+	}
+
+	defer rows.Close()
+	var startedAt time.Time
+	for rows.Next() {
+		if err := rows.Scan(&startedAt); err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				log.Printf("`submission_crawl_history` table is empty in term of contest id `%s`", h.ContestID)
+				return time.Time{}, nil
+			} else {
+				return time.Time{}, failure.Translate(err, DBError, failure.Message("failed to get latest crawl history"))
+			}
+		}
+	}
+
+	return startedAt, nil
+}
+
+func (h *CrawlHistory) Finish() error {
+	tx, err := h.db.Beginx()
+	if err != nil {
+		return failure.Translate(err, DBError, failure.Message("failed to start transaction to save submission crawl history"))
+	}
+	defer tx.Rollback()
+
+	if _, err := tx.Exec(
+		`INSERT INTO "submission_crawl_history" ("contest_id", "started_at") VALUES ($1::text, $2::timestamp);`,
+		h.ContestID,
+		h.StartedAt,
+	); err != nil {
+		return failure.Translate(err, DBError, failure.Message("failed to exec sql to save submission crawl history"))
+	}
+
+	if err := tx.Commit(); err != nil {
+		return failure.Translate(err, DBError, failure.Message("failed to commit transaction to save submission crawl history"))
 	}
 
 	return nil
