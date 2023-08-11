@@ -3,10 +3,9 @@ package acs
 import "github.com/morikuni/failure"
 
 const (
-	FileOperationError failure.StringCode = "FileOperationError"
 	ConvertError       failure.StringCode = "ConvertError"
-	WriteError         failure.StringCode = "WriteError"
+	FileOperationError failure.StringCode = "FileOperationError"
 	GenerateError      failure.StringCode = "GenerateError"
-	PostError          failure.StringCode = "PostError"
 	Interrupt          failure.StringCode = "Interrupt"
+	PostError          failure.StringCode = "PostError"
 )
