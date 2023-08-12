@@ -142,35 +142,14 @@ type FacetCounts struct {
 }
 
 type FacetResponse struct {
-	Category []FacetPart `json:"category,omitempty"`
-	Color    []FacetPart `json:"color,omitempty"`
-}
-
-type FacetPart struct {
-	Label string `json:"label"`
-	Count uint   `json:"count"`
+	Category []acs.FacetPart `json:"category,omitempty"`
+	Color    []acs.FacetPart `json:"color,omitempty"`
 }
 
 func (f *FacetCounts) Into() FacetResponse {
-	category := make([]FacetPart, len(f.Category.Buckets))
-	for i, b := range f.Category.Buckets {
-		category[i] = FacetPart{
-			Label: b.Val,
-			Count: b.Count,
-		}
-	}
-
-	color := make([]FacetPart, len(f.Color.Buckets))
-	for i, b := range f.Color.Buckets {
-		color[i] = FacetPart{
-			Label: b.Val,
-			Count: b.Count,
-		}
-	}
-
 	return FacetResponse{
-		Category: category,
-		Color:    color,
+		Category: acs.ConvertBucket[string](f.Category.Buckets),
+		Color:    acs.ConvertBucket[string](f.Color.Buckets),
 	}
 }
 

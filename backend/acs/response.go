@@ -1,6 +1,10 @@
 package acs
 
-import "time"
+import (
+	"fjnkt98/atcodersearch/solr"
+	"strconv"
+	"time"
+)
 
 type SearchResultResponse[D any] struct {
 	Stats   SearchResultStats `json:"stats,omitempty"`
@@ -30,4 +34,34 @@ type QueryLog struct {
 	Time      uint      `json:"time"`
 	Hits      uint      `json:"hits"`
 	Params    any       `json:"params"`
+}
+
+type FacetPart struct {
+	Label string `json:"label"`
+	Count uint   `json:"count"`
+}
+
+func ConvertBucket[T solr.BucketElement](b []solr.Bucket[T]) []FacetPart {
+	p := make([]FacetPart, len(b))
+	for i, b := range b {
+		var label string
+		switch v := any(b.Val).(type) {
+		case int:
+			label = strconv.Itoa(v)
+		case uint:
+			label = strconv.Itoa(int(v))
+		case float64:
+			label = strconv.FormatFloat(v, 'f', 6, 64)
+		case time.Time:
+			label = v.String()
+		case string:
+			label = v
+		}
+		p[i] = FacetPart {
+			Label: label,
+			Count: b.Count,
+		}
+	}
+
+	return nil
 }

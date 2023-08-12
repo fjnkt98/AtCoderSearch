@@ -84,8 +84,8 @@ type SolrSimpleResponse struct {
 type SolrSelectResponse[D any, F any] struct {
 	Header      SolrResponseHeader `json:"responseHeader"`
 	Response    SolrSelectBody[D]  `json:"response"`
-	FacetCounts F                 `json:"facets"`
-	Error       SolrErrorInfo     `json:"error"`
+	FacetCounts F                  `json:"facets"`
+	Error       SolrErrorInfo      `json:"error"`
 }
 
 type SolrSelectBody[D any] struct {
@@ -96,7 +96,7 @@ type SolrSelectBody[D any] struct {
 }
 
 type BucketElement interface {
-	int | int32 | int64 | uint | uint64 | float32 | float64 | time.Time | string
+	int | uint | float64 | time.Time | string
 }
 
 type Bucket[T BucketElement] struct {

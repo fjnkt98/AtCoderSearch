@@ -212,6 +212,26 @@ type FacetCounts struct {
 	ExecutionTime solr.SolrRangeFacetCount[int] `json:"execution_time,omitempty"`
 }
 
+func (f *FacetCounts) Into() FacetResponse {
+	return FacetResponse{
+		ProblemID:     acs.ConvertBucket[string](f.ProblemID.Buckets),
+		UserID:        acs.ConvertBucket[string](f.UserID.Buckets),
+		Language:      acs.ConvertBucket[string](f.Language.Buckets),
+		Result:        acs.ConvertBucket[string](f.Result.Buckets),
+		Length:        acs.ConvertBucket[int](f.Length.Buckets),
+		ExecutionTime: acs.ConvertBucket[int](f.ExecutionTime.Buckets),
+	}
+}
+
+type FacetResponse struct {
+	ProblemID     []acs.FacetPart `json:"problem_id,omitempty"`
+	UserID        []acs.FacetPart `json:"user_id,omitempty"`
+	Language      []acs.FacetPart `json:"language,omitempty"`
+	Result        []acs.FacetPart `json:"result,omitempty"`
+	Length        []acs.FacetPart `json:"length,omitempty"`
+	ExecutionTime []acs.FacetPart `json:"execution_time,omitempty"`
+}
+
 type Searcher struct {
 	core      *solr.SolrCore[Response, FacetCounts]
 	validator *validator.Validate
