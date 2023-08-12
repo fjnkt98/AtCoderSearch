@@ -61,7 +61,8 @@ CREATE TABLE "submissions" (
     "point" double precision,
     "length" integer,
     "result" text,
-    "execution_time" integer
+    "execution_time" integer,
+    PRIMARY KEY ("id")
 );
 
 CREATE INDEX "submissions_contest_id_index" ON "submissions" ("contest_id");
@@ -100,7 +101,7 @@ CREATE INDEX "update_history_domain_index" ON "update_history" ("domain");
 CREATE TABLE "submission_crawl_history" (
     "id" bigserial NOT NULL,
     "contest_id" text NOT NULL,
-    "started_at" timestamp WITH time zone NOT NULL
+    "started_at" bigint NOT NULL
 );
 
-CREATE INDEX "submission_crawl_history_contest_id_start_at_index" ON "submission_crawl_history" ("contest_id", "start_at");
+CREATE INDEX "submission_crawl_history_contest_id_start_at_index" ON "submission_crawl_history" ("contest_id", "started_at");

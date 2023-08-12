@@ -91,6 +91,7 @@ func (c *Crawler) crawl(contestID string, period int64, duration int) error {
 		return nil
 	}
 
+	log.Printf("fetch submissions at page 1 of the contest `%s`", contestID)
 	list, err := c.client.FetchSubmissionList(contestID, 1)
 	if err != nil {
 		return failure.Translate(err, CrawlError, failure.Context{"contestID": contestID}, failure.Message("failed to crawl submissions"))
@@ -102,7 +103,7 @@ func (c *Crawler) crawl(contestID string, period int64, duration int) error {
 	time.Sleep(time.Duration(duration) * time.Millisecond)
 
 	for i := 2; i <= int(list.MaxPage); i++ {
-		log.Printf("fetch submissions at page %d of the contest `%s`", i, contestID)
+		log.Printf("fetch submissions at page %d / %d of the contest `%s`", i, list.MaxPage, contestID)
 		list, err = c.client.FetchSubmissionList(contestID, uint(i))
 		if err != nil {
 			return failure.Translate(err, CrawlError, failure.Context{"contestID": contestID}, failure.Message("failed to crawl submissions"))
@@ -119,6 +120,7 @@ func (c *Crawler) crawl(contestID string, period int64, duration int) error {
 		time.Sleep(time.Duration(duration) * time.Millisecond)
 	}
 
+	log.Print("commit transaction")
 	if err := tx.Commit(); err != nil {
 		return failure.Translate(err, DBError, failure.Message("failed to commit transaction to save submissions"))
 	}
@@ -138,7 +140,7 @@ func (c *Crawler) Run(duration int) error {
 		if err != nil {
 			return failure.Wrap(err)
 		}
-		if err := c.crawl(id, period.Unix(), duration); err != nil {
+		if err := c.crawl(id, int64(period), duration); err != nil {
 			return failure.Wrap(err)
 		}
 		history.Finish()
@@ -149,36 +151,36 @@ func (c *Crawler) Run(duration int) error {
 
 type CrawlHistory struct {
 	db        *sqlx.DB
-	StartedAt time.Time
+	StartedAt int
 	ContestID string
 }
 
 func NewCrawlHistory(db *sqlx.DB, contestID string) CrawlHistory {
 	return CrawlHistory{
 		db:        db,
-		StartedAt: time.Now(),
+		StartedAt: int(time.Now().Unix()),
 		ContestID: contestID,
 	}
 }
 
-func (h *CrawlHistory) GetLatestHistory() (time.Time, error) {
+func (h *CrawlHistory) GetLatestHistory() (int, error) {
 	rows, err := h.db.Query(
 		`SELECT "started_at" FROM "submission_crawl_history" WHERE "contest_id" = $1::text ORDER BY "started_at" DESC LIMIT 1;`,
 		h.ContestID,
 	)
 	if err != nil {
-		return time.Time{}, failure.Translate(err, DBError, failure.Message("failed to get latest crawl history"))
+		return 0, failure.Translate(err, DBError, failure.Message("failed to get latest crawl history"))
 	}
 
 	defer rows.Close()
-	var startedAt time.Time
+	var startedAt int
 	for rows.Next() {
 		if err := rows.Scan(&startedAt); err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
 				log.Printf("`submission_crawl_history` table is empty in term of contest id `%s`", h.ContestID)
-				return time.Time{}, nil
+				return 0, nil
 			} else {
-				return time.Time{}, failure.Translate(err, DBError, failure.Message("failed to get latest crawl history"))
+				return 0, failure.Translate(err, DBError, failure.Message("failed to get latest crawl history"))
 			}
 		}
 	}
@@ -194,7 +196,7 @@ func (h *CrawlHistory) Finish() error {
 	defer tx.Rollback()
 
 	if _, err := tx.Exec(
-		`INSERT INTO "submission_crawl_history" ("contest_id", "started_at") VALUES ($1::text, $2::timestamp);`,
+		`INSERT INTO "submission_crawl_history" ("contest_id", "started_at") VALUES ($1::text, $2::bigint);`,
 		h.ContestID,
 		h.StartedAt,
 	); err != nil {
