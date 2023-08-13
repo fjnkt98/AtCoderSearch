@@ -63,5 +63,5 @@ func ConvertBucket[T solr.BucketElement](b []solr.Bucket[T]) []FacetPart {
 		}
 	}
 
-	return nil
+	return p
 }
