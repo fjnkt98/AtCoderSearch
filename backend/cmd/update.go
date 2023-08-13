@@ -6,6 +6,7 @@ package cmd
 import (
 	"encoding/json"
 	"fjnkt98/atcodersearch/problem"
+	"fjnkt98/atcodersearch/recommend"
 	"fjnkt98/atcodersearch/solr"
 	"fjnkt98/atcodersearch/submission"
 	"fjnkt98/atcodersearch/user"
@@ -200,6 +201,60 @@ var updateSubmissionCmd = &cobra.Command{
 	},
 }
 
+var updateRecommendCmd = &cobra.Command{
+	Use:   "recommend",
+	Short: "update recommend index",
+	Long:  "update recommend index",
+	Run: func(cmd *cobra.Command, args []string) {
+		cfg := recommend.UpdateConfig{}
+		var err error
+
+		if cfg.SaveDir, err = GetSaveDir(cmd, "recommend"); err != nil {
+			log.Fatalf("%+v", err)
+		}
+		if cfg.Optimize, err = cmd.Flags().GetBool("optimize"); err != nil {
+			log.Fatalf("failed to get value of `optimize` flag: %s", err.Error())
+		}
+		if cfg.ChunkSize, err = cmd.Flags().GetInt("chunk-size"); err != nil {
+			log.Fatalf("failed to get flag `--chunk-size`: %s", err.Error())
+		}
+		if cfg.GenerateConcurrent, err = cmd.Flags().GetInt("generate-concurrent"); err != nil {
+			log.Fatalf("failed to get flag `--generate-concurrent`: %s", err.Error())
+		}
+		if cfg.PostConcurrent, err = cmd.Flags().GetInt("post-concurrent"); err != nil {
+			log.Fatalf("failed to get flag `--post-concurrent`: %s", err.Error())
+		}
+		solrURL := os.Getenv("SOLR_HOST")
+		if solrURL == "" {
+			log.Fatalln("environment variable `SOLR_HOST` must be set.")
+		}
+		core, err := solr.NewSolrCore[any, any]("recommend", solrURL)
+		if err != nil {
+			log.Fatalf("failed to create `recommend` core: %+v", err)
+		}
+
+		db := GetDB()
+
+		options, err := json.Marshal(cfg)
+		if err != nil {
+			log.Fatalf("failed to marshal update options: %s", err.Error())
+		}
+
+		history := NewUpdateHistory(db, "recommend", string(options))
+		if err := recommend.Update(cfg, db, core); err == nil {
+			if err := history.Finish(); err != nil {
+				log.Fatalf("failed to save update history: %+v", err)
+			}
+			log.Print("recommend update successfully finished.")
+		} else {
+			if err := history.Cancel(); err != nil {
+				log.Printf("failed to save update history: %+v", err)
+			}
+			log.Fatalf("recommend update failed: %+v", err)
+		}
+	},
+}
+
 func init() {
 	updateCmd.PersistentFlags().String("save-dir", "", "Directory path at which generated documents will be saved.")
 	updateCmd.PersistentFlags().BoolP("skip-fetch", "f", false, "Skip crawling if true.")
@@ -214,5 +269,7 @@ func init() {
 	updateCmd.AddCommand(updateProblemCmd)
 	updateCmd.AddCommand(updateUserCmd)
 	updateCmd.AddCommand(updateSubmissionCmd)
+	updateCmd.AddCommand(updateRecommendCmd)
+
 	rootCmd.AddCommand(updateCmd)
 }
