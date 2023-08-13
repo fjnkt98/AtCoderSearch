@@ -1,7 +1,9 @@
 {
-  "trailingComma": "es5",
-  "semi": true,
+  "useTabs": false,
   "singleQuote": false,
-  "plugins": ["prettier-plugin-tailwindcss"],
-  "tailwindConfig": "./tailwind.config.cjs"
+  "trailingComma": "all",
+  "printWidth": 200,
+  "plugins": ["prettier-plugin-svelte"],
+  "pluginSearchDirs": ["."],
+  "overrides": [{ "files": "*.svelte", "options": { "parser": "svelte" } }]
 }
