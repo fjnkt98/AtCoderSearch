@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fjnkt98/atcodersearch/problem"
+	"fjnkt98/atcodersearch/recommend"
 	"fjnkt98/atcodersearch/submission"
 	"fjnkt98/atcodersearch/user"
 	"fmt"
@@ -47,10 +48,17 @@ var serverCmd = &cobra.Command{
 			log.Fatalf("failed to instantiate submission searcher: %+v", err)
 		}
 
+		// Recommend searcher configuration
+		recommendSearcher, err := recommend.NewSearcher(solrBaseURL.String(), "problem")
+		if err != nil {
+			log.Fatalf("failed to instantiate recommend searcher: %+v", err)
+		}
+
 		// API handler registration
 		http.HandleFunc("/api/search/problem", problemSearcher.HandleSearch)
 		http.HandleFunc("/api/search/user", userSearcher.HandleSearch)
 		http.HandleFunc("/api/search/submission", submissionSearcher.HandleSearch)
+		http.HandleFunc("/api/recommend/problem", recommendSearcher.HandleSearch)
 		http.HandleFunc("/api/liveness", func(w http.ResponseWriter, r *http.Request) {
 			if problemSearcher.Liveness() && userSearcher.Liveness() {
 				w.WriteHeader(http.StatusOK)
