@@ -106,7 +106,7 @@ func (c *AtCoderClient) FetchSubmissionList(contestID string, page uint) (Submis
 
 	res, err := c.client.Do(req)
 	if err != nil {
-		return SubmissionList{}, failure.Translate(err, RequestExecutionError, failure.Context{"url": u.String(), "page": strconv.Itoa(int(page)), "contestID": contestID}, failure.Message("failed to get submissions html at page %d of the contest `%s`"))
+		return SubmissionList{}, failure.Translate(err, RequestExecutionError, failure.Context{"url": u.String(), "page": strconv.Itoa(int(page)), "contestID": contestID}, failure.Messagef("failed to get submissions html at page %d of the contest `%s`", page, contestID))
 	}
 	if res.StatusCode == http.StatusNotFound {
 		return SubmissionList{
@@ -115,7 +115,10 @@ func (c *AtCoderClient) FetchSubmissionList(contestID string, page uint) (Submis
 		}, nil
 	}
 	if res.StatusCode != http.StatusOK {
-		return SubmissionList{}, failure.New(RequestExecutionError, failure.Context{"url": u.String(), "page": strconv.Itoa(int(page)), "contestID": contestID}, failure.Message("non-ok status returned at page %d of the contest `%s`"))
+		defer res.Body.Close()
+		buf := new(bytes.Buffer)
+		buf.ReadFrom(res.Body)
+		return SubmissionList{}, failure.New(RequestExecutionError, failure.Context{"url": u.String(), "page": strconv.Itoa(int(page)), "contestID": contestID, "response": buf.String()}, failure.Messagef("non-ok status returned at page %d of the contest `%s`", page, contestID))
 	}
 
 	defer res.Body.Close()
