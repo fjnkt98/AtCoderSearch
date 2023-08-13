@@ -58,9 +58,10 @@ func (c *Crawler) crawl(contestID string, period int64, duration int) error {
 	}
 	defer tx.Rollback()
 
+	affected := 0
 	save := func(submissions []atcoder.Submission) error {
 		for _, s := range submissions {
-			if _, err := tx.Exec(`
+			if result, err := tx.Exec(`
 			INSERT INTO "submissions" VALUES(
 				$1::bigint,
 				$2::bigint,
@@ -86,6 +87,9 @@ func (c *Crawler) crawl(contestID string, period int64, duration int) error {
 				s.ExecutionTime,
 			); err != nil {
 				return failure.Translate(err, DBError, failure.Context{"contestID": s.ContestID, "id": strconv.Itoa(int(s.ID))}, failure.Message("failed to exec sql to save submission"))
+			} else {
+				a, _ := result.RowsAffected()
+				affected += int(a)
 			}
 		}
 		return nil
@@ -106,7 +110,12 @@ func (c *Crawler) crawl(contestID string, period int64, duration int) error {
 		log.Printf("fetch submissions at page %d / %d of the contest `%s`", i, list.MaxPage, contestID)
 		list, err = c.client.FetchSubmissionList(contestID, uint(i))
 		if err != nil {
-			return failure.Translate(err, CrawlError, failure.Context{"contestID": contestID}, failure.Message("failed to crawl submissions"))
+			log.Printf("failed to fetch submissions at page %d of the contest `%s`. retry to fetch submissions", i, contestID)
+			time.Sleep(time.Duration(10000) * time.Millisecond)
+			list, err = c.client.FetchSubmissionList(contestID, uint(i))
+			if err != nil {
+				return failure.Translate(err, CrawlError, failure.Context{"contestID": contestID}, failure.Message("failed to crawl submissions"))
+			}
 		}
 
 		if list.Submissions[0].EpochSecond < period {
@@ -120,9 +129,10 @@ func (c *Crawler) crawl(contestID string, period int64, duration int) error {
 		time.Sleep(time.Duration(duration) * time.Millisecond)
 	}
 
-	log.Print("commit transaction")
 	if err := tx.Commit(); err != nil {
 		return failure.Translate(err, DBError, failure.Message("failed to commit transaction to save submissions"))
+	} else {
+		log.Printf("commit transaction. save %d rows.", affected)
 	}
 
 	return nil
