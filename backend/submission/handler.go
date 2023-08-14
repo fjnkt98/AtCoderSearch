@@ -112,6 +112,7 @@ func (p *SearchParams) facet() string {
 
 	facet, err := json.Marshal(facets)
 	if err != nil {
+		slog.Warn("failed to marshal json.facet parameter", slog.Any("facet", p.Facet))
 		return ""
 	}
 
