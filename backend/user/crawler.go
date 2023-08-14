@@ -1,7 +1,7 @@
 package user
 
 import (
-	"log"
+	"fmt"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -9,6 +9,7 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	"github.com/morikuni/failure"
+	"golang.org/x/exp/slog"
 )
 
 type UserCrawler struct {
@@ -32,7 +33,7 @@ func (c *UserCrawler) Crawl(index int) ([]User, error) {
 	v.Set("page", strconv.Itoa(index))
 	u.RawQuery = v.Encode()
 
-	log.Printf("Crawling active user ranking page %s", u.String())
+	slog.Info(fmt.Sprintf("Crawling active user ranking page %s", u.String()))
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
 		return nil, failure.Translate(err, RequestCreationError, failure.Context{"url": u.String()}, failure.Message("failed to create request"))
@@ -173,7 +174,7 @@ func (c *UserCrawler) Save(users []User) error {
 }
 
 func (c *UserCrawler) Run(duration int) error {
-	log.Println("Start to crawl active user information.")
+	slog.Info("Start to crawl active user information.")
 
 loop:
 	for i := 0; ; i++ {

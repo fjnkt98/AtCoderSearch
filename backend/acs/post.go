@@ -3,13 +3,14 @@ package acs
 import (
 	"context"
 	"fjnkt98/atcodersearch/solr"
-	"log"
+	"fmt"
 	"os"
 	"os/signal"
 	"path/filepath"
 	"sync"
 
 	"github.com/morikuni/failure"
+	"golang.org/x/exp/slog"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -30,7 +31,7 @@ func NewDefaultDocumentUploader(core solr.SolrCore[any, any], saveDir string) De
 }
 
 func (u *DefaultDocumentUploader) PostDocument(optimize bool, concurrent int) error {
-	log.Printf("Start to post documents in `%s`", u.saveDir)
+	slog.Info(fmt.Sprintf("Start to post documents in `%s`", u.saveDir))
 	paths, err := filepath.Glob(filepath.Join(u.saveDir, "doc-*.json"))
 	if err != nil {
 		return failure.Translate(err, PostError, failure.Messagef("failed to get document files at `%s`", u.saveDir))
@@ -48,10 +49,10 @@ func (u *DefaultDocumentUploader) PostDocument(optimize bool, concurrent int) er
 	eg.Go(func() error {
 		select {
 		case <-quit:
-			log.Print("post interrupted.")
+			slog.Info("post interrupted.")
 			return failure.New(Interrupt, failure.Message("post interrupted"))
 		case <-ctx.Done():
-			log.Print("interrupt observer canceled.")
+			slog.Info("interrupt observer canceled.")
 			return nil
 		case <-finish:
 			return nil
@@ -79,7 +80,7 @@ func (u *DefaultDocumentUploader) PostDocument(optimize bool, concurrent int) er
 			for {
 				select {
 				case <-ctx.Done():
-					log.Print("post canceled")
+					slog.Info("post canceled")
 					return nil
 				case path, ok := <-ch:
 					if !ok {
@@ -87,12 +88,12 @@ func (u *DefaultDocumentUploader) PostDocument(optimize bool, concurrent int) er
 					}
 					select {
 					case <-ctx.Done():
-						log.Print("post canceled")
+						slog.Info("post canceled")
 						return nil
 					default:
 					}
 
-					log.Printf("Post document `%s`", path)
+					slog.Info(fmt.Sprintf("Post document `%s`", path))
 					if err := f(path); err != nil {
 						return failure.Wrap(err)
 					}
@@ -115,7 +116,7 @@ func (u *DefaultDocumentUploader) PostDocument(optimize bool, concurrent int) er
 
 		select {
 		case <-ctx.Done():
-			log.Print("post canceled. start rollback")
+			slog.Info("post canceled. start rollback")
 			if _, err := u.core.Rollback(); err != nil {
 				return failure.Translate(err, PostError, failure.Message("failed to rollback index"))
 			}

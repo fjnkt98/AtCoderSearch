@@ -4,12 +4,13 @@ import (
 	"database/sql"
 	"errors"
 	"fjnkt98/atcodersearch/atcoder"
-	"log"
+	"fmt"
 	"strconv"
 	"time"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/morikuni/failure"
+	"golang.org/x/exp/slog"
 )
 
 type Crawler struct {
@@ -95,7 +96,7 @@ func (c *Crawler) crawl(contestID string, period int64, duration int) error {
 		return nil
 	}
 
-	log.Printf("fetch submissions at page 1 of the contest `%s`", contestID)
+	slog.Info(fmt.Sprintf("fetch submissions at page 1 of the contest `%s`", contestID))
 	list, err := c.client.FetchSubmissionList(contestID, 1)
 	if err != nil {
 		return failure.Translate(err, CrawlError, failure.Context{"contestID": contestID}, failure.Message("failed to crawl submissions"))
@@ -107,10 +108,10 @@ func (c *Crawler) crawl(contestID string, period int64, duration int) error {
 	time.Sleep(time.Duration(duration) * time.Millisecond)
 
 	for i := 2; i <= int(list.MaxPage); i++ {
-		log.Printf("fetch submissions at page %d / %d of the contest `%s`", i, list.MaxPage, contestID)
+		slog.Info(fmt.Sprintf("fetch submissions at page %d / %d of the contest `%s`", i, list.MaxPage, contestID))
 		list, err = c.client.FetchSubmissionList(contestID, uint(i))
 		if err != nil {
-			log.Printf("failed to fetch submissions at page %d of the contest `%s`. retry to fetch submissions", i, contestID)
+			slog.Info(fmt.Sprintf("failed to fetch submissions at page %d of the contest `%s`. retry to fetch submissions", i, contestID))
 			time.Sleep(time.Duration(10000) * time.Millisecond)
 			list, err = c.client.FetchSubmissionList(contestID, uint(i))
 			if err != nil {
@@ -119,7 +120,7 @@ func (c *Crawler) crawl(contestID string, period int64, duration int) error {
 		}
 
 		if list.Submissions[0].EpochSecond < period {
-			log.Printf("All submissions after page `%d` have been crawled. Break crawling the contest `%s`", i, contestID)
+			slog.Info(fmt.Sprintf("All submissions after page `%d` have been crawled. Break crawling the contest `%s`", i, contestID))
 			break
 		}
 
@@ -132,7 +133,7 @@ func (c *Crawler) crawl(contestID string, period int64, duration int) error {
 	if err := tx.Commit(); err != nil {
 		return failure.Translate(err, DBError, failure.Message("failed to commit transaction to save submissions"))
 	} else {
-		log.Printf("commit transaction. save %d rows.", affected)
+		slog.Info(fmt.Sprintf("commit transaction. save %d rows.", affected))
 	}
 
 	return nil
@@ -187,7 +188,7 @@ func (h *CrawlHistory) GetLatestHistory() (int, error) {
 	for rows.Next() {
 		if err := rows.Scan(&startedAt); err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
-				log.Printf("`submission_crawl_history` table is empty in term of contest id `%s`", h.ContestID)
+				slog.Info(fmt.Sprintf("`submission_crawl_history` table is empty in term of contest id `%s`", h.ContestID))
 				return 0, nil
 			} else {
 				return 0, failure.Translate(err, DBError, failure.Message("failed to get latest crawl history"))

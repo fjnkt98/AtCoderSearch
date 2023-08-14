@@ -4,10 +4,10 @@ import (
 	"context"
 	"fjnkt98/atcodersearch/acs"
 	"fmt"
-	"log"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/morikuni/failure"
+	"golang.org/x/exp/slog"
 )
 
 func grade(c uint) string {
@@ -96,7 +96,7 @@ func (r *RowReader[R, D]) ReadRows(ctx context.Context, tx chan<- User) error {
 	for rows.Next() {
 		select {
 		case <-ctx.Done():
-			log.Println("ReadRows canceled.")
+			slog.Info("ReadRows canceled.")
 			return nil
 		default:
 			var row User

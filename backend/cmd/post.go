@@ -3,10 +3,11 @@ package cmd
 import (
 	"fjnkt98/atcodersearch/acs"
 	"fjnkt98/atcodersearch/solr"
-	"log"
+	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
+	"golang.org/x/exp/slog"
 )
 
 var postCmd = &cobra.Command{
@@ -22,29 +23,27 @@ var postProblemCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		saveDir, err := GetSaveDir(cmd, "problem")
 		if err != nil {
-			log.Fatalf("%+v", err)
+			slog.Error("failed to get save dir", slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
 		}
 
 		solrURL := os.Getenv("SOLR_HOST")
 		if solrURL == "" {
-			log.Fatalln("environment variable `SOLR_HOST` must be set.")
+			slog.Error("environment variable `SOLR_HOST` must be set.", slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
 		}
 		core, err := solr.NewSolrCore[any, any]("problem", solrURL)
 		if err != nil {
-			log.Fatalf("failed to create `problem` core: %+v", err)
+			slog.Error("failed to create `problem` core", slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
 		}
 
 		uploader := acs.NewDefaultDocumentUploader(core, saveDir)
-		optimize, err := cmd.Flags().GetBool("optimize")
-		if err != nil {
-			log.Fatalf("failed to get value of `optimize` flag: %+v", err)
-		}
-		concurrent, err := cmd.Flags().GetInt("concurrent")
-		if err != nil {
-			log.Fatalf("failed to get value of `concurrent` flag: %+v", err)
-		}
+		optimize := GetBool(cmd, "optimize")
+		concurrent := GetInt(cmd, "concurrent")
 		if err := uploader.PostDocument(optimize, concurrent); err != nil {
-			log.Fatalf("%+v", err)
+			slog.Error("post failed", slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
 		}
 	},
 }
@@ -56,29 +55,27 @@ var postUserCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		saveDir, err := GetSaveDir(cmd, "user")
 		if err != nil {
-			log.Fatalf("%+v", err)
+			slog.Error("failed to get save dir", slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
 		}
 
 		solrURL := os.Getenv("SOLR_HOST")
 		if solrURL == "" {
-			log.Fatalln("environment variable `SOLR_HOST` must be set.")
+			slog.Error("environment variable `SOLR_HOST` must be set.", slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
 		}
 		core, err := solr.NewSolrCore[any, any]("user", solrURL)
 		if err != nil {
-			log.Fatalf("failed to create `user` core: %+v", err)
+			slog.Error("failed to create `user` core", slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
 		}
 
 		uploader := acs.NewDefaultDocumentUploader(core, saveDir)
-		optimize, err := cmd.Flags().GetBool("optimize")
-		if err != nil {
-			log.Fatalf("failed to get value of `optimize` flag: %+v", err)
-		}
-		concurrent, err := cmd.Flags().GetInt("concurrent")
-		if err != nil {
-			log.Fatalf("failed to get value of `concurrent` flag: %+v", err)
-		}
+		optimize := GetBool(cmd, "optimize")
+		concurrent := GetInt(cmd, "concurrent")
 		if err := uploader.PostDocument(optimize, concurrent); err != nil {
-			log.Fatalf("%+v", err)
+			slog.Error("post failed", slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
 		}
 	},
 }
@@ -90,29 +87,27 @@ var postSubmissionCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		saveDir, err := GetSaveDir(cmd, "submission")
 		if err != nil {
-			log.Fatalf("%+v", err)
+			slog.Error("failed to get save dir", slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
 		}
 
 		solrURL := os.Getenv("SOLR_HOST")
 		if solrURL == "" {
-			log.Fatalln("environment variable `SOLR_HOST` must be set.")
+			slog.Error("environment variable `SOLR_HOST` must be set.", slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
 		}
 		core, err := solr.NewSolrCore[any, any]("submission", solrURL)
 		if err != nil {
-			log.Fatalf("failed to create `user` core: %+v", err)
+			slog.Error("failed to create `user` core", slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
 		}
 
 		uploader := acs.NewDefaultDocumentUploader(core, saveDir)
-		optimize, err := cmd.Flags().GetBool("optimize")
-		if err != nil {
-			log.Fatalf("failed to get value of `optimize` flag: %+v", err)
-		}
-		concurrent, err := cmd.Flags().GetInt("concurrent")
-		if err != nil {
-			log.Fatalf("failed to get value of `concurrent` flag: %+v", err)
-		}
+		optimize := GetBool(cmd, "optimize")
+		concurrent := GetInt(cmd, "concurrent")
 		if err := uploader.PostDocument(optimize, concurrent); err != nil {
-			log.Fatalf("%+v", err)
+			slog.Error("post failed", slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
 		}
 	},
 }
@@ -124,29 +119,27 @@ var postRecommendCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		saveDir, err := GetSaveDir(cmd, "recommend")
 		if err != nil {
-			log.Fatalf("%+v", err)
+			slog.Error("failed to get save dir", slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
 		}
 
 		solrURL := os.Getenv("SOLR_HOST")
 		if solrURL == "" {
-			log.Fatalln("environment variable `SOLR_HOST` must be set.")
+			slog.Error("environment variable `SOLR_HOST` must be set.", slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
 		}
 		core, err := solr.NewSolrCore[any, any]("recommend", solrURL)
 		if err != nil {
-			log.Fatalf("failed to create `user` core: %+v", err)
+			slog.Error("failed to create `user` core", slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
 		}
 
 		uploader := acs.NewDefaultDocumentUploader(core, saveDir)
-		optimize, err := cmd.Flags().GetBool("optimize")
-		if err != nil {
-			log.Fatalf("failed to get value of `optimize` flag: %+v", err)
-		}
-		concurrent, err := cmd.Flags().GetInt("concurrent")
-		if err != nil {
-			log.Fatalf("failed to get value of `concurrent` flag: %+v", err)
-		}
+		optimize := GetBool(cmd, "optimize")
+		concurrent := GetInt(cmd, "concurrent")
 		if err := uploader.PostDocument(optimize, concurrent); err != nil {
-			log.Fatalf("%+v", err)
+			slog.Error("post failed", slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
 		}
 	},
 }

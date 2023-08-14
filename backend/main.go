@@ -2,7 +2,6 @@ package main
 
 import (
 	"fjnkt98/atcodersearch/cmd"
-	"log"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -14,7 +13,7 @@ func main() {
 	slog.SetDefault(logger)
 
 	if err := godotenv.Load(); err != nil {
-		log.Printf("failed to load .env file: %s.", err.Error())
+		slog.Warn("failed to load .env file", slog.String("error", err.Error()))
 	}
 	cmd.Execute()
 }
