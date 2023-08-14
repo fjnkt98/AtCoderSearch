@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"errors"
-	"log"
+	"fmt"
 	"os"
 	"path/filepath"
 	"time"
@@ -10,6 +10,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/morikuni/failure"
 	"github.com/spf13/cobra"
+	"golang.org/x/exp/slog"
 )
 
 func GetSaveDir(cmd *cobra.Command, domain string) (string, error) {
@@ -25,11 +26,11 @@ func GetSaveDir(cmd *cobra.Command, domain string) (string, error) {
 	saveDir = filepath.Join(saveDir, domain)
 	if _, err := os.Stat(saveDir); err != nil {
 		if os.IsNotExist(err) {
-			log.Printf("The directory `%s` doesn't exists, so attempt to create it.", saveDir)
+			slog.Info(fmt.Sprintf("The directory `%s` doesn't exists, so attempt to create it.", saveDir))
 			if err := os.Mkdir(saveDir, os.ModePerm); err != nil {
 				return "", failure.Translate(err, FileOperationError, failure.Context{"directory": saveDir}, failure.Message("failed to create directory"))
 			} else {
-				log.Printf("The directory `%s` was successfully created.", saveDir)
+				slog.Info(fmt.Sprintf("The directory `%s` was successfully created.", saveDir))
 				return saveDir, nil
 			}
 		} else {
@@ -44,14 +45,43 @@ func GetDB() *sqlx.DB {
 	dsn := os.Getenv("DATABASE_URL")
 	db, err := sqlx.Open("postgres", dsn)
 	if err != nil {
-		log.Fatalf("failed to open database: %s", err.Error())
+		slog.Error("failed to open database", slog.String("error", err.Error()))
+		os.Exit(1)
 	}
 
 	if err := db.Ping(); err != nil {
-		log.Fatalf("failed to connect database: %s", err.Error())
+		slog.Error("failed to connect database", slog.String("error", err.Error()))
+		os.Exit(1)
 	}
 
 	return db
+}
+
+func GetBool(cmd *cobra.Command, flag string) bool {
+	v, err := cmd.Flags().GetBool(flag)
+	if err != nil {
+		slog.Error(fmt.Sprintf("failed to get value of `%s` flag", flag))
+		os.Exit(1)
+	}
+	return v
+}
+
+func GetInt(cmd *cobra.Command, flag string) int {
+	v, err := cmd.Flags().GetInt(flag)
+	if err != nil {
+		slog.Error(fmt.Sprintf("failed to get value of `%s` flag", flag))
+		os.Exit(1)
+	}
+	return v
+}
+
+func GetString(cmd *cobra.Command, flag string) string {
+	v, err := cmd.Flags().GetString(flag)
+	if err != nil {
+		slog.Error(fmt.Sprintf("failed to get value of `%s` flag", flag))
+		os.Exit(1)
+	}
+	return v
 }
 
 type UpdateHistory struct {

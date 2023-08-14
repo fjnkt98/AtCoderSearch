@@ -5,9 +5,11 @@ import (
 	"fjnkt98/atcodersearch/recommend"
 	"fjnkt98/atcodersearch/submission"
 	"fjnkt98/atcodersearch/user"
-	"log"
+	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
+	"golang.org/x/exp/slog"
 )
 
 var generateCmd = &cobra.Command{
@@ -23,16 +25,15 @@ var generateProblemCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		saveDir, err := GetSaveDir(cmd, "problem")
 		if err != nil {
-			log.Fatal(err.Error())
+			slog.Error("failed to get save dir", slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
 		}
 
 		generator := problem.NewDocumentGenerator(GetDB(), saveDir)
-		concurrent, err := cmd.Flags().GetInt("concurrent")
-		if err != nil {
-			log.Fatalf("failed to get value of `concurrent` flag: %+v", err)
-		}
+		concurrent := GetInt(cmd, "concurrent")
 		if err := generator.Run(1000, concurrent); err != nil {
-			log.Fatalf("%+v", err)
+			slog.Error("generation failed", slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
 		}
 	},
 }
@@ -44,15 +45,14 @@ var generateUserCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		saveDir, err := GetSaveDir(cmd, "user")
 		if err != nil {
-			log.Fatalf("%+v", err)
+			slog.Error("failed to get save dir", slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
 		}
 		generator := user.NewDocumentGenerator(GetDB(), saveDir)
-		concurrent, err := cmd.Flags().GetInt("concurrent")
-		if err != nil {
-			log.Fatalf("failed to get value of `concurrent` flag: %+v", err)
-		}
+		concurrent := GetInt(cmd, "concurrent")
 		if err := generator.Run(1000, concurrent); err != nil {
-			log.Fatalf("%+v", err)
+			slog.Error("generation failed", slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
 		}
 	},
 }
@@ -64,15 +64,14 @@ var generateSubmissionCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		saveDir, err := GetSaveDir(cmd, "submission")
 		if err != nil {
-			log.Fatalf("%+v", err)
+			slog.Error("failed to get save dir", slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
 		}
 		generator := submission.NewDocumentGenerator(GetDB(), saveDir)
-		concurrent, err := cmd.Flags().GetInt("concurrent")
-		if err != nil {
-			log.Fatalf("failed to get value of `concurrent` flag: %+v", err)
-		}
+		concurrent := GetInt(cmd, "concurrent")
 		if err := generator.Run(100000, concurrent); err != nil {
-			log.Fatalf("%+v", err)
+			slog.Error("generation failed", slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
 		}
 	},
 }
@@ -84,20 +83,16 @@ var generateRecommendCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		saveDir, err := GetSaveDir(cmd, "recommend")
 		if err != nil {
-			log.Fatalf("%+v", err)
+			slog.Error("failed to get save dir", slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
 		}
 		generator := recommend.NewDocumentGenerator(GetDB(), saveDir)
 
-		concurrent, err := cmd.Flags().GetInt("concurrent")
-		if err != nil {
-			log.Fatalf("failed to get value of `concurrent` flag: %+v", err)
-		}
-		chunkSize, err := cmd.Flags().GetInt("chunk-size")
-		if err != nil {
-			log.Fatalf("failed to get value of `chunk-size` flag: %+v", err)
-		}
+		concurrent := GetInt(cmd, "concurrent")
+		chunkSize := GetInt(cmd, "chunk-size")
 		if err := generator.Run(chunkSize, concurrent); err != nil {
-			log.Fatalf("%+v", err)
+			slog.Error("generation failed", slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
 		}
 	},
 }

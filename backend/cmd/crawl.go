@@ -5,10 +5,11 @@ import (
 	"fjnkt98/atcodersearch/problem"
 	"fjnkt98/atcodersearch/submission"
 	"fjnkt98/atcodersearch/user"
-	"log"
+	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
+	"golang.org/x/exp/slog"
 )
 
 var crawlCmd = &cobra.Command{
@@ -25,25 +26,23 @@ var crawlProblemCmd = &cobra.Command{
 		db := GetDB()
 		contestCrawler := problem.NewContestCrawler(db)
 		if err := contestCrawler.Run(); err != nil {
-			log.Fatalf("failed to save contest information: %+v", err)
+			slog.Error("failed to save contest information", slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
 		}
 
 		difficultyCrawler := problem.NewDifficultyCrawler(db)
 		if err := difficultyCrawler.Run(); err != nil {
-			log.Fatalf("failed to save difficulty information: %+v", err)
+			slog.Error("failed to save difficulty information", slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
 		}
 
-		all, err := cmd.Flags().GetBool("all")
-		if err != nil {
-			log.Fatalf("failed to get flag `all`: %+v", err)
-		}
-		duration, err := cmd.Flags().GetInt("duration")
-		if err != nil {
-			log.Fatalf("failed to get flag `duration`: %+v", err)
-		}
+		all := GetBool(cmd, "all")
+		duration := GetInt(cmd, "duration")
+
 		problemCrawler := problem.NewProblemCrawler(db)
 		if err := problemCrawler.Run(all, duration); err != nil {
-			log.Fatalf("failed to save problem information: %+v", err)
+			slog.Error("failed to save problem information", slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
 		}
 	},
 }
@@ -55,13 +54,11 @@ var crawlUserCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		db := GetDB()
 		crawler := user.NewUserCrawler(db)
-		duration, err := cmd.Flags().GetInt("duration")
-		if err != nil {
-			log.Fatalf("failed to get value of `duration` flag: %+v", err)
-		}
+		duration := GetInt(cmd, "duration")
 
 		if err := crawler.Run(duration); err != nil {
-			log.Fatalf("failed to save user information: %+v", err)
+			slog.Error("failed to save user information", slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
 		}
 	},
 }
@@ -76,22 +73,21 @@ var crawlSubmissionCmd = &cobra.Command{
 		username := os.Getenv("ATCODER_USER_NAME")
 		password := os.Getenv("ATCODER_USER_PASSWORD")
 
-		log.Println("Login to AtCoder...")
+		slog.Info("Login to AtCoder...")
 		client, err := atcoder.NewAtCoderClient(username, password)
 		if err != nil {
-			log.Fatalf("failed to login atcoder: %+v", err)
+			slog.Error("failed to login atcoder", slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
 		}
-		log.Println("Successfully logged in to AtCoder.")
+		slog.Info("Successfully logged in to AtCoder.")
 
 		crawler := submission.NewCrawler(client, db)
-		duration, err := cmd.Flags().GetInt("duration")
-		if err != nil {
-			log.Fatalf("failed to get value of `duration` flag: %+v", err)
-		}
+		duration := GetInt(cmd, "duration")
 
-		log.Println("Start to crawl submissions")
+		slog.Info("Start to crawl submissions")
 		if err := crawler.Run(duration); err != nil {
-			log.Fatalf("failed to save submissions: %+v", err)
+			slog.Error("failed to save submissions", slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
 		}
 	},
 }

@@ -10,10 +10,11 @@ import (
 	"fjnkt98/atcodersearch/solr"
 	"fjnkt98/atcodersearch/submission"
 	"fjnkt98/atcodersearch/user"
-	"log"
+	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
+	"golang.org/x/exp/slog"
 )
 
 // updateCmd represents the update command
@@ -32,56 +33,50 @@ var updateProblemCmd = &cobra.Command{
 		var err error
 
 		if cfg.SaveDir, err = GetSaveDir(cmd, "problem"); err != nil {
-			log.Fatalf("%+v", err)
+			slog.Error("failed to get save dir", slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
 		}
-		if cfg.SkipFetch, err = cmd.Flags().GetBool("skip-fetch"); err != nil {
-			log.Fatalf("failed to get flag `--skip-fetch`: %s", err.Error())
-		}
-		if cfg.Optimize, err = cmd.Flags().GetBool("optimize"); err != nil {
-			log.Fatalf("failed to get value of `optimize` flag: %s", err.Error())
-		}
-		if cfg.ChunkSize, err = cmd.Flags().GetInt("chunk-size"); err != nil {
-			log.Fatalf("failed to get flag `--chunk-size`: %s", err.Error())
-		}
-		if cfg.GenerateConcurrent, err = cmd.Flags().GetInt("generate-concurrent"); err != nil {
-			log.Fatalf("failed to get flag `--generate-concurrent`: %s", err.Error())
-		}
-		if cfg.PostConcurrent, err = cmd.Flags().GetInt("post-concurrent"); err != nil {
-			log.Fatalf("failed to get flag `--post-concurrent`: %s", err.Error())
-		}
-		if cfg.Duration, err = cmd.Flags().GetInt("duration"); err != nil {
-			log.Fatalf("failed to get flag `duration`: %s", err.Error())
-		}
-		if cfg.All, err = cmd.Flags().GetBool("all"); err != nil {
-			log.Fatalf("failed to get flag `all`: %s", err.Error())
-		}
+		cfg.SkipFetch = GetBool(cmd, "skip-fetch")
+		cfg.Optimize = GetBool(cmd, "optimize")
+		cfg.ChunkSize = GetInt(cmd, "chunk-size")
+		cfg.GenerateConcurrent = GetInt(cmd, "generate-concurrent")
+		cfg.PostConcurrent = GetInt(cmd, "post-concurrent")
+		cfg.Duration = GetInt(cmd, "duration")
+		cfg.All = GetBool(cmd, "all")
+
 		solrURL := os.Getenv("SOLR_HOST")
 		if solrURL == "" {
-			log.Fatalln("environment variable `SOLR_HOST` must be set.")
+			slog.Error("environment variable `SOLR_HOST` must be set.")
+			os.Exit(1)
 		}
 		core, err := solr.NewSolrCore[any, any]("problem", solrURL)
 		if err != nil {
-			log.Fatalf("failed to create `problem` core: %+v", err)
+			slog.Error("failed to create `problem` core", slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
 		}
 
 		db := GetDB()
 
 		cfgJSON, err := json.Marshal(cfg)
 		if err != nil {
-			log.Fatalf("failed to marshal update options: %s", err.Error())
+			slog.Error("failed to marshal update options", slog.String("error", err.Error()))
+			os.Exit(1)
 		}
 
 		history := NewUpdateHistory(db, "problem", string(cfgJSON))
 		if err := problem.Update(cfg, db, core); err == nil {
 			if err := history.Finish(); err != nil {
-				log.Fatalf("failed to save update history: %+v", err)
+				slog.Error("failed to save update history", slog.String("error", fmt.Sprintf("%+v", err)))
+				os.Exit(1)
 			}
-			log.Print("problem update successfully finished.")
+			slog.Info("problem update successfully finished.")
 		} else {
 			if err := history.Cancel(); err != nil {
-				log.Printf("failed to save update history: %+v", err)
+				slog.Error("failed to save update history", slog.String("error", fmt.Sprintf("%+v", err)))
+				os.Exit(1)
 			}
-			log.Fatalf("problem update failed: %+v", err)
+			slog.Error("problem update failed", slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
 		}
 	},
 }
@@ -96,53 +91,50 @@ var updateUserCmd = &cobra.Command{
 		var err error
 
 		if cfg.SaveDir, err = GetSaveDir(cmd, "user"); err != nil {
-			log.Fatalf("%+v", err)
+			slog.Error("failed to get save dir", slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
 		}
-		if cfg.SkipFetch, err = cmd.Flags().GetBool("skip-fetch"); err != nil {
-			log.Fatalf("failed to get flag `--skip-fetch`: %s", err.Error())
-		}
-		if cfg.Optimize, err = cmd.Flags().GetBool("optimize"); err != nil {
-			log.Fatalf("failed to get value of `optimize` flag: %s", err.Error())
-		}
-		if cfg.ChunkSize, err = cmd.Flags().GetInt("chunk-size"); err != nil {
-			log.Fatalf("failed to get flag `--chunk-size`: %s", err.Error())
-		}
-		if cfg.GenerateConcurrent, err = cmd.Flags().GetInt("generate-concurrent"); err != nil {
-			log.Fatalf("failed to get flag `--generate-concurrent`: %s", err.Error())
-		}
-		if cfg.PostConcurrent, err = cmd.Flags().GetInt("post-concurrent"); err != nil {
-			log.Fatalf("failed to get flag `--post-concurrent`: %s", err.Error())
-		}
-		if cfg.Duration, err = cmd.Flags().GetInt("duration"); err != nil {
-			log.Fatalf("failed to get flag `duration`: %s", err.Error())
-		}
+
+		cfg.SkipFetch = GetBool(cmd, "skip-fetch")
+		cfg.Optimize = GetBool(cmd, "optimize")
+		cfg.ChunkSize = GetInt(cmd, "chunk-size")
+		cfg.GenerateConcurrent = GetInt(cmd, "generate-concurrent")
+		cfg.PostConcurrent = GetInt(cmd, "post-concurrent")
+		cfg.Duration = GetInt(cmd, "duration")
+
 		solrURL := os.Getenv("SOLR_HOST")
 		if solrURL == "" {
-			log.Fatalln("environment variable `SOLR_HOST` must be set.")
+			slog.Error("environment variable `SOLR_HOST` must be set.")
+			os.Exit(1)
 		}
 		core, err := solr.NewSolrCore[any, any]("user", solrURL)
 		if err != nil {
-			log.Fatalf("failed to create `user` core: %+v", err)
+			slog.Error("failed to create `user` core", slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
 		}
 
 		db := GetDB()
 
 		options, err := json.Marshal(cfg)
 		if err != nil {
-			log.Fatalf("failed to marshal update options: %s", err.Error())
+			slog.Error("failed to marshal update options", slog.String("error", err.Error()))
+			os.Exit(1)
 		}
 
 		history := NewUpdateHistory(db, "user", string(options))
 		if err := user.Update(cfg, db, core); err == nil {
 			if err := history.Finish(); err != nil {
-				log.Fatalf("failed to save update history: %+v", err)
+				slog.Error("failed to save update history", slog.String("error", fmt.Sprintf("%+v", err)))
+				os.Exit(1)
 			}
-			log.Print("user update successfully finished.")
+			slog.Info("user update successfully finished.")
 		} else {
 			if err := history.Cancel(); err != nil {
-				log.Printf("failed to save update history: %+v", err)
+				slog.Error("failed to save update history", slog.String("error", fmt.Sprintf("%+v", err)))
+				os.Exit(1)
 			}
-			log.Fatalf("user update failed: %+v", err)
+			slog.Error("user update failed", slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
 		}
 	},
 }
@@ -156,47 +148,48 @@ var updateSubmissionCmd = &cobra.Command{
 		var err error
 
 		if cfg.SaveDir, err = GetSaveDir(cmd, "submission"); err != nil {
-			log.Fatalf("%+v", err)
+			slog.Error("failed to get save dir", slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
 		}
-		if cfg.Optimize, err = cmd.Flags().GetBool("optimize"); err != nil {
-			log.Fatalf("failed to get value of `optimize` flag: %s", err.Error())
-		}
-		if cfg.ChunkSize, err = cmd.Flags().GetInt("chunk-size"); err != nil {
-			log.Fatalf("failed to get flag `--chunk-size`: %s", err.Error())
-		}
-		if cfg.GenerateConcurrent, err = cmd.Flags().GetInt("generate-concurrent"); err != nil {
-			log.Fatalf("failed to get flag `--generate-concurrent`: %s", err.Error())
-		}
-		if cfg.PostConcurrent, err = cmd.Flags().GetInt("post-concurrent"); err != nil {
-			log.Fatalf("failed to get flag `--post-concurrent`: %s", err.Error())
-		}
+
+		cfg.Optimize = GetBool(cmd, "optimize")
+		cfg.ChunkSize = GetInt(cmd, "chunk-size")
+		cfg.GenerateConcurrent = GetInt(cmd, "generate-concurrent")
+		cfg.PostConcurrent = GetInt(cmd, "post-concurrent")
+
 		solrURL := os.Getenv("SOLR_HOST")
 		if solrURL == "" {
-			log.Fatalln("environment variable `SOLR_HOST` must be set.")
+			slog.Error("environment variable `SOLR_HOST` must be set.")
+			os.Exit(1)
 		}
 		core, err := solr.NewSolrCore[any, any]("submission", solrURL)
 		if err != nil {
-			log.Fatalf("failed to create `submission` core: %+v", err)
+			slog.Error("failed to create `submission` core", slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
 		}
 
 		db := GetDB()
 
 		options, err := json.Marshal(cfg)
 		if err != nil {
-			log.Fatalf("failed to marshal update options: %s", err.Error())
+			slog.Error("failed to marshal update options", slog.String("error", err.Error()))
+			os.Exit(1)
 		}
 
 		history := NewUpdateHistory(db, "submission", string(options))
 		if err := submission.Update(cfg, db, core); err == nil {
 			if err := history.Finish(); err != nil {
-				log.Fatalf("failed to save update history: %+v", err)
+				slog.Error("failed to save update history: %+v", slog.String("error", fmt.Sprintf("%+v", err)))
+				os.Exit(1)
 			}
-			log.Print("submission update successfully finished.")
+			slog.Info("submission update successfully finished.")
 		} else {
 			if err := history.Cancel(); err != nil {
-				log.Printf("failed to save update history: %+v", err)
+				slog.Error("failed to save update history", slog.String("error", fmt.Sprintf("%+v", err)))
+				os.Exit(1)
 			}
-			log.Fatalf("submission update failed: %+v", err)
+			slog.Error("submission update failed", slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
 		}
 	},
 }
@@ -210,47 +203,48 @@ var updateRecommendCmd = &cobra.Command{
 		var err error
 
 		if cfg.SaveDir, err = GetSaveDir(cmd, "recommend"); err != nil {
-			log.Fatalf("%+v", err)
+			slog.Error("failed to get save dir", slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
 		}
-		if cfg.Optimize, err = cmd.Flags().GetBool("optimize"); err != nil {
-			log.Fatalf("failed to get value of `optimize` flag: %s", err.Error())
-		}
-		if cfg.ChunkSize, err = cmd.Flags().GetInt("chunk-size"); err != nil {
-			log.Fatalf("failed to get flag `--chunk-size`: %s", err.Error())
-		}
-		if cfg.GenerateConcurrent, err = cmd.Flags().GetInt("generate-concurrent"); err != nil {
-			log.Fatalf("failed to get flag `--generate-concurrent`: %s", err.Error())
-		}
-		if cfg.PostConcurrent, err = cmd.Flags().GetInt("post-concurrent"); err != nil {
-			log.Fatalf("failed to get flag `--post-concurrent`: %s", err.Error())
-		}
+
+		cfg.Optimize = GetBool(cmd, "optimize")
+		cfg.ChunkSize = GetInt(cmd, "chunk-size")
+		cfg.GenerateConcurrent = GetInt(cmd, "generate-concurrent")
+		cfg.PostConcurrent = GetInt(cmd, "post-concurrent")
+
 		solrURL := os.Getenv("SOLR_HOST")
 		if solrURL == "" {
-			log.Fatalln("environment variable `SOLR_HOST` must be set.")
+			slog.Error("environment variable `SOLR_HOST` must be set.")
+			os.Exit(1)
 		}
 		core, err := solr.NewSolrCore[any, any]("recommend", solrURL)
 		if err != nil {
-			log.Fatalf("failed to create `recommend` core: %+v", err)
+			slog.Error("failed to create `recommend` core", slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
 		}
 
 		db := GetDB()
 
 		options, err := json.Marshal(cfg)
 		if err != nil {
-			log.Fatalf("failed to marshal update options: %s", err.Error())
+			slog.Error("failed to marshal update options: %s", slog.String("error", err.Error()))
+			os.Exit(1)
 		}
 
 		history := NewUpdateHistory(db, "recommend", string(options))
 		if err := recommend.Update(cfg, db, core); err == nil {
 			if err := history.Finish(); err != nil {
-				log.Fatalf("failed to save update history: %+v", err)
+				slog.Error("failed to save update history", slog.String("error", fmt.Sprintf("%+v", err)))
+				os.Exit(1)
 			}
-			log.Print("recommend update successfully finished.")
+			slog.Info("recommend update successfully finished.")
 		} else {
 			if err := history.Cancel(); err != nil {
-				log.Printf("failed to save update history: %+v", err)
+				slog.Error("failed to save update history", slog.String("error", fmt.Sprintf("%+v", err)))
+				os.Exit(1)
 			}
-			log.Fatalf("recommend update failed: %+v", err)
+			slog.Error("recommend update failed", slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
 		}
 	},
 }

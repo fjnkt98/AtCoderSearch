@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 	"os"
 	"os/signal"
 	"path/filepath"
@@ -12,6 +11,7 @@ import (
 
 	_ "github.com/lib/pq"
 	"github.com/morikuni/failure"
+	"golang.org/x/exp/slog"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -38,9 +38,9 @@ func CleanDocument(saveDir string) error {
 		return nil
 	}
 
-	log.Printf("Start to delete existing document files in `%s`", saveDir)
+	slog.Info(fmt.Sprintf("Start to delete existing document files in `%s`", saveDir))
 	for _, file := range files {
-		log.Printf("Delete existing file `%s`", file)
+		slog.Info(fmt.Sprintf("Delete existing file `%s`", file))
 		if err := os.Remove(file); err != nil {
 			return failure.Translate(err, FileOperationError, failure.Context{"file": file}, failure.Message("failed to delete the file"))
 		}
@@ -53,7 +53,7 @@ loop:
 	for {
 		select {
 		case <-ctx.Done():
-			log.Println("ConvertDocument canceled.")
+			slog.Info("ConvertDocument canceled.")
 			return nil
 		case row, ok := <-rx:
 			if !ok {
@@ -63,7 +63,7 @@ loop:
 			select {
 			default:
 			case <-ctx.Done():
-				log.Println("ConvertDocument canceled.")
+				slog.Info("ConvertDocument canceled.")
 				return nil
 			}
 
@@ -99,7 +99,7 @@ loop:
 	for {
 		select {
 		case <-ctx.Done():
-			log.Println("SaveDocument canceled.")
+			slog.Info("SaveDocument canceled.")
 			return nil
 		case doc, ok := <-rx:
 			if !ok {
@@ -107,7 +107,7 @@ loop:
 			}
 			select {
 			case <-ctx.Done():
-				log.Println("SaveDocument canceled.")
+				slog.Info("SaveDocument canceled.")
 				return nil
 			default:
 			}
@@ -118,7 +118,7 @@ loop:
 			if len(buffer) >= chunkSize {
 				filePath := filepath.Join(saveDir, fmt.Sprintf("doc-%d.json", suffix))
 
-				log.Printf("Generate document file: %s", filePath)
+				slog.Info(fmt.Sprintf("Generate document file: %s", filePath))
 				if err := writeDocument(buffer, filePath); err != nil {
 					return failure.Wrap(err)
 				}
@@ -131,7 +131,7 @@ loop:
 	if len(buffer) != 0 {
 		filePath := filepath.Join(saveDir, fmt.Sprintf("doc-%d.json", suffix))
 
-		log.Printf("Generate document file: %s", filePath)
+		slog.Info(fmt.Sprintf("Generate document file: %s", filePath))
 		if err := writeDocument(buffer, filePath); err != nil {
 			return failure.Wrap(err)
 		}
@@ -158,7 +158,7 @@ func GenerateDocument[R ToDocument[D], D any](reader RowReader[R, D], saveDir st
 	eg.Go(func() error {
 		select {
 		case <-quit:
-			log.Print("generate interrupted")
+			slog.Info("generate interrupted")
 			return failure.New(Interrupt, failure.Message("generate interrupted"))
 		case <-finish:
 			return nil

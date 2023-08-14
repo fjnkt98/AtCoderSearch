@@ -6,11 +6,11 @@ import (
 	"fjnkt98/atcodersearch/atcoder"
 	"fjnkt98/atcodersearch/solr"
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/morikuni/failure"
+	"golang.org/x/exp/slog"
 )
 
 type Row struct {
@@ -87,7 +87,7 @@ func (r *RowReader[R, D]) ReadRows(ctx context.Context, tx chan<- Row) error {
 	for rows.Next() {
 		select {
 		case <-ctx.Done():
-			log.Println("ReadRows canceled.")
+			slog.Info("ReadRows canceled.")
 			return nil
 		default:
 			var row Row
