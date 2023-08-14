@@ -27,7 +27,7 @@ var serverCmd = &cobra.Command{
 		}
 		parsedSolrURL, err := url.Parse(solrHost)
 		if err != nil {
-			slog.Error("invalid Solr URL was given", slog.String("host", solrHost))
+			slog.Error("invalid Solr URL was given", slog.String("host", solrHost), slog.String("error", err.Error()))
 			os.Exit(1)
 		}
 		solrBaseURL := url.URL{Scheme: parsedSolrURL.Scheme, Host: parsedSolrURL.Host}
