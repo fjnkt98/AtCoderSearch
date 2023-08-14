@@ -5,7 +5,6 @@ import (
 	"fjnkt98/atcodersearch/acs"
 	"fjnkt98/atcodersearch/solr"
 	"fmt"
-	"log"
 	"net/http"
 	"net/url"
 	"reflect"
@@ -16,6 +15,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/schema"
 	"github.com/morikuni/failure"
+	"golang.org/x/exp/slog"
 )
 
 type SearchParams struct {
@@ -116,9 +116,10 @@ type Searcher struct {
 	core      *solr.SolrCore[Response, any]
 	validator *validator.Validate
 	decoder   *schema.Decoder
+	logger    *slog.Logger
 }
 
-func NewSearcher(baseURL string, coreName string) (Searcher, error) {
+func NewSearcher(logger *slog.Logger, baseURL string, coreName string) (Searcher, error) {
 	core, err := solr.NewSolrCore[Response, any](coreName, baseURL)
 	if err != nil {
 		return Searcher{}, failure.Translate(err, SearcherInitializeError, failure.Context{"baseURL": baseURL, "coreName": coreName}, failure.Message("failed to create user searcher"))
@@ -135,6 +136,7 @@ func NewSearcher(baseURL string, coreName string) (Searcher, error) {
 		core:      &core,
 		validator: validator,
 		decoder:   decoder,
+		logger:    logger,
 	}
 	return searcher, nil
 }
@@ -152,7 +154,7 @@ func (s *Searcher) HandleSearch(w http.ResponseWriter, r *http.Request) {
 		query, err := url.ParseQuery(r.URL.RawQuery)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			log.Printf("ERROR: failed to parse query string `%s`: %s", r.URL.RawQuery, err.Error())
+			s.logger.Error("failed to parse query string", slog.String("url", r.URL.String()), slog.String("error", fmt.Sprintf("%+v", err)))
 			encoder.Encode(NewErrorResponse(fmt.Sprintf("failed to parse query string `%s`", r.URL.RawQuery), nil))
 			return
 		}
@@ -160,19 +162,19 @@ func (s *Searcher) HandleSearch(w http.ResponseWriter, r *http.Request) {
 		var params SearchParams
 		if err := s.decoder.Decode(&params, query); err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			log.Printf("ERROR: failed to decode request parameter `%s`: %s", r.URL.RawQuery, err.Error())
+			s.logger.Error("failed to decode request parameter", slog.String("url", r.URL.String()), slog.String("error", fmt.Sprintf("%+v", err)))
 			encoder.Encode(NewErrorResponse(fmt.Sprintf("failed to decode request parameter `%s`", r.URL.RawQuery), nil))
 			return
 		}
 
 		if err := s.validator.Struct(params); err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			log.Printf("ERROR: validation error: %+v, `%s`: %s", params, r.URL.RawQuery, err.Error())
+			s.logger.Error("validation error", slog.String("url", r.URL.String()), slog.Any("params", params), slog.String("error", fmt.Sprintf("%+v", err)))
 			encoder.Encode(NewErrorResponse(fmt.Sprintf("validation error, `%s`: %s", r.URL.RawQuery, err.Error()), params))
 			return
 		}
 
-		code, res := search(s.core, params)
+		code, res := s.search(r, params)
 		w.WriteHeader(code)
 		encoder.Encode(res)
 	default:
@@ -180,13 +182,13 @@ func (s *Searcher) HandleSearch(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func search(core *solr.SolrCore[Response, any], params SearchParams) (int, acs.SearchResultResponse[Response]) {
+func (s *Searcher) search(r *http.Request, params SearchParams) (int, acs.SearchResultResponse[Response]) {
 	startTime := time.Now()
 
 	query := params.ToQuery()
-	res, err := core.Select(query)
+	res, err := s.core.Select(query)
 	if err != nil {
-		log.Printf("ERROR: failed to request to solr with %+v, from %+v: %s", query, params, err.Error())
+		s.logger.Error("failed to request to solr", slog.String("url", r.URL.String()), slog.Any("query", query), slog.Any("params", params), slog.String("error", fmt.Sprintf("%+v", err)))
 		return 500, NewErrorResponse("internal error", params)
 	}
 
@@ -204,15 +206,7 @@ func search(core *solr.SolrCore[Response, any], params SearchParams) (int, acs.S
 		},
 		Items: res.Response.Docs,
 	}
-	querylog := acs.QueryLog{
-		RequestAt: startTime,
-		Domain:    "recommend",
-		Time:      result.Stats.Time,
-		Hits:      res.Response.NumFound,
-		Params:    params,
-	}
-	encoder := json.NewEncoder(log.Writer())
-	encoder.Encode(querylog)
+	s.logger.Info("querylog", slog.String("domain", "recommend"), slog.Uint64("elapsed_time", uint64(result.Stats.Time)), slog.Uint64("hits", uint64(res.Response.NumFound)), slog.Any("params", params))
 
 	return http.StatusOK, result
 }

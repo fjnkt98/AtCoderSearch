@@ -28,14 +28,6 @@ func NewErrorResponse[D any](msg string, params any) SearchResultResponse[D] {
 	}
 }
 
-type QueryLog struct {
-	RequestAt time.Time `json:"request_at"`
-	Domain    string    `json:"domain"`
-	Time      uint      `json:"time"`
-	Hits      uint      `json:"hits"`
-	Params    any       `json:"params"`
-}
-
 type FacetPart struct {
 	Label string `json:"label"`
 	Count uint   `json:"count"`
@@ -57,7 +49,7 @@ func ConvertBucket[T solr.BucketElement](b []solr.Bucket[T]) []FacetPart {
 		case string:
 			label = v
 		}
-		p[i] = FacetPart {
+		p[i] = FacetPart{
 			Label: label,
 			Count: b.Count,
 		}
