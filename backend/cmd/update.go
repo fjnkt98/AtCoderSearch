@@ -46,7 +46,7 @@ var updateProblemCmd = &cobra.Command{
 
 		solrURL := os.Getenv("SOLR_HOST")
 		if solrURL == "" {
-			slog.Error("environment variable `SOLR_HOST` must be set.", slog.String("error", fmt.Sprintf("%+v", err)))
+			slog.Error("environment variable `SOLR_HOST` must be set.")
 			os.Exit(1)
 		}
 		core, err := solr.NewSolrCore[any, any]("problem", solrURL)
@@ -104,7 +104,7 @@ var updateUserCmd = &cobra.Command{
 
 		solrURL := os.Getenv("SOLR_HOST")
 		if solrURL == "" {
-			slog.Error("environment variable `SOLR_HOST` must be set.", slog.String("error", fmt.Sprintf("%+v", err)))
+			slog.Error("environment variable `SOLR_HOST` must be set.")
 			os.Exit(1)
 		}
 		core, err := solr.NewSolrCore[any, any]("user", solrURL)
@@ -159,7 +159,7 @@ var updateSubmissionCmd = &cobra.Command{
 
 		solrURL := os.Getenv("SOLR_HOST")
 		if solrURL == "" {
-			slog.Error("environment variable `SOLR_HOST` must be set.", slog.String("error", fmt.Sprintf("%+v", err)))
+			slog.Error("environment variable `SOLR_HOST` must be set.")
 			os.Exit(1)
 		}
 		core, err := solr.NewSolrCore[any, any]("submission", solrURL)
@@ -214,7 +214,7 @@ var updateRecommendCmd = &cobra.Command{
 
 		solrURL := os.Getenv("SOLR_HOST")
 		if solrURL == "" {
-			slog.Error("environment variable `SOLR_HOST` must be set.", slog.String("error", fmt.Sprintf("%+v", err)))
+			slog.Error("environment variable `SOLR_HOST` must be set.")
 			os.Exit(1)
 		}
 		core, err := solr.NewSolrCore[any, any]("recommend", solrURL)
