@@ -219,10 +219,9 @@ type Searcher struct {
 	core      *solr.SolrCore[Response, FacetCounts]
 	validator *validator.Validate
 	decoder   *schema.Decoder
-	logger    *slog.Logger
 }
 
-func NewSearcher(logger *slog.Logger, baseURL string, coreName string) (Searcher, error) {
+func NewSearcher(baseURL string, coreName string) (Searcher, error) {
 	core, err := solr.NewSolrCore[Response, FacetCounts](coreName, baseURL)
 	if err != nil {
 		return Searcher{}, failure.Translate(err, SearcherInitializeError, failure.Context{"baseURL": baseURL, "coreName": coreName}, failure.Message("failed to create user searcher"))
@@ -239,7 +238,6 @@ func NewSearcher(logger *slog.Logger, baseURL string, coreName string) (Searcher
 		core:      &core,
 		validator: validator,
 		decoder:   decoder,
-		logger:    logger,
 	}
 	return searcher, nil
 }
@@ -257,7 +255,7 @@ func (s *Searcher) HandleSearch(w http.ResponseWriter, r *http.Request) {
 		query, err := url.ParseQuery(r.URL.RawQuery)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			s.logger.Error("failed to parse query string", slog.String("url", r.URL.String()), slog.String("error", fmt.Sprintf("%+v", err)))
+			slog.Error("failed to parse query string", slog.String("url", r.URL.String()), slog.String("error", fmt.Sprintf("%+v", err)))
 			encoder.Encode(NewErrorResponse(fmt.Sprintf("failed to parse query string `%s`", r.URL.RawQuery), nil))
 			return
 		}
@@ -265,14 +263,14 @@ func (s *Searcher) HandleSearch(w http.ResponseWriter, r *http.Request) {
 		var params SearchParams
 		if err := s.decoder.Decode(&params, query); err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			s.logger.Error("failed to decode request parameter", slog.String("url", r.URL.String()), slog.String("error", fmt.Sprintf("%+v", err)))
+			slog.Error("failed to decode request parameter", slog.String("url", r.URL.String()), slog.String("error", fmt.Sprintf("%+v", err)))
 			encoder.Encode(NewErrorResponse(fmt.Sprintf("failed to decode request parameter `%s`", r.URL.RawQuery), nil))
 			return
 		}
 
 		if err := s.validator.Struct(params); err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			s.logger.Error("validation error", slog.String("url", r.URL.String()), slog.Any("params", params), slog.String("error", fmt.Sprintf("%+v", err)))
+			slog.Error("validation error", slog.String("url", r.URL.String()), slog.Any("params", params), slog.String("error", fmt.Sprintf("%+v", err)))
 			encoder.Encode(NewErrorResponse(fmt.Sprintf("validation error `%s`: %s", r.URL.RawQuery, err.Error()), params))
 			return
 		}
@@ -291,7 +289,7 @@ func (s *Searcher) search(r *http.Request, params SearchParams) (int, acs.Search
 	query := params.ToQuery()
 	res, err := s.core.Select(query)
 	if err != nil {
-		s.logger.Error("failed to request to solr", slog.String("url", r.URL.String()), slog.Any("query", query), slog.Any("params", params), slog.String("error", fmt.Sprintf("%+v", err)))
+		slog.Error("failed to request to solr", slog.String("url", r.URL.String()), slog.Any("query", query), slog.Any("params", params), slog.String("error", fmt.Sprintf("%+v", err)))
 		return 500, NewErrorResponse("internal error", params)
 	}
 
@@ -309,7 +307,7 @@ func (s *Searcher) search(r *http.Request, params SearchParams) (int, acs.Search
 		},
 		Items: res.Response.Docs,
 	}
-	s.logger.Info("querylog", slog.String("domain", "user"), slog.Uint64("elapsed_time", uint64(result.Stats.Time)), slog.Uint64("hits", uint64(res.Response.NumFound)), slog.Any("params", params))
+	slog.Info("querylog", slog.String("domain", "user"), slog.Uint64("elapsed_time", uint64(result.Stats.Time)), slog.Uint64("hits", uint64(res.Response.NumFound)), slog.Any("params", params))
 
 	return http.StatusOK, result
 }

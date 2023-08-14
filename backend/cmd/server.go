@@ -19,43 +19,41 @@ var serverCmd = &cobra.Command{
 	Short: "Launch API server",
 	Long:  "Launch API server",
 	Run: func(cmd *cobra.Command, args []string) {
-		logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
-
 		// Solr common configuration
 		solrHost := os.Getenv("SOLR_HOST")
 		if solrHost == "" {
-			logger.Error("SOLR_HOST must be set")
+			slog.Error("SOLR_HOST must be set")
 			os.Exit(1)
 		}
 		parsedSolrURL, err := url.Parse(solrHost)
 		if err != nil {
-			logger.Error("invalid Solr URL was given", slog.String("host", solrHost))
+			slog.Error("invalid Solr URL was given", slog.String("host", solrHost))
 			os.Exit(1)
 		}
 		solrBaseURL := url.URL{Scheme: parsedSolrURL.Scheme, Host: parsedSolrURL.Host}
 
 		// Problem searcher configuration
-		problemSearcher, err := problem.NewSearcher(logger, solrBaseURL.String(), "problem")
+		problemSearcher, err := problem.NewSearcher(solrBaseURL.String(), "problem")
 		if err != nil {
-			logger.Error("failed to instantiate problem searcher", slog.String("error", fmt.Sprintf("%+v", err)))
+			slog.Error("failed to instantiate problem searcher", slog.String("error", fmt.Sprintf("%+v", err)))
 		}
 
 		// User searcher configuration
-		userSearcher, err := user.NewSearcher(logger, solrBaseURL.String(), "user")
+		userSearcher, err := user.NewSearcher(solrBaseURL.String(), "user")
 		if err != nil {
-			logger.Error("failed to instantiate user searcher", slog.String("error", fmt.Sprintf("%+v", err)))
+			slog.Error("failed to instantiate user searcher", slog.String("error", fmt.Sprintf("%+v", err)))
 		}
 
 		// Submission searcher configuration
-		submissionSearcher, err := submission.NewSearcher(logger, solrBaseURL.String(), "submission")
+		submissionSearcher, err := submission.NewSearcher(solrBaseURL.String(), "submission")
 		if err != nil {
-			logger.Error("failed to instantiate submission searcher", slog.String("error", fmt.Sprintf("%+v", err)))
+			slog.Error("failed to instantiate submission searcher", slog.String("error", fmt.Sprintf("%+v", err)))
 		}
 
 		// Recommend searcher configuration
-		recommendSearcher, err := recommend.NewSearcher(logger, solrBaseURL.String(), "problem")
+		recommendSearcher, err := recommend.NewSearcher(solrBaseURL.String(), "problem")
 		if err != nil {
-			logger.Error("failed to instantiate recommend searcher", slog.String("error", fmt.Sprintf("%+v", err)))
+			slog.Error("failed to instantiate recommend searcher", slog.String("error", fmt.Sprintf("%+v", err)))
 		}
 
 		// API handler registration
@@ -82,12 +80,12 @@ var serverCmd = &cobra.Command{
 		port := os.Getenv("API_SERVER_LISTEN_PORT")
 		if port == "" {
 			port = "8000"
-			logger.Warn("Environment variable API_SERVER_LISTEN_PORT was not given. Default port number 8000 will be used.")
+			slog.Warn("Environment variable API_SERVER_LISTEN_PORT was not given. Default port number 8000 will be used.")
 		} else {
-			logger.Info(fmt.Sprintf("API server will listen on %s", port))
+			slog.Info(fmt.Sprintf("API server will listen on %s", port))
 		}
 		if err := http.ListenAndServe(fmt.Sprintf(":%s", port), nil); err != nil {
-			logger.Error("failed to listen and serve api server", slog.String("error", err.Error()))
+			slog.Error("failed to listen and serve api server", slog.String("error", err.Error()))
 			os.Exit(1)
 		}
 	},
