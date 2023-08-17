@@ -18,7 +18,7 @@ type UpdateConfig struct {
 	Duration           int    `json:"duration"`
 }
 
-func Update(cfg UpdateConfig, db *sqlx.DB, core solr.SolrCore[any, any]) error {
+func Update(cfg UpdateConfig, db *sqlx.DB, core *solr.Core) error {
 	if !cfg.SkipFetch {
 		crawler := NewUserCrawler(db)
 		if err := crawler.Run(cfg.Duration); err != nil {

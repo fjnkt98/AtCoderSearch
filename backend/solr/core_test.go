@@ -16,30 +16,9 @@ type SampleDocument struct {
 	ID string `json:"id"`
 }
 
-func TestCreateCore(t *testing.T) {
-	core, err := NewSolrCore[SampleDocument, map[string]any]("example", "http://localhost:8983")
-
-	if err != nil {
-		t.Error("failed to create core")
-	}
-
-	if core.adminURL.String() != "http://localhost:8983/solr/admin/cores" {
-		t.Errorf("admin URL doesn't match: expected: `http://localhost:8983/solr/admin/cores` but got `%s`", core.adminURL.String())
-	}
-	if core.pingURL.String() != "http://localhost:8983/solr/example/admin/ping" {
-		t.Errorf("admin URL doesn't match: expected: `http://localhost:8983/solr/example/admin/ping` but got `%s`", core.adminURL.String())
-	}
-	if core.selectURL.String() != "http://localhost:8983/solr/example/select" {
-		t.Errorf("admin URL doesn't match: expected: `http://localhost:8983/solr/example/select` but got `%s`", core.adminURL.String())
-	}
-	if core.postURL.String() != "http://localhost:8983/solr/example/update" {
-		t.Errorf("admin URL doesn't match: expected: `http://localhost:8983/solr/example/update` but got `%s`", core.adminURL.String())
-	}
-}
-
 func TestGetCoreStatus(t *testing.T) {
-	core, _ := NewSolrCore[SampleDocument, map[string]any]("example", "http://localhost:8983")
-	status, err := core.Status()
+	core, _ := NewSolrCore("example", "http://localhost:8983")
+	status, err := Status(core)
 	if err != nil {
 		t.Errorf("failed to get core status: %s", err.Error())
 	}
@@ -50,11 +29,11 @@ func TestGetCoreStatus(t *testing.T) {
 }
 
 func TestReloadCore(t *testing.T) {
-	core, _ := NewSolrCore[SampleDocument, map[string]any]("example", "http://localhost:8983")
+	core, _ := NewSolrCore("example", "http://localhost:8983")
 
 	before := time.Now()
-	core.Reload()
-	status, _ := core.Status()
+	Reload(core)
+	status, _ := Status(core)
 	after, _ := time.Parse(time.RFC3339, status.StartTime)
 
 	if before.After(after) {
@@ -68,21 +47,21 @@ func TestReloadCore(t *testing.T) {
 }
 
 func TestPing(t *testing.T) {
-	core, _ := NewSolrCore[SampleDocument, map[string]any]("example", "http://localhost:8983")
+	core, _ := NewSolrCore("example", "http://localhost:8983")
 
-	res, _ := core.Ping()
+	res, _ := Ping(core)
 	if res.Status != "OK" {
 		t.Errorf("ping returns non-ok message: expected `OK` but got `%s`", res.Status)
 	}
 }
 
 func TestSelect(t *testing.T) {
-	core, _ := NewSolrCore[SampleDocument, map[string]any]("example", "http://localhost:8983")
+	core, _ := NewSolrCore("example", "http://localhost:8983")
 
 	params := url.Values{}
 	params.Set("q", "*:*")
 
-	res, err := core.Select(params)
+	res, err := Select[any, any](core, params)
 	if err != nil {
 		t.Errorf("failed to select test: %s", err.Error())
 	}

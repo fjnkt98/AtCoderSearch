@@ -16,7 +16,7 @@ type UpdateConfig struct {
 	PostConcurrent     int    `json:"post-concurrent"`
 }
 
-func Update(cfg UpdateConfig, db *sqlx.DB, core solr.SolrCore[any, any]) error {
+func Update(cfg UpdateConfig, db *sqlx.DB, core *solr.Core) error {
 	generator := NewDocumentGenerator(db, cfg.SaveDir)
 	if err := generator.Run(cfg.ChunkSize, cfg.GenerateConcurrent); err != nil {
 		return failure.Wrap(err)
