@@ -34,7 +34,7 @@ func (r *IntegerRange[T]) ToRange() string {
 		to = strconv.Itoa(int(*r.To))
 	}
 
-	return fmt.Sprintf("[%s TO %s]", from, to)
+	return fmt.Sprintf("[%s TO %s}", from, to)
 }
 
 type FloatRange[T constraints.Float] struct {
@@ -61,7 +61,7 @@ func (r *FloatRange[T]) ToRange() string {
 		to = strconv.FormatFloat(float64(*r.To), 'f', 6, 64)
 	}
 
-	return fmt.Sprintf("[%s TO %s]", from, to)
+	return fmt.Sprintf("[%s TO %s}", from, to)
 }
 
 type DateRange struct {
@@ -88,7 +88,7 @@ func (r *DateRange) ToRange() string {
 		to = solr.IntoSolrDateTime(*r.To).String()
 	}
 
-	return fmt.Sprintf("[%s TO %s]", from, to)
+	return fmt.Sprintf("[%s TO %s}", from, to)
 }
 
 func SanitizeStrings(s []string) []string {
