@@ -19,13 +19,14 @@ func FieldList(doc any) string {
 		fields := make([]string, 0, ty.NumField())
 		for i := 0; i < ty.NumField(); i++ {
 			field := ty.Field(i)
-			// if field.PkgPath == "" {
-			// 	continue
-			// }
 
 			var fieldName string
-			if tag, ok := field.Tag.Lookup("solr"); ok {
-				fieldName = tag
+			if tag, ok := field.Tag.Lookup("json"); ok {
+				if tag == "-" {
+					continue
+				}
+				f, _, _ := strings.Cut(tag, ",")
+				fieldName = f
 			} else {
 				fieldName = field.Name
 			}
@@ -39,47 +40,6 @@ func FieldList(doc any) string {
 	return fieldList
 
 }
-
-// type FieldLister struct {
-// 	cache *cache
-// }
-
-// func NewFieldLister() *FieldLister {
-// 	return &FieldLister{
-// 		cache: newCache(),
-// 	}
-// }
-
-// func (f *FieldLister) FieldList(doc any) string {
-// 	ty := reflect.TypeOf(doc)
-// 	if ty.Kind() != reflect.Struct {
-// 		return ""
-// 	}
-
-// 	fieldList, ok := f.cache.Get(ty)
-// 	if !ok {
-// 		fields := make([]string, 0, ty.NumField())
-// 		for i := 0; i < ty.NumField(); i++ {
-// 			field := ty.Field(i)
-// 			// if field.PkgPath == "" {
-// 			// 	continue
-// 			// }
-
-// 			var fieldName string
-// 			if tag, ok := field.Tag.Lookup("solr"); ok {
-// 				fieldName = tag
-// 			} else {
-// 				fieldName = field.Name
-// 			}
-// 			fields = append(fields, fieldName)
-// 		}
-
-// 		fieldList = strings.Join(fields, ",")
-// 		f.cache.Set(ty, fieldList)
-// 	}
-
-// 	return fieldList
-// }
 
 type fieldListCache struct {
 	vault map[reflect.Type]string

@@ -142,18 +142,18 @@ type FilterParams struct {
 }
 
 type Response struct {
-	UserName      string  `json:"user_name" solr:"user_name"`
-	Rating        int     `json:"rating" solr:"rating"`
-	HighestRating int     `json:"highest_rating" solr:"highest_rating"`
-	Affiliation   *string `json:"affiliation" solr:"affiliation"`
-	BirthYear     *uint   `json:"birth_year" solr:"birth_year"`
-	Country       *string `json:"country" solr:"country"`
-	Crown         *string `json:"crown" solr:"crown"`
-	JoinCount     uint    `json:"join_count" solr:"join_count"`
-	Rank          uint    `json:"rank" solr:"rank"`
-	ActiveRank    *uint   `json:"active_rank" solr:"active_rank"`
-	Wins          uint    `json:"wins"  solr:"wins"`
-	Color         string  `json:"color" solr:"color"`
+	UserName      string  `json:"user_name"`
+	Rating        int     `json:"rating"`
+	HighestRating int     `json:"highest_rating"`
+	Affiliation   *string `json:"affiliation"`
+	BirthYear     *uint   `json:"birth_year"`
+	Country       *string `json:"country"`
+	Crown         *string `json:"crown"`
+	JoinCount     uint    `json:"join_count"`
+	Rank          uint    `json:"rank"`
+	ActiveRank    *uint   `json:"active_rank"`
+	Wins          uint    `json:"wins" `
+	Color         string  `json:"color"`
 }
 
 type FacetCounts struct {
