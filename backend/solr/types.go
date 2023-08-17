@@ -5,19 +5,19 @@ import (
 	"time"
 )
 
-type SolrResponseHeader struct {
+type ResponseHeader struct {
 	ZkConnected map[string]any `json:"zkConnected"`
 	Status      uint           `json:"status"`
 	QTime       uint
 	Params      map[string]any `json:"params"`
 }
 
-type SolrPingResponse struct {
-	Header SolrResponseHeader `json:"responseHeader"`
-	Status string             `json:"status"`
+type PingResponse struct {
+	Header ResponseHeader `json:"responseHeader"`
+	Status string         `json:"status"`
 }
 
-type SolrErrorInfo struct {
+type ErrorInfo struct {
 	Metadata []string `json:"metadata"`
 	Msg      string   `json:"msg"`
 	Code     uint     `json:"code"`
@@ -30,19 +30,19 @@ type LuceneInfo struct {
 	LuceneImplVersion string `json:"lucene-impl-version"`
 }
 
-type SolrSystemInfo struct {
-	Header   SolrResponseHeader `json:"responseHeader"`
-	Mode     string             `json:"mode"`
-	SolrHome string             `json:"solr_home"`
-	CoreRoot string             `json:"core_root"`
-	Lucene   LuceneInfo         `json:"lucene"`
-	Jvm      map[string]any     `json:"jvm"`
-	Security map[string]any     `json:"security"`
-	System   map[string]any     `json:"system"`
-	Error    SolrErrorInfo      `json:"error"`
+type SystemInfo struct {
+	Header   ResponseHeader `json:"responseHeader"`
+	Mode     string         `json:"mode"`
+	SolrHome string         `json:"solr_home"`
+	CoreRoot string         `json:"core_root"`
+	Lucene   LuceneInfo     `json:"lucene"`
+	Jvm      map[string]any `json:"jvm"`
+	Security map[string]any `json:"security"`
+	System   map[string]any `json:"system"`
+	Error    ErrorInfo      `json:"error"`
 }
 
-type SolrIndexInfo struct {
+type IndexInfo struct {
 	NumDocs                 uint64                 `json:"numDocs"`
 	MaxDoc                  uint64                 `json:"maxDoc"`
 	DeletedDocs             uint64                 `json:"deletedDocs"`
@@ -58,37 +58,37 @@ type SolrIndexInfo struct {
 	Size                    string                 `json:"size"`
 }
 
-type SolrCoreStatus struct {
-	Name        string        `json:"name"`
-	InstanceDir string        `json:"instanceDir"`
-	DataDir     string        `json:"dataDir"`
-	Config      string        `json:"config"`
-	Schema      string        `json:"schema"`
-	StartTime   string        `json:"startTime"`
-	UpTime      uint64        `json:"uptime"`
-	Index       SolrIndexInfo `json:"index"`
+type CoreStatus struct {
+	Name        string    `json:"name"`
+	InstanceDir string    `json:"instanceDir"`
+	DataDir     string    `json:"dataDir"`
+	Config      string    `json:"config"`
+	Schema      string    `json:"schema"`
+	StartTime   string    `json:"startTime"`
+	UpTime      uint64    `json:"uptime"`
+	Index       IndexInfo `json:"index"`
 }
 
-type SolrCoreList struct {
-	Header       SolrResponseHeader        `json:"responseHeader"`
-	InitFailures map[string]any            `json:"initFailures"`
-	Status       map[string]SolrCoreStatus `json:"status"`
-	Error        SolrErrorInfo             `json:"error"`
+type CoreList struct {
+	Header       ResponseHeader        `json:"responseHeader"`
+	InitFailures map[string]any        `json:"initFailures"`
+	Status       map[string]CoreStatus `json:"status"`
+	Error        ErrorInfo             `json:"error"`
 }
 
-type SolrSimpleResponse struct {
-	Header SolrResponseHeader `json:"responseHeader"`
-	Error  SolrErrorInfo      `json:"error"`
+type SimpleResponse struct {
+	Header ResponseHeader `json:"responseHeader"`
+	Error  ErrorInfo      `json:"error"`
 }
 
-type SolrSelectResponse[D any, F any] struct {
-	Header      SolrResponseHeader `json:"responseHeader"`
-	Response    SolrSelectBody[D]  `json:"response"`
-	FacetCounts F                  `json:"facets"`
-	Error       SolrErrorInfo      `json:"error"`
+type SelectResponse[D any, F any] struct {
+	Header      ResponseHeader `json:"responseHeader"`
+	Response    SelectBody[D]  `json:"response"`
+	FacetCounts F              `json:"facets"`
+	Error       ErrorInfo      `json:"error"`
 }
 
-type SolrSelectBody[D any] struct {
+type SelectBody[D any] struct {
 	NumFound      uint `json:"numFound"`
 	Start         uint `json:"start"`
 	NumFoundExact bool `json:"numFoundExact"`
@@ -104,22 +104,22 @@ type Bucket[T BucketElement] struct {
 	Count uint `json:"count"`
 }
 
-type SolrTermFacetCount struct {
+type TermFacetCount struct {
 	Buckets []Bucket[string] `json:"buckets"`
 }
 
-type SolrRangeFacetCount[T BucketElement] struct {
+type RangeFacetCount[T BucketElement] struct {
 	Buckets []Bucket[T]              `json:"buckets"`
-	Before  *SolrRangeFacetCountInfo `json:"before"`
-	After   *SolrRangeFacetCountInfo `json:"after"`
-	Between *SolrRangeFacetCountInfo `json:"between"`
+	Before  *RangeFacetCountInfo `json:"before"`
+	After   *RangeFacetCountInfo `json:"after"`
+	Between *RangeFacetCountInfo `json:"between"`
 }
 
-type SolrRangeFacetCountInfo struct {
+type RangeFacetCountInfo struct {
 	Count uint `json:"count"`
 }
 
-type SolrQueryFacetCount struct {
+type QueryFacetCount struct {
 	Buckets []Bucket[string] `json:"buckets"`
 }
 

@@ -19,184 +19,186 @@ const (
 	DecodeError           failure.StringCode = "DecodeError"
 )
 
-type SolrCore[D any, F any] struct {
-	Name      string
-	adminURL  url.URL
-	pingURL   url.URL
-	postURL   url.URL
-	selectURL url.URL
-	client    *http.Client
+type Core struct {
+	name    string
+	baseURL url.URL
+	client  *http.Client
 }
 
-func NewSolrCore[D any, F any](coreName string, baseURL string) (SolrCore[D, F], error) {
+func NewSolrCore(coreName string, baseURL string) (*Core, error) {
 	parsedBaseURL, err := url.Parse(baseURL)
 	if err != nil {
-		return SolrCore[D, F]{}, failure.Translate(err, InvalidHost, failure.Context{"coreName": coreName, "baseURL": baseURL}, failure.Message("failed to create solr core"))
+		return nil, failure.Translate(err, InvalidHost, failure.Context{"coreName": coreName, "baseURL": baseURL}, failure.Message("failed to create solr core"))
 	}
 	solrBaseURL := url.URL{Scheme: parsedBaseURL.Scheme, Host: parsedBaseURL.Host}
 
-	return SolrCore[D, F]{
-		Name:      coreName,
-		adminURL:  *solrBaseURL.JoinPath("solr", "admin", "cores"),
-		pingURL:   *solrBaseURL.JoinPath("solr", coreName, "admin", "ping"),
-		postURL:   *solrBaseURL.JoinPath("solr", coreName, "update"),
-		selectURL: *solrBaseURL.JoinPath("solr", coreName, "select"),
-		client:    &http.Client{},
+	return &Core{
+		name:    coreName,
+		baseURL: solrBaseURL,
+		client:  &http.Client{},
 	}, nil
 }
 
-func (c *SolrCore[D, F]) Ping() (SolrPingResponse, error) {
-	req, err := http.NewRequest("GET", c.pingURL.String(), nil)
+func Ping(core *Core) (PingResponse, error) {
+	u := core.baseURL.JoinPath("solr", core.name, "ping").String()
+	req, err := http.NewRequest("GET", u, nil)
 	if err != nil {
-		return SolrPingResponse{}, failure.Translate(err, RequestCreationError, failure.Context{"url": c.pingURL.String()}, failure.Message("failed to prepare request"))
+		return PingResponse{}, failure.Translate(err, RequestCreationError, failure.Context{"url": u}, failure.Message("failed to prepare request"))
 	}
 
-	if res, err := c.client.Do(req); err != nil {
-		return SolrPingResponse{}, failure.Translate(err, RequestExecutionError, failure.Context{"url": c.pingURL.String()}, failure.Message("ping failed"))
+	if res, err := core.client.Do(req); err != nil {
+		return PingResponse{}, failure.Translate(err, RequestExecutionError, failure.Context{"url": u}, failure.Message("ping failed"))
 	} else {
-		if res.StatusCode != http.StatusOK {
-			return SolrPingResponse{}, failure.New(NotOK, failure.Context{"url": c.pingURL.String()}, failure.Message("ping failed"))
+		var body PingResponse
+		defer res.Body.Close()
+		if err := json.NewDecoder(res.Body).Decode(&body); err != nil {
+			return PingResponse{}, failure.Translate(err, DecodeError, failure.Context{"url": u}, failure.Message("failed to decode solr ping response"))
 		}
 
-		var pingResponse SolrPingResponse
-		defer res.Body.Close()
-		if err := json.NewDecoder(res.Body).Decode(&pingResponse); err != nil {
-			return SolrPingResponse{}, failure.Translate(err, DecodeError, failure.Context{"url": c.pingURL.String()}, failure.Message("failed to decode solr ping response"))
-		} else {
-			return pingResponse, nil
+		if res.StatusCode != http.StatusOK {
+			return body, failure.New(NotOK, failure.Context{"url": u}, failure.Message("ping failed"))
 		}
+
+		return body, nil
 	}
 }
 
-func (c *SolrCore[D, F]) Status() (SolrCoreStatus, error) {
+func  Status(core *Core) (CoreStatus, error) {
 	v := url.Values{}
 	v.Set("action", "STATUS")
-	v.Set("core", c.Name)
-	u := c.adminURL
+	v.Set("core", core.name)
+	u := core.baseURL.JoinPath("solr", "admin", "cores")
 	u.RawQuery = v.Encode()
+	url := u.String()
 
-	req, err := http.NewRequest("GET", u.String(), nil)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		return SolrCoreStatus{}, failure.Translate(err, RequestCreationError, failure.Context{"url": u.String()}, failure.Message("failed to prepare request"))
+		return CoreStatus{}, failure.Translate(err, RequestCreationError, failure.Context{"url": url}, failure.Message("failed to prepare request"))
 	}
 
-	if res, err := c.client.Do(req); err != nil {
-		return SolrCoreStatus{}, failure.Translate(err, RequestExecutionError, failure.Context{"url": u.String()}, failure.Message("status request failed"))
+	if res, err := core.client.Do(req); err != nil {
+		return CoreStatus{}, failure.Translate(err, RequestExecutionError, failure.Context{"url": url}, failure.Message("status request failed"))
 	} else {
-		if res.StatusCode != http.StatusOK {
-			return SolrCoreStatus{}, failure.New(NotOK, failure.Context{"url": u.String()}, failure.Message("couldn't get core status"))
-		}
-
-		var coreStatus SolrCoreList
+		var body CoreList
 		defer res.Body.Close()
-		if err := json.NewDecoder(res.Body).Decode(&coreStatus); err != nil {
-			return SolrCoreStatus{}, failure.Translate(err, DecodeError, failure.Context{"url": u.String()}, failure.Messagef("failed to decode solr status response"))
+		if err := json.NewDecoder(res.Body).Decode(&body); err != nil {
+			return CoreStatus{}, failure.Translate(err, DecodeError, failure.Context{"url": url}, failure.Messagef("failed to decode solr status response"))
 		}
 
-		status, ok := coreStatus.Status[c.Name]
+		if res.StatusCode != http.StatusOK {
+			return CoreStatus{}, failure.New(NotOK, failure.Context{"url": url}, failure.Message("couldn't get core status"))
+		}
+
+		status, ok := body.Status[core.name]
 		if ok {
 			return status, nil
 		} else {
-			return SolrCoreStatus{}, failure.New(CoreNotFound, failure.Context{"url": u.String()}, failure.Messagef("the core `%s` doesn't exists", c.Name))
+			return CoreStatus{}, failure.New(CoreNotFound, failure.Context{"url": url}, failure.Messagef("the core `%s` doesn't exists", core.name))
 		}
 	}
 }
 
-func (core *SolrCore[D, F]) Reload() (SolrSimpleResponse, error) {
+func Reload(core *Core) (SimpleResponse, error) {
 	v := url.Values{}
 	v.Set("action", "RELOAD")
-	v.Set("core", core.Name)
-	u := core.adminURL
+	v.Set("core", core.name)
+	u := core.baseURL.JoinPath("solr", "admin", "cores")
 	u.RawQuery = v.Encode()
+	url := u.String()
 
-	req, err := http.NewRequest("GET", u.String(), nil)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		return SolrSimpleResponse{}, failure.Translate(err, RequestCreationError, failure.Context{"url": u.String()}, failure.Message("failed to prepare request"))
+		return SimpleResponse{}, failure.Translate(err, RequestCreationError, failure.Context{"url": url}, failure.Message("failed to prepare request"))
 	}
 
 	if res, err := core.client.Do(req); err != nil {
-		return SolrSimpleResponse{}, failure.Translate(err, RequestExecutionError, failure.Context{"url": u.String()}, failure.Message("reload request failed"))
+		return SimpleResponse{}, failure.Translate(err, RequestExecutionError, failure.Context{"url": url}, failure.Message("reload request failed"))
 	} else {
-		var reloadResponse SolrSimpleResponse
+		var body SimpleResponse
 		defer res.Body.Close()
-		if err := json.NewDecoder(res.Body).Decode(&reloadResponse); err != nil {
-			return SolrSimpleResponse{}, failure.Translate(err, DecodeError, failure.Context{"url": u.String()}, failure.Message("failed to decode solr status response"))
+		if err := json.NewDecoder(res.Body).Decode(&body); err != nil {
+			return SimpleResponse{}, failure.Translate(err, DecodeError, failure.Context{"url": url}, failure.Message("failed to decode solr status response"))
 		}
 
 		if res.StatusCode != http.StatusOK {
-			return SolrSimpleResponse{}, failure.New(NotOK, failure.Context{"url": u.String()}, failure.Messagef("failed to reload core: %s", reloadResponse.Error.Msg))
+			return body, failure.New(NotOK, failure.Context{"url": url}, failure.Messagef("failed to reload core: %s", body.Error.Msg))
 		} else {
-			return reloadResponse, nil
+			return body, nil
 		}
 	}
 }
 
-func (core *SolrCore[D, F]) Select(params url.Values) (SolrSelectResponse[D, F], error) {
-	u := core.selectURL
+func Select[D any, F any](core *Core, params url.Values) (SelectResponse[D, F], error) {
+	u := core.baseURL.JoinPath("solr", core.name, "select")
 	u.RawQuery = params.Encode()
+	url := u.String()
+	
 
-	req, err := http.NewRequest("GET", u.String(), nil)
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		return SolrSelectResponse[D, F]{}, failure.Translate(err, RequestCreationError, failure.Context{"url": u.String()}, failure.Message("failed to prepare request"))
+		return SelectResponse[D, F]{}, failure.Translate(err, RequestCreationError, failure.Context{"url": url}, failure.Message("failed to prepare request"))
 	}
 
 	if res, err := core.client.Do(req); err != nil {
-		return SolrSelectResponse[D, F]{}, failure.Translate(err, RequestExecutionError, failure.Context{"url": u.String()}, failure.Message("failed to select request"))
+		return SelectResponse[D, F]{}, failure.Translate(err, RequestExecutionError, failure.Context{"url": url}, failure.Message("failed to select request"))
 	} else {
-		var selectResponse SolrSelectResponse[D, F]
+		var body SelectResponse[D, F]
 		defer res.Body.Close()
-		if err := json.NewDecoder(res.Body).Decode(&selectResponse); err != nil {
-			return SolrSelectResponse[D, F]{}, failure.Translate(err, DecodeError, failure.Context{"url": u.String()}, failure.Message("failed to decode Solr select response"))
+		if err := json.NewDecoder(res.Body).Decode(&body); err != nil {
+			return SelectResponse[D, F]{}, failure.Translate(err, DecodeError, failure.Context{"url": url}, failure.Message("failed to decode Solr select response"))
 		}
 
 		if res.StatusCode != http.StatusOK {
-			return SolrSelectResponse[D, F]{}, failure.New(NotOK, failure.Context{"url": u.String()}, failure.Messagef("select request failed: %s", selectResponse.Error.Msg))
+			return body, failure.New(NotOK, failure.Context{"url": url}, failure.Messagef("select request failed: %s", body.Error.Msg))
 		} else {
-			return selectResponse, nil
+			return body, nil
 		}
 	}
 }
 
-func (core *SolrCore[D, F]) Post(body io.Reader, contentType string) (SolrSimpleResponse, error) {
-	req, err := http.NewRequest("POST", core.postURL.String(), body)
+func Post(core *Core, body io.Reader, contentType string) (SimpleResponse, error) {
+	u := core.baseURL.JoinPath("solr", core.name, "update")
+	url := u.String()
+
+	req, err := http.NewRequest("POST", url, body)
 	if err != nil {
-		return SolrSimpleResponse{}, failure.Translate(err, RequestCreationError, failure.Context{"url": core.postURL.String(), "Content-Type": contentType}, failure.Message("failed to prepare request"))
+		return SimpleResponse{}, failure.Translate(err, RequestCreationError, failure.Context{"url": url, "Content-Type": contentType}, failure.Message("failed to prepare request"))
 	}
 	req.Header.Add("Content-Type", contentType)
 
 	if res, err := core.client.Do(req); err != nil {
-		return SolrSimpleResponse{}, failure.Translate(err, RequestExecutionError, failure.Context{"url": core.postURL.String(), "Content-Type": contentType}, failure.Message("failed to post request"))
+		return SimpleResponse{}, failure.Translate(err, RequestExecutionError, failure.Context{"url": url, "Content-Type": contentType}, failure.Message("failed to post request"))
 	} else {
-		var response SolrSimpleResponse
+		var body SimpleResponse
 		defer res.Body.Close()
-		if err := json.NewDecoder(res.Body).Decode(&response); err != nil {
-			return SolrSimpleResponse{}, failure.Translate(err, DecodeError, failure.Context{"url": core.postURL.String(), "Content-Type": contentType}, failure.Message("failed to decode Solr post response"))
+		if err := json.NewDecoder(res.Body).Decode(&body); err != nil {
+			return SimpleResponse{}, failure.Translate(err, DecodeError, failure.Context{"url": url, "Content-Type": contentType}, failure.Message("failed to decode Solr post response"))
 		}
 
 		if res.StatusCode != http.StatusOK {
-			return SolrSimpleResponse{}, failure.New(NotOK, failure.Context{"url": core.postURL.String(), "Content-Type": contentType}, failure.Messagef("post failed: %s", response.Error.Msg))
+			return body, failure.New(NotOK, failure.Context{"url": url, "Content-Type": contentType}, failure.Messagef("post failed: %s", body.Error.Msg))
 		} else {
-			return response, nil
+			return body, nil
 		}
 	}
 }
 
-func (core *SolrCore[D, F]) Commit() (SolrSimpleResponse, error) {
+func Commit(core *Core) (SimpleResponse, error) {
 	body := strings.NewReader(`{"commit": {}}`)
-	return core.Post(body, "application/json")
+	return Post(core, body, "application/json")
 }
 
-func (core *SolrCore[D, F]) Optimize() (SolrSimpleResponse, error) {
+func Optimize(core *Core) (SimpleResponse, error) {
 	body := strings.NewReader(`{"optimize": {}}`)
-	return core.Post(body, "application/json")
+	return Post(core, body, "application/json")
 }
 
-func (core *SolrCore[D, F]) Rollback() (SolrSimpleResponse, error) {
+func Rollback(core *Core) (SimpleResponse, error) {
 	body := strings.NewReader(`{"rollback": {}}`)
-	return core.Post(body, "application/json")
+	return Post(core, body, "application/json")
 }
 
-func (core *SolrCore[D, F]) Truncate() (SolrSimpleResponse, error) {
+func Truncate(core *Core) (SimpleResponse, error) {
 	body := strings.NewReader(`{"delete":{"query": "*:*"}}`)
-	return core.Post(body, "application/json")
+	return Post(core, body, "application/json")
 }

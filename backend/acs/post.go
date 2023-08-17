@@ -15,15 +15,15 @@ import (
 )
 
 type DocumentUploader interface {
-	PostDocument(core solr.SolrCore[any, any], saveDir string, optimize bool) error
+	PostDocument(core *solr.Core, saveDir string, optimize bool) error
 }
 
 type DefaultDocumentUploader struct {
-	core    solr.SolrCore[any, any]
+	core    *solr.Core
 	saveDir string
 }
 
-func NewDefaultDocumentUploader(core solr.SolrCore[any, any], saveDir string) DefaultDocumentUploader {
+func NewDefaultDocumentUploader(core *solr.Core, saveDir string) DefaultDocumentUploader {
 	return DefaultDocumentUploader{
 		core,
 		saveDir,
@@ -64,7 +64,7 @@ func (u *DefaultDocumentUploader) PostDocument(optimize bool, concurrent int) er
 			return failure.Translate(err, FileOperationError, failure.Messagef("failed to open file `%s`", p))
 		}
 		defer file.Close()
-		if _, err := u.core.Post(file, "application/json"); err != nil {
+		if _, err := solr.Post(u.core, file, "application/json"); err != nil {
 			return failure.Translate(err, PostError, failure.Messagef("failed to open file `%s`", p))
 		}
 
@@ -117,16 +117,16 @@ func (u *DefaultDocumentUploader) PostDocument(optimize bool, concurrent int) er
 		select {
 		case <-ctx.Done():
 			slog.Info("post canceled. start rollback")
-			if _, err := u.core.Rollback(); err != nil {
+			if _, err := solr.Rollback(u.core); err != nil {
 				return failure.Translate(err, PostError, failure.Message("failed to rollback index"))
 			}
 		default:
 			if optimize {
-				if _, err := u.core.Optimize(); err != nil {
+				if _, err := solr.Optimize(u.core); err != nil {
 					return failure.Translate(err, PostError, failure.Message("failed to optimize index"))
 				}
 			} else {
-				if _, err := u.core.Commit(); err != nil {
+				if _, err := solr.Commit(u.core); err != nil {
 					return failure.Translate(err, PostError, failure.Message("failed to commit index"))
 				}
 			}

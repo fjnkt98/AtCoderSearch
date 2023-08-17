@@ -113,13 +113,13 @@ type Response struct {
 }
 
 type Searcher struct {
-	core      *solr.SolrCore[Response, any]
+	core      *solr.Core
 	validator *validator.Validate
 	decoder   *schema.Decoder
 }
 
 func NewSearcher(baseURL string, coreName string) (Searcher, error) {
-	core, err := solr.NewSolrCore[Response, any](coreName, baseURL)
+	core, err := solr.NewSolrCore(coreName, baseURL)
 	if err != nil {
 		return Searcher{}, failure.Translate(err, SearcherInitializeError, failure.Context{"baseURL": baseURL, "coreName": coreName}, failure.Message("failed to create user searcher"))
 	}
@@ -132,7 +132,7 @@ func NewSearcher(baseURL string, coreName string) (Searcher, error) {
 	})
 
 	searcher := Searcher{
-		core:      &core,
+		core:      core,
 		validator: validator,
 		decoder:   decoder,
 	}
@@ -184,7 +184,7 @@ func (s *Searcher) search(r *http.Request, params SearchParams) (int, acs.Search
 	startTime := time.Now()
 
 	query := params.ToQuery()
-	res, err := s.core.Select(query)
+	res, err := solr.Select[Response, any](s.core, query)
 	if err != nil {
 		slog.Error("failed to request to solr", slog.String("url", r.URL.String()), slog.Any("query", query), slog.Any("params", params), slog.String("error", fmt.Sprintf("%+v", err)))
 		return 500, NewErrorResponse("internal error", params)
@@ -210,7 +210,7 @@ func (s *Searcher) search(r *http.Request, params SearchParams) (int, acs.Search
 }
 
 func (s *Searcher) Liveness() bool {
-	ping, err := s.core.Ping()
+	ping, err := solr.Ping(s.core)
 	if err != nil {
 		return false
 	}
@@ -219,7 +219,7 @@ func (s *Searcher) Liveness() bool {
 }
 
 func (s *Searcher) Readiness() bool {
-	status, err := s.core.Status()
+	status, err := solr.Status(s.core)
 	if err != nil {
 		return false
 	}

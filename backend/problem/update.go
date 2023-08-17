@@ -19,7 +19,7 @@ type UpdateConfig struct {
 	All                bool   `json:"all"`
 }
 
-func Update(cfg UpdateConfig, db *sqlx.DB, core solr.SolrCore[any, any]) error {
+func Update(cfg UpdateConfig, db *sqlx.DB, core *solr.Core) error {
 	if !cfg.SkipFetch {
 		contestCrawler := NewContestCrawler(db)
 		if err := contestCrawler.Run(); err != nil {

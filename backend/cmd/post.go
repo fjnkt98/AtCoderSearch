@@ -32,7 +32,7 @@ var postProblemCmd = &cobra.Command{
 			slog.Error("environment variable `SOLR_HOST` must be set.")
 			os.Exit(1)
 		}
-		core, err := solr.NewSolrCore[any, any]("problem", solrURL)
+		core, err := solr.NewSolrCore("problem", solrURL)
 		if err != nil {
 			slog.Error("failed to create `problem` core", slog.String("error", fmt.Sprintf("%+v", err)))
 			os.Exit(1)
@@ -64,7 +64,7 @@ var postUserCmd = &cobra.Command{
 			slog.Error("environment variable `SOLR_HOST` must be set.")
 			os.Exit(1)
 		}
-		core, err := solr.NewSolrCore[any, any]("user", solrURL)
+		core, err := solr.NewSolrCore("user", solrURL)
 		if err != nil {
 			slog.Error("failed to create `user` core", slog.String("error", fmt.Sprintf("%+v", err)))
 			os.Exit(1)
@@ -96,7 +96,7 @@ var postSubmissionCmd = &cobra.Command{
 			slog.Error("environment variable `SOLR_HOST` must be set.")
 			os.Exit(1)
 		}
-		core, err := solr.NewSolrCore[any, any]("submission", solrURL)
+		core, err := solr.NewSolrCore("submission", solrURL)
 		if err != nil {
 			slog.Error("failed to create `user` core", slog.String("error", fmt.Sprintf("%+v", err)))
 			os.Exit(1)
@@ -128,7 +128,7 @@ var postRecommendCmd = &cobra.Command{
 			slog.Error("environment variable `SOLR_HOST` must be set.")
 			os.Exit(1)
 		}
-		core, err := solr.NewSolrCore[any, any]("recommend", solrURL)
+		core, err := solr.NewSolrCore("recommend", solrURL)
 		if err != nil {
 			slog.Error("failed to create `user` core", slog.String("error", fmt.Sprintf("%+v", err)))
 			os.Exit(1)
