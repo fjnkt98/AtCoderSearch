@@ -31,9 +31,6 @@ func (c *Crawler) getContestIDs() ([]string, error) {
 		"contest_id"
 	FROM
 		"contests"
-	WHERE
-		"category" IN ('ABC', 'ARC', 'AGC', 'ARC-Like', 'ABC-Like')
-		;
 	`)
 	if err != nil {
 		return nil, failure.Translate(err, DBError, failure.Message("failed to get contests id from `contests` table"))

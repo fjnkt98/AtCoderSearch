@@ -191,16 +191,16 @@ type FilterParams struct {
 }
 
 type Response struct {
-	SubmissionID  int64                 `json:"submission_id" solr:"submission_id"`
-	SubmittedAt   solr.FromSolrDateTime `json:"submitted_at" solr:"submitted_at"`
-	ProblemID     string                `json:"problem_id" solr:"problem_id"`
-	ContestID     string                `json:"contest_id" solr:"contest_id"`
-	UserID        string                `json:"user_id" solr:"user_id"`
-	Language      string                `json:"language" solr:"language"`
-	Point         float64               `json:"point" solr:"point"`
-	Length        uint64                `json:"length" solr:"length"`
-	Result        string                `json:"result" solr:"result"`
-	ExecutionTime *uint64               `json:"execution_time" solr:"execution_time"`
+	SubmissionID  int64                 `json:"submission_id"`
+	SubmittedAt   solr.FromSolrDateTime `json:"submitted_at"`
+	ProblemID     string                `json:"problem_id"`
+	ContestID     string                `json:"contest_id"`
+	UserID        string                `json:"user_id"`
+	Language      string                `json:"language"`
+	Point         float64               `json:"point"`
+	Length        uint64                `json:"length"`
+	Result        string                `json:"result"`
+	ExecutionTime *uint64               `json:"execution_time"`
 }
 
 type FacetCounts struct {
