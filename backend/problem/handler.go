@@ -103,13 +103,16 @@ func (p *SearchParams) fq() []string {
 
 	fq := make([]string, 0)
 
-	if c := acs.SanitizeStrings(p.Filter.Category); len(c) != 0 {
+	if c := acs.QuoteStrings(acs.SanitizeStrings(p.Filter.Category)); len(c) != 0 {
 		fq = append(fq, fmt.Sprintf("{!tag=category}category:(%s)", strings.Join(c, " OR ")))
 	}
 	if p.Filter.Difficulty != nil {
 		if r := p.Filter.Difficulty.ToRange(); r != "" {
 			fq = append(fq, fmt.Sprintf("{!tag=difficulty}difficulty:%s", r))
 		}
+	}
+	if c := acs.SanitizeStrings(p.Filter.Color); len(c) != 0 {
+		fq = append(fq, fmt.Sprintf("{!tag=color}color:%s", strings.Join(c, " OR ")))
 	}
 
 	return fq
@@ -118,6 +121,7 @@ func (p *SearchParams) fq() []string {
 type FilterParams struct {
 	Category   []string               `json:"category,omitempty" schema:"category"`
 	Difficulty *acs.IntegerRange[int] `json:"difficulty,omitempty" schema:"difficulty"`
+	Color      []string               `json:"color,omitempty" schema:"color"`
 }
 
 type Response struct {

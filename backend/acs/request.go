@@ -100,3 +100,11 @@ func SanitizeStrings(s []string) []string {
 	}
 	return sanitized
 }
+
+func QuoteStrings(s []string) []string {
+	ss := make([]string, len(s))
+	for i, e := range s {
+		ss[i] = fmt.Sprintf(`"%s"`, e)
+	}
+	return ss
+}

@@ -4,7 +4,7 @@
 
 <div class="flex-1 overflow-auto p-16">
   <div class="grid h-4/6 grid-cols-2 gap-4 p-2">
-    <a class="block rounded-3xl bg-white p-4 no-underline shadow-lg" href="/search/problem">
+    <a class="block rounded-3xl bg-white p-4 no-underline shadow-lg" href="/search/problem?page=1&facet=category,color">
       <h3 class="font-roboto text-2xl">Search Problems</h3>
       <p class="py-3 text-gray-600">AtCoderの問題を検索します</p>
     </a>

@@ -1,4 +1,4 @@
-export const colors = new Map<string, string>([
+export const colorStyles = new Map<string, string>([
   ["ABC", "bg-blue-500"],
   ["ABC-Like", "bg-sky-600"],
   ["AGC", "bg-yellow-600"],

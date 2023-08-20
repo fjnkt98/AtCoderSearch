@@ -3,6 +3,7 @@ export type SearchStats<F> = {
   total: number;
   index: number;
   pages: number;
+  count: number;
   params: object;
   facet: F;
 };
