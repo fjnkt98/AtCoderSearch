@@ -1,7 +1,10 @@
 import type { ProblemSearchResult } from "$lib/search";
+import { API_HOST } from "$env/static/private";
+
+export const csr = false;
 
 export async function load({ url }) {
-  const response = await fetch(`http://localhost:8000/api/search/problem?${url.searchParams.toString()}`);
+  const response = await fetch(`${API_HOST}/api/search/problem?${url.searchParams.toString()}`);
   const result: ProblemSearchResult = await response.json();
 
   return result;
