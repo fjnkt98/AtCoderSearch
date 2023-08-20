@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { _ } from "$env/static/private";
   import atcoderLogo from "$lib/assets/atcoder_logo.svg";
   import type { ProblemSearchResult } from "$lib/search";
   import dayjs from "dayjs";
