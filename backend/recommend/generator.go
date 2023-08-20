@@ -62,8 +62,8 @@ func (r *Row) correlations() (string, string, error) {
 		COALESCE("weight", 0.0) AS "weight"
 	FROM
 		"difficulty_correlations"
-	LEFT JOIN "contests" USING("contest_id")
-	LEFT JOIN (SELECT "to", "weight" FROM "category_relationships" WHERE "from" = $3::text) AS "relations" ON "contests"."category" = "relations"."to"
+		LEFT JOIN "contests" USING("contest_id")
+		LEFT JOIN (SELECT "to", "weight" FROM "category_relationships" WHERE "from" = $3::text) AS "relations" ON "contests"."category" = "relations"."to"
 	`
 	rows, err := r.db.Queryx(
 		sql,

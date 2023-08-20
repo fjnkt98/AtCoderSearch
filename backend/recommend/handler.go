@@ -86,8 +86,10 @@ func (p *SearchParams) fq() []string {
 func (p *SearchParams) bq() []string {
 	bq := make([]string, 0)
 
-	bq = append(bq, fmt.Sprintf("{!join fromIndex=recommend from=problem_id to=problem_id score=max}{!payload_score f=difficulty_correlation func=sum operator=or includeSpanScore=false v=%s}", p.ProblemID))
-	bq = append(bq, fmt.Sprintf("{!join fromIndex=recommend from=problem_id to=problem_id score=max}{!payload_score f=category_correlation func=sum operator=or includeSpanScore=false v=%s}", p.ProblemID))
+	bq = append(bq, fmt.Sprintf("{!boost b=10}{!join fromIndex=recommend from=problem_id to=problem_id score=max}{!payload_score f=difficulty_correlation func=sum operator=or includeSpanScore=false v=%s}", p.ProblemID))
+	bq = append(bq, fmt.Sprintf("{!boost b=2}{!join fromIndex=recommend from=problem_id to=problem_id score=max}{!payload_score f=category_correlation func=sum operator=or includeSpanScore=false v=%s}", p.ProblemID))
+	bq = append(bq, "{!join fromIndex=recommend from=problem_id to=problem_id score=max}{!func v=log(add(solved_count,1))}")
+	bq = append(bq, "{!func}recip(ms(NOW,start_at),3.16e-11,2,1)")
 
 	return bq
 }
@@ -110,6 +112,8 @@ type Response struct {
 	Duration     int                   `json:"duration"`
 	RateChange   string                `json:"rate_change"`
 	Category     string                `json:"category"`
+	SolvedCount  int                   `json:"solved_count"`
+	Score        float64               `json:"score"`
 }
 
 type Searcher struct {
