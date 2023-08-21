@@ -8,24 +8,20 @@
 
   export let data: ProblemSearchResult;
 
-  const params = new URLSearchParams($page.url.searchParams);
-  let current: number = data.stats.index;
-  let pages: number = data.stats.pages;
-
   const labels = new Map<string, string>([
     ["-score", "検索スコア順"],
     ["start_at", "開催日時早い順"],
     ["-start_at", "開催日時遅い順"],
     ["difficulty", "難易度低い順"],
-    ["-difficulty", "難易度高い"],
+    ["-difficulty", "難易度高い順"],
   ]);
 
-  let selections: string[] = ["-score", "start_at", "-start_at", "difficulty", "-difficulty"];
-  let selected = $page.url.searchParams.get("sort") ?? "-score";
+  let selections: string[] = ["-start_at", "start_at", "-score", "difficulty", "-difficulty"];
+  let selected = $page.url.searchParams.get("sort") ?? "-start_at";
 </script>
 
 <div class="flex-1 overflow-auto px-12 py-8">
-  <PageNavigation end={pages} {current} path={"/search/problem"} {params} />
+  <PageNavigation end={data.stats.pages} current={data.stats.index} />
 
   <div class="container flex flex-row justify-between">
     <div>
