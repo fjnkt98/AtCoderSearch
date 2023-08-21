@@ -57,12 +57,12 @@ func (p *SearchParams) start() uint {
 		return 0
 	}
 
-	return (p.Page - 1) * p.rows()
+	return uint(int(p.Page)-1) * p.rows()
 }
 
 func (p *SearchParams) sort() string {
 	if p.Sort == "" {
-		return "score desc"
+		return "start_at desc"
 	}
 	if strings.HasPrefix(p.Sort, "-") {
 		return fmt.Sprintf("%s desc", p.Sort[1:])
