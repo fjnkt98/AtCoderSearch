@@ -44,6 +44,7 @@ func (u User) ToDocument() (Document, error) {
 		HighestColor:   highestColor,
 		Period:         period,
 		JoinCountGrade: grade(u.JoinCount),
+		UserURL:        fmt.Sprintf("https://atcoder.jp/users/%s", u.UserName),
 	}, nil
 }
 
@@ -63,6 +64,7 @@ type Document struct {
 	HighestColor   string  `json:"highest_color"`
 	Period         string  `json:"period,omitempty"`
 	JoinCountGrade string  `json:"join_count_grade"`
+	UserURL        string  `json:"user_url"`
 }
 
 type RowReader[R acs.ToDocument[D], D any] struct {

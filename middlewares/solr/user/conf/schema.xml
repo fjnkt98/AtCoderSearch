@@ -43,6 +43,7 @@
   <field name="rank" type="i32" indexed="true" stored="true" required="false" multiValued="false" docValues="true" />
   <field name="active_rank" type="i32" indexed="true" stored="true" required="false" multiValued="false" docValues="true" />
   <field name="wins" type="i32" indexed="true" stored="true" required="false" multiValued="false" docValues="true" />
+  <field name="user_url" type="String" indexed="true" stored="true" required="true" multiValued="false" docValues="false" />
 
   <!-- facet -->
   <field name="color" type="String" indexed="true" stored="true" required="true" multiValued="false" docValues="true" />

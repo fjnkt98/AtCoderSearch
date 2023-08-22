@@ -130,6 +130,9 @@ func (p *SearchParams) fq() []string {
 			fq = append(fq, fmt.Sprintf("{!tag=join_count}join_count:%s", p.Filter.JoinCount.ToRange()))
 		}
 	}
+	if c := acs.SanitizeStrings(p.Filter.Color); len(c) != 0 {
+		fq = append(fq, fmt.Sprintf("{!tag=color}color:(%s)", strings.Join(c, " OR ")))
+	}
 
 	return fq
 }
@@ -139,6 +142,7 @@ type FilterParams struct {
 	BirthYear *acs.IntegerRange[int] `json:"birth_year,omitempty" schema:"birth_year"`
 	JoinCount *acs.IntegerRange[int] `json:"join_count,omitempty" schema:"join_count"`
 	Country   []string               `json:"country,omitempty" schema:"country"`
+	Color     []string               `json:"color,omitempty" schema:"color"`
 }
 
 type Response struct {
@@ -154,6 +158,7 @@ type Response struct {
 	ActiveRank    *uint   `json:"active_rank"`
 	Wins          uint    `json:"wins" `
 	Color         string  `json:"color"`
+	UserURL       string  `json:"user_url"`
 }
 
 type FacetCounts struct {

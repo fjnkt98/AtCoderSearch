@@ -4,7 +4,7 @@
   import dayjs from "dayjs";
   import timezone from "dayjs/plugin/timezone";
   import utc from "dayjs/plugin/utc";
-  import { colorStyles } from "$lib/colors";
+  import { bgColorStyles } from "$lib/colors";
 
   dayjs.extend(timezone);
   dayjs.extend(utc);
@@ -44,11 +44,11 @@
   </div>
 
   <div class="mt-2 flex flex-row pt-1 text-xs font-bold text-white">
-    <div class={`mx-1 rounded-full px-2 py-1 ${colorStyles.get(problem.category)}`}>
+    <div class={`mx-1 rounded-full px-2 py-1 ${bgColorStyles.get(problem.category)}`}>
       {problem.category}
     </div>
     {#if problem.difficulty != null && problem.color != null}
-      <div class={`mx-1 rounded-full px-2 py-1 ${colorStyles.get(problem.color)}`}>{problem.difficulty}</div>
+      <div class={`mx-1 rounded-full px-2 py-1 ${bgColorStyles.get(problem.color)}`}>{problem.difficulty}</div>
     {/if}
   </div>
 </div>

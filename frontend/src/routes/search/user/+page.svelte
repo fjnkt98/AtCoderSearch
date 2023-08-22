@@ -2,29 +2,29 @@
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
   import PageNavigation from "$lib/PageNavigation.svelte";
-  import type { ProblemSearchResult } from "$lib/search";
+  import type { UserSearchResult } from "$lib/search";
   import Facet from "./Facet.svelte";
-  import Problem from "./Problem.svelte";
+  import User from "./User.svelte";
 
-  export let data: ProblemSearchResult;
+  export let data: UserSearchResult;
 
   const labels = new Map<string, string>([
+    ["-rating", "レート高い順"],
+    ["rating", "レート低い順"],
+    ["birth_year", "誕生日早い順"],
+    ["-birth_year", "誕生日遅い順"],
     ["-score", "検索スコア順"],
-    ["start_at", "開催日時早い順"],
-    ["-start_at", "開催日時遅い順"],
-    ["difficulty", "難易度低い順"],
-    ["-difficulty", "難易度高い順"],
   ]);
 
-  let selections: string[] = ["-start_at", "start_at", "-score", "difficulty", "-difficulty"];
-  let selected = $page.url.searchParams.get("sort") ?? "-start_at";
+  let selections: string[] = ["-rating", "rating", "birth_year", "-birth_year", "-score"];
+  let selected = $page.url.searchParams.get("sort") ?? "-rating";
 </script>
 
 <div class="flex-1 overflow-auto px-12 py-8">
   <PageNavigation end={data.stats.pages} current={data.stats.index} />
 
-  <div class="container flex flex-row justify-between">
-    <div>
+  <div class="container flex flex-row items-start justify-between">
+    <div class="basis-1/6">
       <select
         class="my-2 block w-full rounded-lg bg-white p-2.5 text-sm shadow-sm shadow-gray-300"
         bind:value={selected}
@@ -48,7 +48,7 @@
     <div class="mx-2 flex flex-1 flex-col items-center justify-center">
       <p class="my-2 w-2/3 min-w-[600px] text-left text-slate-500">{data.stats.count}件/{data.stats.total}件 約{data.stats.time}ms</p>
       {#each data.items as item}
-        <Problem problem={item} />
+        <User user={item} />
       {/each}
     </div>
   </div>

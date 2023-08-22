@@ -7,6 +7,9 @@
   const width = 5;
 
   const generateLabels = (c: number, e: number): string[] => {
+    if ((c === 1 && e === 1) || e === 0) {
+      return ["1"];
+    }
     let labels: string[] = [];
     let containsBegin = false;
     let containsEnd = false;

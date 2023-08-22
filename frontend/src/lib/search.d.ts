@@ -5,7 +5,7 @@ export type SearchStats<F> = {
   pages: number;
   count: number;
   params: object;
-  facet: F;
+  facet: F | null;
 };
 
 export type FacetPart = {
@@ -56,13 +56,14 @@ export type User = {
   active_rank: number | null;
   wins: number;
   color: string;
+  user_url: string;
 };
 
 export type UserFacet = {
-  color: FacetPart[];
-  birth_year: FacetPart[];
-  join_count: FacetPart[];
-  country: FacetPart[];
+  color: FacetPart[] | null;
+  birth_year: FacetPart[] | null;
+  join_count: FacetPart[] | null;
+  country: FacetPart[] | null;
 };
 
 export type SubmissionResult = SearchResult<Submission, SubmissionFacet>;

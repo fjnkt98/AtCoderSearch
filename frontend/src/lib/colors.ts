@@ -1,4 +1,4 @@
-export const colorStyles = new Map<string, string>([
+export const bgColorStyles = new Map<string, string>([
   ["ABC", "bg-blue-500"],
   ["ABC-Like", "bg-sky-600"],
   ["AGC", "bg-yellow-600"],
@@ -23,4 +23,31 @@ export const colorStyles = new Map<string, string>([
   ["red", "bg-red-600"],
   ["silver", "bg-zinc-400"],
   ["gold", "bg-amber-400"],
+]);
+
+export const textColorStyles = new Map<string, string>([
+  ["ABC", "text-blue-500"],
+  ["ABC-Like", "text-sky-600"],
+  ["AGC", "text-yellow-600"],
+  ["AGC-Like", "text-amber-500"],
+  ["AHC", "text-green-500"],
+  ["ARC", "text-red-500"],
+  ["ARC-Like", "text-orange-700"],
+  ["JAG", "text-slate-500"],
+  ["JOI", "text-slate-600"],
+  ["Marathon", "text-slate-600"],
+  ["Other Contests", "text-slate-600"],
+  ["Other Sponsored", "text-slate-600"],
+  ["PAST", "text-slate-600"],
+  ["black", "text-gray-900"],
+  ["gray", "text-gray-500"],
+  ["brown", "text-amber-800"],
+  ["green", "text-green-500"],
+  ["cyan", "text-cyan-400"],
+  ["blue", "text-blue-600"],
+  ["yellow", "text-yellow-300"],
+  ["orange", "text-orange-400"],
+  ["red", "text-red-600"],
+  ["silver", "text-zinc-400"],
+  ["gold", "text-amber-400"],
 ]);
