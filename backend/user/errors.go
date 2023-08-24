@@ -5,6 +5,7 @@ import "github.com/morikuni/failure"
 const (
 	DBError                 failure.StringCode = "DBError"
 	DecodeError             failure.StringCode = "DecodeError"
+	EncodeError             failure.StringCode = "EncodeError"
 	FileOperationError      failure.StringCode = "FileOperationError"
 	ReadError               failure.StringCode = "ReadError"
 	RequestCreationError    failure.StringCode = "RequestCreationError"

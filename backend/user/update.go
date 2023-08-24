@@ -1,6 +1,7 @@
 package user
 
 import (
+	"encoding/json"
 	"fjnkt98/atcodersearch/acs"
 	"fjnkt98/atcodersearch/solr"
 
@@ -19,6 +20,13 @@ type UpdateConfig struct {
 }
 
 func Update(cfg UpdateConfig, db *sqlx.DB, core *solr.Core) error {
+	options, err := json.Marshal(cfg)
+	if err != nil {
+		failure.Translate(err, EncodeError, failure.Message("failed to encode update config"))
+	}
+	history := acs.NewUpdateHistory(db, "user", string(options))
+	defer history.Cancel()
+
 	if !cfg.SkipFetch {
 		crawler := NewUserCrawler(db)
 		if err := crawler.Run(cfg.Duration); err != nil {
@@ -35,6 +43,7 @@ func Update(cfg UpdateConfig, db *sqlx.DB, core *solr.Core) error {
 	if err := uploader.PostDocument(cfg.Optimize, cfg.PostConcurrent); err != nil {
 		return failure.Wrap(err)
 	}
-	return nil
 
+	history.Finish()
+	return nil
 }
