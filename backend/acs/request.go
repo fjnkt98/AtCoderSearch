@@ -11,8 +11,8 @@ import (
 )
 
 type IntegerRange[T constraints.Integer] struct {
-	From *T `json:"from"`
-	To   *T `json:"to"`
+	From *T `json:"from,omitempty" schema:"from"`
+	To   *T `json:"to,omitempty" schema:"to"`
 }
 
 func (r *IntegerRange[T]) ToRange() string {
@@ -38,8 +38,8 @@ func (r *IntegerRange[T]) ToRange() string {
 }
 
 type FloatRange[T constraints.Float] struct {
-	From *T `json:"from"`
-	To   *T `json:"to"`
+	From *T `json:"from,omitempty" schema:"from"`
+	To   *T `json:"to,omitempty" schema:"to"`
 }
 
 func (r *FloatRange[T]) ToRange() string {
@@ -65,8 +65,8 @@ func (r *FloatRange[T]) ToRange() string {
 }
 
 type DateRange struct {
-	From *time.Time `json:"from"`
-	To   *time.Time `json:"to"`
+	From *time.Time `json:"from,omitempty" schema:"from"`
+	To   *time.Time `json:"to,omitempty" schema:"to"`
 }
 
 func (r *DateRange) ToRange() string {
@@ -107,4 +107,10 @@ func QuoteStrings(s []string) []string {
 		ss[i] = fmt.Sprintf(`"%s"`, e)
 	}
 	return ss
+}
+
+type RangeFacetParam struct {
+	From int `json:"from" schema:"from"`
+	To   int `json:"to" schema:"to" validate:"gtecsfield=From"`
+	Gap  int `json:"gap" schema:"gap"`
 }

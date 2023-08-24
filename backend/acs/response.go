@@ -2,6 +2,7 @@ package acs
 
 import (
 	"fjnkt98/atcodersearch/solr"
+	"fmt"
 	"strconv"
 	"time"
 )
@@ -56,4 +57,32 @@ func ConvertBucket[T solr.BucketElement](b []solr.Bucket[T]) []FacetPart {
 	}
 
 	return p
+}
+
+func max(x, y int) int {
+	if x > y {
+		return x
+	}
+	return y
+}
+
+func ConvertRangeBucket(r *solr.RangeFacetCount[int], p *RangeFacetParam) []FacetPart {
+	if r == nil || p == nil {
+		return nil
+	}
+
+	parts := make([]FacetPart, 0, len(r.Buckets)+2)
+
+	parts = append(parts, FacetPart{Label: fmt.Sprintf("~ %d", p.From), Count: r.Before.Count})
+	end := p.To
+	for _, b := range r.Buckets {
+		parts = append(parts, FacetPart{
+			Label: fmt.Sprintf("%d ~ %d", b.Val, b.Val+p.Gap),
+			Count: b.Count,
+		})
+		end = max(end, b.Val+p.Gap)
+	}
+	parts = append(parts, FacetPart{Label: fmt.Sprintf("%d ~", end), Count: r.After.Count})
+
+	return parts
 }

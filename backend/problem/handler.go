@@ -26,7 +26,7 @@ type SearchParams struct {
 	Page    uint          `json:"page,omitempty" schema:"page"`
 	Filter  *FilterParams `json:"filter,omitempty" schema:"filter"`
 	Sort    string        `json:"sort,omitempty" schema:"sort" validate:"omitempty,oneof=-score start_at -start_at difficulty -difficulty"`
-	Facet   []string      `json:"facet,omitempty" schema:"facet" validate:"dive,oneof=category color"`
+	Facet   *FacetParams  `json:"facet,omitempty" schema:"facet"`
 }
 
 func (p *SearchParams) ToQuery() url.Values {
@@ -72,9 +72,13 @@ func (p *SearchParams) sort() string {
 }
 
 func (p *SearchParams) facet() string {
+	if p.Facet == nil {
+		return ""
+	}
+
 	facets := make(map[string]any)
 
-	for _, f := range p.Facet {
+	for _, f := range p.Facet.Term {
 		facets[f] = map[string]any{
 			"type":     "terms",
 			"field":    f,
@@ -84,6 +88,17 @@ func (p *SearchParams) facet() string {
 			"domain": map[string]any{
 				"excludeTags": []string{f},
 			},
+		}
+	}
+
+	if p.Facet.Difficulty != nil {
+		facets["difficulty"] = map[string]any{
+			"type":  "range",
+			"field": "difficulty",
+			"start": p.Facet.Difficulty.From,
+			"end":   p.Facet.Difficulty.To,
+			"gap":   p.Facet.Difficulty.Gap,
+			"other": "all",
 		}
 	}
 
@@ -124,6 +139,11 @@ type FilterParams struct {
 	Color      []string               `json:"color,omitempty" schema:"color"`
 }
 
+type FacetParams struct {
+	Term       []string             `json:"term,omitempty" schema:"term" validate:"dive,oneof=category color"`
+	Difficulty *acs.RangeFacetParam `json:"difficulty,omitempty" schema:"difficulty"`
+}
+
 type Response struct {
 	ProblemID    string                `json:"problem_id"`
 	ProblemTitle string                `json:"problem_title"`
@@ -140,20 +160,37 @@ type Response struct {
 }
 
 type FacetCounts struct {
-	// Count    uint                    `json:"count"`
-	Category solr.TermFacetCount `json:"category"`
-	Color    solr.TermFacetCount `json:"color"`
+	Category   *solr.TermFacetCount       `json:"category,omitempty"`
+	Color      *solr.TermFacetCount       `json:"color,omitempty"`
+	Difficulty *solr.RangeFacetCount[int] `json:"difficulty,omitempty"`
 }
 
 type FacetResponse struct {
-	Category []acs.FacetPart `json:"category,omitempty"`
-	Color    []acs.FacetPart `json:"color,omitempty"`
+	Category   []acs.FacetPart `json:"category,omitempty"`
+	Color      []acs.FacetPart `json:"color,omitempty"`
+	Difficulty []acs.FacetPart `json:"difficulty,omitempty"`
 }
 
-func (f *FacetCounts) Into() FacetResponse {
+func (f *FacetCounts) Into(p *FacetParams) FacetResponse {
+	var category []acs.FacetPart
+	if f.Category != nil {
+		category = acs.ConvertBucket[string](f.Category.Buckets)
+	}
+
+	var color []acs.FacetPart
+	if f.Color != nil {
+		color = acs.ConvertBucket[string](f.Color.Buckets)
+	}
+
+	var difficulty []acs.FacetPart
+	if f.Difficulty != nil && p != nil {
+		difficulty = acs.ConvertRangeBucket(f.Difficulty, p.Difficulty)
+	}
+
 	return FacetResponse{
-		Category: acs.ConvertBucket[string](f.Category.Buckets),
-		Color:    acs.ConvertBucket[string](f.Color.Buckets),
+		Category:   category,
+		Color:      color,
+		Difficulty: difficulty,
 	}
 }
 
@@ -245,7 +282,7 @@ func (s *Searcher) search(r *http.Request, params SearchParams) (int, acs.Search
 			Count:  uint(len(res.Response.Docs)),
 			Pages:  (res.Response.NumFound + uint(rows) - 1) / uint(rows),
 			Params: params,
-			Facet:  res.FacetCounts.Into(),
+			Facet:  res.FacetCounts.Into(params.Facet),
 		},
 		Items: res.Response.Docs,
 	}
