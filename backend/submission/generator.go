@@ -56,7 +56,8 @@ type Document struct {
 }
 
 type RowReader[R acs.ToDocument[D], D any] struct {
-	db *sqlx.DB
+	db     *sqlx.DB
+	period time.Time
 }
 
 func (r *RowReader[R, D]) ReadRows(ctx context.Context, tx chan<- Row) error {
@@ -76,8 +77,10 @@ func (r *RowReader[R, D]) ReadRows(ctx context.Context, tx chan<- Row) error {
 	FROM
 		"submissions"
 		LEFT JOIN "contests" USING("contest_id")
+	WHERE
+		"submissions"."created_at" > $1::timestamp with time zone
 	`
-	rows, err := r.db.Queryx(sql)
+	rows, err := r.db.Queryx(sql, r.period)
 	if err != nil {
 		return failure.Translate(err, DBError, failure.Context{"sql": sql}, failure.Message("failed to read rows"))
 	}
@@ -107,10 +110,10 @@ type DocumentGenerator struct {
 	reader  *RowReader[Row, Document]
 }
 
-func NewDocumentGenerator(db *sqlx.DB, saveDir string) DocumentGenerator {
+func NewDocumentGenerator(db *sqlx.DB, saveDir string, period time.Time) DocumentGenerator {
 	return DocumentGenerator{
 		saveDir: saveDir,
-		reader:  &RowReader[Row, Document]{db: db},
+		reader:  &RowReader[Row, Document]{db: db, period: period},
 	}
 }
 

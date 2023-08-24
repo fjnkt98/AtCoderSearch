@@ -74,6 +74,7 @@ func (h *UpdateHistory) GetLatest() (time.Time, error) {
 			"update_history"
 		WHERE
 			"domain" = $1::text
+			AND "status" = 'finished'
 		ORDER
 			BY "started_at" DESC
 		LIMIT

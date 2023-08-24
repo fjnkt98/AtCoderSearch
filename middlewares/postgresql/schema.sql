@@ -62,6 +62,7 @@ CREATE TABLE "submissions" (
     "length" integer,
     "result" text,
     "execution_time" integer,
+    "created_at" timestamp WITH time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     PRIMARY KEY ("id")
 );
 
@@ -72,6 +73,8 @@ CREATE INDEX "submissions_epoch_second_index" ON "submissions" ("epoch_second");
 CREATE INDEX "submissions_problem_id_index" ON "submissions" ("problem_id");
 
 CREATE INDEX "submissions_user_id_index" ON "submissions" ("user_id");
+
+CREATE INDEX "submissions_created_at_index" ON "submissions" ("created_at");
 
 CREATE TABLE "category_relationships" (
     "from" TEXT NOT NULL,

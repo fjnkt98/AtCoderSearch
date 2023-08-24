@@ -60,7 +60,20 @@ func (c *Crawler) crawl(contestID string, period int64, duration int) error {
 	save := func(submissions []atcoder.Submission) error {
 		for _, s := range submissions {
 			if result, err := tx.Exec(`
-			INSERT INTO "submissions" VALUES(
+			INSERT INTO "submissions" (
+				"id",
+				"epoch_second",
+				"problem_id",
+				"contest_id",
+				"user_id",
+				"language",
+				"point",
+				"length",
+				"result",
+				"execution_time",
+				"created_at"
+			)
+			VALUES(
 				$1::bigint,
 				$2::bigint,
 				$3::text,
@@ -70,7 +83,8 @@ func (c *Crawler) crawl(contestID string, period int64, duration int) error {
 				$7::double precision,
 				$8::bigint,
 				$9::text,
-				$10::bigint
+				$10::bigint,
+				NOW()
 			)
 			ON CONFLICT DO NOTHING;`,
 				s.ID,

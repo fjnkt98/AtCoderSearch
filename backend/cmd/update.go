@@ -123,6 +123,7 @@ var updateSubmissionCmd = &cobra.Command{
 		cfg.ChunkSize = GetInt(cmd, "chunk-size")
 		cfg.GenerateConcurrent = GetInt(cmd, "generate-concurrent")
 		cfg.PostConcurrent = GetInt(cmd, "post-concurrent")
+		cfg.All = GetBool(cmd, "all")
 
 		solrURL := os.Getenv("SOLR_HOST")
 		if solrURL == "" {
@@ -197,6 +198,8 @@ func init() {
 
 	updateUserCmd.Flags().BoolP("skip-fetch", "f", false, "Skip crawling if true.")
 	updateUserCmd.Flags().Int("duration", 1000, "Interval time[ms] for crawling.")
+
+	updateSubmissionCmd.Flags().BoolP("all", "a", false, "Update all submissions.")
 
 	updateCmd.AddCommand(updateProblemCmd)
 	updateCmd.AddCommand(updateUserCmd)

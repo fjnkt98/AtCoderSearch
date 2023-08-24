@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fjnkt98/atcodersearch/acs"
 	"fjnkt98/atcodersearch/solr"
+	"time"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/morikuni/failure"
@@ -15,6 +16,7 @@ type UpdateConfig struct {
 	ChunkSize          int    `json:"chunk-size"`
 	GenerateConcurrent int    `json:"generate-concurrent"`
 	PostConcurrent     int    `json:"post-concurrent"`
+	All                bool   `json:"all"`
 }
 
 func Update(cfg UpdateConfig, db *sqlx.DB, core *solr.Core) error {
@@ -25,7 +27,17 @@ func Update(cfg UpdateConfig, db *sqlx.DB, core *solr.Core) error {
 	history := acs.NewUpdateHistory(db, "submission", string(options))
 	defer history.Cancel()
 
-	generator := NewDocumentGenerator(db, cfg.SaveDir)
+	period, err := history.GetLatest()
+	if err != nil {
+		return failure.Wrap(err)
+	}
+
+	var generator DocumentGenerator
+	if cfg.All {
+		generator = NewDocumentGenerator(db, cfg.SaveDir, time.Time{})
+	} else {
+		generator = NewDocumentGenerator(db, cfg.SaveDir, period)
+	}
 	if err := generator.Run(cfg.ChunkSize, cfg.GenerateConcurrent); err != nil {
 		return failure.Wrap(err)
 	}
