@@ -21,3 +21,8 @@ export const defaultUserSearchParams = new URLSearchParams([
   ["facet.join_count.to", "100"],
   ["facet.join_count.gap", "20"],
 ]);
+
+export const defaultSubmissionSearchParams = new URLSearchParams([
+  ["limit", "50"],
+  ["page", "1"],
+]);

@@ -41,7 +41,7 @@ type FilterParams struct {
 }
 
 type FacetParams struct {
-	Term          []string            `json:"term" schema:"term" validate:"dive,oneof=problem_id user_id language result"`
+	Term          []string            `json:"term" schema:"term" validate:"dive,oneof=problem_id user_id language result contest_id"`
 	Length        acs.RangeFacetParam `json:"length" schema:"length"`
 	ExecutionTime acs.RangeFacetParam `json:"execution_time" schema:"execution_time"`
 }
@@ -140,13 +140,13 @@ func (p *SearchParams) fq() []string {
 	if expr := strings.Join(acs.SanitizeStrings(p.Filter.ContestID), " OR "); expr != "" {
 		fq = append(fq, fmt.Sprintf("{!tag=contest_id}contest_id:(%s)", expr))
 	}
-	if expr := strings.Join(acs.SanitizeStrings(p.Filter.Category), " OR "); expr != "" {
+	if expr := strings.Join(acs.QuoteStrings(acs.SanitizeStrings(p.Filter.Category)), " OR "); expr != "" {
 		fq = append(fq, fmt.Sprintf("{!tag=category}category:(%s)", expr))
 	}
 	if expr := strings.Join(acs.SanitizeStrings(p.Filter.UserID), " OR "); expr != "" {
 		fq = append(fq, fmt.Sprintf("{!tag=user_id}user_id:(%s)", expr))
 	}
-	if expr := strings.Join(acs.SanitizeStrings(p.Filter.Language), " OR "); expr != "" {
+	if expr := strings.Join(acs.QuoteStrings(acs.SanitizeStrings(p.Filter.Language)), " OR "); expr != "" {
 		fq = append(fq, fmt.Sprintf("{!tag=language}language:(%s)", expr))
 	}
 	if expr := strings.Join(acs.SanitizeStrings(p.Filter.Result), " OR "); expr != "" {
@@ -170,6 +170,7 @@ type Response struct {
 }
 
 type FacetCounts struct {
+	ContestID     *solr.TermFacetCount       `json:"contest_id,omitempty"`
 	ProblemID     *solr.TermFacetCount       `json:"problem_id,omitempty"`
 	UserID        *solr.TermFacetCount       `json:"user_id,omitempty"`
 	Language      *solr.TermFacetCount       `json:"language,omitempty"`
@@ -179,6 +180,11 @@ type FacetCounts struct {
 }
 
 func (f *FacetCounts) Into(p FacetParams) FacetResponse {
+	var contestID []acs.FacetPart
+	if f.ContestID != nil {
+		contestID = acs.ConvertBucket[string](f.ContestID.Buckets)
+	}
+
 	var problemID []acs.FacetPart
 	if f.ProblemID != nil {
 		problemID = acs.ConvertBucket[string](f.ProblemID.Buckets)
@@ -205,6 +211,7 @@ func (f *FacetCounts) Into(p FacetParams) FacetResponse {
 	}
 
 	return FacetResponse{
+		ContestID:     contestID,
 		ProblemID:     problemID,
 		UserID:        userID,
 		Language:      language,
@@ -215,6 +222,7 @@ func (f *FacetCounts) Into(p FacetParams) FacetResponse {
 }
 
 type FacetResponse struct {
+	ContestID     []acs.FacetPart `json:"contest_id,omitempty"`
 	ProblemID     []acs.FacetPart `json:"problem_id,omitempty"`
 	UserID        []acs.FacetPart `json:"user_id,omitempty"`
 	Language      []acs.FacetPart `json:"language,omitempty"`
