@@ -30,8 +30,7 @@
   <field name="_version_" type="i64" indexed="false" stored="false" />
   <field name="null" type="Null" indexed="false" stored="false" />
 
-  <uniqueKey>id</uniqueKey>
-  <field name="id" type="String" indexed="true" stored="true" required="true" multiValued="false" docValues="true" />
+  <uniqueKey>submission_url</uniqueKey>
   <field name="submission_id" type="i64" indexed="true" stored="true" required="true" multiValued="false" docValues="true" />
   <field name="epoch_second" type="i64" indexed="true" stored="true" required="true" multiValued="false" docValues="true" />
   <field name="submitted_at" type="DateTime" indexed="true" stored="true" required="true" multiValued="false" docValues="true" />
@@ -44,5 +43,12 @@
   <field name="length" type="i64" indexed="true" stored="true" required="true" multiValued="false" docValues="false" />
   <field name="result" type="String" indexed="true" stored="true" required="true" multiValued="false" docValues="true" />
   <field name="execution_time" type="i64" indexed="true" stored="true" required="false" multiValued="false" docValues="false" />
+
+  <field name="submission_url" type="String" indexed="true" stored="true" required="true" multiValued="false" docValues="false" />
+  <field name="problem_title" type="String" indexed="false" stored="true" required="true" multiValued="false" docValues="false" />
+  <field name="contest_title" type="String" indexed="false" stored="true" required="true" multiValued="false" docValues="false" />
+  <field name="difficulty" type="i32" indexed="false" stored="true" required="true" multiValued="false" docValues="false" />
+  <field name="color" type="String" indexed="false" stored="true" required="true" multiValued="false" docValues="false" />
+
   <field name="text_unigram" type="TextUniGram" indexed="true" stored="false" multiValued="true" />
 </schema>
