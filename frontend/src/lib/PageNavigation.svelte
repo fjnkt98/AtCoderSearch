@@ -39,7 +39,8 @@
       <p class="m-1 flex h-10 w-10 select-none items-center justify-center rounded-md bg-white text-center font-medium shadow-sm shadow-gray-500">{label}</p>
     {:else}
       <button
-        class="m-1 flex h-10 w-10 items-center justify-center rounded-md bg-white text-center font-medium shadow-sm shadow-gray-500"
+        class={"m-1 flex h-10 w-10 items-center justify-center rounded-md text-center font-medium shadow-sm shadow-gray-500 hover:bg-gray-100 " +
+          (current.toString() === label ? "bg-gray-700 text-white" : "bg-white ")}
         on:click={() => {
           const params = new URLSearchParams($page.url.searchParams);
           params.set("page", label);

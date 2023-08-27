@@ -37,8 +37,8 @@ export type Problem = {
 };
 
 export type ProblemFacet = {
-  category: FacetPart[];
-  color: FacetPart[];
+  category: FacetPart[] | null;
+  difficulty: FacetPart[] | null;
 };
 
 export type UserSearchResult = SearchResult<User, UserFacet>;
