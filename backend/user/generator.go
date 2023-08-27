@@ -10,61 +10,43 @@ import (
 	"golang.org/x/exp/slog"
 )
 
-func grade(c int) string {
-	if c < 10 {
-		return "    ~  10"
-	} else if c < 100 {
-		return fmt.Sprintf("%d0  ~  %d9", c/10, c/10)
-	} else {
-		return fmt.Sprintf("%d00 ~ %d99", c/100, c/100)
-	}
-}
-
 func (u User) ToDocument() (Document, error) {
 	color := acs.RateToColor(u.Rating)
 	highestColor := acs.RateToColor(u.HighestRating)
-	var period string
-	if u.BirthYear != nil {
-		period = fmt.Sprintf("%d0's", *u.BirthYear/10)
-	}
 
 	return Document{
-		UserName:       u.UserName,
-		Rating:         u.Rating,
-		HighestRating:  u.HighestRating,
-		Affiliation:    u.Affiliation,
-		BirthYear:      u.BirthYear,
-		Country:        u.Country,
-		Crown:          u.Crown,
-		JoinCount:      u.JoinCount,
-		Rank:           u.Rank,
-		ActiveRank:     u.ActiveRank,
-		Wins:           u.Wins,
-		Color:          color,
-		HighestColor:   highestColor,
-		Period:         period,
-		JoinCountGrade: grade(u.JoinCount),
-		UserURL:        fmt.Sprintf("https://atcoder.jp/users/%s", u.UserName),
+		UserName:      u.UserName,
+		Rating:        u.Rating,
+		HighestRating: u.HighestRating,
+		Affiliation:   u.Affiliation,
+		BirthYear:     u.BirthYear,
+		Country:       u.Country,
+		Crown:         u.Crown,
+		JoinCount:     u.JoinCount,
+		Rank:          u.Rank,
+		ActiveRank:    u.ActiveRank,
+		Wins:          u.Wins,
+		Color:         color,
+		HighestColor:  highestColor,
+		UserURL:       fmt.Sprintf("https://atcoder.jp/users/%s", u.UserName),
 	}, nil
 }
 
 type Document struct {
-	UserName       string  `json:"user_name"`
-	Rating         int     `json:"rating"`
-	HighestRating  int     `json:"highest_rating"`
-	Affiliation    *string `json:"affiliation"`
-	BirthYear      *int    `json:"birth_year"`
-	Country        *string `json:"country"`
-	Crown          *string `json:"crown"`
-	JoinCount      int     `json:"join_count"`
-	Rank           int     `json:"rank"`
-	ActiveRank     *int    `json:"active_rank"`
-	Wins           int     `json:"wins" `
-	Color          string  `json:"color"`
-	HighestColor   string  `json:"highest_color"`
-	Period         string  `json:"period,omitempty"`
-	JoinCountGrade string  `json:"join_count_grade"`
-	UserURL        string  `json:"user_url"`
+	UserName      string  `json:"user_name"`
+	Rating        int     `json:"rating"`
+	HighestRating int     `json:"highest_rating"`
+	Affiliation   *string `json:"affiliation"`
+	BirthYear     *int    `json:"birth_year"`
+	Country       *string `json:"country"`
+	Crown         *string `json:"crown"`
+	JoinCount     int     `json:"join_count"`
+	Rank          int     `json:"rank"`
+	ActiveRank    *int    `json:"active_rank"`
+	Wins          int     `json:"wins" `
+	Color         string  `json:"color"`
+	HighestColor  string  `json:"highest_color"`
+	UserURL       string  `json:"user_url"`
 }
 
 type RowReader[R acs.ToDocument[D], D any] struct {

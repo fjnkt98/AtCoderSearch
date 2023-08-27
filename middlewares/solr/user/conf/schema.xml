@@ -48,8 +48,6 @@
   <!-- facet -->
   <field name="color" type="String" indexed="true" stored="true" required="true" multiValued="false" docValues="true" />
   <field name="highest_color" type="String" indexed="true" stored="true" required="false" multiValued="false" docValues="true" />
-  <field name="period" type="String" indexed="true" stored="true" required="false" multiValued="false" docValues="true" />
-  <field name="join_count_grade" type="String" indexed="true" stored="true" required="false" multiValued="false" docValues="true" />
 
   <field name="text_unigram" type="TextUniGram" indexed="true" stored="false" multiValued="true" />
   <dynamicField name="*__text_unigram" type="TextUniGram" indexed="true" stored="false" multiValued="true" />
