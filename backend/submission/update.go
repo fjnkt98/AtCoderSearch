@@ -43,7 +43,7 @@ func Update(cfg UpdateConfig, db *sqlx.DB, core *solr.Core) error {
 	}
 
 	uploader := acs.NewDefaultDocumentUploader(core, cfg.SaveDir)
-	if err := uploader.PostDocument(cfg.Optimize, cfg.PostConcurrent); err != nil {
+	if err := uploader.PostDocument(cfg.Optimize, cfg.All, cfg.PostConcurrent); err != nil {
 		return failure.Wrap(err)
 	}
 
