@@ -10,6 +10,8 @@ import (
 	"net/url"
 	"os"
 
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/spf13/cobra"
 	"golang.org/x/exp/slog"
 )
@@ -56,20 +58,24 @@ var serverCmd = &cobra.Command{
 			slog.Error("failed to instantiate recommend searcher", slog.String("error", fmt.Sprintf("%+v", err)))
 		}
 
+		e := echo.New()
+		e.Use(middleware.Recover())
+
 		// API handler registration
-		http.HandleFunc("/api/search/problem", problemSearcher.HandleSearch)
-		http.HandleFunc("/api/search/user", userSearcher.HandleSearch)
-		http.HandleFunc("/api/search/submission", submissionSearcher.HandleSearch)
-		http.HandleFunc("/api/recommend/problem", recommendSearcher.HandleSearch)
+		e.GET("/api/search/problem", problemSearcher.HandleGET)
+		e.GET("/api/search/user", userSearcher.HandleGET)
+		e.GET("/api/search/submission", submissionSearcher.HandleGET)
+		e.GET("/api/recommend/problem", recommendSearcher.HandleGET)
+
 		http.HandleFunc("/api/liveness", func(w http.ResponseWriter, r *http.Request) {
-			if problemSearcher.Liveness() && userSearcher.Liveness() {
+			if problemSearcher.Liveness() && userSearcher.Liveness() && submissionSearcher.Liveness() && recommendSearcher.Liveness() {
 				w.WriteHeader(http.StatusOK)
 			} else {
 				w.WriteHeader(http.StatusInternalServerError)
 			}
 		})
 		http.HandleFunc("/api/readiness", func(w http.ResponseWriter, r *http.Request) {
-			if problemSearcher.Readiness() && userSearcher.Readiness() {
+			if problemSearcher.Readiness() && userSearcher.Readiness() && submissionSearcher.Readiness() && recommendSearcher.Readiness() {
 				w.WriteHeader(http.StatusOK)
 			} else {
 				w.WriteHeader(http.StatusInternalServerError)
@@ -84,10 +90,8 @@ var serverCmd = &cobra.Command{
 		} else {
 			slog.Info(fmt.Sprintf("API server will listen on %s", port))
 		}
-		if err := http.ListenAndServe(fmt.Sprintf(":%s", port), nil); err != nil {
-			slog.Error("failed to listen and serve api server", slog.String("error", err.Error()))
-			os.Exit(1)
-		}
+
+		e.Logger.Fatal(e.Start(fmt.Sprintf(":%s", port)))
 	},
 }
 

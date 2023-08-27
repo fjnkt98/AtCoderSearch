@@ -14,6 +14,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/schema"
+	"github.com/labstack/echo/v4"
 	"github.com/morikuni/failure"
 	"golang.org/x/exp/slog"
 )
@@ -263,41 +264,26 @@ func NewErrorResponse(msg string, params any) acs.SearchResultResponse[Response]
 	return acs.NewErrorResponse[Response](msg, params)
 }
 
-func (s *Searcher) HandleSearch(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodGet:
-		w.Header().Set("Content-Type", "application/json; charset=utf8")
-		encoder := json.NewEncoder(w)
-
-		query, err := url.ParseQuery(r.URL.RawQuery)
-		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			slog.Error("failed to parse query string", slog.String("url", r.URL.String()), slog.String("error", fmt.Sprintf("%+v", err)))
-			encoder.Encode(NewErrorResponse(fmt.Sprintf("failed to parse query string `%s`", r.URL.RawQuery), nil))
-			return
-		}
-
-		var params SearchParams
-		if err := s.decoder.Decode(&params, query); err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			slog.Error("failed to decode request parameter", slog.String("url", r.URL.String()), slog.String("error", fmt.Sprintf("%+v", err)))
-			encoder.Encode(NewErrorResponse(fmt.Sprintf("failed to decode request parameter `%s`", r.URL.RawQuery), nil))
-			return
-		}
-
-		if err := s.validator.Struct(params); err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			slog.Error("validation error", slog.String("url", r.URL.String()), slog.Any("params", params), slog.String("error", fmt.Sprintf("%+v", err)))
-			encoder.Encode(NewErrorResponse(fmt.Sprintf("validation error, `%s`: %s", r.URL.RawQuery, err.Error()), params))
-			return
-		}
-
-		code, res := s.search(r, params)
-		w.WriteHeader(code)
-		encoder.Encode(res)
-	default:
-
+func (s *Searcher) HandleGET(c echo.Context) error {
+	raw := c.Request().URL.RawQuery
+	query, err := url.ParseQuery(raw)
+	if err != nil {
+		slog.Error("failed to parse query string", slog.String("uri", c.Request().RequestURI), slog.String("error", fmt.Sprintf("%+v", err)))
+		return c.JSON(http.StatusBadRequest, NewErrorResponse(fmt.Sprintf("failed to parse query string `%s`", raw), nil))
 	}
+
+	var params SearchParams
+	if err := s.decoder.Decode(&params, query); err != nil {
+		slog.Error("failed to decode request parameter", slog.String("uri", c.Request().RequestURI), slog.String("error", fmt.Sprintf("%+v", err)))
+		return c.JSON(http.StatusBadRequest, NewErrorResponse(fmt.Sprintf("failed to decode request parameter `%s`", raw), nil))
+	}
+
+	if err := s.validator.Struct(params); err != nil {
+		slog.Error("validation error", slog.String("uri", c.Request().RequestURI), slog.Any("params", params), slog.String("error", fmt.Sprintf("%+v", err)))
+		return c.JSON(http.StatusBadRequest, NewErrorResponse(fmt.Sprintf("validation error `%s`: %s", raw, err.Error()), params))
+	}
+	code, res := s.search(c.Request(), params)
+	return c.JSON(code, res)
 }
 
 func (s *Searcher) search(r *http.Request, params SearchParams) (int, acs.SearchResultResponse[Response]) {
