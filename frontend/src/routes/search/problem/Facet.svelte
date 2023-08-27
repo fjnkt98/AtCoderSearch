@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { ProblemFacet } from "$lib/search";
+  import type { ProblemFacet, FilterRange } from "$lib/search";
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
 
@@ -7,9 +7,11 @@
 
   const params = new URLSearchParams($page.url.searchParams);
   let categories: string[] = params.get("filter.category")?.split(",") ?? [];
-  let difficulty: string = "";
-  let difficultyFrom: string | null = params.get("filter.difficulty.from");
-  let difficultyTo: string | null = params.get("filter.difficulty.to");
+  let difficultySelection: string = "";
+  let difficulty = {
+    from: params.get("filter.difficulty.from"),
+    to: params.get("filter.difficulty.to"),
+  };
 
   function filter() {
     const params = new URLSearchParams($page.url.searchParams);
@@ -21,13 +23,13 @@
       params.delete("filter.category");
     }
 
-    if (difficultyFrom != null && difficultyFrom !== "") {
-      params.set("filter.difficulty.from", difficultyFrom);
+    if (difficulty.from != null && difficulty.from !== "") {
+      params.set("filter.difficulty.from", difficulty.from);
     } else {
       params.delete("filter.difficulty.from");
     }
-    if (difficultyTo != null && difficultyTo !== "") {
-      params.set("filter.difficulty.to", difficultyTo);
+    if (difficulty.to != null && difficulty.to !== "") {
+      params.set("filter.difficulty.to", difficulty.to);
     } else {
       params.delete("filter.difficulty.to");
     }
@@ -37,6 +39,16 @@
 </script>
 
 <div class="rounded-xl bg-white px-6 py-2 shadow-md shadow-gray-300">
+  <button
+    class="mb-2 mt-4 w-full rounded-xl bg-gray-600 px-2 py-1 text-white"
+    on:click={() => {
+      categories = [];
+      difficultySelection = "";
+      difficulty = { from: null, to: null };
+      filter();
+    }}>Reset</button
+  >
+
   {#if facet.category != null}
     <p class="my-1 text-lg">Category</p>
     {#each facet.category as part}
@@ -51,7 +63,7 @@
           value={part.label}
           class="mx-1 inline-block cursor-pointer"
         />
-        <label for={part.label} class="mx-1 inline-block flex-grow cursor-pointer text-left">
+        <label for={part.label} class="mx-1 inline-block flex-grow cursor-pointer whitespace-nowrap text-left">
           {part.label}
         </label>
         <label for={part.label} class="mx-1 inline-block cursor-pointer">
@@ -69,30 +81,38 @@
           id={part.label}
           type="radio"
           class="mx-1 inline-block cursor-pointer"
-          bind:group={difficulty}
+          bind:group={difficultySelection}
           on:change={() => {
             const splitted = part.label.split("~");
             if (splitted.length === 2) {
               const [from, to] = splitted;
-              difficultyFrom = from.trim();
-              difficultyTo = to.trim();
+              difficulty = {
+                from: from.trim(),
+                to: to.trim(),
+              };
             } else if (splitted.length === 1) {
               if (part.label.startsWith("~")) {
-                difficultyFrom = null;
-                difficultyTo = splitted[0].trim();
+                difficulty = {
+                  from: null,
+                  to: splitted[0].trim(),
+                };
               } else if (part.label.endsWith("~")) {
-                difficultyFrom = splitted[0].trim();
-                difficultyTo = null;
+                difficulty = {
+                  from: splitted[0].trim(),
+                  to: null,
+                };
               }
             } else {
-              difficultyFrom = null;
-              difficultyTo = null;
+              difficulty = {
+                from: null,
+                to: null,
+              };
             }
             filter();
           }}
           value={part.label}
         />
-        <label for={part.label} class="mx-1 inline-block flex-grow cursor-pointer text-left">
+        <label for={part.label} class="mx-1 inline-block flex-grow cursor-pointer whitespace-nowrap text-left">
           {part.label}
         </label>
         <label for={part.label} class="mx-1 inline-block cursor-pointer">
@@ -101,15 +121,4 @@
       </div>
     {/each}
   {/if}
-
-  <button
-    class="mb-2 mt-4 w-full rounded-xl bg-gray-600 px-2 py-1 text-white"
-    on:click={() => {
-      categories = [];
-      difficulty = "";
-      difficultyFrom = null;
-      difficultyTo = null;
-      filter();
-    }}>Reset</button
-  >
 </div>

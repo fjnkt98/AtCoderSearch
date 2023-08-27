@@ -13,6 +13,11 @@ export type FacetPart = {
   count: number;
 };
 
+export type FilterRange = {
+  from: string | null;
+  to: string | null;
+};
+
 export type SearchResult<T, F> = {
   stats: SearchStats<F>;
   items: T[];
@@ -60,7 +65,7 @@ export type User = {
 };
 
 export type UserFacet = {
-  color: FacetPart[] | null;
+  rating: FacetPart[] | null;
   birth_year: FacetPart[] | null;
   join_count: FacetPart[] | null;
   country: FacetPart[] | null;
@@ -82,10 +87,10 @@ export type Submission = {
 };
 
 export type SubmissionFacet = {
-  problem_id: FacetPart[];
-  user_id: FacetPart[];
-  language: FacetPart[];
-  result: FacetPart[];
-  length: FacetPart[];
-  execution_time: FacetPart[];
+  problem_id: FacetPart[] | null;
+  user_id: FacetPart[] | null;
+  language: FacetPart[] | null;
+  result: FacetPart[] | null;
+  length: FacetPart[] | null;
+  execution_time: FacetPart[] | null;
 };

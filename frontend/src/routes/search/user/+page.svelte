@@ -31,6 +31,7 @@
         on:change={() => {
           const params = new URLSearchParams($page.url.searchParams);
           params.set("sort", selected);
+          params.set("page", "1");
           goto(`${$page.url.pathname}?${params.toString()}`);
         }}
       >

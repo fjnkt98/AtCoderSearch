@@ -39,7 +39,7 @@ type FilterParams struct {
 }
 
 type FacetParams struct {
-	Term      []string            `json:"term" schema:"term" validate:"dive,oneof=color country"`
+	Term      []string            `json:"term" schema:"term" validate:"dive,oneof=country"`
 	Rating    acs.RangeFacetParam `json:"rating" schema:"rating"`
 	BirthYear acs.RangeFacetParam `json:"birth_year" schema:"birth_year"`
 	JoinCount acs.RangeFacetParam `json:"join_count" schema:"join_count"`
@@ -162,59 +162,42 @@ type Response struct {
 }
 
 type FacetCounts struct {
-	Color     solr.TermFacetCount `json:"color"`
-	BirthYear solr.TermFacetCount `json:"birth_year"`
-	JoinCount solr.TermFacetCount `json:"join_count"`
-	Country   solr.TermFacetCount `json:"country"`
+	Rating    *solr.RangeFacetCount[int] `json:"rating"`
+	BirthYear *solr.RangeFacetCount[int] `json:"birth_year"`
+	JoinCount *solr.RangeFacetCount[int] `json:"join_count"`
+	Country   *solr.TermFacetCount       `json:"country"`
 }
 
 type FacetResponse struct {
-	Color     []FacetPart `json:"color,omitempty"`
-	BirthYear []FacetPart `json:"birth_year,omitempty"`
-	JoinCount []FacetPart `json:"join_count,omitempty"`
-	Country   []FacetPart `json:"country,omitempty"`
+	Rating    []acs.FacetPart `json:"rating,omitempty"`
+	BirthYear []acs.FacetPart `json:"birth_year,omitempty"`
+	JoinCount []acs.FacetPart `json:"join_count,omitempty"`
+	Country   []acs.FacetPart `json:"country,omitempty"`
 }
 
-type FacetPart struct {
-	Label string `json:"label"`
-	Count int    `json:"count"`
-}
-
-func (f *FacetCounts) Into() FacetResponse {
-	color := make([]FacetPart, len(f.Color.Buckets))
-	for i, b := range f.Color.Buckets {
-		color[i] = FacetPart{
-			Label: b.Val,
-			Count: b.Count,
-		}
+func (f *FacetCounts) Into(p FacetParams) FacetResponse {
+	var rating []acs.FacetPart
+	if f.Rating != nil {
+		rating = acs.ConvertRangeBucket(f.Rating, p.Rating)
 	}
 
-	birthYear := make([]FacetPart, len(f.BirthYear.Buckets))
-	for i, b := range f.BirthYear.Buckets {
-		birthYear[i] = FacetPart{
-			Label: b.Val,
-			Count: b.Count,
-		}
+	var birthYear []acs.FacetPart
+	if f.BirthYear != nil {
+		birthYear = acs.ConvertRangeBucket(f.BirthYear, p.BirthYear)
 	}
 
-	joinCount := make([]FacetPart, len(f.JoinCount.Buckets))
-	for i, b := range f.JoinCount.Buckets {
-		joinCount[i] = FacetPart{
-			Label: b.Val,
-			Count: b.Count,
-		}
+	var joinCount []acs.FacetPart
+	if f.JoinCount != nil {
+		joinCount = acs.ConvertRangeBucket(f.JoinCount, p.JoinCount)
 	}
 
-	country := make([]FacetPart, len(f.Country.Buckets))
-	for i, b := range f.Country.Buckets {
-		country[i] = FacetPart{
-			Label: b.Val,
-			Count: b.Count,
-		}
+	var country []acs.FacetPart
+	if f.Country != nil {
+		country = acs.ConvertBucket[string](f.Country.Buckets)
 	}
 
 	return FacetResponse{
-		Color:     color,
+		Rating:    rating,
 		BirthYear: birthYear,
 		JoinCount: joinCount,
 		Country:   country,
@@ -294,7 +277,7 @@ func (s *Searcher) search(r *http.Request, params SearchParams) (int, acs.Search
 			Count:  int(len(res.Response.Docs)),
 			Pages:  (res.Response.NumFound + int(rows) - 1) / int(rows),
 			Params: params,
-			Facet:  res.FacetCounts.Into(),
+			Facet:  res.FacetCounts.Into(params.Facet),
 		},
 		Items: res.Response.Docs,
 	}
