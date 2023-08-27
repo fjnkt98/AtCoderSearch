@@ -202,11 +202,11 @@ type User struct {
 	Rating        int     `json:"rating" db:"rating"`
 	HighestRating int     `json:"highest_rating" db:"highest_rating"`
 	Affiliation   *string `json:"affiliation" db:"affiliation"`
-	BirthYear     *uint   `json:"birth_year" db:"birth_year"`
+	BirthYear     *int    `json:"birth_year" db:"birth_year"`
 	Country       *string `json:"country" db:"country"`
 	Crown         *string `json:"crown" db:"crown"`
-	JoinCount     uint    `json:"join_count" db:"join_count"`
-	Rank          uint    `json:"rank" db:"rank"`
-	ActiveRank    *uint   `json:"active_rank" db:"active_rank"`
-	Wins          uint    `json:"wins" db:"wins"`
+	JoinCount     int     `json:"join_count" db:"join_count"`
+	Rank          int     `json:"rank" db:"rank"`
+	ActiveRank    *int    `json:"active_rank" db:"active_rank"`
+	Wins          int     `json:"wins" db:"wins"`
 }

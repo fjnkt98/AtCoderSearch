@@ -61,9 +61,9 @@ type Document struct {
 	UserID        string                `json:"user_id"`
 	Language      string                `json:"language"`
 	Point         float64               `json:"point"`
-	Length        uint64                `json:"length"`
+	Length        int64                 `json:"length"`
 	Result        string                `json:"result"`
-	ExecutionTime *uint64               `json:"execution_time"`
+	ExecutionTime *int64                `json:"execution_time"`
 }
 
 type RowReader[R acs.ToDocument[D], D any] struct {

@@ -88,7 +88,7 @@ func extractCSRFToken(body string) string {
 	return token
 }
 
-func (c *AtCoderClient) FetchSubmissionList(contestID string, page uint) (SubmissionList, error) {
+func (c *AtCoderClient) FetchSubmissionList(contestID string, page int) (SubmissionList, error) {
 	p, err := url.JoinPath("https://atcoder.jp", "contests", contestID, "submissions")
 	if err != nil {
 		return SubmissionList{}, failure.Translate(err, InvalidURL, failure.Context{"contestID": contestID}, failure.Message("invalid contestID was given"))
@@ -142,7 +142,7 @@ func scrapeSubmissions(html io.Reader) (SubmissionList, error) {
 		return SubmissionList{}, failure.Translate(err, ReadError, failure.Message("failed to read html from reader"))
 	}
 
-	var maxPage uint
+	var maxPage int
 	pagePattern, _ := regexp.Compile(`page=\d+$`)
 	doc.Find("a").Each(func(_ int, a *goquery.Selection) {
 		if href, ok := a.Attr("href"); ok {
@@ -153,7 +153,7 @@ func scrapeSubmissions(html io.Reader) (SubmissionList, error) {
 					return
 				}
 
-				if page := uint(page); maxPage < uint(page) {
+				if page := int(page); maxPage < int(page) {
 					maxPage = page
 				}
 			}
@@ -187,7 +187,7 @@ func scrapeSubmissions(html io.Reader) (SubmissionList, error) {
 				lengthStr = strings.TrimSuffix(lengthStr, "Byte")
 				lengthStr = strings.TrimSpace(lengthStr)
 				length, _ := strconv.Atoi(lengthStr)
-				s.Length = uint64(length)
+				s.Length = int64(length)
 			case 6:
 				s.Result = td.Text()
 			case 7, 9:
@@ -198,7 +198,7 @@ func scrapeSubmissions(html io.Reader) (SubmissionList, error) {
 					t := td.Text()
 					t = strings.TrimSuffix(t, "ms")
 					t = strings.TrimSpace(t)
-					et, _ := strconv.ParseUint(t, 10, 64)
+					et, _ := strconv.ParseInt(t, 10, 64)
 					s.ExecutionTime = &et
 
 				}

@@ -54,7 +54,7 @@ func (c *Crawler) crawl(contestID string, period int64, duration int) error {
 loop:
 	for i := 1; i <= maxPage; i++ {
 		slog.Info(fmt.Sprintf("fetch submissions at page %d / %d of the contest `%s`", i, maxPage, contestID))
-		list, err := c.client.FetchSubmissionList(contestID, uint(i))
+		list, err := c.client.FetchSubmissionList(contestID, int(i))
 		if err != nil {
 			return failure.Translate(err, CrawlError, failure.Context{"contestID": contestID}, failure.Message("failed to crawl submissions"))
 		}

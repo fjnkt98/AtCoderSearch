@@ -7,8 +7,8 @@ import (
 
 type ResponseHeader struct {
 	ZkConnected map[string]any `json:"zkConnected"`
-	Status      uint           `json:"status"`
-	QTime       uint
+	Status      int            `json:"status"`
+	QTime       int
 	Params      map[string]any `json:"params"`
 }
 
@@ -20,7 +20,7 @@ type PingResponse struct {
 type ErrorInfo struct {
 	Metadata []string `json:"metadata"`
 	Msg      string   `json:"msg"`
-	Code     uint     `json:"code"`
+	Code     int      `json:"code"`
 }
 
 type LuceneInfo struct {
@@ -43,18 +43,18 @@ type SystemInfo struct {
 }
 
 type IndexInfo struct {
-	NumDocs                 uint64                 `json:"numDocs"`
-	MaxDoc                  uint64                 `json:"maxDoc"`
-	DeletedDocs             uint64                 `json:"deletedDocs"`
-	Version                 uint64                 `json:"version"`
-	SegmentCount            uint64                 `json:"segmentCount"`
+	NumDocs                 int64                  `json:"numDocs"`
+	MaxDoc                  int64                  `json:"maxDoc"`
+	DeletedDocs             int64                  `json:"deletedDocs"`
+	Version                 int64                  `json:"version"`
+	SegmentCount            int64                  `json:"segmentCount"`
 	Current                 bool                   `json:"current"`
 	HasDeletions            bool                   `json:"hasDeletions"`
 	Directory               string                 `json:"directory"`
 	SegmentsFile            string                 `json:"segmentsFile"`
-	SegmentsFileSizeInBytes uint64                 `json:"segmentsFileSizeInBytes"`
+	SegmentsFileSizeInBytes int64                  `json:"segmentsFileSizeInBytes"`
 	UserData                map[string]interface{} `json:"userData"`
-	SizeInBytes             uint64                 `json:"sizeInBites"`
+	SizeInBytes             int64                  `json:"sizeInBites"`
 	Size                    string                 `json:"size"`
 }
 
@@ -65,7 +65,7 @@ type CoreStatus struct {
 	Config      string    `json:"config"`
 	Schema      string    `json:"schema"`
 	StartTime   string    `json:"startTime"`
-	UpTime      uint64    `json:"uptime"`
+	UpTime      int64     `json:"uptime"`
 	Index       IndexInfo `json:"index"`
 }
 
@@ -89,8 +89,8 @@ type SelectResponse[D any, F any] struct {
 }
 
 type SelectBody[D any] struct {
-	NumFound      uint `json:"numFound"`
-	Start         uint `json:"start"`
+	NumFound      int  `json:"numFound"`
+	Start         int  `json:"start"`
 	NumFoundExact bool `json:"numFoundExact"`
 	Docs          []D  `json:"docs"`
 }
@@ -100,8 +100,8 @@ type BucketElement interface {
 }
 
 type Bucket[T BucketElement] struct {
-	Val   T    `json:"val"`
-	Count uint `json:"count"`
+	Val   T   `json:"val"`
+	Count int `json:"count"`
 }
 
 type TermFacetCount struct {
@@ -109,14 +109,14 @@ type TermFacetCount struct {
 }
 
 type RangeFacetCount[T BucketElement] struct {
-	Buckets []Bucket[T]              `json:"buckets"`
-	Before  *RangeFacetCountInfo `json:"before"`
-	After   *RangeFacetCountInfo `json:"after"`
-	Between *RangeFacetCountInfo `json:"between"`
+	Buckets []Bucket[T]         `json:"buckets"`
+	Before  RangeFacetCountInfo `json:"before"`
+	After   RangeFacetCountInfo `json:"after"`
+	Between RangeFacetCountInfo `json:"between"`
 }
 
 type RangeFacetCountInfo struct {
-	Count uint `json:"count"`
+	Count int `json:"count"`
 }
 
 type QueryFacetCount struct {

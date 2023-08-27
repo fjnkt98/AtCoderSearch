@@ -20,8 +20,8 @@ import (
 
 type SearchParams struct {
 	ProblemID string        `json:"problem_id,omitempty" schema:"problem_id" validate:"required"`
-	Limit     uint          `json:"limit,omitempty" schema:"limit" validate:"lte=200"`
-	Page      uint          `json:"page,omitempty" schema:"page"`
+	Limit     int           `json:"limit,omitempty" schema:"limit" validate:"lte=200"`
+	Page      int           `json:"page,omitempty" schema:"page"`
 	Filter    *FilterParams `json:"filter,omitempty" schema:"filter"`
 	Sort      string        `json:"sort,omitempty" schema:"sort" validate:"omitempty,oneof=-score"`
 }
@@ -41,19 +41,19 @@ func (p *SearchParams) ToQuery() url.Values {
 		Build()
 }
 
-func (p *SearchParams) rows() uint {
+func (p *SearchParams) rows() int {
 	if p.Limit == 0 {
 		return 20
 	}
 	return p.Limit
 }
 
-func (p *SearchParams) start() uint {
+func (p *SearchParams) start() int {
 	if p.Page == 0 {
 		return 0
 	}
 
-	return uint(int(p.Page)-1) * p.rows()
+	return int(int(p.Page)-1) * p.rows()
 }
 
 func (p *SearchParams) sort() string {
@@ -183,17 +183,17 @@ func (s *Searcher) search(r *http.Request, params SearchParams) (int, acs.Search
 
 	result := acs.SearchResultResponse[Response]{
 		Stats: acs.SearchResultStats{
-			Time:   uint(time.Since(startTime).Milliseconds()),
+			Time:   int(time.Since(startTime).Milliseconds()),
 			Total:  res.Response.NumFound,
-			Index:  (res.Response.Start / uint(rows)) + 1,
-			Count:  uint(len(res.Response.Docs)),
-			Pages:  (res.Response.NumFound + uint(rows) - 1) / uint(rows),
+			Index:  (res.Response.Start / int(rows)) + 1,
+			Count:  int(len(res.Response.Docs)),
+			Pages:  (res.Response.NumFound + int(rows) - 1) / int(rows),
 			Params: &params,
 			Facet:  res.FacetCounts,
 		},
 		Items: res.Response.Docs,
 	}
-	slog.Info("querylog", slog.String("domain", "recommend"), slog.Uint64("elapsed_time", uint64(result.Stats.Time)), slog.Uint64("hits", uint64(res.Response.NumFound)), slog.Any("params", params))
+	slog.Info("querylog", slog.String("domain", "recommend"), slog.Int("elapsed_time", result.Stats.Time), slog.Int("hits", res.Response.NumFound), slog.Any("params", params))
 
 	return http.StatusOK, result
 }

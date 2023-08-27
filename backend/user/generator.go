@@ -10,7 +10,7 @@ import (
 	"golang.org/x/exp/slog"
 )
 
-func grade(c uint) string {
+func grade(c int) string {
 	if c < 10 {
 		return "    ~  10"
 	} else if c < 100 {
@@ -53,13 +53,13 @@ type Document struct {
 	Rating         int     `json:"rating"`
 	HighestRating  int     `json:"highest_rating"`
 	Affiliation    *string `json:"affiliation"`
-	BirthYear      *uint   `json:"birth_year"`
+	BirthYear      *int    `json:"birth_year"`
 	Country        *string `json:"country"`
 	Crown          *string `json:"crown"`
-	JoinCount      uint    `json:"join_count"`
-	Rank           uint    `json:"rank"`
-	ActiveRank     *uint   `json:"active_rank"`
-	Wins           uint    `json:"wins" `
+	JoinCount      int     `json:"join_count"`
+	Rank           int     `json:"rank"`
+	ActiveRank     *int    `json:"active_rank"`
+	Wins           int     `json:"wins" `
 	Color          string  `json:"color"`
 	HighestColor   string  `json:"highest_color"`
 	Period         string  `json:"period,omitempty"`

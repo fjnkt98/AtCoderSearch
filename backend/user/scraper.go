@@ -27,12 +27,12 @@ func Scrape(html io.Reader) ([]User, error) {
 			case 0:
 				m := RANK_RE.FindStringSubmatch(td.Find("span").Text())
 				if rank, err := strconv.Atoi(m[1]); err == nil {
-					user.Rank = uint(rank)
+					user.Rank = int(rank)
 				}
 
 				activeRankStr := strings.TrimSpace(td.Contents().Not("span").Text())
 				if r, err := strconv.Atoi(activeRankStr); err == nil {
-					rank := uint(r)
+					rank := int(r)
 					user.ActiveRank = &rank
 				}
 			case 1:
@@ -61,7 +61,7 @@ func Scrape(html io.Reader) ([]User, error) {
 				}
 			case 2:
 				if year, err := strconv.Atoi(td.Text()); err == nil {
-					year := uint(year)
+					year := int(year)
 					user.BirthYear = &year
 				}
 			case 3:
@@ -74,11 +74,11 @@ func Scrape(html io.Reader) ([]User, error) {
 				}
 			case 5:
 				if joinCount, err := strconv.Atoi(td.Text()); err == nil {
-					user.JoinCount = uint(joinCount)
+					user.JoinCount = int(joinCount)
 				}
 			case 6:
 				if wins, err := strconv.Atoi(td.Text()); err == nil {
-					user.Wins = uint(wins)
+					user.Wins = int(wins)
 				}
 			}
 		})

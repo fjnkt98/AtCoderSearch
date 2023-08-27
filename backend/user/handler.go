@@ -22,12 +22,27 @@ import (
 )
 
 type SearchParams struct {
-	Keyword string        `validate:"lte=200" json:"keyword,omitempty" schema:"keyword"`
-	Limit   uint          `validate:"lte=200" json:"limit,omitempty" schema:"limit"`
-	Page    uint          `json:"page,omitempty" schema:"page"`
-	Filter  *FilterParams `json:"filter,omitempty" schema:"filter"`
-	Sort    string        `validate:"omitempty,oneof=-score rating -rating birth_year -birth_year" json:"sort,omitempty" schema:"sort"`
-	Facet   []string      `validate:"dive,oneof=color birth_year join_count country" json:"facet,omitempty" schema:"facet"`
+	Keyword string       `json:"keyword" schema:"keyword" validate:"lte=200"`
+	Limit   int          `json:"limit" schema:"limit" validate:"lte=200"`
+	Page    int          `json:"page" schema:"page"`
+	Filter  FilterParams `json:"filter" schema:"filter"`
+	Sort    string       `json:"sort" schema:"sort" validate:"omitempty,oneof=-score rating -rating birth_year -birth_year"`
+	Facet   FacetParams  `json:"facet" schema:"facet"`
+}
+
+type FilterParams struct {
+	Rating    acs.IntegerRange `json:"rating" schema:"rating"`
+	BirthYear acs.IntegerRange `json:"birth_year" schema:"birth_year"`
+	JoinCount acs.IntegerRange `json:"join_count" schema:"join_count"`
+	Country   []string         `json:"country" schema:"country"`
+	Color     []string         `json:"color" schema:"color"`
+}
+
+type FacetParams struct {
+	Term      []string            `json:"term" schema:"term" validate:"dive,oneof=color country"`
+	Rating    acs.RangeFacetParam `json:"rating" schema:"rating"`
+	BirthYear acs.RangeFacetParam `json:"birth_year" schema:"birth_year"`
+	JoinCount acs.RangeFacetParam `json:"join_count" schema:"join_count"`
 }
 
 func (p *SearchParams) ToQuery() url.Values {
@@ -46,19 +61,19 @@ func (p *SearchParams) ToQuery() url.Values {
 		Build()
 }
 
-func (p *SearchParams) rows() uint {
+func (p *SearchParams) rows() int {
 	if p.Limit == 0 {
 		return 20
 	}
 	return p.Limit
 }
 
-func (p *SearchParams) start() uint {
+func (p *SearchParams) start() int {
 	if p.Page == 0 {
 		return 0
 	}
 
-	return uint(int(p.Page)-1) * p.rows()
+	return int(int(p.Page)-1) * p.rows()
 }
 
 func (p *SearchParams) sort() string {
@@ -72,22 +87,13 @@ func (p *SearchParams) sort() string {
 	}
 }
 
-var FACET_MAP = map[string]string{
-	"birth_year": "period",
-	"join_count": "join_count_grade",
-}
-
 func (p *SearchParams) facet() string {
 	facets := make(map[string]any)
 
-	for _, f := range p.Facet {
-		field, ok := FACET_MAP[f]
-		if !ok {
-			field = f
-		}
+	for _, f := range p.Facet.Term {
 		facets[f] = map[string]any{
 			"type":     "terms",
-			"field":    field,
+			"field":    f,
 			"limit":    -1,
 			"mincount": 0,
 			"sort":     "index",
@@ -95,6 +101,16 @@ func (p *SearchParams) facet() string {
 				"excludeTags": []string{f},
 			},
 		}
+	}
+
+	if f := p.Facet.Rating.ToFacet("rating"); f != nil {
+		facets["rating"] = f
+	}
+	if f := p.Facet.BirthYear.ToFacet("birth_year"); f != nil {
+		facets["birth_year"] = f
+	}
+	if f := p.Facet.JoinCount.ToFacet("join_count"); f != nil {
+		facets["join_count"] = f
 	}
 
 	facet, err := json.Marshal(facets)
@@ -107,43 +123,26 @@ func (p *SearchParams) facet() string {
 }
 
 func (p *SearchParams) fq() []string {
-	if p.Filter == nil {
-		return make([]string, 0)
-	}
-
 	fq := make([]string, 0)
 
 	if c := acs.SanitizeStrings(p.Filter.Country); len(c) != 0 {
 		fq = append(fq, fmt.Sprintf("{!tag=country}country:(%s)", strings.Join(c, " OR ")))
 	}
-	if p.Filter.Rating != nil {
-		if r := p.Filter.Rating.ToRange(); r != "" {
-			fq = append(fq, fmt.Sprintf("{!tag=rating}rating:%s", r))
-		}
-	}
-	if p.Filter.BirthYear != nil {
-		if r := p.Filter.BirthYear.ToRange(); r != "" {
-			fq = append(fq, fmt.Sprintf("{!tag=birth_year}birth_year:%s", p.Filter.BirthYear.ToRange()))
-		}
-	}
-	if p.Filter.JoinCount != nil {
-		if r := p.Filter.JoinCount.ToRange(); r != "" {
-			fq = append(fq, fmt.Sprintf("{!tag=join_count}join_count:%s", p.Filter.JoinCount.ToRange()))
-		}
-	}
 	if c := acs.SanitizeStrings(p.Filter.Color); len(c) != 0 {
 		fq = append(fq, fmt.Sprintf("{!tag=color}color:(%s)", strings.Join(c, " OR ")))
 	}
 
-	return fq
-}
+	if r := p.Filter.Rating.ToRange(); r != "" {
+		fq = append(fq, fmt.Sprintf("{!tag=rating}rating:%s", r))
+	}
+	if r := p.Filter.BirthYear.ToRange(); r != "" {
+		fq = append(fq, fmt.Sprintf("{!tag=birth_year}birth_year:%s", p.Filter.BirthYear.ToRange()))
+	}
+	if r := p.Filter.JoinCount.ToRange(); r != "" {
+		fq = append(fq, fmt.Sprintf("{!tag=join_count}join_count:%s", p.Filter.JoinCount.ToRange()))
+	}
 
-type FilterParams struct {
-	Rating    *acs.IntegerRange[int] `json:"rating,omitempty" schema:"rating"`
-	BirthYear *acs.IntegerRange[int] `json:"birth_year,omitempty" schema:"birth_year"`
-	JoinCount *acs.IntegerRange[int] `json:"join_count,omitempty" schema:"join_count"`
-	Country   []string               `json:"country,omitempty" schema:"country"`
-	Color     []string               `json:"color,omitempty" schema:"color"`
+	return fq
 }
 
 type Response struct {
@@ -151,13 +150,13 @@ type Response struct {
 	Rating        int     `json:"rating"`
 	HighestRating int     `json:"highest_rating"`
 	Affiliation   *string `json:"affiliation"`
-	BirthYear     *uint   `json:"birth_year"`
+	BirthYear     *int    `json:"birth_year"`
 	Country       *string `json:"country"`
 	Crown         *string `json:"crown"`
-	JoinCount     uint    `json:"join_count"`
-	Rank          uint    `json:"rank"`
-	ActiveRank    *uint   `json:"active_rank"`
-	Wins          uint    `json:"wins" `
+	JoinCount     int     `json:"join_count"`
+	Rank          int     `json:"rank"`
+	ActiveRank    *int    `json:"active_rank"`
+	Wins          int     `json:"wins" `
 	Color         string  `json:"color"`
 	UserURL       string  `json:"user_url"`
 }
@@ -178,7 +177,7 @@ type FacetResponse struct {
 
 type FacetPart struct {
 	Label string `json:"label"`
-	Count uint   `json:"count"`
+	Count int    `json:"count"`
 }
 
 func (f *FacetCounts) Into() FacetResponse {
@@ -289,17 +288,17 @@ func (s *Searcher) search(r *http.Request, params SearchParams) (int, acs.Search
 
 	result := acs.SearchResultResponse[Response]{
 		Stats: acs.SearchResultStats{
-			Time:   uint(time.Since(startTime).Milliseconds()),
+			Time:   int(time.Since(startTime).Milliseconds()),
 			Total:  res.Response.NumFound,
-			Index:  (res.Response.Start / uint(rows)) + 1,
-			Count:  uint(len(res.Response.Docs)),
-			Pages:  (res.Response.NumFound + uint(rows) - 1) / uint(rows),
+			Index:  (res.Response.Start / int(rows)) + 1,
+			Count:  int(len(res.Response.Docs)),
+			Pages:  (res.Response.NumFound + int(rows) - 1) / int(rows),
 			Params: params,
 			Facet:  res.FacetCounts.Into(),
 		},
 		Items: res.Response.Docs,
 	}
-	slog.Info("querylog", slog.String("domain", "user"), slog.Uint64("elapsed_time", uint64(result.Stats.Time)), slog.Uint64("hits", uint64(res.Response.NumFound)), slog.Any("params", params))
+	slog.Info("querylog", slog.String("domain", "user"), slog.Int("elapsed_time", result.Stats.Time), slog.Int("hits", res.Response.NumFound), slog.Any("params", params))
 
 	return http.StatusOK, result
 }
