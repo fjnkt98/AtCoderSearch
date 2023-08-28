@@ -64,7 +64,7 @@ var serverCmd = &cobra.Command{
 		db := GetDB()
 		listSearcher := list.NewSearcher(db)
 
-		c := freecache.NewCache(10 * 1024 * 1024)
+		c := freecache.NewCache(50 * 1024 * 1024)
 
 		e := echo.New()
 		e.Use(middleware.Recover())
