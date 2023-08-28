@@ -76,8 +76,14 @@ export type SubmissionResult = SearchResult<Submission, SubmissionFacet>;
 export type Submission = {
   submission_id: number;
   submitted_at: string;
+  submission_url: string;
   problem_id: string;
+  problem_title: string;
   contest_id: string;
+  contest_title: string;
+  category: string;
+  difficulty: number;
+  color: string;
   user_id: string;
   language: string;
   point: number;
