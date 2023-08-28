@@ -23,7 +23,7 @@ type SearchParams struct {
 	Limit  int          `json:"limit" schema:"limit" validate:"lte=200"`
 	Page   int          `json:"page" schema:"page"`
 	Filter FilterParams `json:"filter" schema:"filter"`
-	Sort   string       `json:"sort" schema:"sort" validate:"omitempty,oneof=-score execution_time -execution_time submitted_at -submitted_at point -point length -length"`
+	Sort   string       `json:"sort" schema:"sort" validate:"omitempty,oneof=execution_time -execution_time submitted_at -submitted_at point -point length -length"`
 	Facet  FacetParams  `json:"facet" schema:"facet"`
 }
 
@@ -47,16 +47,14 @@ type FacetParams struct {
 }
 
 func (p *SearchParams) ToQuery() url.Values {
-	return solr.NewEDisMaxQueryBuilder().
+	return solr.NewLuceneQueryBuilder().
 		Facet(p.facet()).
 		Fl(acs.FieldList(Response{})).
 		Fq(p.fq()).
 		Op("AND").
-		Qf("text_unigram").
 		Q("*:*").
 		Rows(p.rows()).
 		Sort(p.sort()).
-		Sow(true).
 		Start(p.start()).
 		Build()
 }
