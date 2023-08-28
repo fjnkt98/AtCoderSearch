@@ -74,6 +74,8 @@ CREATE INDEX "submissions_problem_id_index" ON "submissions" ("problem_id");
 
 CREATE INDEX "submissions_user_id_index" ON "submissions" ("user_id");
 
+CREATE INDEX "submissions_language_index" ON "submissions" ("language");
+
 CREATE INDEX "submissions_crawled_at_index" ON "submissions" ("crawled_at");
 
 CREATE TABLE "category_relationships" (
@@ -108,3 +110,8 @@ CREATE TABLE "submission_crawl_history" (
 );
 
 CREATE INDEX "submission_crawl_history_contest_id_start_at_index" ON "submission_crawl_history" ("contest_id", "started_at");
+
+CREATE TABLE "languages" (
+    "language" text NOT NULL,
+    PRIMARY KEY ("language")
+);

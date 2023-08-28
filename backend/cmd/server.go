@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fjnkt98/atcodersearch/list"
 	"fjnkt98/atcodersearch/problem"
 	"fjnkt98/atcodersearch/recommend"
 	"fjnkt98/atcodersearch/submission"
@@ -10,6 +11,8 @@ import (
 	"net/url"
 	"os"
 
+	"github.com/coocood/freecache"
+	cache "github.com/gitsight/go-echo-cache"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/spf13/cobra"
@@ -58,14 +61,22 @@ var serverCmd = &cobra.Command{
 			slog.Error("failed to instantiate recommend searcher", slog.String("error", fmt.Sprintf("%+v", err)))
 		}
 
+		db := GetDB()
+		listSearcher := list.NewSearcher(db)
+
+		c := freecache.NewCache(10 * 1024 * 1024)
+
 		e := echo.New()
 		e.Use(middleware.Recover())
+		e.Use(cache.New(&cache.Config{}, c))
 
 		// API handler registration
 		e.GET("/api/search/problem", problemSearcher.HandleGET)
 		e.GET("/api/search/user", userSearcher.HandleGET)
 		e.GET("/api/search/submission", submissionSearcher.HandleGET)
 		e.GET("/api/recommend/problem", recommendSearcher.HandleGET)
+		e.GET("/api/list/category", listSearcher.HandleCategory)
+		e.GET("/api/list/language", listSearcher.HandleLanguage)
 
 		http.HandleFunc("/api/liveness", func(w http.ResponseWriter, r *http.Request) {
 			if problemSearcher.Liveness() && userSearcher.Liveness() && submissionSearcher.Liveness() && recommendSearcher.Liveness() {
