@@ -157,8 +157,14 @@ func (p *SearchParams) fq() []string {
 type Response struct {
 	SubmissionID  int64                 `json:"submission_id"`
 	SubmittedAt   solr.FromSolrDateTime `json:"submitted_at"`
+	SubmissionURL string                `json:"submission_url"`
 	ProblemID     string                `json:"problem_id"`
+	ProblemTitle  string                `json:"problem_title"`
 	ContestID     string                `json:"contest_id"`
+	ContestTitle  string                `json:"contest_title"`
+	Category      string                `json:"category"`
+	Difficulty    int                   `json:"difficulty"`
+	Color         string                `json:"color"`
 	UserID        string                `json:"user_id"`
 	Language      string                `json:"language"`
 	Point         float64               `json:"point"`
