@@ -5,8 +5,9 @@
   import type { SubmissionResult } from "$lib/search";
   import Filter from "./Filter.svelte";
   import Submission from "./Submission.svelte";
+  import type { Data } from "./data";
 
-  export let data: SubmissionResult;
+  export let data: Data;
 
   const labels = new Map<string, string>([
     ["-submitted_at", "提出日時降順"],
@@ -22,7 +23,7 @@
 </script>
 
 <div class="flex-1 overflow-auto px-12 py-8">
-  <PageNavigation end={data.stats.pages} current={data.stats.index} />
+  <PageNavigation end={data.result.stats.pages} current={data.result.stats.index} />
 
   <div class="container flex flex-row justify-between">
     <div>
@@ -43,12 +44,12 @@
         {/each}
       </select>
 
-      <Filter />
+      <Filter categories={data.categories} languages={data.languages} contests={data.contests} problems={data.problems} />
     </div>
 
     <div class="mx-2 flex flex-1 flex-col items-center justify-center">
-      <p class="my-2 w-2/3 min-w-[600px] text-left text-slate-500">{data.stats.count}件/{data.stats.total}件 約{data.stats.time}ms</p>
-      {#each data.items as item}
+      <p class="my-2 w-2/3 min-w-[600px] text-left text-slate-500">{data.result.stats.count}件/{data.result.stats.total}件 約{data.result.stats.time}ms</p>
+      {#each data.result.items as item}
         <Submission submission={item} />
       {/each}
     </div>
