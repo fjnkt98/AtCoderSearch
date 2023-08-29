@@ -14,10 +14,6 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-type DocumentUploader interface {
-	PostDocument(core *solr.Core, saveDir string, optimize bool) error
-}
-
 type DefaultDocumentUploader struct {
 	core    *solr.Core
 	saveDir string
@@ -30,7 +26,7 @@ func NewDefaultDocumentUploader(core *solr.Core, saveDir string) DefaultDocument
 	}
 }
 
-func (u *DefaultDocumentUploader) PostDocument(optimize bool, concurrent int) error {
+func (u *DefaultDocumentUploader) PostDocument(optimize bool, initialize bool, concurrent int) error {
 	slog.Info(fmt.Sprintf("Start to post documents in `%s`", u.saveDir))
 	paths, err := filepath.Glob(filepath.Join(u.saveDir, "doc-*.json"))
 	if err != nil {
@@ -104,6 +100,12 @@ func (u *DefaultDocumentUploader) PostDocument(optimize bool, concurrent int) er
 	}
 
 	eg.Go(func() error {
+		if initialize {
+			if _, err := solr.Truncate(u.core); err != nil {
+				return failure.Translate(err, PostError, failure.Message("failed to truncate index"))
+			}
+		}
+
 		for _, path := range paths {
 			ch <- path
 		}

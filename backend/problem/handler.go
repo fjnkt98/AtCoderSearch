@@ -17,16 +17,28 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/schema"
+	"github.com/labstack/echo/v4"
 	"github.com/morikuni/failure"
 )
 
 type SearchParams struct {
-	Keyword string        `json:"keyword,omitempty" schema:"keyword" validate:"lte=200"`
-	Limit   uint          `json:"limit,omitempty" schema:"limit" validate:"lte=200"`
-	Page    uint          `json:"page,omitempty" schema:"page"`
-	Filter  *FilterParams `json:"filter,omitempty" schema:"filter"`
-	Sort    string        `json:"sort,omitempty" schema:"sort" validate:"omitempty,oneof=-score start_at -start_at difficulty -difficulty"`
-	Facet   []string      `json:"facet,omitempty" schema:"facet" validate:"dive,oneof=category color"`
+	Keyword string       `json:"keyword" schema:"keyword" validate:"lte=200"`
+	Limit   int          `json:"limit" schema:"limit" validate:"lte=200"`
+	Page    int          `json:"page" schema:"page"`
+	Filter  FilterParams `json:"filter" schema:"filter"`
+	Sort    string       `json:"sort" schema:"sort" validate:"omitempty,oneof=-score start_at -start_at difficulty -difficulty"`
+	Facet   FacetParams  `json:"facet" schema:"facet"`
+}
+
+type FilterParams struct {
+	Category   []string         `json:"category" schema:"category"`
+	Difficulty acs.IntegerRange `json:"difficulty" schema:"difficulty"`
+	Color      []string         `json:"color" schema:"color"`
+}
+
+type FacetParams struct {
+	Term       []string            `json:"term" schema:"term" validate:"dive,oneof=category color"`
+	Difficulty acs.RangeFacetParam `json:"difficulty" schema:"difficulty"`
 }
 
 func (p *SearchParams) ToQuery() url.Values {
@@ -45,24 +57,24 @@ func (p *SearchParams) ToQuery() url.Values {
 		Build()
 }
 
-func (p *SearchParams) rows() uint {
+func (p *SearchParams) rows() int {
 	if p.Limit == 0 {
 		return 20
 	}
 	return p.Limit
 }
 
-func (p *SearchParams) start() uint {
+func (p *SearchParams) start() int {
 	if p.Page == 0 {
 		return 0
 	}
 
-	return (p.Page - 1) / p.rows()
+	return int(int(p.Page)-1) * p.rows()
 }
 
 func (p *SearchParams) sort() string {
 	if p.Sort == "" {
-		return "score desc"
+		return "start_at desc"
 	}
 	if strings.HasPrefix(p.Sort, "-") {
 		return fmt.Sprintf("%s desc", p.Sort[1:])
@@ -74,7 +86,7 @@ func (p *SearchParams) sort() string {
 func (p *SearchParams) facet() string {
 	facets := make(map[string]any)
 
-	for _, f := range p.Facet {
+	for _, f := range p.Facet.Term {
 		facets[f] = map[string]any{
 			"type":     "terms",
 			"field":    f,
@@ -87,6 +99,10 @@ func (p *SearchParams) facet() string {
 		}
 	}
 
+	if f := p.Facet.Difficulty.ToFacet("difficulty"); f != nil {
+		facets["difficulty"] = f
+	}
+
 	facet, err := json.Marshal(facets)
 	if err != nil {
 		slog.Warn("failed to marshal json.facet parameter", slog.Any("facet", p.Facet))
@@ -97,27 +113,19 @@ func (p *SearchParams) facet() string {
 }
 
 func (p *SearchParams) fq() []string {
-	if p.Filter == nil {
-		return make([]string, 0)
-	}
-
 	fq := make([]string, 0)
 
-	if c := acs.SanitizeStrings(p.Filter.Category); len(c) != 0 {
+	if c := acs.QuoteStrings(acs.SanitizeStrings(p.Filter.Category)); len(c) != 0 {
 		fq = append(fq, fmt.Sprintf("{!tag=category}category:(%s)", strings.Join(c, " OR ")))
 	}
-	if p.Filter.Difficulty != nil {
-		if r := p.Filter.Difficulty.ToRange(); r != "" {
-			fq = append(fq, fmt.Sprintf("{!tag=difficulty}difficulty:%s", r))
-		}
+	if r := p.Filter.Difficulty.ToRange(); r != "" {
+		fq = append(fq, fmt.Sprintf("{!tag=difficulty}difficulty:%s", r))
+	}
+	if c := acs.SanitizeStrings(p.Filter.Color); len(c) != 0 {
+		fq = append(fq, fmt.Sprintf("{!tag=color}color:%s", strings.Join(c, " OR ")))
 	}
 
 	return fq
-}
-
-type FilterParams struct {
-	Category   []string               `json:"category,omitempty" schema:"category"`
-	Difficulty *acs.IntegerRange[int] `json:"difficulty,omitempty" schema:"difficulty"`
 }
 
 type Response struct {
@@ -136,20 +144,37 @@ type Response struct {
 }
 
 type FacetCounts struct {
-	// Count    uint                    `json:"count"`
-	Category solr.TermFacetCount `json:"category"`
-	Color    solr.TermFacetCount `json:"color"`
+	Category   *solr.TermFacetCount       `json:"category,omitempty"`
+	Color      *solr.TermFacetCount       `json:"color,omitempty"`
+	Difficulty *solr.RangeFacetCount[int] `json:"difficulty,omitempty"`
 }
 
 type FacetResponse struct {
-	Category []acs.FacetPart `json:"category,omitempty"`
-	Color    []acs.FacetPart `json:"color,omitempty"`
+	Category   []acs.FacetPart `json:"category,omitempty"`
+	Color      []acs.FacetPart `json:"color,omitempty"`
+	Difficulty []acs.FacetPart `json:"difficulty,omitempty"`
 }
 
-func (f *FacetCounts) Into() FacetResponse {
+func (f *FacetCounts) Into(p FacetParams) FacetResponse {
+	var category []acs.FacetPart
+	if f.Category != nil {
+		category = acs.ConvertBucket[string](f.Category.Buckets)
+	}
+
+	var color []acs.FacetPart
+	if f.Color != nil {
+		color = acs.ConvertBucket[string](f.Color.Buckets)
+	}
+
+	var difficulty []acs.FacetPart
+	if f.Difficulty != nil {
+		difficulty = acs.ConvertRangeBucket(f.Difficulty, p.Difficulty)
+	}
+
 	return FacetResponse{
-		Category: acs.ConvertBucket[string](f.Category.Buckets),
-		Color:    acs.ConvertBucket[string](f.Color.Buckets),
+		Category:   category,
+		Color:      color,
+		Difficulty: difficulty,
 	}
 }
 
@@ -184,41 +209,26 @@ func NewErrorResponse(msg string, params any) acs.SearchResultResponse[Response]
 	return acs.NewErrorResponse[Response](msg, params)
 }
 
-func (s *Searcher) HandleSearch(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodGet:
-		w.Header().Set("Content-Type", "application/json; charset=utf8")
-		encoder := json.NewEncoder(w)
-
-		query, err := url.ParseQuery(r.URL.RawQuery)
-		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			slog.Error("failed to parse query string", slog.String("url", r.URL.String()), slog.String("error", fmt.Sprintf("%+v", err)))
-			encoder.Encode(NewErrorResponse(fmt.Sprintf("failed to parse query string `%s`", r.URL.RawQuery), nil))
-			return
-		}
-
-		var params SearchParams
-		if err := s.decoder.Decode(&params, query); err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			slog.Error("failed to decode request parameter", slog.String("url", r.URL.String()), slog.String("error", fmt.Sprintf("%+v", err)))
-			encoder.Encode(NewErrorResponse(fmt.Sprintf("failed to decode request parameter `%s`", r.URL.RawQuery), nil))
-			return
-		}
-
-		if err := s.validator.Struct(params); err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			slog.Error("validation error", slog.String("url", r.URL.String()), slog.Any("params", params), slog.String("error", fmt.Sprintf("%+v", err)))
-			encoder.Encode(NewErrorResponse(fmt.Sprintf("validation error `%s`: %s", r.URL.RawQuery, err.Error()), params))
-			return
-		}
-
-		code, res := s.search(r, params)
-		w.WriteHeader(code)
-		encoder.Encode(res)
-	default:
-
+func (s *Searcher) HandleGET(c echo.Context) error {
+	raw := c.Request().URL.RawQuery
+	query, err := url.ParseQuery(raw)
+	if err != nil {
+		slog.Error("failed to parse query string", slog.String("uri", c.Request().RequestURI), slog.String("error", fmt.Sprintf("%+v", err)))
+		return c.JSON(http.StatusBadRequest, NewErrorResponse(fmt.Sprintf("failed to parse query string `%s`", raw), nil))
 	}
+
+	var params SearchParams
+	if err := s.decoder.Decode(&params, query); err != nil {
+		slog.Error("failed to decode request parameter", slog.String("uri", c.Request().RequestURI), slog.String("error", fmt.Sprintf("%+v", err)))
+		return c.JSON(http.StatusBadRequest, NewErrorResponse(fmt.Sprintf("failed to decode request parameter `%s`", raw), nil))
+	}
+
+	if err := s.validator.Struct(params); err != nil {
+		slog.Error("validation error", slog.String("uri", c.Request().RequestURI), slog.Any("params", params), slog.String("error", fmt.Sprintf("%+v", err)))
+		return c.JSON(http.StatusBadRequest, NewErrorResponse(fmt.Sprintf("validation error `%s`: %s", raw, err.Error()), params))
+	}
+	code, res := s.search(c.Request(), params)
+	return c.JSON(code, res)
 }
 
 func (s *Searcher) search(r *http.Request, params SearchParams) (int, acs.SearchResultResponse[Response]) {
@@ -235,17 +245,17 @@ func (s *Searcher) search(r *http.Request, params SearchParams) (int, acs.Search
 
 	result := acs.SearchResultResponse[Response]{
 		Stats: acs.SearchResultStats{
-			Time:   uint(time.Since(startTime).Milliseconds()),
+			Time:   int(time.Since(startTime).Milliseconds()),
 			Total:  res.Response.NumFound,
-			Index:  (res.Response.Start / uint(rows)) + 1,
-			Count:  uint(len(res.Response.Docs)),
-			Pages:  (res.Response.NumFound + uint(rows) - 1) / uint(rows),
+			Index:  (res.Response.Start / int(rows)) + 1,
+			Count:  int(len(res.Response.Docs)),
+			Pages:  (res.Response.NumFound + int(rows) - 1) / int(rows),
 			Params: params,
-			Facet:  res.FacetCounts.Into(),
+			Facet:  res.FacetCounts.Into(params.Facet),
 		},
 		Items: res.Response.Docs,
 	}
-	slog.Info("querylog", slog.String("domain", "problem"), slog.Uint64("elapsed_time", uint64(result.Stats.Time)), slog.Uint64("hits", uint64(res.Response.NumFound)), slog.Any("params", params))
+	slog.Info("querylog", slog.String("domain", "problem"), slog.Int("elapsed_time", result.Stats.Time), slog.Int("hits", res.Response.NumFound), slog.Any("params", params))
 
 	return http.StatusOK, result
 }

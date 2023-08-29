@@ -4,7 +4,6 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"encoding/json"
 	"fjnkt98/atcodersearch/problem"
 	"fjnkt98/atcodersearch/recommend"
 	"fjnkt98/atcodersearch/solr"
@@ -57,27 +56,11 @@ var updateProblemCmd = &cobra.Command{
 
 		db := GetDB()
 
-		cfgJSON, err := json.Marshal(cfg)
-		if err != nil {
-			slog.Error("failed to marshal update options", slog.String("error", err.Error()))
-			os.Exit(1)
-		}
-
-		history := NewUpdateHistory(db, "problem", string(cfgJSON))
-		if err := problem.Update(cfg, db, core); err == nil {
-			if err := history.Finish(); err != nil {
-				slog.Error("failed to save update history", slog.String("error", fmt.Sprintf("%+v", err)))
-				os.Exit(1)
-			}
-			slog.Info("problem update successfully finished.")
-		} else {
-			if err := history.Cancel(); err != nil {
-				slog.Error("failed to save update history", slog.String("error", fmt.Sprintf("%+v", err)))
-				os.Exit(1)
-			}
+		if err := problem.Update(cfg, db, core); err != nil {
 			slog.Error("problem update failed", slog.String("error", fmt.Sprintf("%+v", err)))
 			os.Exit(1)
 		}
+		slog.Info("problem update successfully finished.")
 	},
 }
 
@@ -115,27 +98,11 @@ var updateUserCmd = &cobra.Command{
 
 		db := GetDB()
 
-		options, err := json.Marshal(cfg)
-		if err != nil {
-			slog.Error("failed to marshal update options", slog.String("error", err.Error()))
-			os.Exit(1)
-		}
-
-		history := NewUpdateHistory(db, "user", string(options))
-		if err := user.Update(cfg, db, core); err == nil {
-			if err := history.Finish(); err != nil {
-				slog.Error("failed to save update history", slog.String("error", fmt.Sprintf("%+v", err)))
-				os.Exit(1)
-			}
-			slog.Info("user update successfully finished.")
-		} else {
-			if err := history.Cancel(); err != nil {
-				slog.Error("failed to save update history", slog.String("error", fmt.Sprintf("%+v", err)))
-				os.Exit(1)
-			}
+		if err := user.Update(cfg, db, core); err != nil {
 			slog.Error("user update failed", slog.String("error", fmt.Sprintf("%+v", err)))
 			os.Exit(1)
 		}
+		slog.Info("user update successfully finished.")
 	},
 }
 
@@ -156,6 +123,7 @@ var updateSubmissionCmd = &cobra.Command{
 		cfg.ChunkSize = GetInt(cmd, "chunk-size")
 		cfg.GenerateConcurrent = GetInt(cmd, "generate-concurrent")
 		cfg.PostConcurrent = GetInt(cmd, "post-concurrent")
+		cfg.All = GetBool(cmd, "all")
 
 		solrURL := os.Getenv("SOLR_HOST")
 		if solrURL == "" {
@@ -170,27 +138,11 @@ var updateSubmissionCmd = &cobra.Command{
 
 		db := GetDB()
 
-		options, err := json.Marshal(cfg)
-		if err != nil {
-			slog.Error("failed to marshal update options", slog.String("error", err.Error()))
-			os.Exit(1)
-		}
-
-		history := NewUpdateHistory(db, "submission", string(options))
-		if err := submission.Update(cfg, db, core); err == nil {
-			if err := history.Finish(); err != nil {
-				slog.Error("failed to save update history: %+v", slog.String("error", fmt.Sprintf("%+v", err)))
-				os.Exit(1)
-			}
-			slog.Info("submission update successfully finished.")
-		} else {
-			if err := history.Cancel(); err != nil {
-				slog.Error("failed to save update history", slog.String("error", fmt.Sprintf("%+v", err)))
-				os.Exit(1)
-			}
+		if err := submission.Update(cfg, db, core); err != nil {
 			slog.Error("submission update failed", slog.String("error", fmt.Sprintf("%+v", err)))
 			os.Exit(1)
 		}
+		slog.Info("submission update successfully finished.")
 	},
 }
 
@@ -225,40 +177,29 @@ var updateRecommendCmd = &cobra.Command{
 
 		db := GetDB()
 
-		options, err := json.Marshal(cfg)
-		if err != nil {
-			slog.Error("failed to marshal update options: %s", slog.String("error", err.Error()))
-			os.Exit(1)
-		}
-
-		history := NewUpdateHistory(db, "recommend", string(options))
-		if err := recommend.Update(cfg, db, core); err == nil {
-			if err := history.Finish(); err != nil {
-				slog.Error("failed to save update history", slog.String("error", fmt.Sprintf("%+v", err)))
-				os.Exit(1)
-			}
-			slog.Info("recommend update successfully finished.")
-		} else {
-			if err := history.Cancel(); err != nil {
-				slog.Error("failed to save update history", slog.String("error", fmt.Sprintf("%+v", err)))
-				os.Exit(1)
-			}
+		if err := recommend.Update(cfg, db, core); err != nil {
 			slog.Error("recommend update failed", slog.String("error", fmt.Sprintf("%+v", err)))
 			os.Exit(1)
 		}
+		slog.Info("recommend update successfully finished.")
 	},
 }
 
 func init() {
 	updateCmd.PersistentFlags().String("save-dir", "", "Directory path at which generated documents will be saved.")
-	updateCmd.PersistentFlags().BoolP("skip-fetch", "f", false, "Skip crawling if true.")
 	updateCmd.PersistentFlags().BoolP("optimize", "o", true, "Optimize index if true.")
 	updateCmd.PersistentFlags().Int("chunk-size", 1000, "Number of documents to write in 1 file.")
 	updateCmd.PersistentFlags().Int("generate-concurrent", 6, "Number of concurrent document generation processes")
 	updateCmd.PersistentFlags().Int("post-concurrent", 4, "Number of concurrent document upload processes")
-	updateCmd.PersistentFlags().Int("duration", 1000, "Interval time[ms] for crawling.")
 
 	updateProblemCmd.Flags().BoolP("all", "a", false, "Crawl all problems if true.")
+	updateProblemCmd.Flags().BoolP("skip-fetch", "f", false, "Skip crawling if true.")
+	updateProblemCmd.Flags().Int("duration", 1000, "Interval time[ms] for crawling.")
+
+	updateUserCmd.Flags().BoolP("skip-fetch", "f", false, "Skip crawling if true.")
+	updateUserCmd.Flags().Int("duration", 1000, "Interval time[ms] for crawling.")
+
+	updateSubmissionCmd.Flags().BoolP("all", "a", false, "Update all submissions.")
 
 	updateCmd.AddCommand(updateProblemCmd)
 	updateCmd.AddCommand(updateUserCmd)

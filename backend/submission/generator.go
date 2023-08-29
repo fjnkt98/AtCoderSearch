@@ -15,20 +15,27 @@ import (
 
 type Row struct {
 	atcoder.Submission
-	Category string `db:"category"`
+	Category     string `db:"category"`
+	ProblemTitle string `db:"problem_title"`
+	ContestTitle string `db:"contest_title"`
+	Difficulty   int    `db:"difficulty"`
 }
 
 func (r Row) ToDocument() (Document, error) {
-	dt := time.Unix(r.EpochSecond, 0)
-	id := fmt.Sprintf("%s-%d", r.ContestID, r.ID)
+	submissionURL := fmt.Sprintf("https://atcoder.jp/contests/%s/submissions/%d", r.ContestID, r.ID)
+	color := acs.RateToColor(r.Difficulty)
 
 	return Document{
-		ID:            id,
 		SubmissionID:  r.ID,
 		EpochSecond:   r.EpochSecond,
-		SubmittedAt:   solr.IntoSolrDateTime(dt),
+		SubmittedAt:   solr.IntoSolrDateTime(time.Unix(r.EpochSecond, 0)),
+		SubmissionURL: submissionURL,
 		ProblemID:     r.ProblemID,
+		ProblemTitle:  r.ProblemTitle,
+		Color:         color,
+		Difficulty:    r.Difficulty,
 		ContestID:     r.ContestID,
+		ContestTitle:  r.ContestTitle,
 		Category:      r.Category,
 		UserID:        r.UserID,
 		Language:      r.Language,
@@ -40,44 +47,57 @@ func (r Row) ToDocument() (Document, error) {
 }
 
 type Document struct {
-	ID            string                `json:"id"`
 	SubmissionID  int64                 `json:"submission_id"`
 	EpochSecond   int64                 `json:"epoch_second"`
 	SubmittedAt   solr.IntoSolrDateTime `json:"submitted_at"`
+	SubmissionURL string                `json:"submission_url"`
 	ProblemID     string                `json:"problem_id"`
+	ProblemTitle  string                `json:"problem_title"`
+	Color         string                `json:"color"`
+	Difficulty    int                   `json:"difficulty"`
 	ContestID     string                `json:"contest_id"`
+	ContestTitle  string                `json:"contest_title"`
 	Category      string                `json:"category"`
 	UserID        string                `json:"user_id"`
 	Language      string                `json:"language"`
 	Point         float64               `json:"point"`
-	Length        uint64                `json:"length"`
+	Length        int64                 `json:"length"`
 	Result        string                `json:"result"`
-	ExecutionTime *uint64               `json:"execution_time"`
+	ExecutionTime *int64                `json:"execution_time"`
 }
 
 type RowReader[R acs.ToDocument[D], D any] struct {
-	db *sqlx.DB
+	db     *sqlx.DB
+	period time.Time
 }
 
 func (r *RowReader[R, D]) ReadRows(ctx context.Context, tx chan<- Row) error {
 	sql := `
 	SELECT
-		"id",
-		"epoch_second",
-		"problem_id",
-		"contest_id",
-		"category",
-		"user_id",
-		"language",
-		"point",
-		"length",
-		"result",
-		"execution_time"
+		"submissions"."id",
+		"submissions"."epoch_second",
+		"submissions"."problem_id",
+		COALESCE("problems"."title", '') AS "problem_title",
+		COALESCE("difficulties"."difficulty", 0) AS "difficulty",
+		"submissions"."contest_id",
+		"contests"."title" AS "contest_title",
+		"contests"."category",
+		"submissions"."user_id",
+		"submissions"."language",
+		"submissions"."point",
+		"submissions"."length",
+		"submissions"."result",
+		"submissions"."execution_time"
 	FROM
 		"submissions"
 		LEFT JOIN "contests" USING("contest_id")
+		LEFT JOIN "problems" ON "submissions"."problem_id" = "problems"."problem_id"
+		LEFT JOIN "difficulties" ON "submissions"."problem_id" = "difficulties"."problem_id"
+	WHERE
+		"submissions"."epoch_second" > EXTRACT(EPOCH FROM CURRENT_DATE - INTERVAL '30 day')
+		AND "submissions"."crawled_at" > $1::timestamp with time zone
 	`
-	rows, err := r.db.Queryx(sql)
+	rows, err := r.db.Queryx(sql, r.period)
 	if err != nil {
 		return failure.Translate(err, DBError, failure.Context{"sql": sql}, failure.Message("failed to read rows"))
 	}
@@ -107,10 +127,10 @@ type DocumentGenerator struct {
 	reader  *RowReader[Row, Document]
 }
 
-func NewDocumentGenerator(db *sqlx.DB, saveDir string) DocumentGenerator {
+func NewDocumentGenerator(db *sqlx.DB, saveDir string, period time.Time) DocumentGenerator {
 	return DocumentGenerator{
 		saveDir: saveDir,
-		reader:  &RowReader[Row, Document]{db: db},
+		reader:  &RowReader[Row, Document]{db: db, period: period},
 	}
 }
 

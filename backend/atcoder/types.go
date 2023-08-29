@@ -1,7 +1,7 @@
 package atcoder
 
 type SubmissionList struct {
-	MaxPage     uint
+	MaxPage     int
 	Submissions []Submission
 }
 
@@ -13,7 +13,7 @@ type Submission struct {
 	UserID        string  `db:"user_id"`
 	Language      string  `db:"language"`
 	Point         float64 `db:"point"`
-	Length        uint64  `db:"length"`
+	Length        int64   `db:"length"`
 	Result        string  `db:"result"`
-	ExecutionTime *uint64 `db:"execution_time"`
+	ExecutionTime *int64  `db:"execution_time"`
 }

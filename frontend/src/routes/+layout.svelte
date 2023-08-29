@@ -5,10 +5,6 @@
   import AiFillTwitterCircle from "svelte-icons-pack/ai/AiFillTwitterCircle";
 </script>
 
-<nav class="flex w-full items-center justify-start border">
-  <a href="/" class="mx-4 my-2 font-roboto text-3xl">AtCoder Search</a>
-</nav>
-
 <slot />
 
 <footer class="flex h-12 w-full flex-row items-center justify-end p-2">

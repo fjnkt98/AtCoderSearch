@@ -1,6 +1,7 @@
 package problem
 
 import (
+	"encoding/json"
 	"fjnkt98/atcodersearch/acs"
 	"fjnkt98/atcodersearch/solr"
 
@@ -20,6 +21,13 @@ type UpdateConfig struct {
 }
 
 func Update(cfg UpdateConfig, db *sqlx.DB, core *solr.Core) error {
+	options, err := json.Marshal(cfg)
+	if err != nil {
+		failure.Translate(err, EncodeError, failure.Message("failed to encode update config"))
+	}
+	history := acs.NewUpdateHistory(db, "problem", string(options))
+	defer history.Cancel()
+
 	if !cfg.SkipFetch {
 		contestCrawler := NewContestCrawler(db)
 		if err := contestCrawler.Run(); err != nil {
@@ -43,9 +51,9 @@ func Update(cfg UpdateConfig, db *sqlx.DB, core *solr.Core) error {
 	}
 
 	uploader := acs.NewDefaultDocumentUploader(core, cfg.SaveDir)
-	if err := uploader.PostDocument(cfg.Optimize, cfg.PostConcurrent); err != nil {
+	if err := uploader.PostDocument(cfg.Optimize, true, cfg.PostConcurrent); err != nil {
 		return failure.Wrap(err)
 	}
+	history.Finish()
 	return nil
-
 }

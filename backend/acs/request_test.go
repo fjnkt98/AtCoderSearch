@@ -10,13 +10,13 @@ func TestIntegerRange(t *testing.T) {
 	a := 0
 	b := 100
 	cases := map[string]struct {
-		r    IntegerRange[int]
+		r    IntegerRange
 		want string
 	}{
-		"0-100": {IntegerRange[int]{From: &a, To: &b}, "[0 TO 100}"},
-		"0-*":   {IntegerRange[int]{From: &a, To: nil}, "[0 TO *}"},
-		"*-100": {IntegerRange[int]{From: nil, To: &b}, "[* TO 100}"},
-		"*-*":   {IntegerRange[int]{From: nil, To: nil}, ""},
+		"0-100": {IntegerRange{From: &a, To: &b}, "[0 TO 100}"},
+		"0-*":   {IntegerRange{From: &a, To: nil}, "[0 TO *}"},
+		"*-100": {IntegerRange{From: nil, To: &b}, "[* TO 100}"},
+		"*-*":   {IntegerRange{From: nil, To: nil}, ""},
 	}
 
 	for name, tt := range cases {
@@ -30,13 +30,13 @@ func TestFloatRange(t *testing.T) {
 	a := 0.0
 	b := 3.14159265
 	cases := map[string]struct {
-		r    FloatRange[float64]
+		r    FloatRange
 		want string
 	}{
-		"0.0-3.141593": {FloatRange[float64]{From: &a, To: &b}, "[0.000000 TO 3.141593}"},
-		"0.0-*":        {FloatRange[float64]{From: &a, To: nil}, "[0.000000 TO *}"},
-		"*-3.141593":   {FloatRange[float64]{From: nil, To: &b}, "[* TO 3.141593}"},
-		"*-*":          {FloatRange[float64]{From: nil, To: nil}, ""},
+		"0.0-3.141593": {FloatRange{From: &a, To: &b}, "[0.000000 TO 3.141593}"},
+		"0.0-*":        {FloatRange{From: &a, To: nil}, "[0.000000 TO *}"},
+		"*-3.141593":   {FloatRange{From: nil, To: &b}, "[* TO 3.141593}"},
+		"*-*":          {FloatRange{From: nil, To: nil}, ""},
 	}
 
 	for name, tt := range cases {
@@ -68,11 +68,11 @@ func TestDateRange(t *testing.T) {
 
 func TestSanitizeStrings(t *testing.T) {
 	cases := map[string]struct {
-		s []string
+		s    []string
 		want []string
 	}{
-		"normal": {[]string{"a", "b", "c"}, []string{"a", "b", "c"}},
-		"contains whitespace": {[]string{"a", "   ", "c"}, []string{"a", "c"}},
+		"normal":                  {[]string{"a", "b", "c"}, []string{"a", "b", "c"}},
+		"contains whitespace":     {[]string{"a", "   ", "c"}, []string{"a", "c"}},
 		"solr special characters": {[]string{"AND", "OR", "C++"}, []string{"\\AND", "\\OR", "C\\+\\+"}},
 	}
 

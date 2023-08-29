@@ -7,6 +7,7 @@ import (
 	"fjnkt98/atcodersearch/user"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/spf13/cobra"
 	"golang.org/x/exp/slog"
@@ -67,7 +68,7 @@ var generateSubmissionCmd = &cobra.Command{
 			slog.Error("failed to get save dir", slog.String("error", fmt.Sprintf("%+v", err)))
 			os.Exit(1)
 		}
-		generator := submission.NewDocumentGenerator(GetDB(), saveDir)
+		generator := submission.NewDocumentGenerator(GetDB(), saveDir, time.Time{})
 		concurrent := GetInt(cmd, "concurrent")
 		if err := generator.Run(100000, concurrent); err != nil {
 			slog.Error("generation failed", slog.String("error", fmt.Sprintf("%+v", err)))

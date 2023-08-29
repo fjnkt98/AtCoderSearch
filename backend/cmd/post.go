@@ -41,7 +41,7 @@ var postProblemCmd = &cobra.Command{
 		uploader := acs.NewDefaultDocumentUploader(core, saveDir)
 		optimize := GetBool(cmd, "optimize")
 		concurrent := GetInt(cmd, "concurrent")
-		if err := uploader.PostDocument(optimize, concurrent); err != nil {
+		if err := uploader.PostDocument(optimize, true, concurrent); err != nil {
 			slog.Error("post failed", slog.String("error", fmt.Sprintf("%+v", err)))
 			os.Exit(1)
 		}
@@ -73,7 +73,7 @@ var postUserCmd = &cobra.Command{
 		uploader := acs.NewDefaultDocumentUploader(core, saveDir)
 		optimize := GetBool(cmd, "optimize")
 		concurrent := GetInt(cmd, "concurrent")
-		if err := uploader.PostDocument(optimize, concurrent); err != nil {
+		if err := uploader.PostDocument(optimize, true, concurrent); err != nil {
 			slog.Error("post failed", slog.String("error", fmt.Sprintf("%+v", err)))
 			os.Exit(1)
 		}
@@ -105,7 +105,7 @@ var postSubmissionCmd = &cobra.Command{
 		uploader := acs.NewDefaultDocumentUploader(core, saveDir)
 		optimize := GetBool(cmd, "optimize")
 		concurrent := GetInt(cmd, "concurrent")
-		if err := uploader.PostDocument(optimize, concurrent); err != nil {
+		if err := uploader.PostDocument(optimize, true, concurrent); err != nil {
 			slog.Error("post failed", slog.String("error", fmt.Sprintf("%+v", err)))
 			os.Exit(1)
 		}
@@ -137,7 +137,7 @@ var postRecommendCmd = &cobra.Command{
 		uploader := acs.NewDefaultDocumentUploader(core, saveDir)
 		optimize := GetBool(cmd, "optimize")
 		concurrent := GetInt(cmd, "concurrent")
-		if err := uploader.PostDocument(optimize, concurrent); err != nil {
+		if err := uploader.PostDocument(optimize, false, concurrent); err != nil {
 			slog.Error("post failed", slog.String("error", fmt.Sprintf("%+v", err)))
 			os.Exit(1)
 		}

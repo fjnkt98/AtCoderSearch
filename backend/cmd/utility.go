@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"time"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/morikuni/failure"
@@ -82,53 +81,4 @@ func GetString(cmd *cobra.Command, flag string) string {
 		os.Exit(1)
 	}
 	return v
-}
-
-type UpdateHistory struct {
-	db        *sqlx.DB
-	StartedAt time.Time
-	Domain    string
-	Options   string
-}
-
-func NewUpdateHistory(db *sqlx.DB, domain string, options string) UpdateHistory {
-	return UpdateHistory{
-		db:        db,
-		StartedAt: time.Now(),
-		Domain:    domain,
-		Options:   options,
-	}
-}
-
-func (h *UpdateHistory) save(status string) error {
-	tx, err := h.db.Beginx()
-	if err != nil {
-		return failure.Translate(err, DBError, failure.Message("failed to start transaction to save update history"))
-	}
-	defer tx.Rollback()
-
-	if _, err := tx.Exec(
-		`INSERT INTO "update_history" ("domain", "started_at", "finished_at", "status", "options") VALUES ($1::text, $2::timestamp, $3::timestamp, $4::text, $5::json);`,
-		h.Domain,
-		h.StartedAt,
-		time.Now(),
-		status,
-		h.Options,
-	); err != nil {
-		return failure.Translate(err, DBError, failure.Message("failed to exec sql to save update history"))
-	}
-
-	if err := tx.Commit(); err != nil {
-		return failure.Translate(err, DBError, failure.Message("failed to commit transaction to save update history"))
-	}
-
-	return nil
-}
-
-func (h *UpdateHistory) Finish() error {
-	return h.save("finished")
-}
-
-func (h *UpdateHistory) Cancel() error {
-	return h.save("canceled")
 }

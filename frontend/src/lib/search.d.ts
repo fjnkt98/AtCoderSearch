@@ -3,13 +3,19 @@ export type SearchStats<F> = {
   total: number;
   index: number;
   pages: number;
+  count: number;
   params: object;
-  facet: F;
+  facet: F | null;
 };
 
 export type FacetPart = {
   label: string;
   count: number;
+};
+
+export type FilterRange = {
+  from: string | null;
+  to: string | null;
 };
 
 export type SearchResult<T, F> = {
@@ -36,8 +42,8 @@ export type Problem = {
 };
 
 export type ProblemFacet = {
-  category: FacetPart[];
-  color: FacetPart[];
+  category: FacetPart[] | null;
+  difficulty: FacetPart[] | null;
 };
 
 export type UserSearchResult = SearchResult<User, UserFacet>;
@@ -55,13 +61,14 @@ export type User = {
   active_rank: number | null;
   wins: number;
   color: string;
+  user_url: string;
 };
 
 export type UserFacet = {
-  color: FacetPart[];
-  birth_year: FacetPart[];
-  join_count: FacetPart[];
-  country: FacetPart[];
+  rating: FacetPart[] | null;
+  birth_year: FacetPart[] | null;
+  join_count: FacetPart[] | null;
+  country: FacetPart[] | null;
 };
 
 export type SubmissionResult = SearchResult<Submission, SubmissionFacet>;
@@ -69,8 +76,14 @@ export type SubmissionResult = SearchResult<Submission, SubmissionFacet>;
 export type Submission = {
   submission_id: number;
   submitted_at: string;
+  submission_url: string;
   problem_id: string;
+  problem_title: string;
   contest_id: string;
+  contest_title: string;
+  category: string;
+  difficulty: number;
+  color: string;
   user_id: string;
   language: string;
   point: number;
@@ -80,10 +93,10 @@ export type Submission = {
 };
 
 export type SubmissionFacet = {
-  problem_id: FacetPart[];
-  user_id: FacetPart[];
-  language: FacetPart[];
-  result: FacetPart[];
-  length: FacetPart[];
-  execution_time: FacetPart[];
+  problem_id: FacetPart[] | null;
+  user_id: FacetPart[] | null;
+  language: FacetPart[] | null;
+  result: FacetPart[] | null;
+  length: FacetPart[] | null;
+  execution_time: FacetPart[] | null;
 };

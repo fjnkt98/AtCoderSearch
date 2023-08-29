@@ -6,16 +6,14 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"golang.org/x/exp/constraints"
 )
 
-type IntegerRange[T constraints.Integer] struct {
-	From *T `json:"from"`
-	To   *T `json:"to"`
+type IntegerRange struct {
+	From *int `json:"from" schema:"from"`
+	To   *int `json:"to" schema:"to"`
 }
 
-func (r *IntegerRange[T]) ToRange() string {
+func (r *IntegerRange) ToRange() string {
 	if r.From == nil && r.To == nil {
 		return ""
 	}
@@ -37,12 +35,12 @@ func (r *IntegerRange[T]) ToRange() string {
 	return fmt.Sprintf("[%s TO %s}", from, to)
 }
 
-type FloatRange[T constraints.Float] struct {
-	From *T `json:"from"`
-	To   *T `json:"to"`
+type FloatRange struct {
+	From *float64 `json:"from" schema:"from"`
+	To   *float64 `json:"to" schema:"to"`
 }
 
-func (r *FloatRange[T]) ToRange() string {
+func (r *FloatRange) ToRange() string {
 	if r.From == nil && r.To == nil {
 		return ""
 	}
@@ -65,8 +63,8 @@ func (r *FloatRange[T]) ToRange() string {
 }
 
 type DateRange struct {
-	From *time.Time `json:"from"`
-	To   *time.Time `json:"to"`
+	From *time.Time `json:"from" schema:"from"`
+	To   *time.Time `json:"to" schema:"to"`
 }
 
 func (r *DateRange) ToRange() string {
@@ -99,4 +97,36 @@ func SanitizeStrings(s []string) []string {
 		}
 	}
 	return sanitized
+}
+
+func QuoteStrings(s []string) []string {
+	ss := make([]string, len(s))
+	for i, e := range s {
+		ss[i] = fmt.Sprintf(`"%s"`, e)
+	}
+	return ss
+}
+
+type RangeFacetParam struct {
+	From *int `json:"from" schema:"from"`
+	To   *int `json:"to" schema:"to"`
+	Gap  *int `json:"gap" schema:"gap"`
+}
+
+func (p *RangeFacetParam) ToFacet(field string) map[string]any {
+	if p.From == nil || p.To == nil || p.Gap == nil {
+		return nil
+	}
+
+	return map[string]any{
+		"type":  "range",
+		"field": field,
+		"start": p.From,
+		"end":   p.To,
+		"gap":   p.Gap,
+		"other": "all",
+		"domain": map[string]any{
+			"excludeTags": []string{field},
+		},
+	}
 }
