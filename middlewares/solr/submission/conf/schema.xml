@@ -14,19 +14,6 @@
   <fieldType name="Binary" class="solr.BinaryField" />
   <fieldType name="Rank" class="solr.RankField" />
 
-  <fieldType name="TextUniGram" class="solr.TextField" positionIncrementGap="100" autoGeneratePhraseQueries="true">
-    <analyzer type="index">
-      <tokenizer class="solr.NGramTokenizerFactory" minGramSize="1" maxGramSize="1" />
-      <filter class="solr.CJKWidthFilterFactory" />
-      <filter class="solr.LowerCaseFilterFactory" />
-    </analyzer>
-    <analyzer type="query">
-      <tokenizer class="solr.NGramTokenizerFactory" minGramSize="1" maxGramSize="1" />
-      <filter class="solr.CJKWidthFilterFactory" />
-      <filter class="solr.LowerCaseFilterFactory" />
-    </analyzer>
-  </fieldType>
-
   <field name="_version_" type="i64" indexed="false" stored="false" />
   <field name="null" type="Null" indexed="false" stored="false" />
 
@@ -49,6 +36,4 @@
   <field name="contest_title" type="String" indexed="false" stored="true" required="true" multiValued="false" docValues="false" />
   <field name="difficulty" type="i32" indexed="false" stored="true" required="true" multiValued="false" docValues="false" />
   <field name="color" type="String" indexed="false" stored="true" required="true" multiValued="false" docValues="false" />
-
-  <field name="text_unigram" type="TextUniGram" indexed="true" stored="false" multiValued="true" />
 </schema>
