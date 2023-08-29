@@ -40,7 +40,7 @@
     {:else}
       <button
         class={"m-1 flex h-10 w-10 items-center justify-center rounded-md text-center font-medium shadow-sm shadow-gray-500 hover:bg-gray-100 " +
-          (current.toString() === label ? "bg-gray-700 text-white" : "bg-white ")}
+          (current.toString() === label ? "bg-gray-700 text-white hover:bg-gray-800" : "bg-white")}
         on:click={() => {
           const params = new URLSearchParams($page.url.searchParams);
           params.set("page", label);
