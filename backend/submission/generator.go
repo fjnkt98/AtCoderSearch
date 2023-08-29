@@ -94,9 +94,8 @@ func (r *RowReader[R, D]) ReadRows(ctx context.Context, tx chan<- Row) error {
 		LEFT JOIN "problems" ON "submissions"."problem_id" = "problems"."problem_id"
 		LEFT JOIN "difficulties" ON "submissions"."problem_id" = "difficulties"."problem_id"
 	WHERE
-		"submissions"."crawled_at" > $1::timestamp with time zone
-	LIMIT
-		100000
+		"submissions"."epoch_second" > EXTRACT(EPOCH FROM CURRENT_DATE - INTERVAL '30 day')
+		AND "submissions"."crawled_at" > $1::timestamp with time zone
 	`
 	rows, err := r.db.Queryx(sql, r.period)
 	if err != nil {
