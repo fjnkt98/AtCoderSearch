@@ -1,6 +1,7 @@
 package list
 
 import (
+	"database/sql"
 	"net/http"
 
 	"golang.org/x/exp/slog"
@@ -57,8 +58,8 @@ func (s *Searcher) HandleLanguage(c echo.Context) error {
 		"language"
 	`)
 	if err != nil {
-		slog.Error("failed to get a list of contest language", slog.String("error", err.Error()))
-		return c.String(http.StatusInternalServerError, "failed to get contest language list")
+		slog.Error("failed to get a list of language", slog.String("error", err.Error()))
+		return c.String(http.StatusInternalServerError, "failed to get language list")
 	}
 
 	languages := make([]string, 0, 12)
@@ -72,4 +73,98 @@ func (s *Searcher) HandleLanguage(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, languages)
+}
+
+func (s *Searcher) HandleContest(c echo.Context) error {
+	category := c.QueryParam("category")
+
+	var rows *sql.Rows
+	var err error
+	if category == "" {
+		rows, err = s.db.Query(`
+		SELECT
+			"contest_id"
+		FROM
+			"contests"
+		ORDER BY
+			"start_epoch_second" DESC
+		`)
+	} else {
+		rows, err = s.db.Query(`
+		SELECT
+			"contest_id"
+		FROM
+			"contests"
+		WHERE
+			"category" = $1::text
+		ORDER BY
+			"start_epoch_second" DESC
+		`,
+			category,
+		)
+	}
+
+	if err != nil {
+		slog.Error("failed to get a list of contests ", slog.String("error", err.Error()))
+		return c.String(http.StatusInternalServerError, "failed to get contests")
+	}
+
+	contests := make([]string, 0)
+	for rows.Next() {
+		var contest string
+		if err := rows.Scan(&contest); err != nil {
+			slog.Error("failed to scan row for fetching a list of contests", slog.String("error", err.Error()))
+			return c.String(http.StatusInternalServerError, "failed to scan contest")
+		}
+		contests = append(contests, contest)
+	}
+
+	return c.JSON(http.StatusOK, contests)
+}
+
+func (s *Searcher) HandleProblem(c echo.Context) error {
+	id := c.QueryParam("contest_id")
+
+	var rows *sql.Rows
+	var err error
+	if id == "" {
+		rows, err = s.db.Query(`
+		SELECT
+			"problem_id"
+		FROM
+			"problems"
+		ORDER BY
+			"problem_id"
+		`)
+	} else {
+		rows, err = s.db.Query(`
+		SELECT
+			"problem_id"
+		FROM
+			"problems"
+		WHERE
+			"contest_id" = $1::text
+		ORDER BY
+			"problem_id"
+		`,
+			id,
+		)
+	}
+
+	if err != nil {
+		slog.Error("failed to get a list of problems ", slog.String("error", err.Error()))
+		return c.String(http.StatusInternalServerError, "failed to get problems")
+	}
+
+	problems := make([]string, 0, 6)
+	for rows.Next() {
+		var problem string
+		if err := rows.Scan(&problem); err != nil {
+			slog.Error("failed to scan row for fetching a list of problems", slog.String("error", err.Error()))
+			return c.String(http.StatusInternalServerError, "failed to scan problem")
+		}
+		problems = append(problems, problem)
+	}
+
+	return c.JSON(http.StatusOK, problems)
 }

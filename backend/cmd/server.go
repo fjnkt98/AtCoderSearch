@@ -64,7 +64,7 @@ var serverCmd = &cobra.Command{
 		db := GetDB()
 		listSearcher := list.NewSearcher(db)
 
-		c := freecache.NewCache(50 * 1024 * 1024)
+		c := freecache.NewCache(100 * 1024 * 1024)
 
 		e := echo.New()
 		e.Use(middleware.Recover())
@@ -77,6 +77,8 @@ var serverCmd = &cobra.Command{
 		e.GET("/api/recommend/problem", recommendSearcher.HandleGET)
 		e.GET("/api/list/category", listSearcher.HandleCategory)
 		e.GET("/api/list/language", listSearcher.HandleLanguage)
+		e.GET("/api/list/contest", listSearcher.HandleContest)
+		e.GET("/api/list/problem", listSearcher.HandleProblem)
 
 		http.HandleFunc("/api/liveness", func(w http.ResponseWriter, r *http.Request) {
 			if problemSearcher.Liveness() && userSearcher.Liveness() && submissionSearcher.Liveness() && recommendSearcher.Liveness() {
