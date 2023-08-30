@@ -19,25 +19,20 @@ import (
 )
 
 type SearchParams struct {
-	ProblemID string        `json:"problem_id,omitempty" schema:"problem_id" validate:"required"`
-	Limit     int           `json:"limit,omitempty" schema:"limit" validate:"lte=200"`
-	Page      int           `json:"page,omitempty" schema:"page"`
-	Filter    *FilterParams `json:"filter,omitempty" schema:"filter"`
-	Sort      string        `json:"sort,omitempty" schema:"sort" validate:"omitempty,oneof=-score"`
+	Model int `json:"model" schema:"model" validate:"required,model"`
+	Rate  int `json:"rate" schema:"rate" validate:"required"`
+	Limit int `json:"limit" schema:"limit" validate:"lte=200"`
+	Page  int `json:"page" schema:"page"`
 }
 
 func (p *SearchParams) ToQuery() url.Values {
 	return solr.NewEDisMaxQueryBuilder().
 		Bq(p.bq()).
 		Fl(acs.FieldList(Response{})).
-		Fq(p.fq()).
-		Op("AND").
-		Qf("text_unigram").
-		Q("*:*").
+		QAlt("*:*^=0").
 		Rows(p.rows()).
-		Sort(p.sort()).
-		Sow(true).
 		Start(p.start()).
+		Sort("score desc,problem_id asc").
 		Build()
 }
 
@@ -53,50 +48,77 @@ func (p *SearchParams) start() int {
 		return 0
 	}
 
-	return int(int(p.Page)-1) * p.rows()
+	return (p.Page - 1) * p.rows()
 }
 
-func (p *SearchParams) sort() string {
-	if p.Sort == "" {
-		return "score desc"
-	}
-	if strings.HasPrefix(p.Sort, "-") {
-		return fmt.Sprintf("%s desc", p.Sort[1:])
-	} else {
-		return fmt.Sprintf("%s asc", p.Sort)
-	}
-}
-
-func (p *SearchParams) fq() []string {
-	fq := make([]string, 0)
-	if p.Filter == nil {
-		return fq
-	}
-
-	if !p.Filter.IncludeExperimental {
-		fq = append(fq, "is_experimental:false")
-	}
-	if expr := strings.Join(acs.SanitizeStrings(p.Filter.Category), " OR "); expr != "" {
-		fq = append(fq, fmt.Sprintf("category:(%s)", expr))
-	}
-
-	return fq
+type Weights struct {
+	Time       int
+	Difficulty int
+	ABC        int
+	ARC        int
+	AGC        int
+	Other      int
 }
 
 func (p *SearchParams) bq() []string {
 	bq := make([]string, 0)
 
-	bq = append(bq, fmt.Sprintf("{!boost b=10}{!join fromIndex=recommend from=problem_id to=problem_id score=max}{!payload_score f=difficulty_correlation func=sum operator=or includeSpanScore=false v=%s}", p.ProblemID))
-	bq = append(bq, fmt.Sprintf("{!boost b=2}{!join fromIndex=recommend from=problem_id to=problem_id score=max}{!payload_score f=category_correlation func=sum operator=or includeSpanScore=false v=%s}", p.ProblemID))
-	bq = append(bq, "{!join fromIndex=recommend from=problem_id to=problem_id score=max}{!func v=log(add(solved_count,1))}")
-	bq = append(bq, "{!func}recip(ms(NOW,start_at),3.16e-11,2,1)")
+	var w Weights
+	var rate int
+
+	switch p.Model {
+	case 1000:
+		w = Weights{Time: 10}
+	case 3000:
+		// TODO
+		w = Weights{Time: 10}
+	default:
+		model := []rune(strconv.Itoa(p.Model))
+		w = Weights{Time: 3, Difficulty: 10, ABC: 5, ARC: 5, AGC: 5, Other: 1}
+
+		switch model[1] {
+		case '0':
+			rate = p.Rate - 200
+		case '1':
+			rate = p.Rate
+		case '2':
+			rate = p.Rate + 200
+		}
+
+		switch model[2] {
+		case '0':
+			w.ABC = 8
+			w.ARC = 4
+			w.AGC = 2
+		case '1':
+			w.ABC = 2
+			w.ARC = 8
+			w.AGC = 4
+		case '2':
+			w.ABC = 2
+			w.ARC = 4
+			w.AGC = 8
+		}
+
+		switch model[3] {
+		case '0':
+			w.Time = 3
+		case '1':
+			w.Time = 5
+		case '2':
+			w.Time = 7
+		}
+	}
+
+	bq = append(bq, fmt.Sprintf("{!boost b=%d}{!func}pow(2,mul(-1,div(ms(NOW,start_at),2592000000)))", w.Time))
+	bq = append(bq, fmt.Sprintf("{!boost b=%d}{!func}pow(2.71828182846,mul(-1,div(pow(sub(%d,difficulty),2),20000)))", w.Difficulty, rate))
+	bq = append(bq, fmt.Sprintf(`{!boost b=%d}(category:"ABC" OR category:"ABC-Like"^0.5)`, w.ABC))
+	bq = append(bq, fmt.Sprintf(`{!boost b=%d}(category:"ARC" OR category:"ARC-Like"^0.5)`, w.ARC))
+	bq = append(bq, fmt.Sprintf(`{!boost b=%d}(category:"AGC" OR category:"AGC-Like"^0.5)`, w.AGC))
+	bq = append(bq, fmt.Sprintf(`{!boost b=%d}category:("JOI" OR "Other Sponsored" OR "Other Contests" OR "PAST")`, w.Other))
+	bq = append(bq, "{!boost b=1}{!join fromIndex=recommend from=problem_id to=problem_id score=max}{!func v=log(add(solved_count,1))}")
 
 	return bq
-}
-
-type FilterParams struct {
-	IncludeExperimental bool     `json:"include_experimental,omitempty" schema:"include_experimental"`
-	Category            []string `json:"category,omitempty" schema:"category"`
 }
 
 type Response struct {
@@ -122,6 +144,17 @@ type Searcher struct {
 	decoder   *schema.Decoder
 }
 
+func ValidateModel(fl validator.FieldLevel) bool {
+	if !fl.Field().CanInt() {
+		return false
+	}
+
+	if model := fl.Field().Int(); model == 1000 || (2000 <= model && model <= 2221) || model == 3000 {
+		return true
+	}
+	return false
+}
+
 func NewSearcher(baseURL string, coreName string) (Searcher, error) {
 	core, err := solr.NewSolrCore(coreName, baseURL)
 	if err != nil {
@@ -129,6 +162,7 @@ func NewSearcher(baseURL string, coreName string) (Searcher, error) {
 	}
 
 	validator := validator.New()
+	validator.RegisterValidation("model", ValidateModel)
 	decoder := schema.NewDecoder()
 	decoder.IgnoreUnknownKeys(true)
 	decoder.RegisterConverter([]string{}, func(input string) reflect.Value {
