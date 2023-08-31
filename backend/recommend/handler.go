@@ -163,7 +163,6 @@ type Response struct {
 	Duration     int                   `json:"duration"`
 	RateChange   string                `json:"rate_change"`
 	Category     string                `json:"category"`
-	SolvedCount  int                   `json:"solved_count"`
 	Score        float64               `json:"score"`
 }
 
