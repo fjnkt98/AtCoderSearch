@@ -18,16 +18,26 @@ import (
 	"golang.org/x/exp/slog"
 )
 
+const (
+	RECENT  = 1
+	RATING  = 2
+	HISTORY = 3
+)
+
 type SearchParams struct {
-	Model int `json:"model" schema:"model" validate:"required,model"`
-	Rate  int `json:"rate" schema:"rate" validate:"required"`
-	Limit int `json:"limit" schema:"limit" validate:"lte=200"`
-	Page  int `json:"page" schema:"page"`
+	Model    int    `json:"model" schema:"model" validate:"required,model"`
+	Option   string `json:"option" schema:"option" validate:"omitempty,option"`
+	UserID   string `json:"user_id" schema:"user_id" validate:"required"`
+	Rating   int    `json:"rating" schema:"rating" validate:"required"`
+	Limit    int    `json:"limit" schema:"limit" validate:"lte=200"`
+	Page     int    `json:"page" schema:"page"`
+	Unsolved bool   `json:"unsolved" schema:"unsolved"`
 }
 
 func (p *SearchParams) ToQuery() url.Values {
 	return solr.NewEDisMaxQueryBuilder().
 		Bq(p.bq()).
+		Fq(p.fq()).
 		Fl(acs.FieldList(Response{})).
 		QAlt("*:*^=0").
 		Rows(p.rows()).
@@ -51,13 +61,22 @@ func (p *SearchParams) start() int {
 	return (p.Page - 1) * p.rows()
 }
 
+func (p *SearchParams) fq() []string {
+	fq := make([]string, 1)
+	if p.Unsolved {
+		fq = append(fq, fmt.Sprintf("-{!join fromIndex=solved from=problem_id to=problem_id}user_id:%s", solr.Sanitize(p.UserID)))
+	}
+	return fq
+}
+
 type Weights struct {
-	Time       int
-	Difficulty int
-	ABC        int
-	ARC        int
-	AGC        int
-	Other      int
+	Trend           int
+	Difficulty      int
+	ABC             int
+	ARC             int
+	AGC             int
+	Other           int
+	NotExperimental int
 }
 
 func (p *SearchParams) bq() []string {
@@ -67,55 +86,65 @@ func (p *SearchParams) bq() []string {
 	var rate int
 
 	switch p.Model {
-	case 1000:
-		w = Weights{Time: 10}
-	case 3000:
+	case RECENT:
+		w = Weights{Trend: 10}
+	case RATING:
+		w = Weights{Trend: 3, Difficulty: 10, ABC: 5, ARC: 5, AGC: 5, Other: 1, NotExperimental: 0}
+
+		if p.Option != "" {
+			opt := []rune(p.Option)
+
+			switch opt[0] {
+			case '0':
+				rate = p.Rating - 200
+			case '1':
+				rate = p.Rating
+			case '2':
+				rate = p.Rating + 200
+			}
+
+			switch opt[1] {
+			case '1':
+				w.ABC = 8
+				w.ARC = 4
+				w.AGC = 2
+			case '2':
+				w.ABC = 2
+				w.ARC = 8
+				w.AGC = 4
+			case '3':
+				w.ABC = 2
+				w.ARC = 4
+				w.AGC = 8
+			default:
+			}
+
+			switch opt[2] {
+			case '0':
+				w.Trend = 3
+			case '1':
+				w.Trend = 7
+			}
+
+			switch opt[3] {
+			case '0':
+				w.NotExperimental = 0
+			case '1':
+				w.NotExperimental = 10
+			}
+		}
+	case HISTORY:
 		// TODO
-		w = Weights{Time: 10}
-	default:
-		model := []rune(strconv.Itoa(p.Model))
-		w = Weights{Time: 3, Difficulty: 10, ABC: 5, ARC: 5, AGC: 5, Other: 1}
-
-		switch model[1] {
-		case '0':
-			rate = p.Rate - 200
-		case '1':
-			rate = p.Rate
-		case '2':
-			rate = p.Rate + 200
-		}
-
-		switch model[2] {
-		case '0':
-			w.ABC = 8
-			w.ARC = 4
-			w.AGC = 2
-		case '1':
-			w.ABC = 2
-			w.ARC = 8
-			w.AGC = 4
-		case '2':
-			w.ABC = 2
-			w.ARC = 4
-			w.AGC = 8
-		}
-
-		switch model[3] {
-		case '0':
-			w.Time = 3
-		case '1':
-			w.Time = 5
-		case '2':
-			w.Time = 7
-		}
+		w = Weights{Trend: 10}
 	}
 
-	bq = append(bq, fmt.Sprintf("{!boost b=%d}{!func}pow(2,mul(-1,div(ms(NOW,start_at),2592000000)))", w.Time))
+	bq = append(bq, fmt.Sprintf("{!boost b=%d}{!func}pow(2,mul(-1,div(ms(NOW,start_at),2592000000)))", w.Trend))
 	bq = append(bq, fmt.Sprintf("{!boost b=%d}{!func}pow(2.71828182846,mul(-1,div(pow(sub(%d,difficulty),2),20000)))", w.Difficulty, rate))
 	bq = append(bq, fmt.Sprintf(`{!boost b=%d}(category:"ABC" OR category:"ABC-Like"^0.5)`, w.ABC))
 	bq = append(bq, fmt.Sprintf(`{!boost b=%d}(category:"ARC" OR category:"ARC-Like"^0.5)`, w.ARC))
 	bq = append(bq, fmt.Sprintf(`{!boost b=%d}(category:"AGC" OR category:"AGC-Like"^0.5)`, w.AGC))
 	bq = append(bq, fmt.Sprintf(`{!boost b=%d}category:("JOI" OR "Other Sponsored" OR "Other Contests" OR "PAST")`, w.Other))
+	bq = append(bq, fmt.Sprintf(`{!boost b=%d}is_experimental:false`, w.NotExperimental))
 	bq = append(bq, "{!boost b=1}{!join fromIndex=recommend from=problem_id to=problem_id score=max}{!func v=log(add(solved_count,1))}")
 
 	return bq
@@ -149,10 +178,38 @@ func ValidateModel(fl validator.FieldLevel) bool {
 		return false
 	}
 
-	if model := fl.Field().Int(); model == 1000 || (2000 <= model && model <= 2221) || model == 3000 {
+	if model := fl.Field().Int(); model == RECENT || model == RATING || model == HISTORY {
 		return true
 	}
 	return false
+}
+
+func ValidateOption(fl validator.FieldLevel) bool {
+	s := fl.Field().String()
+
+	if _, err := strconv.Atoi(s); err != nil {
+		return false
+	}
+
+	opt := []rune(s)
+	if len(opt) != 4 {
+		return false
+	}
+
+	if !('0' <= opt[0] && opt[0] <= '2') {
+		return false
+	}
+	if !('0' <= opt[1] && opt[1] <= '3') {
+		return false
+	}
+	if !('0' <= opt[2] && opt[2] <= '1') {
+		return false
+	}
+	if !('0' <= opt[3] && opt[3] <= '1') {
+		return false
+	}
+
+	return true
 }
 
 func NewSearcher(baseURL string, coreName string) (Searcher, error) {
@@ -163,6 +220,7 @@ func NewSearcher(baseURL string, coreName string) (Searcher, error) {
 
 	validator := validator.New()
 	validator.RegisterValidation("model", ValidateModel)
+	validator.RegisterValidation("option", ValidateOption)
 	decoder := schema.NewDecoder()
 	decoder.IgnoreUnknownKeys(true)
 	decoder.RegisterConverter([]string{}, func(input string) reflect.Value {
