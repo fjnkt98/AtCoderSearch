@@ -15,6 +15,7 @@ COPY --chown=solr:solr ./problem /var/solr/data/problem
 COPY --chown=solr:solr ./recommend /var/solr/data/recommend
 COPY --chown=solr:solr ./user /var/solr/data/user
 COPY --chown=solr:solr ./submission /var/solr/data/submission
+COPY --chown=solr:solr ./solved /var/solr/data/solved
 COPY --chown=solr:solr ./dict/lucene-analysis-kuromoji-9.3.0-unidic-2.1.2.jar /opt/solr/server/solr-webapp/webapp/WEB-INF/lib/lucene-analysis-kuromoji-9.3.0.jar
 
 USER solr

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<schema name="users" version="1.6">
+<schema name="submission" version="1.6">
   <fieldType name="i32" class="solr.IntPointField" docValues="true" />
   <fieldType name="i64" class="solr.LongPointField" docValues="true" />
   <fieldType name="f32" class="solr.FloatPointField" docValues="true" />

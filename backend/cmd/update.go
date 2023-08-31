@@ -7,6 +7,7 @@ import (
 	"fjnkt98/atcodersearch/problem"
 	"fjnkt98/atcodersearch/recommend"
 	"fjnkt98/atcodersearch/solr"
+	"fjnkt98/atcodersearch/solved"
 	"fjnkt98/atcodersearch/submission"
 	"fjnkt98/atcodersearch/user"
 	"fmt"
@@ -185,6 +186,45 @@ var updateRecommendCmd = &cobra.Command{
 	},
 }
 
+var updateSolvedCmd = &cobra.Command{
+	Use:   "solved",
+	Short: "update solved index",
+	Long:  "update solved index",
+	Run: func(cmd *cobra.Command, args []string) {
+		cfg := solved.UpdateConfig{}
+		var err error
+
+		if cfg.SaveDir, err = GetSaveDir(cmd, "solved"); err != nil {
+			slog.Error("failed to get save dir", slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
+		}
+
+		cfg.Optimize = GetBool(cmd, "optimize")
+		cfg.ChunkSize = GetInt(cmd, "chunk-size")
+		cfg.GenerateConcurrent = GetInt(cmd, "generate-concurrent")
+		cfg.PostConcurrent = GetInt(cmd, "post-concurrent")
+
+		solrURL := os.Getenv("SOLR_HOST")
+		if solrURL == "" {
+			slog.Error("environment variable `SOLR_HOST` must be set.")
+			os.Exit(1)
+		}
+		core, err := solr.NewSolrCore("solved", solrURL)
+		if err != nil {
+			slog.Error("failed to create `solved` core", slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
+		}
+
+		db := GetDB()
+
+		if err := solved.Update(cfg, db, core); err != nil {
+			slog.Error("solved update failed", slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
+		}
+		slog.Info("solved update successfully finished.")
+	},
+}
+
 func init() {
 	updateCmd.PersistentFlags().String("save-dir", "", "Directory path at which generated documents will be saved.")
 	updateCmd.PersistentFlags().BoolP("optimize", "o", true, "Optimize index if true.")
@@ -205,6 +245,7 @@ func init() {
 	updateCmd.AddCommand(updateUserCmd)
 	updateCmd.AddCommand(updateSubmissionCmd)
 	updateCmd.AddCommand(updateRecommendCmd)
+	updateCmd.AddCommand(updateSolvedCmd)
 
 	rootCmd.AddCommand(updateCmd)
 }

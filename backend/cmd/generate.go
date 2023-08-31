@@ -3,6 +3,7 @@ package cmd
 import (
 	"fjnkt98/atcodersearch/problem"
 	"fjnkt98/atcodersearch/recommend"
+	"fjnkt98/atcodersearch/solved"
 	"fjnkt98/atcodersearch/submission"
 	"fjnkt98/atcodersearch/user"
 	"fmt"
@@ -98,6 +99,27 @@ var generateRecommendCmd = &cobra.Command{
 	},
 }
 
+var generateSolvedCmd = &cobra.Command{
+	Use:   "solved",
+	Short: "Generate solved problems document JSON files",
+	Long:  "Generate solved problems document JSON files",
+	Run: func(cmd *cobra.Command, args []string) {
+		saveDir, err := GetSaveDir(cmd, "solved")
+		if err != nil {
+			slog.Error("failed to get save dir", slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
+		}
+		generator := solved.NewDocumentGenerator(GetDB(), saveDir)
+
+		concurrent := GetInt(cmd, "concurrent")
+		chunkSize := GetInt(cmd, "chunk-size")
+		if err := generator.Run(chunkSize, concurrent); err != nil {
+			slog.Error("generation failed", slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
+		}
+	},
+}
+
 func init() {
 	generateCmd.PersistentFlags().String("save-dir", "", "Directory path at which generated documents will be saved")
 	generateCmd.PersistentFlags().Int("concurrent", 10, "Concurrent number of document generation processes")
@@ -106,6 +128,7 @@ func init() {
 	generateCmd.AddCommand(generateUserCmd)
 	generateCmd.AddCommand(generateSubmissionCmd)
 	generateCmd.AddCommand(generateRecommendCmd)
+	generateCmd.AddCommand(generateSolvedCmd)
 
 	rootCmd.AddCommand(generateCmd)
 }

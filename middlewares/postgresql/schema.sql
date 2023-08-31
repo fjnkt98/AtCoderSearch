@@ -76,6 +76,8 @@ CREATE INDEX "submissions_user_id_index" ON "submissions" ("user_id");
 
 CREATE INDEX "submissions_language_index" ON "submissions" ("language");
 
+CREATE INDEX "submissions_result_index" ON "submissions" ("result");
+
 CREATE INDEX "submissions_crawled_at_index" ON "submissions" ("crawled_at");
 
 CREATE TABLE "category_relationships" (
