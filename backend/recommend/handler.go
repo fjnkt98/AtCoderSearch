@@ -145,7 +145,7 @@ func (p *SearchParams) bq() []string {
 	bq = append(bq, fmt.Sprintf(`{!boost b=%d}(category:"AGC" OR category:"AGC-Like"^0.5)`, w.AGC))
 	bq = append(bq, fmt.Sprintf(`{!boost b=%d}category:("JOI" OR "Other Sponsored" OR "Other Contests" OR "PAST")`, w.Other))
 	bq = append(bq, fmt.Sprintf(`{!boost b=%d}is_experimental:false`, w.NotExperimental))
-	bq = append(bq, "{!boost b=1}{!join fromIndex=recommend from=problem_id to=problem_id score=max}{!func v=log(add(solved_count,1))}")
+	bq = append(bq, "{!boost b=0.2}{!join fromIndex=recommend from=problem_id to=problem_id score=max}{!func v=log(add(solved_count,1))}")
 
 	return bq
 }
