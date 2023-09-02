@@ -31,6 +31,7 @@ type SearchParams struct {
 }
 
 type FilterParams struct {
+	UserID    []string         `json:"user_id" schema:"user_id"`
 	Rating    acs.IntegerRange `json:"rating" schema:"rating"`
 	BirthYear acs.IntegerRange `json:"birth_year" schema:"birth_year"`
 	JoinCount acs.IntegerRange `json:"join_count" schema:"join_count"`
@@ -125,6 +126,9 @@ func (p *SearchParams) facet() string {
 func (p *SearchParams) fq() []string {
 	fq := make([]string, 0)
 
+	if c := acs.SanitizeStrings(p.Filter.UserID); len(c) != 0 {
+		fq = append(fq, fmt.Sprintf("{!tag=user_name}user_name:(%s)", strings.Join(c, " OR ")))
+	}
 	if c := acs.SanitizeStrings(p.Filter.Country); len(c) != 0 {
 		fq = append(fq, fmt.Sprintf("{!tag=country}country:(%s)", strings.Join(c, " OR ")))
 	}

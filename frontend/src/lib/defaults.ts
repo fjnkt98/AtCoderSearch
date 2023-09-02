@@ -26,3 +26,10 @@ export const defaultSubmissionSearchParams = new URLSearchParams([
   ["limit", "50"],
   ["page", "1"],
 ]);
+
+export const defaultRecommendParams = new URLSearchParams([
+  ["limit", "10"],
+  ["page", "1"],
+  ["model", "2"],
+  ["option", "1111"],
+]);

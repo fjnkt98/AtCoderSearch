@@ -28,7 +28,7 @@ type SearchParams struct {
 	Model    int    `json:"model" schema:"model" validate:"required,model"`
 	Option   string `json:"option" schema:"option" validate:"omitempty,option"`
 	UserID   string `json:"user_id" schema:"user_id" validate:"required"`
-	Rating   int    `json:"rating" schema:"rating" validate:"required"`
+	Rating   int    `json:"rating" schema:"rating"`
 	Limit    int    `json:"limit" schema:"limit" validate:"lte=200"`
 	Page     int    `json:"page" schema:"page"`
 	Unsolved bool   `json:"unsolved" schema:"unsolved"`
