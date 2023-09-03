@@ -55,13 +55,14 @@ var serverCmd = &cobra.Command{
 			slog.Error("failed to instantiate submission searcher", slog.String("error", fmt.Sprintf("%+v", err)))
 		}
 
+		db := GetDB()
+
 		// Recommend searcher configuration
-		recommendSearcher, err := recommend.NewSearcher(solrBaseURL.String(), "problem")
+		recommendSearcher, err := recommend.NewSearcher(solrBaseURL.String(), "problem", db)
 		if err != nil {
 			slog.Error("failed to instantiate recommend searcher", slog.String("error", fmt.Sprintf("%+v", err)))
 		}
 
-		db := GetDB()
 		listSearcher := list.NewSearcher(db)
 
 		c := freecache.NewCache(100 * 1024 * 1024)

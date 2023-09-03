@@ -13,6 +13,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/schema"
+	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
 	"github.com/morikuni/failure"
 	"golang.org/x/exp/slog"
@@ -64,7 +65,7 @@ func (p *SearchParams) start() int {
 func (p *SearchParams) fq() []string {
 	fq := make([]string, 1)
 	if p.Unsolved {
-		fq = append(fq, fmt.Sprintf("-{!join fromIndex=solved from=problem_id to=problem_id}user_id:%s", solr.Sanitize(p.UserID)))
+		fq = append(fq, fmt.Sprintf(`-{!join fromIndex=submission from=problem_id to=problem_id v="+user_id:%s +result:AC"}`, solr.Sanitize(p.UserID)))
 	}
 	return fq
 }
@@ -168,6 +169,7 @@ type Response struct {
 
 type Searcher struct {
 	core      *solr.Core
+	db        *sqlx.DB
 	validator *validator.Validate
 	decoder   *schema.Decoder
 }
@@ -211,7 +213,7 @@ func ValidateOption(fl validator.FieldLevel) bool {
 	return true
 }
 
-func NewSearcher(baseURL string, coreName string) (Searcher, error) {
+func NewSearcher(baseURL string, coreName string, db *sqlx.DB) (Searcher, error) {
 	core, err := solr.NewSolrCore(coreName, baseURL)
 	if err != nil {
 		return Searcher{}, failure.Translate(err, SearcherInitializeError, failure.Context{"baseURL": baseURL, "coreName": coreName}, failure.Message("failed to create user searcher"))
@@ -228,6 +230,7 @@ func NewSearcher(baseURL string, coreName string) (Searcher, error) {
 
 	searcher := Searcher{
 		core:      core,
+		db:        db,
 		validator: validator,
 		decoder:   decoder,
 	}
@@ -236,6 +239,25 @@ func NewSearcher(baseURL string, coreName string) (Searcher, error) {
 
 func NewErrorResponse(msg string, params any) acs.SearchResultResponse[Response] {
 	return acs.NewErrorResponse[Response](msg, params)
+}
+
+func (s *Searcher) getRating(userID string) (int, error) {
+	row := s.db.QueryRow(`
+	SELECT
+		"rating"
+	FROM
+		"users"
+	WHERE
+		"user_name" = $1::text
+	`,
+		userID,
+	)
+	var rating int
+	if err := row.Scan(&rating); err != nil {
+		return 0, failure.Translate(err, DBError, failure.Context{"user_id": userID}, failure.Messagef("failed to get rating of the user `%s`", userID))
+	}
+
+	return rating, nil
 }
 
 func (s *Searcher) HandleGET(c echo.Context) error {
@@ -262,6 +284,12 @@ func (s *Searcher) HandleGET(c echo.Context) error {
 
 func (s *Searcher) search(r *http.Request, params SearchParams) (int, acs.SearchResultResponse[Response]) {
 	startTime := time.Now()
+
+	rating, err := s.getRating(params.UserID)
+	if err != nil {
+		slog.Error("invalid user id", slog.String("url", r.URL.String()), slog.Any("params", params), slog.String("error", fmt.Sprintf("%+v", err)))
+	}
+	params.Rating = rating
 
 	query := params.ToQuery()
 	res, err := solr.Select[Response, any](s.core, query)
