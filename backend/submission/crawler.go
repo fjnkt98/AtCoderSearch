@@ -107,19 +107,8 @@ loop:
 		:execution_time,
 		NOW()	
 	)
-	ON CONFLICT ("id") DO UPDATE SET
-		"id" = EXCLUDED."id",
-		"epoch_second" = EXCLUDED."epoch_second",
-		"problem_id" = EXCLUDED."problem_id",
-		"contest_id" = EXCLUDED."contest_id",
-		"user_id" = EXCLUDED."user_id",
-		"language" = EXCLUDED."language",
-		"point" = EXCLUDED."point",
-		"length" = EXCLUDED."length",
-		"result" = EXCLUDED."result",
-		"execution_time" = EXCLUDED."execution_time",
-		"crawled_at" = NOW()
-	;`
+	ON CONFLICT DO NOTHING;
+	`
 	affected := 0
 	if result, err := tx.NamedExec(sql, submissions); err != nil {
 		return failure.Translate(err, DBError, failure.Context{"contestID": contestID}, failure.Message("failed to exec sql to save submission"))
