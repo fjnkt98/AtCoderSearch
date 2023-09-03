@@ -5,7 +5,8 @@
   import AiOutlineSearch from "svelte-icons-pack/ai/AiOutlineSearch";
   import HiOutlinePaperAirplane from "svelte-icons-pack/hi/HiOutlinePaperAirplane";
 
-  let userId: string = "";
+  export let data;
+  let userId: string = data.userId ?? "";
 
   function search() {
     const params = new URLSearchParams(defaultRecommendParams);

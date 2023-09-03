@@ -1,4 +1,4 @@
-import type { ProblemSearchResult, RecommendResult, UserSearchResult } from "$lib/search";
+import type { ProblemSearchResult, RecommendResult } from "$lib/search";
 import { API_HOST } from "$env/static/private";
 import type { Data } from "./data.d.ts";
 
@@ -16,56 +16,28 @@ async function fetchProblems() {
   return result;
 }
 
-async function fetchUserRating(userId: string): Promise<number> {
-  const params = new URLSearchParams([
-    ["filter.user_id", userId],
-    ["limit", "1"],
-  ]);
-  const response = await fetch(`${API_HOST}/api/search/user?${params.toString()}`);
-  const result: UserSearchResult = await response.json();
-
-  if (result.items.length != 1) {
-    throw new Error("invalid user id");
-  }
-  return result.items[0].rating;
-}
-
-type UserWithRating = {
-  userId: string;
-  rating: number;
-};
-
-async function fetchRecommendByRating(url: URL, user: UserWithRating | null) {
+async function fetchRecommendByRating(url: URL, user: string | null) {
   if (user == null) {
     return null;
   }
 
   const params = new URLSearchParams(url.searchParams);
-  params.set("user_id", user.userId);
-  params.set("rating", user.rating.toString());
-
+  params.set("user_id", user);
   const response = await fetch(`${API_HOST}/api/recommend/problem?${params.toString()}`);
   const result: RecommendResult = await response.json();
 
   return result;
 }
 
-export async function load({ url }): Promise<Data> {
-  let user: UserWithRating | null = null;
-  const userId = url.searchParams.get("user_id");
-  if (userId != null) {
-    try {
-      const rating = await fetchUserRating(userId);
-      user = {
-        userId: userId,
-        rating: rating,
-      };
-    } catch (e) {
-      user = null;
-    }
+export async function load({ url, cookies }): Promise<Data> {
+  let userId: string | null = url.searchParams.get("user_id");
+  if (userId == null) {
+    userId = cookies.get("user_id") ?? null;
+  } else {
+    cookies.set("user_id", userId, { path: "/recommend/problem" });
   }
 
-  const [recent, recByRating] = await Promise.all([fetchProblems(), fetchRecommendByRating(url, user)]);
+  const [recent, recByRating] = await Promise.all([fetchProblems(), fetchRecommendByRating(url, userId)]);
   return {
     recent,
     recByRating,
