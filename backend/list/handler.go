@@ -34,6 +34,7 @@ func (s *Searcher) HandleCategory(c echo.Context) error {
 		slog.Error("failed to get a list of contest category", slog.String("error", err.Error()))
 		return c.String(http.StatusInternalServerError, "failed to get contest category list")
 	}
+	defer rows.Close()
 
 	categories := make([]string, 0, 12)
 	for rows.Next() {
@@ -61,6 +62,7 @@ func (s *Searcher) HandleLanguage(c echo.Context) error {
 		slog.Error("failed to get a list of language", slog.String("error", err.Error()))
 		return c.String(http.StatusInternalServerError, "failed to get language list")
 	}
+	defer rows.Close()
 
 	languages := make([]string, 0, 12)
 	for rows.Next() {
@@ -108,6 +110,7 @@ func (s *Searcher) HandleContest(c echo.Context) error {
 		slog.Error("failed to get a list of contests ", slog.String("error", err.Error()))
 		return c.String(http.StatusInternalServerError, "failed to get contests")
 	}
+	defer rows.Close()
 
 	contests := make([]string, 0)
 	for rows.Next() {
@@ -155,6 +158,7 @@ func (s *Searcher) HandleProblem(c echo.Context) error {
 		slog.Error("failed to get a list of problems ", slog.String("error", err.Error()))
 		return c.String(http.StatusInternalServerError, "failed to get problems")
 	}
+	defer rows.Close()
 
 	problems := make([]string, 0, 6)
 	for rows.Next() {

@@ -13,31 +13,37 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/schema"
+	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
 	"github.com/morikuni/failure"
 	"golang.org/x/exp/slog"
 )
 
+const (
+	RECENT  = 1
+	RATING  = 2
+	HISTORY = 3
+)
+
 type SearchParams struct {
-	ProblemID string        `json:"problem_id,omitempty" schema:"problem_id" validate:"required"`
-	Limit     int           `json:"limit,omitempty" schema:"limit" validate:"lte=200"`
-	Page      int           `json:"page,omitempty" schema:"page"`
-	Filter    *FilterParams `json:"filter,omitempty" schema:"filter"`
-	Sort      string        `json:"sort,omitempty" schema:"sort" validate:"omitempty,oneof=-score"`
+	Model    int    `json:"model" schema:"model" validate:"required,model"`
+	Option   string `json:"option" schema:"option" validate:"omitempty,option"`
+	UserID   string `json:"user_id" schema:"user_id" validate:"required"`
+	Rating   int    `json:"rating" schema:"rating"`
+	Limit    int    `json:"limit" schema:"limit" validate:"lte=200"`
+	Page     int    `json:"page" schema:"page"`
+	Unsolved bool   `json:"unsolved" schema:"unsolved"`
 }
 
 func (p *SearchParams) ToQuery() url.Values {
 	return solr.NewEDisMaxQueryBuilder().
 		Bq(p.bq()).
-		Fl(acs.FieldList(Response{})).
 		Fq(p.fq()).
-		Op("AND").
-		Qf("text_unigram").
-		Q("*:*").
+		Fl(acs.FieldList(Response{})).
+		QAlt("*:*^=0").
 		Rows(p.rows()).
-		Sort(p.sort()).
-		Sow(true).
 		Start(p.start()).
+		Sort("score desc,problem_id asc").
 		Build()
 }
 
@@ -53,50 +59,96 @@ func (p *SearchParams) start() int {
 		return 0
 	}
 
-	return int(int(p.Page)-1) * p.rows()
-}
-
-func (p *SearchParams) sort() string {
-	if p.Sort == "" {
-		return "score desc"
-	}
-	if strings.HasPrefix(p.Sort, "-") {
-		return fmt.Sprintf("%s desc", p.Sort[1:])
-	} else {
-		return fmt.Sprintf("%s asc", p.Sort)
-	}
+	return (p.Page - 1) * p.rows()
 }
 
 func (p *SearchParams) fq() []string {
-	fq := make([]string, 0)
-	if p.Filter == nil {
-		return fq
+	fq := make([]string, 1)
+	if p.Unsolved {
+		fq = append(fq, fmt.Sprintf(`-{!join fromIndex=submission from=problem_id to=problem_id v="+user_id:%s +result:AC"}`, solr.Sanitize(p.UserID)))
 	}
-
-	if !p.Filter.IncludeExperimental {
-		fq = append(fq, "is_experimental:false")
-	}
-	if expr := strings.Join(acs.SanitizeStrings(p.Filter.Category), " OR "); expr != "" {
-		fq = append(fq, fmt.Sprintf("category:(%s)", expr))
-	}
-
 	return fq
+}
+
+type Weights struct {
+	Trend           int
+	Difficulty      int
+	ABC             int
+	ARC             int
+	AGC             int
+	Other           int
+	NotExperimental int
 }
 
 func (p *SearchParams) bq() []string {
 	bq := make([]string, 0)
 
-	bq = append(bq, fmt.Sprintf("{!boost b=10}{!join fromIndex=recommend from=problem_id to=problem_id score=max}{!payload_score f=difficulty_correlation func=sum operator=or includeSpanScore=false v=%s}", p.ProblemID))
-	bq = append(bq, fmt.Sprintf("{!boost b=2}{!join fromIndex=recommend from=problem_id to=problem_id score=max}{!payload_score f=category_correlation func=sum operator=or includeSpanScore=false v=%s}", p.ProblemID))
-	bq = append(bq, "{!join fromIndex=recommend from=problem_id to=problem_id score=max}{!func v=log(add(solved_count,1))}")
-	bq = append(bq, "{!func}recip(ms(NOW,start_at),3.16e-11,2,1)")
+	var w Weights
+	var rate int
+
+	switch p.Model {
+	case RECENT:
+		w = Weights{Trend: 10}
+	case RATING:
+		w = Weights{Trend: 3, Difficulty: 10, ABC: 5, ARC: 5, AGC: 5, Other: 1, NotExperimental: 0}
+
+		if p.Option != "" {
+			opt := []rune(p.Option)
+
+			switch opt[0] {
+			case '0':
+				rate = p.Rating - 200
+			case '1':
+				rate = p.Rating
+			case '2':
+				rate = p.Rating + 200
+			}
+
+			switch opt[1] {
+			case '1':
+				w.ABC = 8
+				w.ARC = 4
+				w.AGC = 2
+			case '2':
+				w.ABC = 2
+				w.ARC = 8
+				w.AGC = 4
+			case '3':
+				w.ABC = 2
+				w.ARC = 4
+				w.AGC = 8
+			default:
+			}
+
+			switch opt[2] {
+			case '0':
+				w.Trend = 3
+			case '1':
+				w.Trend = 7
+			}
+
+			switch opt[3] {
+			case '0':
+				w.NotExperimental = 0
+			case '1':
+				w.NotExperimental = 10
+			}
+		}
+	case HISTORY:
+		// TODO
+		w = Weights{Trend: 10}
+	}
+
+	bq = append(bq, fmt.Sprintf("{!boost b=%d}{!func}pow(2,mul(-1,div(ms(NOW,start_at),2592000000)))", w.Trend))
+	bq = append(bq, fmt.Sprintf("{!boost b=%d}{!func}pow(2.71828182846,mul(-1,div(pow(sub(%d,difficulty),2),20000)))", w.Difficulty, rate))
+	bq = append(bq, fmt.Sprintf(`{!boost b=%d}(category:"ABC" OR category:"ABC-Like"^0.5)`, w.ABC))
+	bq = append(bq, fmt.Sprintf(`{!boost b=%d}(category:"ARC" OR category:"ARC-Like"^0.5)`, w.ARC))
+	bq = append(bq, fmt.Sprintf(`{!boost b=%d}(category:"AGC" OR category:"AGC-Like"^0.5)`, w.AGC))
+	bq = append(bq, fmt.Sprintf(`{!boost b=%d}category:("JOI" OR "Other Sponsored" OR "Other Contests" OR "PAST")`, w.Other))
+	bq = append(bq, fmt.Sprintf(`{!boost b=%d}is_experimental:false`, w.NotExperimental))
+	bq = append(bq, "{!boost b=0.2}{!join fromIndex=recommend from=problem_id to=problem_id score=max}{!func v=log(add(solved_count,1))}")
 
 	return bq
-}
-
-type FilterParams struct {
-	IncludeExperimental bool     `json:"include_experimental,omitempty" schema:"include_experimental"`
-	Category            []string `json:"category,omitempty" schema:"category"`
 }
 
 type Response struct {
@@ -112,23 +164,64 @@ type Response struct {
 	Duration     int                   `json:"duration"`
 	RateChange   string                `json:"rate_change"`
 	Category     string                `json:"category"`
-	SolvedCount  int                   `json:"solved_count"`
 	Score        float64               `json:"score"`
 }
 
 type Searcher struct {
 	core      *solr.Core
+	db        *sqlx.DB
 	validator *validator.Validate
 	decoder   *schema.Decoder
 }
 
-func NewSearcher(baseURL string, coreName string) (Searcher, error) {
+func ValidateModel(fl validator.FieldLevel) bool {
+	if !fl.Field().CanInt() {
+		return false
+	}
+
+	if model := fl.Field().Int(); model == RECENT || model == RATING || model == HISTORY {
+		return true
+	}
+	return false
+}
+
+func ValidateOption(fl validator.FieldLevel) bool {
+	s := fl.Field().String()
+
+	if _, err := strconv.Atoi(s); err != nil {
+		return false
+	}
+
+	opt := []rune(s)
+	if len(opt) != 4 {
+		return false
+	}
+
+	if !('0' <= opt[0] && opt[0] <= '2') {
+		return false
+	}
+	if !('0' <= opt[1] && opt[1] <= '3') {
+		return false
+	}
+	if !('0' <= opt[2] && opt[2] <= '1') {
+		return false
+	}
+	if !('0' <= opt[3] && opt[3] <= '1') {
+		return false
+	}
+
+	return true
+}
+
+func NewSearcher(baseURL string, coreName string, db *sqlx.DB) (Searcher, error) {
 	core, err := solr.NewSolrCore(coreName, baseURL)
 	if err != nil {
 		return Searcher{}, failure.Translate(err, SearcherInitializeError, failure.Context{"baseURL": baseURL, "coreName": coreName}, failure.Message("failed to create user searcher"))
 	}
 
 	validator := validator.New()
+	validator.RegisterValidation("model", ValidateModel)
+	validator.RegisterValidation("option", ValidateOption)
 	decoder := schema.NewDecoder()
 	decoder.IgnoreUnknownKeys(true)
 	decoder.RegisterConverter([]string{}, func(input string) reflect.Value {
@@ -137,6 +230,7 @@ func NewSearcher(baseURL string, coreName string) (Searcher, error) {
 
 	searcher := Searcher{
 		core:      core,
+		db:        db,
 		validator: validator,
 		decoder:   decoder,
 	}
@@ -145,6 +239,25 @@ func NewSearcher(baseURL string, coreName string) (Searcher, error) {
 
 func NewErrorResponse(msg string, params any) acs.SearchResultResponse[Response] {
 	return acs.NewErrorResponse[Response](msg, params)
+}
+
+func (s *Searcher) getRating(userID string) (int, error) {
+	row := s.db.QueryRow(`
+	SELECT
+		"rating"
+	FROM
+		"users"
+	WHERE
+		"user_name" = $1::text
+	`,
+		userID,
+	)
+	var rating int
+	if err := row.Scan(&rating); err != nil {
+		return 0, failure.Translate(err, DBError, failure.Context{"user_id": userID}, failure.Messagef("failed to get rating of the user `%s`", userID))
+	}
+
+	return rating, nil
 }
 
 func (s *Searcher) HandleGET(c echo.Context) error {
@@ -171,6 +284,12 @@ func (s *Searcher) HandleGET(c echo.Context) error {
 
 func (s *Searcher) search(r *http.Request, params SearchParams) (int, acs.SearchResultResponse[Response]) {
 	startTime := time.Now()
+
+	rating, err := s.getRating(params.UserID)
+	if err != nil {
+		slog.Error("invalid user id", slog.String("url", r.URL.String()), slog.Any("params", params), slog.String("error", fmt.Sprintf("%+v", err)))
+	}
+	params.Rating = rating
 
 	query := params.ToQuery()
 	res, err := solr.Select[Response, any](s.core, query)

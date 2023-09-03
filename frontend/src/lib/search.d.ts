@@ -100,3 +100,21 @@ export type SubmissionFacet = {
   length: FacetPart[] | null;
   execution_time: FacetPart[] | null;
 };
+
+export type RecommendResult = SearchResult<Recommend, object>;
+
+export type Recommend = {
+  problem_id: string;
+  problem_title: string;
+  problem_url: string;
+  contest_id: string;
+  contest_title: string;
+  contest_url: string;
+  difficulty: number | null;
+  color: string | null;
+  start_at: string;
+  duration: number;
+  rate_change: string;
+  category: string;
+  score: number;
+};
