@@ -9,8 +9,12 @@ COPY . .
 
 RUN go build -o /app/atcodersearch
 
-FROM debian:buster-slim
+FROM debian:bullseye-slim
 
 COPY --from=stage /app/atcodersearch /usr/local/bin/atcodersearch
+
+RUN groupadd --gid 1000 atcodersearch \
+    && useradd --uid 1000 --gid atcodersearch --shell /bin/bash --create-home atcodersearch
+USER atcodersearch
 
 CMD ["atcodersearch"]
