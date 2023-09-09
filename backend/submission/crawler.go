@@ -64,6 +64,7 @@ loop:
 		submissions = append(submissions, list.Submissions...)
 		if list.Submissions[0].EpochSecond < period {
 			slog.Info(fmt.Sprintf("All submissions after page `%d` have been crawled. Break crawling the contest `%s`", i, contestID))
+			time.Sleep(time.Duration(duration) * time.Millisecond)
 			break loop
 		}
 		maxPage = int(list.MaxPage)

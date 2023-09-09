@@ -36,6 +36,8 @@ func post(domain string, core *solr.Core, saveDir string, optimize bool, truncat
 		case <-quit:
 			defer cancel()
 			return failure.New(acs.Interrupt, failure.Messagef("post %s documents has been interrupted", domain))
+		case <-ctx.Done():
+			return nil
 		case <-done:
 			return nil
 		}

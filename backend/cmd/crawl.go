@@ -67,6 +67,8 @@ var crawlProblemCmd = &cobra.Command{
 			case <-quit:
 				defer cancel()
 				return failure.New(acs.Interrupt, failure.Message("problem crawling has been interrupted"))
+			case <-ctx.Done():
+				return nil
 			case <-done:
 				return nil
 			}
@@ -116,6 +118,8 @@ var crawlUserCmd = &cobra.Command{
 			case <-quit:
 				defer cancel()
 				return failure.New(acs.Interrupt, failure.Message("problem crawling has been interrupted"))
+			case <-ctx.Done():
+				return nil
 			case <-done:
 				return nil
 			}
@@ -178,6 +182,8 @@ var crawlSubmissionCmd = &cobra.Command{
 			case <-quit:
 				defer cancel()
 				return failure.New(acs.Interrupt, failure.Message("problem crawling has been interrupted"))
+			case <-ctx.Done():
+				return nil
 			case <-done:
 				return nil
 			}

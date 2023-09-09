@@ -59,6 +59,8 @@ var generateProblemCmd = &cobra.Command{
 			case <-quit:
 				defer cancel()
 				return failure.New(acs.Interrupt, failure.Message("generating problem documents has been interrupted"))
+			case <-ctx.Done():
+				return nil
 			case <-done:
 				return nil
 			}
@@ -112,6 +114,8 @@ var generateUserCmd = &cobra.Command{
 			case <-quit:
 				defer cancel()
 				return failure.New(acs.Interrupt, failure.Message("generating user documents has been interrupted"))
+			case <-ctx.Done():
+				return nil
 			case <-done:
 				return nil
 			}
@@ -165,6 +169,8 @@ var generateSubmissionCmd = &cobra.Command{
 			case <-quit:
 				defer cancel()
 				return failure.New(acs.Interrupt, failure.Message("generating problem documents has been interrupted"))
+			case <-ctx.Done():
+				return nil
 			case <-done:
 				return nil
 			}
@@ -218,6 +224,8 @@ var generateRecommendCmd = &cobra.Command{
 			case <-quit:
 				defer cancel()
 				return failure.New(acs.Interrupt, failure.Message("generating recommend documents has been interrupted"))
+			case <-ctx.Done():
+				return nil
 			case <-done:
 				return nil
 			}

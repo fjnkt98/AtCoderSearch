@@ -81,6 +81,8 @@ var updateProblemCmd = &cobra.Command{
 			case <-quit:
 				defer cancel()
 				return failure.New(acs.Interrupt, failure.Message("updating problem index has been canceled"))
+			case <-ctx.Done():
+				return nil
 			case <-done:
 				return nil
 			}
@@ -154,6 +156,8 @@ var updateUserCmd = &cobra.Command{
 			case <-quit:
 				defer cancel()
 				return failure.New(acs.Interrupt, failure.Message("updating user index has been canceled"))
+			case <-ctx.Done():
+				return nil
 			case <-done:
 				return nil
 			}
@@ -225,6 +229,8 @@ var updateSubmissionCmd = &cobra.Command{
 			case <-quit:
 				defer cancel()
 				return failure.New(acs.Interrupt, failure.Message("updating submission index has been canceled"))
+			case <-ctx.Done():
+				return nil
 			case <-done:
 				return nil
 			}
@@ -295,6 +301,8 @@ var updateRecommendCmd = &cobra.Command{
 			case <-quit:
 				defer cancel()
 				return failure.New(acs.Interrupt, failure.Message("updating recommend index has been canceled"))
+			case <-ctx.Done():
+				return nil
 			case <-done:
 				return nil
 			}
