@@ -52,15 +52,33 @@ func (c *Crawler) getContestIDs(ctx context.Context) ([]string, error) {
 	return ids, nil
 }
 
-func (c *Crawler) crawl(ctx context.Context, contestID string, period int64, duration int) error {
+func (c *Crawler) crawl(ctx context.Context, contestID string, period int64, duration int, retry int) error {
 	submissions := make([]atcoder.Submission, 0)
 	maxPage := 1
 loop:
 	for i := 1; i <= maxPage; i++ {
 		slog.Info(fmt.Sprintf("fetch submissions at page %d / %d of the contest `%s`", i, maxPage, contestID))
-		list, err := c.client.FetchSubmissionList(ctx, contestID, int(i))
+		list, err := c.client.FetchSubmissionList(ctx, contestID, i)
 		if err != nil {
-			return failure.Translate(err, acs.CrawlError, failure.Context{"contestID": contestID}, failure.Message("failed to crawl submissions"))
+		retryLoop:
+			for j := 0; j < retry; j++ {
+				select {
+				case <-ctx.Done():
+					return failure.New(acs.Interrupt, failure.Message("retry to crawl submission has been canceled"))
+				default:
+					slog.Error("failed to crawl submission", slog.String("contestID", contestID), slog.String("error", fmt.Sprintf("%+v", err)))
+					slog.Info("retry to crawl submission after 1 minutes...")
+					time.Sleep(time.Duration(60) * time.Second)
+					list, err = c.client.FetchSubmissionList(ctx, contestID, i)
+					if err == nil {
+						break retryLoop
+					}
+				}
+			}
+
+			if err != nil {
+				return failure.Translate(err, acs.CrawlError, failure.Context{"contestID": contestID}, failure.Message("failed to crawl submissions"))
+			}
 		}
 
 		submissions = append(submissions, list.Submissions...)
@@ -132,7 +150,7 @@ loop:
 	return nil
 }
 
-func (c *Crawler) Run(ctx context.Context, duration int) error {
+func (c *Crawler) Run(ctx context.Context, duration int, retry int) error {
 	ids, err := c.getContestIDs(ctx)
 	if err != nil {
 		return err
@@ -145,7 +163,7 @@ func (c *Crawler) Run(ctx context.Context, duration int) error {
 			return failure.Wrap(err)
 		}
 		slog.Info(fmt.Sprintf("Start to crawl contest `%s` since period `%s`", id, time.Unix(int64(period), 0)))
-		if err := c.crawl(ctx, id, int64(period), duration); err != nil {
+		if err := c.crawl(ctx, id, int64(period), duration, retry); err != nil {
 			return failure.Wrap(err)
 		}
 		history.Finish(ctx)
