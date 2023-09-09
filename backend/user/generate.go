@@ -10,7 +10,7 @@ import (
 	"golang.org/x/exp/slog"
 )
 
-func (u User) ToDocument() (Document, error) {
+func ToDocument(ctx context.Context, u User) (Document, error) {
 	color := acs.RateToColor(u.Rating)
 	highestColor := acs.RateToColor(u.HighestRating)
 
@@ -49,11 +49,11 @@ type Document struct {
 	UserURL       string  `json:"user_url"`
 }
 
-type RowReader[R acs.ToDocument[D], D any] struct {
+type RowReader struct {
 	db *sqlx.DB
 }
 
-func (r *RowReader[R, D]) ReadRows(ctx context.Context, tx chan<- User) error {
+func (r *RowReader) ReadRows(ctx context.Context, tx chan<- User) error {
 	sql := `
 	SELECT
 		"user_name",
@@ -70,9 +70,9 @@ func (r *RowReader[R, D]) ReadRows(ctx context.Context, tx chan<- User) error {
 	FROM
 		"users"
 	`
-	rows, err := r.db.Queryx(sql)
+	rows, err := r.db.QueryxContext(ctx, sql)
 	if err != nil {
-		return failure.Translate(err, DBError, failure.Context{"sql": sql}, failure.Message("failed to read rows"))
+		return failure.Translate(err, acs.DBError, failure.Context{"sql": sql}, failure.Message("failed to read rows"))
 	}
 	defer rows.Close()
 	defer close(tx)
@@ -81,12 +81,12 @@ func (r *RowReader[R, D]) ReadRows(ctx context.Context, tx chan<- User) error {
 		select {
 		case <-ctx.Done():
 			slog.Info("ReadRows canceled.")
-			return nil
+			return failure.New(acs.Interrupt, failure.Message("ReadRows canceled"))
 		default:
 			var row User
 			err := rows.StructScan(&row)
 			if err != nil {
-				return failure.Translate(err, DBError, failure.Message("failed to scan row"))
+				return failure.Translate(err, acs.DBError, failure.Message("failed to scan row"))
 			}
 			tx <- row
 		}
@@ -95,39 +95,15 @@ func (r *RowReader[R, D]) ReadRows(ctx context.Context, tx chan<- User) error {
 	return nil
 }
 
-type DocumentGenerator struct {
-	saveDir string
-	reader  *RowReader[User, Document]
-}
-
-func NewDocumentGenerator(db *sqlx.DB, saveDir string) DocumentGenerator {
-	return DocumentGenerator{
-		saveDir: saveDir,
-		reader:  &RowReader[User, Document]{db: db},
-	}
-}
-
-func (g *DocumentGenerator) Clean() error {
-	if err := acs.CleanDocument(g.saveDir); err != nil {
-		return failure.Translate(err, FileOperationError, failure.Context{"directory": g.saveDir}, failure.Message("failed to delete problem document files"))
-	}
-	return nil
-}
-
-func (g *DocumentGenerator) Generate(chunkSize int, concurrent int) error {
-	if err := acs.GenerateDocument[User, Document](g.reader, g.saveDir, chunkSize, concurrent); err != nil {
-		return failure.Wrap(err)
-	}
-	return nil
-}
-
-func (g *DocumentGenerator) Run(chunkSize int, concurrent int) error {
-	if err := g.Clean(); err != nil {
-		return failure.Wrap(err)
+func Generate(ctx context.Context, db *sqlx.DB, saveDir string, chunkSize int, concurrent int) error {
+	if err := acs.CleanDocument(saveDir); err != nil {
+		return failure.Translate(err, acs.GenerateError, failure.Message("failed to clean user save directory"))
 	}
 
-	if err := g.Generate(chunkSize, concurrent); err != nil {
-		return failure.Wrap(err)
+	reader := RowReader{db: db}
+
+	if err := acs.GenerateDocument[User, Document](ctx, saveDir, chunkSize, concurrent, reader.ReadRows, ToDocument); err != nil {
+		return failure.Translate(err, acs.GenerateError, failure.Message("failed to generate user document"))
 	}
 	return nil
 }

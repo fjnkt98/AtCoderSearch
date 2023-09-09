@@ -4,6 +4,8 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"context"
+	"fjnkt98/atcodersearch/acs"
 	"fjnkt98/atcodersearch/problem"
 	"fjnkt98/atcodersearch/recommend"
 	"fjnkt98/atcodersearch/solr"
@@ -11,9 +13,12 @@ import (
 	"fjnkt98/atcodersearch/user"
 	"fmt"
 	"os"
+	"os/signal"
 
+	"github.com/morikuni/failure"
 	"github.com/spf13/cobra"
 	"golang.org/x/exp/slog"
+	"golang.org/x/sync/errgroup"
 )
 
 // updateCmd represents the update command
@@ -55,12 +60,45 @@ var updateProblemCmd = &cobra.Command{
 		}
 
 		db := GetDB()
+		ctx, cancel := context.WithCancel(context.Background())
+		eg, ctx := errgroup.WithContext(ctx)
 
-		if err := problem.Update(cfg, db, core); err != nil {
-			slog.Error("problem update failed", slog.String("error", fmt.Sprintf("%+v", err)))
-			os.Exit(1)
+		quit := make(chan os.Signal, 1)
+		signal.Notify(quit, os.Interrupt)
+
+		done := make(chan Msg, 1)
+
+		eg.Go(func() error {
+			if err := problem.Update(ctx, cfg, db, core); err != nil {
+				failure.Wrap(err)
+			}
+			done <- Msg{}
+			return nil
+		})
+
+		eg.Go(func() error {
+			select {
+			case <-quit:
+				defer cancel()
+				return failure.New(acs.Interrupt, failure.Message("updating problem index has been canceled"))
+			case <-ctx.Done():
+				return nil
+			case <-done:
+				return nil
+			}
+		})
+
+		if err := eg.Wait(); err != nil {
+			if failure.Is(err, acs.Interrupt) {
+				slog.Error("updating problem index has been canceled", slog.String("error", fmt.Sprintf("%+v", err)))
+				return
+			} else {
+				slog.Error("failed to update problem index", slog.String("error", fmt.Sprintf("%+v", err)))
+				os.Exit(1)
+			}
 		}
-		slog.Info("problem update successfully finished.")
+
+		slog.Info("updating problem index successfully finished.")
 	},
 }
 
@@ -97,12 +135,45 @@ var updateUserCmd = &cobra.Command{
 		}
 
 		db := GetDB()
+		ctx, cancel := context.WithCancel(context.Background())
+		eg, ctx := errgroup.WithContext(ctx)
 
-		if err := user.Update(cfg, db, core); err != nil {
-			slog.Error("user update failed", slog.String("error", fmt.Sprintf("%+v", err)))
-			os.Exit(1)
+		quit := make(chan os.Signal, 1)
+		signal.Notify(quit, os.Interrupt)
+
+		done := make(chan Msg, 1)
+
+		eg.Go(func() error {
+			if err := user.Update(ctx, cfg, db, core); err != nil {
+				failure.Wrap(err)
+			}
+			done <- Msg{}
+			return nil
+		})
+
+		eg.Go(func() error {
+			select {
+			case <-quit:
+				defer cancel()
+				return failure.New(acs.Interrupt, failure.Message("updating user index has been canceled"))
+			case <-ctx.Done():
+				return nil
+			case <-done:
+				return nil
+			}
+		})
+
+		if err := eg.Wait(); err != nil {
+			if failure.Is(err, acs.Interrupt) {
+				slog.Error("updating user index has been canceled", slog.String("error", fmt.Sprintf("%+v", err)))
+				return
+			} else {
+				slog.Error("failed to update user index", slog.String("error", fmt.Sprintf("%+v", err)))
+				os.Exit(1)
+			}
 		}
-		slog.Info("user update successfully finished.")
+
+		slog.Info("updating user index successfully finished.")
 	},
 }
 
@@ -137,12 +208,45 @@ var updateSubmissionCmd = &cobra.Command{
 		}
 
 		db := GetDB()
+		ctx, cancel := context.WithCancel(context.Background())
+		eg, ctx := errgroup.WithContext(ctx)
 
-		if err := submission.Update(cfg, db, core); err != nil {
-			slog.Error("submission update failed", slog.String("error", fmt.Sprintf("%+v", err)))
-			os.Exit(1)
+		quit := make(chan os.Signal, 1)
+		signal.Notify(quit, os.Interrupt)
+
+		done := make(chan Msg, 1)
+
+		eg.Go(func() error {
+			if err := submission.Update(ctx, cfg, db, core); err != nil {
+				return failure.Wrap(err)
+			}
+			done <- Msg{}
+			return nil
+		})
+
+		eg.Go(func() error {
+			select {
+			case <-quit:
+				defer cancel()
+				return failure.New(acs.Interrupt, failure.Message("updating submission index has been canceled"))
+			case <-ctx.Done():
+				return nil
+			case <-done:
+				return nil
+			}
+		})
+
+		if err := eg.Wait(); err != nil {
+			if failure.Is(err, acs.Interrupt) {
+				slog.Error("updating submission index has been canceled", slog.String("error", fmt.Sprintf("%+v", err)))
+				return
+			} else {
+				slog.Error("failed to update submission index", slog.String("error", fmt.Sprintf("%+v", err)))
+				os.Exit(1)
+			}
 		}
-		slog.Info("submission update successfully finished.")
+
+		slog.Info("updating submission index successfully finished.")
 	},
 }
 
@@ -176,12 +280,45 @@ var updateRecommendCmd = &cobra.Command{
 		}
 
 		db := GetDB()
+		ctx, cancel := context.WithCancel(context.Background())
+		eg, ctx := errgroup.WithContext(ctx)
 
-		if err := recommend.Update(cfg, db, core); err != nil {
-			slog.Error("recommend update failed", slog.String("error", fmt.Sprintf("%+v", err)))
-			os.Exit(1)
+		quit := make(chan os.Signal, 1)
+		signal.Notify(quit, os.Interrupt)
+
+		done := make(chan Msg, 1)
+
+		eg.Go(func() error {
+			if err := recommend.Update(ctx, cfg, db, core); err != nil {
+				return failure.Wrap(err)
+			}
+			done <- Msg{}
+			return nil
+		})
+
+		eg.Go(func() error {
+			select {
+			case <-quit:
+				defer cancel()
+				return failure.New(acs.Interrupt, failure.Message("updating recommend index has been canceled"))
+			case <-ctx.Done():
+				return nil
+			case <-done:
+				return nil
+			}
+		})
+
+		if err := eg.Wait(); err != nil {
+			if failure.Is(err, acs.Interrupt) {
+				slog.Error("updating recommend index has been canceled", slog.String("error", fmt.Sprintf("%+v", err)))
+				return
+			} else {
+				slog.Error("failed to update recommend index", slog.String("error", fmt.Sprintf("%+v", err)))
+				os.Exit(1)
+			}
 		}
-		slog.Info("recommend update successfully finished.")
+
+		slog.Info("updating recommend index successfully finished.")
 	},
 }
 

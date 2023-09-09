@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"os/signal"
 	"path/filepath"
 	"sync"
 
@@ -15,18 +14,9 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-type ToDocument[D any] interface {
-	ToDocument() (D, error)
-}
+type ToDocFunc[R, D any] func(ctx context.Context, row R) (D, error)
 
-type RowReader[R ToDocument[D], D any] interface {
-	ReadRows(ctx context.Context, tx chan<- R) error
-}
-
-type DocumentGenerator[D any] interface {
-	Clean() error
-	Generate(chunkSize int) error
-}
+type ReadRowsFunc[R any] func(ctx context.Context, tx chan<- R) error
 
 func CleanDocument(saveDir string) error {
 	files, err := filepath.Glob(filepath.Join(saveDir, "doc-*.json"))
@@ -48,13 +38,13 @@ func CleanDocument(saveDir string) error {
 	return nil
 }
 
-func ConvertDocument[R ToDocument[D], D any](ctx context.Context, rx <-chan R, tx chan<- D) error {
+func ConvertDocument[R, D any](ctx context.Context, rx <-chan R, tx chan<- D, convert ToDocFunc[R, D]) error {
 loop:
 	for {
 		select {
 		case <-ctx.Done():
 			slog.Info("ConvertDocument canceled.")
-			return nil
+			return failure.New(Interrupt, failure.Message("ConvertDocument canceled"))
 		case row, ok := <-rx:
 			if !ok {
 				break loop
@@ -64,10 +54,10 @@ loop:
 			default:
 			case <-ctx.Done():
 				slog.Info("ConvertDocument canceled.")
-				return nil
+				return failure.New(Interrupt, failure.Message("ConvertDocument canceled"))
 			}
 
-			d, err := row.ToDocument()
+			d, err := convert(ctx, row)
 			if err != nil {
 				return failure.Translate(err, ConvertError, failure.Message("failed to convert document"))
 			}
@@ -100,7 +90,7 @@ loop:
 		select {
 		case <-ctx.Done():
 			slog.Info("SaveDocument canceled.")
-			return nil
+			return failure.New(Interrupt, failure.Message("SaveDocument canceled"))
 		case doc, ok := <-rx:
 			if !ok {
 				break loop
@@ -108,7 +98,7 @@ loop:
 			select {
 			case <-ctx.Done():
 				slog.Info("SaveDocument canceled.")
-				return nil
+				return failure.New(Interrupt, failure.Message("SaveDocument canceled"))
 			default:
 			}
 
@@ -144,39 +134,37 @@ loop:
 
 type msg struct{}
 
-func GenerateDocument[R ToDocument[D], D any](reader RowReader[R, D], saveDir string, chunkSize int, concurrent int) error {
+func GenerateDocument[R, D any](ctx context.Context, saveDir string, chunkSize int, concurrent int, readFunc ReadRowsFunc[R], convertFunc ToDocFunc[R, D]) error {
 	rowChannel := make(chan R, chunkSize)
 	docChannel := make(chan D, chunkSize)
 
-	eg, ctx := errgroup.WithContext(context.Background())
+	eg, ctx := errgroup.WithContext(ctx)
 	var wg sync.WaitGroup
 
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, os.Interrupt)
-	finish := make(chan msg, 1)
+	done := make(chan msg, 1)
 
 	eg.Go(func() error {
 		select {
-		case <-quit:
+		case <-ctx.Done():
 			slog.Info("generate interrupted")
 			return failure.New(Interrupt, failure.Message("generate interrupted"))
-		case <-finish:
+		case <-done:
 			return nil
 		}
 	})
 	eg.Go(func() error {
 		wg.Wait()
-		finish <- msg{}
+		done <- msg{}
 		defer close(docChannel)
 		return nil
 	})
-	eg.Go(func() error { return reader.ReadRows(ctx, rowChannel) })
+	eg.Go(func() error { return readFunc(ctx, rowChannel) })
 	eg.Go(func() error { return SaveDocument(ctx, docChannel, saveDir, chunkSize) })
 	for i := 0; i < concurrent; i++ {
 		wg.Add(1)
 		eg.Go(func() error {
 			defer wg.Done()
-			return ConvertDocument[R, D](ctx, rowChannel, docChannel)
+			return ConvertDocument[R, D](ctx, rowChannel, docChannel, convertFunc)
 		})
 	}
 

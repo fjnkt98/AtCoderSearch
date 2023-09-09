@@ -1,6 +1,7 @@
 package user
 
 import (
+	"context"
 	"encoding/json"
 	"fjnkt98/atcodersearch/acs"
 	"fjnkt98/atcodersearch/solr"
@@ -19,28 +20,26 @@ type UpdateConfig struct {
 	Duration           int    `json:"duration"`
 }
 
-func Update(cfg UpdateConfig, db *sqlx.DB, core *solr.Core) error {
+func Update(ctx context.Context, cfg UpdateConfig, db *sqlx.DB, core *solr.Core) error {
 	options, err := json.Marshal(cfg)
 	if err != nil {
-		failure.Translate(err, EncodeError, failure.Message("failed to encode update config"))
+		failure.Translate(err, acs.EncodeError, failure.Message("failed to encode update config"))
 	}
 	history := acs.NewUpdateHistory(db, "user", string(options))
 	defer history.Cancel()
 
 	if !cfg.SkipFetch {
 		crawler := NewUserCrawler(db)
-		if err := crawler.Run(cfg.Duration); err != nil {
+		if err := crawler.Run(ctx, cfg.Duration); err != nil {
 			return failure.Wrap(err)
 		}
 	}
 
-	generator := NewDocumentGenerator(db, cfg.SaveDir)
-	if err := generator.Run(cfg.ChunkSize, cfg.GenerateConcurrent); err != nil {
+	if err := Generate(ctx, db, cfg.SaveDir, cfg.ChunkSize, cfg.GenerateConcurrent); err != nil {
 		return failure.Wrap(err)
 	}
 
-	uploader := acs.NewDefaultDocumentUploader(core, cfg.SaveDir)
-	if err := uploader.PostDocument(cfg.Optimize, true, cfg.PostConcurrent); err != nil {
+	if err := acs.PostDocument(ctx, core, cfg.SaveDir, cfg.Optimize, true, cfg.PostConcurrent); err != nil {
 		return failure.Wrap(err)
 	}
 

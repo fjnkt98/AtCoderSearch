@@ -21,7 +21,7 @@ type Row struct {
 	Difficulty   int    `db:"difficulty"`
 }
 
-func (r Row) ToDocument() (Document, error) {
+func ToDocument(ctx context.Context, r Row) (Document, error) {
 	submissionURL := fmt.Sprintf("https://atcoder.jp/contests/%s/submissions/%d", r.ContestID, r.ID)
 	color := acs.RateToColor(r.Difficulty)
 
@@ -66,12 +66,12 @@ type Document struct {
 	ExecutionTime *int64                `json:"execution_time"`
 }
 
-type RowReader[R acs.ToDocument[D], D any] struct {
+type RowReader struct {
 	db     *sqlx.DB
 	period time.Time
 }
 
-func (r *RowReader[R, D]) ReadRows(ctx context.Context, tx chan<- Row) error {
+func (r *RowReader) ReadRows(ctx context.Context, tx chan<- Row) error {
 	sql := `
 	SELECT
 		"submissions"."id",
@@ -97,9 +97,9 @@ func (r *RowReader[R, D]) ReadRows(ctx context.Context, tx chan<- Row) error {
 		"submissions"."epoch_second" > EXTRACT(EPOCH FROM CURRENT_DATE - INTERVAL '30 day')
 		AND "submissions"."crawled_at" > $1::timestamp with time zone
 	`
-	rows, err := r.db.Queryx(sql, r.period)
+	rows, err := r.db.QueryxContext(ctx, sql, r.period)
 	if err != nil {
-		return failure.Translate(err, DBError, failure.Context{"sql": sql}, failure.Message("failed to read rows"))
+		return failure.Translate(err, acs.DBError, failure.Context{"sql": sql}, failure.Message("failed to read rows"))
 	}
 	defer rows.Close()
 	defer close(tx)
@@ -108,12 +108,12 @@ func (r *RowReader[R, D]) ReadRows(ctx context.Context, tx chan<- Row) error {
 		select {
 		case <-ctx.Done():
 			slog.Info("ReadRows canceled.")
-			return nil
+			return failure.New(acs.Interrupt, failure.Message("ReadRows canceled"))
 		default:
 			var row Row
 			err := rows.StructScan(&row)
 			if err != nil {
-				return failure.Translate(err, DBError, failure.Message("failed to scan row"))
+				return failure.Translate(err, acs.DBError, failure.Message("failed to scan row"))
 			}
 			tx <- row
 		}
@@ -122,39 +122,15 @@ func (r *RowReader[R, D]) ReadRows(ctx context.Context, tx chan<- Row) error {
 	return nil
 }
 
-type DocumentGenerator struct {
-	saveDir string
-	reader  *RowReader[Row, Document]
-}
-
-func NewDocumentGenerator(db *sqlx.DB, saveDir string, period time.Time) DocumentGenerator {
-	return DocumentGenerator{
-		saveDir: saveDir,
-		reader:  &RowReader[Row, Document]{db: db, period: period},
-	}
-}
-
-func (g *DocumentGenerator) Clean() error {
-	if err := acs.CleanDocument(g.saveDir); err != nil {
-		return failure.Translate(err, FileOperationError, failure.Context{"directory": g.saveDir}, failure.Message("failed to delete submission document files"))
-	}
-	return nil
-}
-
-func (g *DocumentGenerator) Generate(chunkSize int, concurrent int) error {
-	if err := acs.GenerateDocument[Row, Document](g.reader, g.saveDir, chunkSize, concurrent); err != nil {
-		return failure.Wrap(err)
-	}
-	return nil
-}
-
-func (g *DocumentGenerator) Run(chunkSize int, concurrent int) error {
-	if err := g.Clean(); err != nil {
-		return failure.Wrap(err)
+func Generate(ctx context.Context, db *sqlx.DB, saveDir string, chunkSize int, concurrent int, period time.Time) error {
+	if err := acs.CleanDocument(saveDir); err != nil {
+		return failure.Translate(err, acs.GenerateError, failure.Message("failed to clean submission save directory"))
 	}
 
-	if err := g.Generate(chunkSize, concurrent); err != nil {
-		return failure.Wrap(err)
+	reader := RowReader{db: db, period: period}
+
+	if err := acs.GenerateDocument[Row, Document](ctx, saveDir, chunkSize, concurrent, reader.ReadRows, ToDocument); err != nil {
+		return failure.Translate(err, acs.GenerateError, failure.Message("failed to generate submission document"))
 	}
 	return nil
 }
