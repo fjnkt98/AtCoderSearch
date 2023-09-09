@@ -35,13 +35,11 @@ func Update(ctx context.Context, cfg UpdateConfig, db *sqlx.DB, core *solr.Core)
 		}
 	}
 
-	generator := NewDocumentGenerator(db, cfg.SaveDir)
-	if err := generator.Run(cfg.ChunkSize, cfg.GenerateConcurrent); err != nil {
+	if err := Generate(ctx, db, cfg.SaveDir, cfg.ChunkSize, cfg.GenerateConcurrent); err != nil {
 		return failure.Wrap(err)
 	}
 
-	uploader := acs.NewDefaultDocumentUploader(core, cfg.SaveDir)
-	if err := uploader.PostDocument(cfg.Optimize, true, cfg.PostConcurrent); err != nil {
+	if err := acs.PostDocument(ctx, core, cfg.SaveDir, cfg.Optimize, true, cfg.PostConcurrent); err != nil {
 		return failure.Wrap(err)
 	}
 

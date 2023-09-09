@@ -11,7 +11,6 @@ import (
 
 type Row struct {
 	db   *sqlx.DB
-	ctx  context.Context
 	data Data
 }
 
@@ -20,7 +19,7 @@ type Data struct {
 	SolvedCount int    `db:"solved_count"`
 }
 
-func (r Row) ToDocument() (Document, error) {
+func ToDocument(ctx context.Context, r Row) (Document, error) {
 	return Document{
 		ProblemID:   r.data.ProblemID,
 		SolvedCount: r.data.SolvedCount,
@@ -32,11 +31,11 @@ type Document struct {
 	SolvedCount int    `json:"solved_count"`
 }
 
-type RowReader[R acs.ToDocument[D], D any] struct {
+type RowReader struct {
 	db *sqlx.DB
 }
 
-func (r *RowReader[R, D]) ReadRows(ctx context.Context, tx chan<- Row) error {
+func (r *RowReader) ReadRows(ctx context.Context, tx chan<- Row) error {
 	sql := `
 	WITH "solved_counts" AS (
 		SELECT
@@ -58,7 +57,7 @@ func (r *RowReader[R, D]) ReadRows(ctx context.Context, tx chan<- Row) error {
 	WHERE
 		"difficulty" IS NOT NULL
 	`
-	rows, err := r.db.Queryx(sql)
+	rows, err := r.db.QueryxContext(ctx, sql)
 	if err != nil {
 		return failure.Translate(err, acs.DBError, failure.Context{"sql": sql}, failure.Message("failed to read rows"))
 	}
@@ -69,7 +68,7 @@ func (r *RowReader[R, D]) ReadRows(ctx context.Context, tx chan<- Row) error {
 		select {
 		case <-ctx.Done():
 			slog.Info("ReadRows canceled.")
-			return nil
+			return failure.New(acs.Interrupt, failure.Message("ReadRows canceled"))
 		default:
 			var data Data
 			err := rows.StructScan(&data)
@@ -80,7 +79,6 @@ func (r *RowReader[R, D]) ReadRows(ctx context.Context, tx chan<- Row) error {
 			row := Row{
 				db:   r.db,
 				data: data,
-				ctx:  ctx,
 			}
 			tx <- row
 		}
@@ -89,39 +87,15 @@ func (r *RowReader[R, D]) ReadRows(ctx context.Context, tx chan<- Row) error {
 	return nil
 }
 
-type DocumentGenerator struct {
-	saveDir string
-	reader  *RowReader[Row, Document]
-}
-
-func NewDocumentGenerator(db *sqlx.DB, saveDir string) DocumentGenerator {
-	return DocumentGenerator{
-		saveDir: saveDir,
-		reader:  &RowReader[Row, Document]{db: db},
-	}
-}
-
-func (g *DocumentGenerator) Clean() error {
-	if err := acs.CleanDocument(g.saveDir); err != nil {
-		return failure.Translate(err, acs.FileOperationError, failure.Context{"directory": g.saveDir}, failure.Message("failed to delete problem document files in `%s`"))
-	}
-	return nil
-}
-
-func (g *DocumentGenerator) Generate(chunkSize int, concurrent int) error {
-	if err := acs.GenerateDocument[Row, Document](g.reader, g.saveDir, chunkSize, concurrent); err != nil {
-		return failure.Wrap(err)
-	}
-	return nil
-}
-
-func (g *DocumentGenerator) Run(chunkSize int, concurrent int) error {
-	if err := g.Clean(); err != nil {
-		return failure.Wrap(err)
+func Generate(ctx context.Context, db *sqlx.DB, saveDir string, chunkSize int, concurrent int) error {
+	if err := acs.CleanDocument(saveDir); err != nil {
+		return failure.Translate(err, acs.GenerateError, failure.Message("failed to clean recommend save directory"))
 	}
 
-	if err := g.Generate(chunkSize, concurrent); err != nil {
-		return failure.Wrap(err)
+	reader := RowReader{db: db}
+
+	if err := acs.GenerateDocument[Row, Document](ctx, saveDir, chunkSize, concurrent, reader.ReadRows, ToDocument); err != nil {
+		return failure.Translate(err, acs.GenerateError, failure.Message("failed to generate recommend document"))
 	}
 	return nil
 }

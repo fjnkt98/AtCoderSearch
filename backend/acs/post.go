@@ -31,7 +31,7 @@ func PostDocument(ctx context.Context, core *solr.Core, saveDir string, optimize
 			return failure.Translate(err, FileOperationError, failure.Messagef("failed to open file `%s`", p))
 		}
 		defer file.Close()
-		if _, err := solr.PostWithContext(ctx, core, file, "application/json"); err != nil {
+		if _, err := solr.Post(core, file, "application/json"); err != nil {
 			return failure.Translate(err, PostError, failure.Messagef("failed to open file `%s`", p))
 		}
 
@@ -49,7 +49,7 @@ func PostDocument(ctx context.Context, core *solr.Core, saveDir string, optimize
 				select {
 				case <-ctx.Done():
 					slog.Info(fmt.Sprintf("post worker `%d` canceled", workerNum))
-					return nil
+					return failure.New(Interrupt, failure.Messagef("post worker `%d` canceled", workerNum))
 				case path, ok := <-ch:
 					if !ok {
 						break loop
@@ -57,7 +57,7 @@ func PostDocument(ctx context.Context, core *solr.Core, saveDir string, optimize
 					select {
 					case <-ctx.Done():
 						slog.Info(fmt.Sprintf("post worker `%d` canceled", workerNum))
-						return nil
+						return failure.New(Interrupt, failure.Messagef("post worker `%d` canceled", workerNum))
 					default:
 					}
 
@@ -73,9 +73,11 @@ func PostDocument(ctx context.Context, core *solr.Core, saveDir string, optimize
 
 	eg.Go(func() error {
 		if truncate {
+			slog.Info("Start to truncate index...")
 			if _, err := solr.TruncateWithContext(ctx, core); err != nil {
 				return failure.Translate(err, PostError, failure.Message("failed to truncate index"))
 			}
+			slog.Info("Finished truncating index successfully.")
 		}
 
 		for _, path := range paths {
@@ -87,18 +89,24 @@ func PostDocument(ctx context.Context, core *solr.Core, saveDir string, optimize
 		select {
 		case <-ctx.Done():
 			slog.Info("post canceled. start rollback...")
-			if _, err := solr.RollbackWithContext(ctx, core); err != nil {
+			if _, err := solr.Rollback(core); err != nil {
 				return failure.Translate(err, PostError, failure.Message("failed to rollback index"))
 			}
+			slog.Info("rollback finished successfully.")
+			return failure.New(Interrupt, failure.Message("post canceled"))
 		default:
 			if optimize {
-				if _, err := solr.OptimizeWithContext(ctx, core); err != nil {
+				slog.Info("Start to optimize index...")
+				if _, err := solr.Optimize(core); err != nil {
 					return failure.Translate(err, PostError, failure.Message("failed to optimize index"))
 				}
+				slog.Info("Finished optimize index successfully.")
 			} else {
-				if _, err := solr.CommitWithContext(ctx, core); err != nil {
+				slog.Info("Start to commit index...")
+				if _, err := solr.Commit(core); err != nil {
 					return failure.Translate(err, PostError, failure.Message("failed to commit index"))
 				}
+				slog.Info("Finished commit index successfully.")
 			}
 		}
 

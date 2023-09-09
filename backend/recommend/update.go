@@ -1,6 +1,7 @@
 package recommend
 
 import (
+	"context"
 	"encoding/json"
 	"fjnkt98/atcodersearch/acs"
 	"fjnkt98/atcodersearch/solr"
@@ -17,7 +18,7 @@ type UpdateConfig struct {
 	PostConcurrent     int    `json:"post-concurrent"`
 }
 
-func Update(cfg UpdateConfig, db *sqlx.DB, core *solr.Core) error {
+func Update(ctx context.Context, cfg UpdateConfig, db *sqlx.DB, core *solr.Core) error {
 	options, err := json.Marshal(cfg)
 	if err != nil {
 		failure.Translate(err, acs.EncodeError, failure.Message("failed to encode update config"))
@@ -25,14 +26,12 @@ func Update(cfg UpdateConfig, db *sqlx.DB, core *solr.Core) error {
 	history := acs.NewUpdateHistory(db, "recommend", string(options))
 	defer history.Cancel()
 
-	generator := NewDocumentGenerator(db, cfg.SaveDir)
-	if err := generator.Run(cfg.ChunkSize, cfg.GenerateConcurrent); err != nil {
-		return failure.Wrap(err)
+	if err := Generate(ctx, db, cfg.SaveDir, cfg.ChunkSize, cfg.GenerateConcurrent); err != nil {
+		return failure.Translate(err, acs.UpdateIndexError, failure.Message("failed to update recommend index"))
 	}
 
-	uploader := acs.NewDefaultDocumentUploader(core, cfg.SaveDir)
-	if err := uploader.PostDocument(cfg.Optimize, true, cfg.PostConcurrent); err != nil {
-		return failure.Wrap(err)
+	if err := acs.PostDocument(ctx, core, cfg.SaveDir, cfg.Optimize, true, cfg.PostConcurrent); err != nil {
+		return failure.Translate(err, acs.UpdateIndexError, failure.Message("failed to update recommend index"))
 	}
 
 	history.Finish()

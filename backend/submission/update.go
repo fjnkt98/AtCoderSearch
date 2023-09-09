@@ -1,6 +1,7 @@
 package submission
 
 import (
+	"context"
 	"encoding/json"
 	"fjnkt98/atcodersearch/acs"
 	"fjnkt98/atcodersearch/solr"
@@ -19,7 +20,7 @@ type UpdateConfig struct {
 	All                bool   `json:"all"`
 }
 
-func Update(cfg UpdateConfig, db *sqlx.DB, core *solr.Core) error {
+func Update(ctx context.Context, cfg UpdateConfig, db *sqlx.DB, core *solr.Core) error {
 	options, err := json.Marshal(cfg)
 	if err != nil {
 		failure.Translate(err, acs.EncodeError, failure.Message("failed to encode update config"))
@@ -32,18 +33,14 @@ func Update(cfg UpdateConfig, db *sqlx.DB, core *solr.Core) error {
 		return failure.Wrap(err)
 	}
 
-	var generator DocumentGenerator
 	if cfg.All {
-		generator = NewDocumentGenerator(db, cfg.SaveDir, time.Time{})
-	} else {
-		generator = NewDocumentGenerator(db, cfg.SaveDir, period)
+		period = time.Time{}
 	}
-	if err := generator.Run(cfg.ChunkSize, cfg.GenerateConcurrent); err != nil {
+	if err := Generate(ctx, db, cfg.SaveDir, cfg.ChunkSize, cfg.GenerateConcurrent, period); err != nil {
 		return failure.Wrap(err)
 	}
 
-	uploader := acs.NewDefaultDocumentUploader(core, cfg.SaveDir)
-	if err := uploader.PostDocument(cfg.Optimize, cfg.All, cfg.PostConcurrent); err != nil {
+	if err := acs.PostDocument(ctx, core, cfg.SaveDir, cfg.Optimize, cfg.All, cfg.PostConcurrent); err != nil {
 		return failure.Wrap(err)
 	}
 

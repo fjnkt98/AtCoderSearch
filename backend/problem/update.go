@@ -32,28 +32,26 @@ func Update(ctx context.Context, cfg UpdateConfig, db *sqlx.DB, core *solr.Core)
 	if !cfg.SkipFetch {
 		contestCrawler := NewContestCrawler(db)
 		if err := contestCrawler.Run(ctx); err != nil {
-			return failure.Wrap(err)
+			return failure.Translate(err, acs.UpdateIndexError, failure.Message("failed to update problem index"))
 		}
 
 		difficultyCrawler := NewDifficultyCrawler(db)
 		if err := difficultyCrawler.Run(ctx); err != nil {
-			return failure.Wrap(err)
+			return failure.Translate(err, acs.UpdateIndexError, failure.Message("failed to update problem index"))
 		}
 
 		problemCrawler := NewProblemCrawler(db)
 		if err := problemCrawler.Run(ctx, cfg.All, cfg.Duration); err != nil {
-			return failure.Wrap(err)
+			return failure.Translate(err, acs.UpdateIndexError, failure.Message("failed to update problem index"))
 		}
 	}
 
-	generator := NewDocumentGenerator(db, cfg.SaveDir)
-	if err := generator.Run(cfg.ChunkSize, cfg.GenerateConcurrent); err != nil {
-		return failure.Wrap(err)
+	if err := Generate(ctx, db, cfg.SaveDir, cfg.ChunkSize, cfg.GenerateConcurrent); err != nil {
+		return failure.Translate(err, acs.UpdateIndexError, failure.Message("failed to update problem index"))
 	}
 
-	uploader := acs.NewDefaultDocumentUploader(core, cfg.SaveDir)
-	if err := uploader.PostDocument(cfg.Optimize, true, cfg.PostConcurrent); err != nil {
-		return failure.Wrap(err)
+	if err := acs.PostDocument(ctx, core, cfg.SaveDir, cfg.Optimize, true, cfg.PostConcurrent); err != nil {
+		return failure.Translate(err, acs.UpdateIndexError, failure.Message("failed to update problem index"))
 	}
 	history.Finish()
 	return nil
