@@ -1,14 +1,58 @@
 package cmd
 
 import (
+	"context"
 	"fjnkt98/atcodersearch/acs"
 	"fjnkt98/atcodersearch/solr"
 	"fmt"
 	"os"
+	"os/signal"
 
+	"github.com/morikuni/failure"
 	"github.com/spf13/cobra"
 	"golang.org/x/exp/slog"
+	"golang.org/x/sync/errgroup"
 )
+
+func post(domain string, core *solr.Core, saveDir string, optimize bool, truncate bool, concurrent int) {
+	ctx, cancel := context.WithCancel(context.Background())
+	eg, ctx := errgroup.WithContext(ctx)
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt)
+
+	done := make(chan Msg, 1)
+
+	eg.Go(func() error {
+		if err := acs.PostDocument(ctx, core, saveDir, optimize, truncate, concurrent); err != nil {
+			return failure.Wrap(err)
+		}
+		done <- Msg{}
+		return nil
+	})
+
+	eg.Go(func() error {
+		select {
+		case <-quit:
+			defer cancel()
+			return failure.New(acs.Interrupt, failure.Messagef("post %s documents has been interrupted", domain))
+		case <-done:
+			return nil
+		}
+	})
+
+	if err := eg.Wait(); err != nil {
+		if failure.Is(err, acs.Interrupt) {
+			slog.Error(fmt.Sprintf("post %s documents has been interrupted", domain), slog.String("error", fmt.Sprintf("%+v", err)))
+			return
+		} else {
+			slog.Error(fmt.Sprintf("failed to post %s documents", domain), slog.String("error", fmt.Sprintf("%+v", err)))
+			os.Exit(1)
+		}
+	}
+
+	slog.Info(fmt.Sprintf("finished post %s documents successfully.", domain))
+}
 
 var postCmd = &cobra.Command{
 	Use:   "post",
@@ -38,13 +82,11 @@ var postProblemCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		uploader := acs.NewDefaultDocumentUploader(core, saveDir)
 		optimize := GetBool(cmd, "optimize")
+		truncate := GetBool(cmd, "truncate")
 		concurrent := GetInt(cmd, "concurrent")
-		if err := uploader.PostDocument(optimize, true, concurrent); err != nil {
-			slog.Error("post failed", slog.String("error", fmt.Sprintf("%+v", err)))
-			os.Exit(1)
-		}
+
+		post("problem", core, saveDir, optimize, truncate, concurrent)
 	},
 }
 
@@ -70,13 +112,11 @@ var postUserCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		uploader := acs.NewDefaultDocumentUploader(core, saveDir)
 		optimize := GetBool(cmd, "optimize")
+		truncate := GetBool(cmd, "truncate")
 		concurrent := GetInt(cmd, "concurrent")
-		if err := uploader.PostDocument(optimize, true, concurrent); err != nil {
-			slog.Error("post failed", slog.String("error", fmt.Sprintf("%+v", err)))
-			os.Exit(1)
-		}
+
+		post("user", core, saveDir, optimize, truncate, concurrent)
 	},
 }
 
@@ -102,13 +142,11 @@ var postSubmissionCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		uploader := acs.NewDefaultDocumentUploader(core, saveDir)
 		optimize := GetBool(cmd, "optimize")
+		truncate := GetBool(cmd, "truncate")
 		concurrent := GetInt(cmd, "concurrent")
-		if err := uploader.PostDocument(optimize, true, concurrent); err != nil {
-			slog.Error("post failed", slog.String("error", fmt.Sprintf("%+v", err)))
-			os.Exit(1)
-		}
+
+		post("submission", core, saveDir, optimize, truncate, concurrent)
 	},
 }
 
@@ -134,18 +172,17 @@ var postRecommendCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		uploader := acs.NewDefaultDocumentUploader(core, saveDir)
 		optimize := GetBool(cmd, "optimize")
+		truncate := GetBool(cmd, "truncate")
 		concurrent := GetInt(cmd, "concurrent")
-		if err := uploader.PostDocument(optimize, false, concurrent); err != nil {
-			slog.Error("post failed", slog.String("error", fmt.Sprintf("%+v", err)))
-			os.Exit(1)
-		}
+
+		post("recommend", core, saveDir, optimize, truncate, concurrent)
 	},
 }
 
 func init() {
 	postCmd.PersistentFlags().BoolP("optimize", "o", false, "When true, send optimize request to Solr")
+	postCmd.PersistentFlags().BoolP("truncate", "t", false, "When true, truncate index before post")
 	postCmd.PersistentFlags().String("save-dir", "", "Directory path at which generated documents will be saved")
 	postCmd.PersistentFlags().Int("concurrent", 3, "Concurrent number of document upload processes")
 

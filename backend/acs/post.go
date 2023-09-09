@@ -5,7 +5,6 @@ import (
 	"fjnkt98/atcodersearch/solr"
 	"fmt"
 	"os"
-	"os/signal"
 	"path/filepath"
 	"sync"
 
@@ -14,53 +13,25 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-type DefaultDocumentUploader struct {
-	core    *solr.Core
-	saveDir string
-}
-
-func NewDefaultDocumentUploader(core *solr.Core, saveDir string) DefaultDocumentUploader {
-	return DefaultDocumentUploader{
-		core,
-		saveDir,
-	}
-}
-
-func (u *DefaultDocumentUploader) PostDocument(optimize bool, initialize bool, concurrent int) error {
-	slog.Info(fmt.Sprintf("Start to post documents in `%s`", u.saveDir))
-	paths, err := filepath.Glob(filepath.Join(u.saveDir, "doc-*.json"))
+func PostDocument(ctx context.Context, core *solr.Core, saveDir string, optimize bool, truncate bool, concurrent int) error {
+	slog.Info(fmt.Sprintf("Start to post documents in `%s`", saveDir))
+	paths, err := filepath.Glob(filepath.Join(saveDir, "doc-*.json"))
 	if err != nil {
-		return failure.Translate(err, PostError, failure.Messagef("failed to get document files at `%s`", u.saveDir))
+		return failure.Translate(err, PostError, failure.Messagef("failed to get document files at `%s`", saveDir))
 	}
 
 	ch := make(chan string, len(paths))
 
-	eg, ctx := errgroup.WithContext(context.Background())
+	eg, ctx := errgroup.WithContext(ctx)
 	var wg sync.WaitGroup
 
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, os.Interrupt)
-	finish := make(chan msg, 1)
-
-	eg.Go(func() error {
-		select {
-		case <-quit:
-			slog.Info("post interrupted.")
-			return failure.New(Interrupt, failure.Message("post interrupted"))
-		case <-ctx.Done():
-			slog.Info("interrupt observer canceled.")
-			return nil
-		case <-finish:
-			return nil
-		}
-	})
-	f := func(p string) error {
+	f := func(ctx context.Context, p string) error {
 		file, err := os.Open(p)
 		if err != nil {
 			return failure.Translate(err, FileOperationError, failure.Messagef("failed to open file `%s`", p))
 		}
 		defer file.Close()
-		if _, err := solr.Post(u.core, file, "application/json"); err != nil {
+		if _, err := solr.PostWithContext(ctx, core, file, "application/json"); err != nil {
 			return failure.Translate(err, PostError, failure.Messagef("failed to open file `%s`", p))
 		}
 
@@ -69,6 +40,7 @@ func (u *DefaultDocumentUploader) PostDocument(optimize bool, initialize bool, c
 
 	for i := 0; i < concurrent; i++ {
 		wg.Add(1)
+		workerNum := i
 		eg.Go(func() error {
 			defer wg.Done()
 
@@ -76,7 +48,7 @@ func (u *DefaultDocumentUploader) PostDocument(optimize bool, initialize bool, c
 			for {
 				select {
 				case <-ctx.Done():
-					slog.Info("post canceled")
+					slog.Info(fmt.Sprintf("post worker `%d` canceled", workerNum))
 					return nil
 				case path, ok := <-ch:
 					if !ok {
@@ -84,13 +56,13 @@ func (u *DefaultDocumentUploader) PostDocument(optimize bool, initialize bool, c
 					}
 					select {
 					case <-ctx.Done():
-						slog.Info("post canceled")
+						slog.Info(fmt.Sprintf("post worker `%d` canceled", workerNum))
 						return nil
 					default:
 					}
 
-					slog.Info(fmt.Sprintf("Post document `%s`", path))
-					if err := f(path); err != nil {
+					slog.Info(fmt.Sprintf("Post document `%s` by worker `%d`", path, workerNum))
+					if err := f(ctx, path); err != nil {
 						return failure.Wrap(err)
 					}
 				}
@@ -100,8 +72,8 @@ func (u *DefaultDocumentUploader) PostDocument(optimize bool, initialize bool, c
 	}
 
 	eg.Go(func() error {
-		if initialize {
-			if _, err := solr.Truncate(u.core); err != nil {
+		if truncate {
+			if _, err := solr.TruncateWithContext(ctx, core); err != nil {
 				return failure.Translate(err, PostError, failure.Message("failed to truncate index"))
 			}
 		}
@@ -110,31 +82,26 @@ func (u *DefaultDocumentUploader) PostDocument(optimize bool, initialize bool, c
 			ch <- path
 		}
 		close(ch)
-		return nil
-	})
 
-	eg.Go(func() error {
 		wg.Wait()
-
 		select {
 		case <-ctx.Done():
-			slog.Info("post canceled. start rollback")
-			if _, err := solr.Rollback(u.core); err != nil {
+			slog.Info("post canceled. start rollback...")
+			if _, err := solr.RollbackWithContext(ctx, core); err != nil {
 				return failure.Translate(err, PostError, failure.Message("failed to rollback index"))
 			}
 		default:
 			if optimize {
-				if _, err := solr.Optimize(u.core); err != nil {
+				if _, err := solr.OptimizeWithContext(ctx, core); err != nil {
 					return failure.Translate(err, PostError, failure.Message("failed to optimize index"))
 				}
 			} else {
-				if _, err := solr.Commit(u.core); err != nil {
+				if _, err := solr.CommitWithContext(ctx, core); err != nil {
 					return failure.Translate(err, PostError, failure.Message("failed to commit index"))
 				}
 			}
 		}
 
-		finish <- msg{}
 		return nil
 	})
 
