@@ -114,11 +114,13 @@ loop:
 	ON CONFLICT DO NOTHING;
 	`
 	affected := 0
-	if result, err := tx.NamedExecContext(ctx, sql, submissions); err != nil {
-		return failure.Translate(err, acs.DBError, failure.Context{"contestID": contestID}, failure.Message("failed to exec sql to save submission"))
-	} else {
-		a, _ := result.RowsAffected()
-		affected += int(a)
+	for _, submission := range submissions {
+		if result, err := tx.NamedExecContext(ctx, sql, submission); err != nil {
+			return failure.Translate(err, acs.DBError, failure.Context{"contestID": contestID}, failure.Message("failed to exec sql to save submission"))
+		} else {
+			a, _ := result.RowsAffected()
+			affected += int(a)
+		}
 	}
 
 	if err := tx.Commit(); err != nil {
