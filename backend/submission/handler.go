@@ -244,7 +244,7 @@ type Searcher struct {
 func NewSearcher(baseURL string, coreName string) (Searcher, error) {
 	core, err := solr.NewSolrCore(coreName, baseURL)
 	if err != nil {
-		return Searcher{}, failure.Translate(err, SearcherInitializeError, failure.Context{"baseURL": baseURL, "coreName": coreName}, failure.Message("failed to create user searcher"))
+		return Searcher{}, failure.Translate(err, acs.SearcherInitializeError, failure.Context{"baseURL": baseURL, "coreName": coreName}, failure.Message("failed to create user searcher"))
 	}
 
 	validator := validator.New()

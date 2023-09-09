@@ -216,7 +216,7 @@ func ValidateOption(fl validator.FieldLevel) bool {
 func NewSearcher(baseURL string, coreName string, db *sqlx.DB) (Searcher, error) {
 	core, err := solr.NewSolrCore(coreName, baseURL)
 	if err != nil {
-		return Searcher{}, failure.Translate(err, SearcherInitializeError, failure.Context{"baseURL": baseURL, "coreName": coreName}, failure.Message("failed to create user searcher"))
+		return Searcher{}, failure.Translate(err, acs.SearcherInitializeError, failure.Context{"baseURL": baseURL, "coreName": coreName}, failure.Message("failed to create user searcher"))
 	}
 
 	validator := validator.New()
@@ -254,7 +254,7 @@ func (s *Searcher) getRating(userID string) (int, error) {
 	)
 	var rating int
 	if err := row.Scan(&rating); err != nil {
-		return 0, failure.Translate(err, DBError, failure.Context{"user_id": userID}, failure.Messagef("failed to get rating of the user `%s`", userID))
+		return 0, failure.Translate(err, acs.DBError, failure.Context{"user_id": userID}, failure.Messagef("failed to get rating of the user `%s`", userID))
 	}
 
 	return rating, nil

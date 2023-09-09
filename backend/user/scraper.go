@@ -1,6 +1,7 @@
 package user
 
 import (
+	"fjnkt98/atcodersearch/acs"
 	"io"
 	"path"
 	"regexp"
@@ -16,7 +17,7 @@ var RANK_RE, _ = regexp.Compile(`\((\d+)\)`)
 func Scrape(html io.Reader) ([]User, error) {
 	doc, err := goquery.NewDocumentFromReader(html)
 	if err != nil {
-		return nil, failure.Translate(err, ReadError, failure.Message("failed to read html from reader"))
+		return nil, failure.Translate(err, acs.ReadError, failure.Message("failed to read html from reader"))
 	}
 
 	users := make([]User, 0)

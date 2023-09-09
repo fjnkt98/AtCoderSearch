@@ -11,12 +11,11 @@ import (
 )
 
 const (
-	CoreNotFound          failure.StringCode = "CoreNotFound"
-	NotOK                 failure.StringCode = "NotOK"
-	InvalidHost           failure.StringCode = "InvalidHost"
-	RequestCreationError  failure.StringCode = "RequestCreationError"
-	RequestExecutionError failure.StringCode = "RequestExecutionError"
-	DecodeError           failure.StringCode = "DecodeError"
+	CoreNotFound failure.StringCode = "CoreNotFound"
+	NotOK        failure.StringCode = "NotOK"
+	InvalidHost  failure.StringCode = "InvalidHost"
+	RequestError failure.StringCode = "RequestError"
+	DecodeError  failure.StringCode = "DecodeError"
 )
 
 type Core struct {
@@ -43,11 +42,11 @@ func Ping(core *Core) (PingResponse, error) {
 	u := core.baseURL.JoinPath("solr", core.name, "ping").String()
 	req, err := http.NewRequest("GET", u, nil)
 	if err != nil {
-		return PingResponse{}, failure.Translate(err, RequestCreationError, failure.Context{"url": u}, failure.Message("failed to prepare request"))
+		return PingResponse{}, failure.Translate(err, RequestError, failure.Context{"url": u}, failure.Message("failed to prepare request"))
 	}
 
 	if res, err := core.client.Do(req); err != nil {
-		return PingResponse{}, failure.Translate(err, RequestExecutionError, failure.Context{"url": u}, failure.Message("ping failed"))
+		return PingResponse{}, failure.Translate(err, RequestError, failure.Context{"url": u}, failure.Message("ping failed"))
 	} else {
 		var body PingResponse
 		defer res.Body.Close()
@@ -63,7 +62,7 @@ func Ping(core *Core) (PingResponse, error) {
 	}
 }
 
-func  Status(core *Core) (CoreStatus, error) {
+func Status(core *Core) (CoreStatus, error) {
 	v := url.Values{}
 	v.Set("action", "STATUS")
 	v.Set("core", core.name)
@@ -73,11 +72,11 @@ func  Status(core *Core) (CoreStatus, error) {
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		return CoreStatus{}, failure.Translate(err, RequestCreationError, failure.Context{"url": url}, failure.Message("failed to prepare request"))
+		return CoreStatus{}, failure.Translate(err, RequestError, failure.Context{"url": url}, failure.Message("failed to prepare request"))
 	}
 
 	if res, err := core.client.Do(req); err != nil {
-		return CoreStatus{}, failure.Translate(err, RequestExecutionError, failure.Context{"url": url}, failure.Message("status request failed"))
+		return CoreStatus{}, failure.Translate(err, RequestError, failure.Context{"url": url}, failure.Message("status request failed"))
 	} else {
 		var body CoreList
 		defer res.Body.Close()
@@ -108,11 +107,11 @@ func Reload(core *Core) (SimpleResponse, error) {
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		return SimpleResponse{}, failure.Translate(err, RequestCreationError, failure.Context{"url": url}, failure.Message("failed to prepare request"))
+		return SimpleResponse{}, failure.Translate(err, RequestError, failure.Context{"url": url}, failure.Message("failed to prepare request"))
 	}
 
 	if res, err := core.client.Do(req); err != nil {
-		return SimpleResponse{}, failure.Translate(err, RequestExecutionError, failure.Context{"url": url}, failure.Message("reload request failed"))
+		return SimpleResponse{}, failure.Translate(err, RequestError, failure.Context{"url": url}, failure.Message("reload request failed"))
 	} else {
 		var body SimpleResponse
 		defer res.Body.Close()
@@ -132,15 +131,14 @@ func Select[D any, F any](core *Core, params url.Values) (SelectResponse[D, F], 
 	u := core.baseURL.JoinPath("solr", core.name, "select")
 	u.RawQuery = params.Encode()
 	url := u.String()
-	
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		return SelectResponse[D, F]{}, failure.Translate(err, RequestCreationError, failure.Context{"url": url}, failure.Message("failed to prepare request"))
+		return SelectResponse[D, F]{}, failure.Translate(err, RequestError, failure.Context{"url": url}, failure.Message("failed to prepare request"))
 	}
 
 	if res, err := core.client.Do(req); err != nil {
-		return SelectResponse[D, F]{}, failure.Translate(err, RequestExecutionError, failure.Context{"url": url}, failure.Message("failed to select request"))
+		return SelectResponse[D, F]{}, failure.Translate(err, RequestError, failure.Context{"url": url}, failure.Message("failed to select request"))
 	} else {
 		var body SelectResponse[D, F]
 		defer res.Body.Close()
@@ -162,12 +160,12 @@ func Post(core *Core, body io.Reader, contentType string) (SimpleResponse, error
 
 	req, err := http.NewRequest("POST", url, body)
 	if err != nil {
-		return SimpleResponse{}, failure.Translate(err, RequestCreationError, failure.Context{"url": url, "Content-Type": contentType}, failure.Message("failed to prepare request"))
+		return SimpleResponse{}, failure.Translate(err, RequestError, failure.Context{"url": url, "Content-Type": contentType}, failure.Message("failed to prepare request"))
 	}
 	req.Header.Add("Content-Type", contentType)
 
 	if res, err := core.client.Do(req); err != nil {
-		return SimpleResponse{}, failure.Translate(err, RequestExecutionError, failure.Context{"url": url, "Content-Type": contentType}, failure.Message("failed to post request"))
+		return SimpleResponse{}, failure.Translate(err, RequestError, failure.Context{"url": url, "Content-Type": contentType}, failure.Message("failed to post request"))
 	} else {
 		var body SimpleResponse
 		defer res.Body.Close()

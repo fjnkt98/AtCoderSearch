@@ -1,6 +1,8 @@
 package user
 
 import (
+	"context"
+	"fjnkt98/atcodersearch/acs"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -26,7 +28,7 @@ func NewUserCrawler(db *sqlx.DB) UserCrawler {
 	}
 }
 
-func (c *UserCrawler) Crawl(index int) ([]User, error) {
+func (c *UserCrawler) Crawl(ctx context.Context, index int) ([]User, error) {
 	u, _ := url.Parse(c.targetURL)
 	v := url.Values{}
 	v.Set("contestType", "algo")
@@ -34,33 +36,33 @@ func (c *UserCrawler) Crawl(index int) ([]User, error) {
 	u.RawQuery = v.Encode()
 
 	slog.Info(fmt.Sprintf("Crawling active user ranking page %s", u.String()))
-	req, err := http.NewRequest("GET", u.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, "GET", u.String(), nil)
 	if err != nil {
-		return nil, failure.Translate(err, RequestCreationError, failure.Context{"url": u.String()}, failure.Message("failed to create request"))
+		return nil, failure.Translate(err, acs.RequestError, failure.Context{"url": u.String()}, failure.Message("failed to create request"))
 	}
 
 	res, err := c.client.Do(req)
 	if err != nil {
-		return nil, failure.Translate(err, RequestExecutionError, failure.Context{"url": u.String()}, failure.Message("request failed"))
+		return nil, failure.Translate(err, acs.RequestError, failure.Context{"url": u.String()}, failure.Message("request failed"))
 	}
 
 	defer res.Body.Close()
 	users, err := Scrape(res.Body)
 	if err != nil {
-		return nil, failure.Translate(err, ScrapeError, failure.Context{"url": u.String()}, failure.Message("failed to scrape active user information"))
+		return nil, failure.Translate(err, acs.ScrapeError, failure.Context{"url": u.String()}, failure.Message("failed to scrape active user information"))
 	}
 	return users, nil
 }
 
-func (c *UserCrawler) Save(users []User) error {
+func (c *UserCrawler) Save(ctx context.Context, users []User) error {
 	tx, err := c.db.Beginx()
 	if err != nil {
-		return failure.Translate(err, DBError, failure.Message("failed to start transaction to save user information"))
+		return failure.Translate(err, acs.DBError, failure.Message("failed to start transaction to save user information"))
 	}
 	defer tx.Rollback()
 
 	for _, user := range users {
-		_, err := tx.Exec(`
+		_, err := tx.ExecContext(ctx, `
 			MERGE INTO "users"
 			USING
 				(
@@ -163,22 +165,22 @@ func (c *UserCrawler) Save(users []User) error {
 			user.Wins,
 		)
 		if err != nil {
-			return failure.Translate(err, DBError, failure.Context{"user": user.UserName}, failure.Message("failed to save user information"))
+			return failure.Translate(err, acs.DBError, failure.Context{"user": user.UserName}, failure.Message("failed to save user information"))
 		}
 	}
 	if err := tx.Commit(); err != nil {
-		return failure.Translate(err, DBError, failure.Message("failed to commit transaction to save user information"))
+		return failure.Translate(err, acs.DBError, failure.Message("failed to commit transaction to save user information"))
 	}
 
 	return nil
 }
 
-func (c *UserCrawler) Run(duration int) error {
+func (c *UserCrawler) Run(ctx context.Context, duration int) error {
 	slog.Info("Start to crawl active user information.")
 
 loop:
 	for i := 0; ; i++ {
-		users, err := c.Crawl(i)
+		users, err := c.Crawl(ctx, i)
 		if err != nil {
 			return failure.Wrap(err)
 		}
@@ -187,7 +189,7 @@ loop:
 			break loop
 		}
 
-		if err := c.Save(users); err != nil {
+		if err := c.Save(ctx, users); err != nil {
 			return failure.Wrap(err)
 		}
 

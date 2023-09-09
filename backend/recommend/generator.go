@@ -60,7 +60,7 @@ func (r *RowReader[R, D]) ReadRows(ctx context.Context, tx chan<- Row) error {
 	`
 	rows, err := r.db.Queryx(sql)
 	if err != nil {
-		return failure.Translate(err, DBError, failure.Context{"sql": sql}, failure.Message("failed to read rows"))
+		return failure.Translate(err, acs.DBError, failure.Context{"sql": sql}, failure.Message("failed to read rows"))
 	}
 	defer rows.Close()
 	defer close(tx)
@@ -74,7 +74,7 @@ func (r *RowReader[R, D]) ReadRows(ctx context.Context, tx chan<- Row) error {
 			var data Data
 			err := rows.StructScan(&data)
 			if err != nil {
-				return failure.Translate(err, DBError, failure.Message("failed to scan row"))
+				return failure.Translate(err, acs.DBError, failure.Message("failed to scan row"))
 			}
 
 			row := Row{
@@ -103,7 +103,7 @@ func NewDocumentGenerator(db *sqlx.DB, saveDir string) DocumentGenerator {
 
 func (g *DocumentGenerator) Clean() error {
 	if err := acs.CleanDocument(g.saveDir); err != nil {
-		return failure.Translate(err, FileOperationError, failure.Context{"directory": g.saveDir}, failure.Message("failed to delete problem document files in `%s`"))
+		return failure.Translate(err, acs.FileOperationError, failure.Context{"directory": g.saveDir}, failure.Message("failed to delete problem document files in `%s`"))
 	}
 	return nil
 }

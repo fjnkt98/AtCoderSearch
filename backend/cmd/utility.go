@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"errors"
+	"fjnkt98/atcodersearch/acs"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -11,6 +12,8 @@ import (
 	"github.com/spf13/cobra"
 	"golang.org/x/exp/slog"
 )
+
+type Msg struct{}
 
 func GetSaveDir(cmd *cobra.Command, domain string) (string, error) {
 	var saveDir string
@@ -27,13 +30,13 @@ func GetSaveDir(cmd *cobra.Command, domain string) (string, error) {
 		if os.IsNotExist(err) {
 			slog.Info(fmt.Sprintf("The directory `%s` doesn't exists, so attempt to create it.", saveDir))
 			if err := os.Mkdir(saveDir, os.ModePerm); err != nil {
-				return "", failure.Translate(err, FileOperationError, failure.Context{"directory": saveDir}, failure.Message("failed to create directory"))
+				return "", failure.Translate(err, acs.FileOperationError, failure.Context{"directory": saveDir}, failure.Message("failed to create directory"))
 			} else {
 				slog.Info(fmt.Sprintf("The directory `%s` was successfully created.", saveDir))
 				return saveDir, nil
 			}
 		} else {
-			return "", failure.Translate(err, FileOperationError, failure.Context{"directory": saveDir}, failure.Message("failed to get stat directory"))
+			return "", failure.Translate(err, acs.FileOperationError, failure.Context{"directory": saveDir}, failure.Message("failed to get stat directory"))
 		}
 	} else {
 		return saveDir, nil

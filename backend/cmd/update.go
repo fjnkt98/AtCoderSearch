@@ -4,6 +4,7 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"context"
 	"fjnkt98/atcodersearch/problem"
 	"fjnkt98/atcodersearch/recommend"
 	"fjnkt98/atcodersearch/solr"
@@ -55,8 +56,9 @@ var updateProblemCmd = &cobra.Command{
 		}
 
 		db := GetDB()
+		ctx, _ := context.WithCancel(context.Background())
 
-		if err := problem.Update(cfg, db, core); err != nil {
+		if err := problem.Update(ctx, cfg, db, core); err != nil {
 			slog.Error("problem update failed", slog.String("error", fmt.Sprintf("%+v", err)))
 			os.Exit(1)
 		}
@@ -97,8 +99,9 @@ var updateUserCmd = &cobra.Command{
 		}
 
 		db := GetDB()
+		ctx, _ := context.WithCancel(context.Background())
 
-		if err := user.Update(cfg, db, core); err != nil {
+		if err := user.Update(ctx, cfg, db, core); err != nil {
 			slog.Error("user update failed", slog.String("error", fmt.Sprintf("%+v", err)))
 			os.Exit(1)
 		}

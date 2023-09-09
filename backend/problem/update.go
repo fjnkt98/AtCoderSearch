@@ -1,6 +1,7 @@
 package problem
 
 import (
+	"context"
 	"encoding/json"
 	"fjnkt98/atcodersearch/acs"
 	"fjnkt98/atcodersearch/solr"
@@ -20,27 +21,27 @@ type UpdateConfig struct {
 	All                bool   `json:"all"`
 }
 
-func Update(cfg UpdateConfig, db *sqlx.DB, core *solr.Core) error {
+func Update(ctx context.Context, cfg UpdateConfig, db *sqlx.DB, core *solr.Core) error {
 	options, err := json.Marshal(cfg)
 	if err != nil {
-		failure.Translate(err, EncodeError, failure.Message("failed to encode update config"))
+		failure.Translate(err, acs.EncodeError, failure.Message("failed to encode update config"))
 	}
 	history := acs.NewUpdateHistory(db, "problem", string(options))
 	defer history.Cancel()
 
 	if !cfg.SkipFetch {
 		contestCrawler := NewContestCrawler(db)
-		if err := contestCrawler.Run(); err != nil {
+		if err := contestCrawler.Run(ctx); err != nil {
 			return failure.Wrap(err)
 		}
 
 		difficultyCrawler := NewDifficultyCrawler(db)
-		if err := difficultyCrawler.Run(); err != nil {
+		if err := difficultyCrawler.Run(ctx); err != nil {
 			return failure.Wrap(err)
 		}
 
 		problemCrawler := NewProblemCrawler(db)
-		if err := problemCrawler.Run(cfg.All, cfg.Duration); err != nil {
+		if err := problemCrawler.Run(ctx, cfg.All, cfg.Duration); err != nil {
 			return failure.Wrap(err)
 		}
 	}
