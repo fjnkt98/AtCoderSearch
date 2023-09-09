@@ -32,6 +32,8 @@ func (c *Crawler) getContestIDs(ctx context.Context) ([]string, error) {
 		"contest_id"
 	FROM
 		"contests"
+	ORDER BY
+		"start_epoch_second" DESC
 	`)
 	if err != nil {
 		return nil, failure.Translate(err, acs.DBError, failure.Message("failed to get contests id from `contests` table"))
