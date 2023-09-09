@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"context"
 	"fjnkt98/atcodersearch/list"
 	"fjnkt98/atcodersearch/problem"
 	"fjnkt98/atcodersearch/recommend"
@@ -10,6 +11,8 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"os/signal"
+	"time"
 
 	"github.com/coocood/freecache"
 	cache "github.com/gitsight/go-echo-cache"
@@ -70,6 +73,7 @@ var serverCmd = &cobra.Command{
 		e := echo.New()
 		e.Use(middleware.Recover())
 		e.Use(cache.New(&cache.Config{}, c))
+		e.HideBanner = true
 
 		// API handler registration
 		e.GET("/api/search/problem", problemSearcher.HandleGET)
@@ -105,7 +109,21 @@ var serverCmd = &cobra.Command{
 			slog.Info(fmt.Sprintf("API server will listen on %s", port))
 		}
 
-		e.Logger.Fatal(e.Start(fmt.Sprintf(":%s", port)))
+		go func() {
+			if err := e.Start(fmt.Sprintf(":%s", port)); err != nil && err != http.ErrServerClosed {
+				e.Logger.Fatal("shutting down the server")
+			}
+		}()
+
+		quit := make(chan os.Signal, 1)
+		signal.Notify(quit, os.Interrupt)
+		<-quit
+		slog.Info("shutting down the server gracefully")
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+		if err := e.Shutdown(ctx); err != nil {
+			e.Logger.Fatal(err)
+		}
 	},
 }
 
