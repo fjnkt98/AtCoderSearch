@@ -82,6 +82,10 @@ loop:
 		}
 
 		submissions = append(submissions, list.Submissions...)
+		if len(list.Submissions) == 0 {
+			slog.Info(fmt.Sprintf("There is no submissions in contest `%s`.", contestID))
+			break loop
+		}
 		if list.Submissions[0].EpochSecond < period {
 			slog.Info(fmt.Sprintf("All submissions after page `%d` have been crawled. Break crawling the contest `%s`", i, contestID))
 			time.Sleep(time.Duration(duration) * time.Millisecond)
