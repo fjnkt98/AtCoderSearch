@@ -1,0 +1,57 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  labels:
+    app: postgres
+spec:
+  ports:
+    - port: 5432
+      name: postgres
+  clusterIP: None
+  selector:
+    app: postgres
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+spec:
+  selector:
+    matchLabels:
+      app: postgres
+  serviceName: "solr"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      securityContext:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: postgres
+          image: postgres:15-bullseye
+          env:
+            - name: POSTGRES_PASSWORD
+              value: atcodersearch
+            - name: POSTGRES_USER
+              value: atcodersearch
+            - name: POSTGRES_DB
+              value: atcodersearch
+          ports:
+            - containerPort: 5432
+              name: postgres
+          volumeMounts:
+            - name: postgres-pvc
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-pvc
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 30Gi
