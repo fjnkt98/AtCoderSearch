@@ -1,0 +1,56 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: solr
+  labels:
+    app: solr
+spec:
+  ports:
+    - port: 8983
+      name: solr
+  clusterIP: None
+  selector:
+    app: solr
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: solr
+spec:
+  selector:
+    matchLabels:
+      app: solr
+  serviceName: "solr"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: solr
+    spec:
+      securityContext:
+        runAsUser: 8983
+        runAsNonRoot: true
+        fsGroup: 8983
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: solr
+          image: atcodersearch-solr:0.1.0
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8983
+              name: solr
+          volumeMounts:
+            - name: problem-pvc
+              mountPath: /var/solr/data/problem/data
+  volumeClaimTemplates:
+    - metadata:
+        name: problem-pvc
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+---
+
