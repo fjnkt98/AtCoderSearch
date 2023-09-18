@@ -30,6 +30,7 @@ spec:
     spec:
       securityContext:
         runAsUser: 8983
+        runAsGroup: 8983
         runAsNonRoot: true
         fsGroup: 8983
       terminationGracePeriodSeconds: 10
@@ -40,9 +41,19 @@ spec:
           ports:
             - containerPort: 8983
               name: solr
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 1000m
           volumeMounts:
             - name: problem-pvc
               mountPath: /var/solr/data/problem/data
+            - name: user-pvc
+              mountPath: /var/solr/data/user/data
+            - name: submission-pvc
+              mountPath: /var/solr/data/submission/data
+            - name: recommend-pvc
+              mountPath: /var/solr/data/recommend/data
   volumeClaimTemplates:
     - metadata:
         name: problem-pvc
@@ -51,6 +62,30 @@ spec:
           - ReadWriteOnce
         resources:
           requests:
-            storage: 1Gi
+            storage: 3Gi
+    - metadata:
+        name: user-pvc
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 3Gi
+    - metadata:
+        name: submission-pvc
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 3Gi
+    - metadata:
+        name: recommend-pvc
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 3Gi
 ---
 
