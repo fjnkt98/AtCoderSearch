@@ -62,6 +62,16 @@ func migrate(databaseURL string, schemaFile string) error {
 	return nil
 }
 
+func DoMigrate() {
+	url := os.Getenv("DATABASE_URL")
+	schema := os.Getenv("DB_SCHEMA_FILE")
+	if err := migrate(url, schema); err != nil {
+		slog.Error("failed to migrate database schema", slog.String("error", fmt.Sprintf("%+v", err)))
+		os.Exit(1)
+	}
+	slog.Info("finished migrating database schema successfully.")
+}
+
 var migrateCmd = &cobra.Command{
 	Use:   "migrate",
 	Short: "Migrate database table schema",

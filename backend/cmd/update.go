@@ -59,6 +59,10 @@ var updateProblemCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
+		if doMigrate := GetBool(cmd, "migrate"); doMigrate {
+			DoMigrate()
+		}
+
 		db := GetDB()
 		ctx, cancel := context.WithCancel(context.Background())
 		eg, ctx := errgroup.WithContext(ctx)
@@ -134,6 +138,10 @@ var updateUserCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
+		if doMigrate := GetBool(cmd, "migrate"); doMigrate {
+			DoMigrate()
+		}
+
 		db := GetDB()
 		ctx, cancel := context.WithCancel(context.Background())
 		eg, ctx := errgroup.WithContext(ctx)
@@ -205,6 +213,10 @@ var updateSubmissionCmd = &cobra.Command{
 		if err != nil {
 			slog.Error("failed to create `submission` core", slog.String("error", fmt.Sprintf("%+v", err)))
 			os.Exit(1)
+		}
+
+		if doMigrate := GetBool(cmd, "migrate"); doMigrate {
+			DoMigrate()
 		}
 
 		db := GetDB()
@@ -279,6 +291,10 @@ var updateRecommendCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
+		if doMigrate := GetBool(cmd, "migrate"); doMigrate {
+			DoMigrate()
+		}
+
 		db := GetDB()
 		ctx, cancel := context.WithCancel(context.Background())
 		eg, ctx := errgroup.WithContext(ctx)
@@ -323,6 +339,7 @@ var updateRecommendCmd = &cobra.Command{
 }
 
 func init() {
+	updateCmd.PersistentFlags().Bool("migrate", false, "Execute database migration before update index.")
 	updateCmd.PersistentFlags().String("save-dir", "", "Directory path at which generated documents will be saved.")
 	updateCmd.PersistentFlags().BoolP("optimize", "o", true, "Optimize index if true.")
 	updateCmd.PersistentFlags().Int("chunk-size", 1000, "Number of documents to write in 1 file.")
