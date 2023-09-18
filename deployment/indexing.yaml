@@ -104,58 +104,9 @@ spec:
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: submission-indexer-1
+  name: submission-indexer
 spec:
-  schedule: "*/10 * * * 1-5"
-  concurrencyPolicy: Forbid
-  startingDeadlineSeconds: 30
-  suspend: false
-  jobTemplate:
-    spec:
-      backoffLimit: 0
-      completions: 1
-      parallelism: 1
-      template:
-        spec:
-          restartPolicy: OnFailure
-          containers:
-            - name: indexer
-              image: atcodersearch-backend:0.1.0
-              imagePullPolicy: Never
-              env:
-                - name: DATABASE_URL
-                  valueFrom:
-                    secretKeyRef:
-                      name: secret-backend
-                      key: database-url
-                - name: SOLR_HOST
-                  value: http://solr:8983
-                - name: DOCUMENT_SAVE_DIRECTORY
-                  value: /var/tmp
-              resources:
-                requests:
-                  memory: 512Mi
-                  cpu: 500m
-              securityContext:
-                runAsUser: 1000
-                runAsGroup: 1000
-                runAsNonRoot: true
-              args:
-                [
-                  "atcodersearch",
-                  "update",
-                  "submission",
-                  "--generate-concurrent=2",
-                  "--post-concurrent=2",
-                  "--chunk-size=10000",
-                ]
----
-apiVersion: batch/v1
-kind: CronJob
-metadata:
-  name: submission-indexer-2
-spec:
-  schedule: "*/10 0-20 * * 0,6"
+  schedule: "*/10 * * * *"
   concurrencyPolicy: Forbid
   startingDeadlineSeconds: 30
   suspend: false
