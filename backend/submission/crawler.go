@@ -7,6 +7,7 @@ import (
 	"fjnkt98/atcodersearch/acs"
 	"fjnkt98/atcodersearch/atcoder"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -26,17 +27,41 @@ func NewCrawler(client atcoder.AtCoderClient, db *sqlx.DB) Crawler {
 	}
 }
 
-func (c *Crawler) getContestIDs(ctx context.Context) ([]string, error) {
-	rows, err := c.db.QueryContext(ctx, `
-	SELECT
-		"contest_id"
-	FROM
-		"contests"
-	ORDER BY
-		"start_epoch_second" DESC
-	`)
-	if err != nil {
-		return nil, failure.Translate(err, acs.DBError, failure.Message("failed to get contests id from `contests` table"))
+func (c *Crawler) getContestIDs(ctx context.Context, targets []string) ([]string, error) {
+	var rows *sqlx.Rows
+	var err error
+	if len(targets) == 0 {
+		rows, err = c.db.QueryxContext(
+			ctx,
+			`SELECT
+				"contest_id"
+			FROM
+				"contests"
+			ORDER BY
+				"start_epoch_second" DESC`,
+		)
+		if err != nil {
+			return nil, failure.Translate(err, acs.DBError, failure.Message("failed to get contests id from `contests` table"))
+		}
+	} else {
+		sql, args, err := sqlx.In(`
+			SELECT
+				"contest_id"
+			FROM
+				"contests"
+			WHERE
+				"category" IN (?)
+			ORDER BY
+				"start_epoch_second" DESC
+		`, targets)
+		if err != nil {
+			return nil, failure.Translate(err, acs.DBError, failure.Context{"targets": strings.Join(targets, ",")}, failure.Message("failed to build sql query"))
+		}
+		sql = c.db.Rebind(sql)
+		rows, err = c.db.QueryxContext(ctx, sql, args...)
+		if err != nil {
+			return nil, failure.Translate(err, acs.DBError, failure.Context{"sql": sql}, failure.Message("failed to get contests id from `contests` table"))
+		}
 	}
 
 	defer rows.Close()
@@ -154,8 +179,8 @@ loop:
 	return nil
 }
 
-func (c *Crawler) Run(ctx context.Context, duration int, retry int) error {
-	ids, err := c.getContestIDs(ctx)
+func (c *Crawler) Run(ctx context.Context, targets []string, duration int, retry int) error {
+	ids, err := c.getContestIDs(ctx, targets)
 	if err != nil {
 		return err
 	}
