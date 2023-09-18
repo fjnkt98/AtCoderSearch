@@ -10,7 +10,7 @@ spec:
     spec:
       restartPolicy: Never
       containers:
-        - name: problem-indexer
+        - name: problem-indexer-one-shot
           image: atcodersearch-backend:0.1.0
           imagePullPolicy: Never
           env:
@@ -42,7 +42,7 @@ spec:
               "--post-concurrent=2",
               "--chunk-size=1000",
             ]
-        - name: user-indexer
+        - name: user-indexer-one-shot
           image: atcodersearch-backend:0.1.0
           imagePullPolicy: Never
           env:
@@ -74,7 +74,7 @@ spec:
               "--post-concurrent=2",
               "--chunk-size=10000",
             ]
-        - name: submission-indexer
+        - name: submission-indexer-one-shot
           image: atcodersearch-backend:0.1.0
           imagePullPolicy: Never
           env:
