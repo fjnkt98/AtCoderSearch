@@ -42,14 +42,6 @@ spec:
                   key: database-url
             - name: SOLR_HOST
               value: http://solr:8983
-            - name: PROBLEM_CORE_NAE
-              value: problem
-            - name: USER_CORE_NAE
-              value: user
-            - name: RECOMMEND_CORE_NAE
-              value: recommend
-            - name: SUBMISSION_CORE_NAE
-              value: submission
           ports:
             - name: backend
               containerPort: 8000

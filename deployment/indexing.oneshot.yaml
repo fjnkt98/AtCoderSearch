@@ -1,0 +1,108 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: one-shot-indexer
+spec:
+  backoffLimit: 0
+  parallelism: 1
+  completions: 1
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: problem-indexer
+          image: atcodersearch-backend:0.1.0
+          imagePullPolicy: Never
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: secret-backend
+                  key: database-url
+            - name: SOLR_HOST
+              value: http://solr:8983
+            - name: DOCUMENT_SAVE_DIRECTORY
+              value: /var/tmp
+          resources:
+            requests:
+              memory: 1024Mi
+              cpu: 1000m
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            runAsNonRoot: true
+          args:
+            [
+              "atcodersearch",
+              "update",
+              "problem",
+              "--optimize",
+              "--skip-fetch",
+              "--generate-concurrent=2",
+              "--post-concurrent=2",
+              "--chunk-size=1000",
+            ]
+        - name: user-indexer
+          image: atcodersearch-backend:0.1.0
+          imagePullPolicy: Never
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: secret-backend
+                  key: database-url
+            - name: SOLR_HOST
+              value: http://solr:8983
+            - name: DOCUMENT_SAVE_DIRECTORY
+              value: /var/tmp
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 500m
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            runAsNonRoot: true
+          args:
+            [
+              "atcodersearch",
+              "update",
+              "user",
+              "--optimize",
+              "--skip-fetch",
+              "--generate-concurrent=2",
+              "--post-concurrent=2",
+              "--chunk-size=10000",
+            ]
+        - name: submission-indexer
+          image: atcodersearch-backend:0.1.0
+          imagePullPolicy: Never
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: secret-backend
+                  key: database-url
+            - name: SOLR_HOST
+              value: http://solr:8983
+            - name: DOCUMENT_SAVE_DIRECTORY
+              value: /var/tmp
+          resources:
+            requests:
+              memory: 1024Mi
+              cpu: 1000m
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            runAsNonRoot: true
+          args:
+            [
+              "atcodersearch",
+              "update",
+              "submission",
+              "--optimize",
+              "--all",
+              "--generate-concurrent=2",
+              "--post-concurrent=2",
+              "--chunk-size=1000000",
+            ]
