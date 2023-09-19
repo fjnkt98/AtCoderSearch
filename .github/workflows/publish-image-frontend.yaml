@@ -1,12 +1,12 @@
-name: publish-image-backend
-run-name: publish-image-backend
+name: publish-image-frontend
+run-name: publish-image-frontend
 on:
   push:
     tags:
-      - "atcodersearch-backend_v*.*.*"
+      - "atcodersearch-frontend_v*.*.*"
 env:
-  BUILD_CONTEXT: backend
-  ECR_REPOSITORY: atcodersearch-backend
+  BUILD_CONTEXT: frontend
+  ECR_REPOSITORY: atcodersearch-frontend
 jobs:
   build:
     runs-on: ubuntu-22.04
