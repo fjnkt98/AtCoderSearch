@@ -2,7 +2,7 @@ name: publish-image-backend
 run-name: publish-image-backend
 on:
   push:
-    branches:
+    tags:
       - "atcodersearch-backend_v*.*.*"
 env:
   BUILD_CONTEXT: backend
