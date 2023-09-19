@@ -5,7 +5,7 @@ on:
     tags:
       - "atcodersearch-backend_v*.*.*"
 env:
-  BUILD_CONTEXT: ./backend/
+  BUILD_CONTEXT: backend
   ECR_REPOSITORY: atcodersearch-backend
 jobs:
   build:
@@ -46,7 +46,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
-          context: ${{ env.BUILD_CONTEXT}}
+          context: "{{defaultContext}}:${{ env.BUILD_CONTEXT }}"
           push: true
           tags: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.TAG_VERSION }}
           cache-from: type=local,src=/tmp/.buildx-cache
