@@ -5,7 +5,7 @@ on:
     tags:
       - "atcodersearch-backend_v*.*.*"
 env:
-  BUILD_CONTEXT: backend
+  BUILD_CONTEXT: ./backend/
   ECR_REPOSITORY: atcodersearch-backend
 jobs:
   build:
