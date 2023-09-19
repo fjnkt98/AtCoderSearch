@@ -1,0 +1,26 @@
+name: grant-tag-frontend
+run-name: grant-tag-frontend
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - frontend/package.json
+jobs:
+  grant-tag-frontend:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+      - uses: salsify/action-detect-and-tag-new-version@v2
+        id: detect-atcodersearch-frontend-version
+        with:
+          create-tag: false
+          version-command: |
+            cat frontend/package.json | jq -r '.version'
+      - uses: mathieudutour/github-tag-action@v6.1
+        with:
+          custom_tag: ${{steps.detect-atcodersearch-frontend-version.outputs.current-version}}
+          tag_prefix: "atcodersearch-frontend_v"
+          github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
