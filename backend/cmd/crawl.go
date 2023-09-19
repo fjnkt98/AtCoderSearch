@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"strings"
 
 	"github.com/morikuni/failure"
 	"github.com/spf13/cobra"
@@ -145,7 +146,12 @@ var crawlSubmissionCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		db := GetDB()
 
-		endless := GetBool(cmd, "endless")
+		retry := GetInt(cmd, "retry")
+		if retry < 0 {
+			slog.Error("`retry` must be greater than or equals to 0")
+			os.Exit(1)
+		}
+		targets := strings.Split(GetString(cmd, "target"), ",")
 
 		ctx, cancel := context.WithCancel(context.Background())
 		eg, ctx := errgroup.WithContext(ctx)
@@ -170,21 +176,8 @@ var crawlSubmissionCmd = &cobra.Command{
 			duration := GetInt(cmd, "duration")
 
 			slog.Info("Start to crawl submissions")
-			if endless {
-				for {
-					select {
-					case <-quit:
-						return failure.New(acs.Interrupt, failure.Message("crawling problems has been interrupted."))
-					default:
-						if err := crawler.Run(ctx, duration); err != nil {
-							slog.Error("failed to crawl submissions", slog.String("error", fmt.Sprintf("%+v", err)))
-						}
-					}
-				}
-			} else {
-				if err := crawler.Run(ctx, duration); err != nil {
-					return failure.Wrap(err)
-				}
+			if err := crawler.Run(ctx, targets, duration, retry); err != nil {
+				return failure.Wrap(err)
 			}
 
 			done <- Msg{}
@@ -219,7 +212,8 @@ var crawlSubmissionCmd = &cobra.Command{
 
 func init() {
 	crawlProblemCmd.Flags().BoolP("all", "a", false, "When true, crawl all problems")
-	crawlSubmissionCmd.Flags().BoolP("endless", "e", false, "When true, crawler will continue crawling even if an error occurred.")
+	crawlSubmissionCmd.Flags().IntP("retry", "r", 0, "Limit of the number of retry when an error occurred in crawling submissions.")
+	crawlSubmissionCmd.Flags().String("target", "", "Target category to crawl. Multiple categories can be specified by separating tem with comma. If not specified, all categories will be crawled.")
 	crawlCmd.PersistentFlags().Int("duration", 1000, "Duration[ms] in crawling problem")
 
 	crawlCmd.AddCommand(crawlProblemCmd)

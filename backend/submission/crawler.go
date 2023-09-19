@@ -7,6 +7,7 @@ import (
 	"fjnkt98/atcodersearch/acs"
 	"fjnkt98/atcodersearch/atcoder"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -26,17 +27,41 @@ func NewCrawler(client atcoder.AtCoderClient, db *sqlx.DB) Crawler {
 	}
 }
 
-func (c *Crawler) getContestIDs(ctx context.Context) ([]string, error) {
-	rows, err := c.db.QueryContext(ctx, `
-	SELECT
-		"contest_id"
-	FROM
-		"contests"
-	ORDER BY
-		"start_epoch_second" DESC
-	`)
-	if err != nil {
-		return nil, failure.Translate(err, acs.DBError, failure.Message("failed to get contests id from `contests` table"))
+func (c *Crawler) getContestIDs(ctx context.Context, targets []string) ([]string, error) {
+	var rows *sqlx.Rows
+	var err error
+	if len(targets) == 0 {
+		rows, err = c.db.QueryxContext(
+			ctx,
+			`SELECT
+				"contest_id"
+			FROM
+				"contests"
+			ORDER BY
+				"start_epoch_second" DESC`,
+		)
+		if err != nil {
+			return nil, failure.Translate(err, acs.DBError, failure.Message("failed to get contests id from `contests` table"))
+		}
+	} else {
+		sql, args, err := sqlx.In(`
+			SELECT
+				"contest_id"
+			FROM
+				"contests"
+			WHERE
+				"category" IN (?)
+			ORDER BY
+				"start_epoch_second" DESC
+		`, targets)
+		if err != nil {
+			return nil, failure.Translate(err, acs.DBError, failure.Context{"targets": strings.Join(targets, ",")}, failure.Message("failed to build sql query"))
+		}
+		sql = c.db.Rebind(sql)
+		rows, err = c.db.QueryxContext(ctx, sql, args...)
+		if err != nil {
+			return nil, failure.Translate(err, acs.DBError, failure.Context{"sql": sql}, failure.Message("failed to get contests id from `contests` table"))
+		}
 	}
 
 	defer rows.Close()
@@ -52,18 +77,40 @@ func (c *Crawler) getContestIDs(ctx context.Context) ([]string, error) {
 	return ids, nil
 }
 
-func (c *Crawler) crawl(ctx context.Context, contestID string, period int64, duration int) error {
+func (c *Crawler) crawl(ctx context.Context, contestID string, period int64, duration int, retry int) error {
 	submissions := make([]atcoder.Submission, 0)
 	maxPage := 1
 loop:
 	for i := 1; i <= maxPage; i++ {
 		slog.Info(fmt.Sprintf("fetch submissions at page %d / %d of the contest `%s`", i, maxPage, contestID))
-		list, err := c.client.FetchSubmissionList(ctx, contestID, int(i))
+		list, err := c.client.FetchSubmissionList(ctx, contestID, i)
 		if err != nil {
-			return failure.Translate(err, acs.CrawlError, failure.Context{"contestID": contestID}, failure.Message("failed to crawl submissions"))
+		retryLoop:
+			for j := 0; j < retry; j++ {
+				select {
+				case <-ctx.Done():
+					return failure.New(acs.Interrupt, failure.Message("retry to crawl submission has been canceled"))
+				default:
+					slog.Error("failed to crawl submission", slog.String("contestID", contestID), slog.String("error", fmt.Sprintf("%+v", err)))
+					slog.Info("retry to crawl submission after 1 minutes...")
+					time.Sleep(time.Duration(60) * time.Second)
+					list, err = c.client.FetchSubmissionList(ctx, contestID, i)
+					if err == nil {
+						break retryLoop
+					}
+				}
+			}
+
+			if err != nil {
+				return failure.Translate(err, acs.CrawlError, failure.Context{"contestID": contestID}, failure.Message("failed to crawl submissions"))
+			}
 		}
 
 		submissions = append(submissions, list.Submissions...)
+		if len(list.Submissions) == 0 {
+			slog.Info(fmt.Sprintf("There is no submissions in contest `%s`.", contestID))
+			break loop
+		}
 		if list.Submissions[0].EpochSecond < period {
 			slog.Info(fmt.Sprintf("All submissions after page `%d` have been crawled. Break crawling the contest `%s`", i, contestID))
 			time.Sleep(time.Duration(duration) * time.Millisecond)
@@ -114,11 +161,13 @@ loop:
 	ON CONFLICT DO NOTHING;
 	`
 	affected := 0
-	if result, err := tx.NamedExecContext(ctx, sql, submissions); err != nil {
-		return failure.Translate(err, acs.DBError, failure.Context{"contestID": contestID}, failure.Message("failed to exec sql to save submission"))
-	} else {
-		a, _ := result.RowsAffected()
-		affected += int(a)
+	for _, submission := range submissions {
+		if result, err := tx.NamedExecContext(ctx, sql, submission); err != nil {
+			return failure.Translate(err, acs.DBError, failure.Context{"contestID": contestID}, failure.Message("failed to exec sql to save submission"))
+		} else {
+			a, _ := result.RowsAffected()
+			affected += int(a)
+		}
 	}
 
 	if err := tx.Commit(); err != nil {
@@ -130,8 +179,8 @@ loop:
 	return nil
 }
 
-func (c *Crawler) Run(ctx context.Context, duration int) error {
-	ids, err := c.getContestIDs(ctx)
+func (c *Crawler) Run(ctx context.Context, targets []string, duration int, retry int) error {
+	ids, err := c.getContestIDs(ctx, targets)
 	if err != nil {
 		return err
 	}
@@ -143,7 +192,7 @@ func (c *Crawler) Run(ctx context.Context, duration int) error {
 			return failure.Wrap(err)
 		}
 		slog.Info(fmt.Sprintf("Start to crawl contest `%s` since period `%s`", id, time.Unix(int64(period), 0)))
-		if err := c.crawl(ctx, id, int64(period), duration); err != nil {
+		if err := c.crawl(ctx, id, int64(period), duration, retry); err != nil {
 			return failure.Wrap(err)
 		}
 		history.Finish(ctx)

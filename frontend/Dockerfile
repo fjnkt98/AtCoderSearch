@@ -5,7 +5,8 @@ FROM node:18-bullseye-slim AS stage
 WORKDIR /app
 
 COPY . .
-ENV API_HOST='http://localhost:8000'
+ARG HOST='http://localhost:8000'
+ENV API_HOST=${HOST}
 RUN npm install && npm run build
 
 FROM node:18-bullseye-slim

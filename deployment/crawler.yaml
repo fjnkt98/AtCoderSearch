@@ -1,0 +1,110 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: submission-crawler-1
+spec:
+  schedule: "*/10 0 * * 1-5"
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 30
+  suspend: false
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      completions: 1
+      parallelism: 1
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: indexer
+              image: atcodersearch-backend:0.1.0
+              imagePullPolicy: Never
+              env:
+                - name: DATABASE_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: secret-backend
+                      key: database-url
+                - name: ATCODER_USER_NAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: secret-backend
+                      key: atcoder-username
+                - name: ATCODER_USER_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: secret-backend
+                      key: atcoder-password
+              resources:
+                requests:
+                  memory: 512Mi
+                  cpu: 250m
+              securityContext:
+                runAsUser: 1000
+                runAsGroup: 1000
+                runAsNonRoot: true
+              args:
+                [
+                  "atcodersearch",
+                  "crawl",
+                  "submission",
+                  "--duration=1000",
+                  "--retry=10",
+                  "--target=ABC,ABC-Like,ARC,ARC-Like,AGC,AGC-Like,JOI,Other Sponsored,PAST",
+                ]
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: submission-crawler-2
+spec:
+  schedule: "*/10 0-20 * * 0,6"
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 30
+  suspend: false
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      completions: 1
+      parallelism: 1
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: indexer
+              image: atcodersearch-backend:0.1.0
+              imagePullPolicy: Never
+              env:
+                - name: DATABASE_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: secret-backend
+                      key: database-url
+                - name: ATCODER_USER_NAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: secret-backend
+                      key: atcoder-username
+                - name: ATCODER_USER_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: secret-backend
+                      key: atcoder-password
+              resources:
+                requests:
+                  memory: 512Mi
+                  cpu: 250m
+              securityContext:
+                runAsUser: 1000
+                runAsGroup: 1000
+                runAsNonRoot: true
+              args:
+                [
+                  "atcodersearch",
+                  "crawl",
+                  "submission",
+                  "--duration=1000",
+                  "--retry=10",
+                  "--target=ABC,ABC-Like,ARC,ARC-Like,AGC,AGC-Like,JOI,Other Sponsored,PAST",
+                ]

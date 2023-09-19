@@ -12,6 +12,8 @@ RUN go build -o /app/atcodersearch
 FROM debian:bullseye-slim
 
 COPY --from=stage /app/atcodersearch /usr/local/bin/atcodersearch
+COPY ./schema.sql /etc/schema.sql
+ENV DB_SCHEMA_FILE='/etc/schema.sql'
 
 RUN groupadd --gid 1000 atcodersearch \
     && useradd --uid 1000 --gid atcodersearch --shell /bin/bash --create-home atcodersearch
