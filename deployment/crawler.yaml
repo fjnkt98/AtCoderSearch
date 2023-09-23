@@ -17,7 +17,7 @@ spec:
         spec:
           restartPolicy: Never
           containers:
-            - name: indexer
+            - name: crawler
               image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.0
               env:
                 - name: DATABASE_URL
@@ -71,7 +71,7 @@ spec:
         spec:
           restartPolicy: Never
           containers:
-            - name: indexer
+            - name: crawler
               image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.0
               env:
                 - name: DATABASE_URL
