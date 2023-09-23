@@ -7,9 +7,11 @@ import (
 	"fjnkt98/atcodersearch/acs"
 	"fjnkt98/atcodersearch/atcoder"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
+	mapset "github.com/deckarep/golang-set/v2"
 	"github.com/jmoiron/sqlx"
 	"github.com/morikuni/failure"
 	"golang.org/x/exp/slog"
@@ -125,6 +127,16 @@ loop:
 		return nil
 	}
 
+	noDupSubmissions := make([]atcoder.Submission, 0, len(submissions))
+	ids := mapset.NewSet[int64]()
+	for _, s := range submissions {
+		if ids.Contains(s.ID) {
+			continue
+		}
+		ids.Add(s.ID)
+		noDupSubmissions = append(noDupSubmissions, s)
+	}
+
 	tx, err := c.db.Beginx()
 	if err != nil {
 		return failure.Translate(err, acs.DBError, failure.Message("failed to start transaction to save submission"))
@@ -161,7 +173,7 @@ loop:
 	ON CONFLICT DO NOTHING;
 	`
 	affected := 0
-	for _, submission := range submissions {
+	for _, submission := range noDupSubmissions {
 		if result, err := tx.NamedExecContext(ctx, sql, submission); err != nil {
 			return failure.Translate(err, acs.DBError, failure.Context{"contestID": contestID}, failure.Message("failed to exec sql to save submission"))
 		} else {
@@ -196,6 +208,83 @@ func (c *Crawler) Run(ctx context.Context, targets []string, duration int, retry
 			return failure.Wrap(err)
 		}
 		history.Finish(ctx)
+	}
+
+	return nil
+}
+
+type Target struct {
+	ID        int64  `db:"id"`
+	ContestID string `db:"contest_id"`
+	Result    string `db:"result"`
+}
+
+func (c *Crawler) ReCrawl(ctx context.Context, duration int) error {
+	rows, err := c.db.QueryxContext(
+		ctx,
+		`
+		SELECT
+			"id",
+			"contest_id",
+			"result"
+		FROM
+			"submissions"
+		WHERE
+			"result" NOT IN ('AC', 'CE', 'IE', 'MLE', 'NG', 'OLE', 'QLE', 'RE', 'TLE', 'WA', 'WJ', 'WR')
+		`,
+	)
+	if err != nil {
+		return failure.Translate(err, acs.DBError, failure.Message("failed to get submissions `submissions` table"))
+	}
+
+	update := func(ctx context.Context, db *sqlx.DB, target Target) error {
+		tx, err := db.Beginx()
+		if err != nil {
+			return failure.Translate(err, acs.DBError, failure.Message("failed to start transaction to save submission"))
+		}
+		defer tx.Rollback()
+
+		sql := `
+		UPDATE
+			"submissions"
+		SET
+			"result" = :result
+		WHERE
+			"id" = :id
+			AND "contest_id" = :contest_id
+		`
+
+		if _, err := tx.NamedExecContext(ctx, sql, target); err != nil {
+			return failure.Translate(err, acs.DBError, failure.Context{"submissionID": strconv.Itoa(int(target.ID)), "contestID": target.ContestID}, failure.Message("failed to exec sql to update submission result"))
+		}
+
+		if err := tx.Commit(); err != nil {
+			return failure.Translate(err, acs.DBError, failure.Context{"submissionID": strconv.Itoa(int(target.ID)), "contestID": target.ContestID}, failure.Message("failed to commit transaction to update submission result"))
+		}
+		slog.Info(fmt.Sprintf("commit transaction updating submission `%d` result.", target.ID))
+
+		return nil
+	}
+
+	defer rows.Close()
+	for rows.Next() {
+		var t Target
+		if err := rows.StructScan(&t); err != nil {
+			return failure.Translate(err, acs.DBError, failure.Message("failed to scan row"))
+		}
+
+		var result string
+		if result, err = c.client.FetchSubmissionResult(ctx, t.ContestID, t.ID); err != nil {
+			return failure.Translate(err, acs.CrawlError, failure.Context{"contestID": t.ContestID, "submissionID": strconv.Itoa(int(t.ID))}, failure.Message("failed to crawl submission"))
+		}
+		slog.Info(fmt.Sprintf("update submission result of `%d` in contest `%s` from `%s` into `%s`", t.ID, t.ContestID, t.Result, result))
+		t.Result = result
+
+		if err := update(ctx, c.db, t); err != nil {
+			return failure.Wrap(err)
+		}
+
+		time.Sleep(time.Duration(duration) * time.Millisecond)
 	}
 
 	return nil

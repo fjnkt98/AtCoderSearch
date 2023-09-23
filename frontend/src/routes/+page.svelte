@@ -18,7 +18,7 @@
     </a>
     <a class="block rounded-3xl bg-white p-4 no-underline shadow-lg" href={`/search/submission?${defaultSubmissionSearchParams.toString()}`}>
       <h3 class="font-roboto text-2xl">Submissions</h3>
-      <p class="py-3 text-gray-600">全ての提出を表示します</p>
+      <p class="py-3 text-gray-600">1ヶ月以内の提出を表示します</p>
     </a>
     <a class="block rounded-3xl bg-white p-4 no-underline shadow-lg" href={`/recommend/problem?${defaultRecommendParams.toString()}`}>
       <h3 class="font-roboto text-2xl">Recommend <span class="text-red-500">(alpha)</span></h3>

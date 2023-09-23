@@ -18,8 +18,7 @@ spec:
           restartPolicy: OnFailure
           containers:
             - name: indexer
-              image: atcodersearch-backend:0.1.0
-              imagePullPolicy: Never
+              image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.1
               env:
                 - name: DATABASE_URL
                   valueFrom:
@@ -30,6 +29,8 @@ spec:
                   value: http://solr:8983
                 - name: DOCUMENT_SAVE_DIRECTORY
                   value: /var/tmp
+                - name: PGSSLMODE
+                  value: disable
               resources:
                 requests:
                   memory: 1024Mi
@@ -43,6 +44,7 @@ spec:
                   "atcodersearch",
                   "update",
                   "problem",
+                  "--migrate",
                   "--optimize",
                   "--generate-concurrent=2",
                   "--post-concurrent=2",
@@ -69,8 +71,7 @@ spec:
           restartPolicy: OnFailure
           containers:
             - name: indexer
-              image: atcodersearch-backend:0.1.0
-              imagePullPolicy: Never
+              image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.1
               env:
                 - name: DATABASE_URL
                   valueFrom:
@@ -81,6 +82,8 @@ spec:
                   value: http://solr:8983
                 - name: DOCUMENT_SAVE_DIRECTORY
                   value: /var/tmp
+                - name: PGSSLMODE
+                  value: disable
               resources:
                 requests:
                   memory: 512Mi
@@ -94,12 +97,16 @@ spec:
                   "atcodersearch",
                   "update",
                   "user",
+                  "--migrate",
                   "--optimize",
                   "--generate-concurrent=2",
                   "--post-concurrent=2",
                   "--duration=1000",
                   "--chunk-size=10000",
                 ]
+          imagePullSecrets:
+            - name: regcred
+
 ---
 apiVersion: batch/v1
 kind: CronJob
@@ -120,8 +127,7 @@ spec:
           restartPolicy: OnFailure
           containers:
             - name: indexer
-              image: atcodersearch-backend:0.1.0
-              imagePullPolicy: Never
+              image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.1
               env:
                 - name: DATABASE_URL
                   valueFrom:
@@ -132,6 +138,8 @@ spec:
                   value: http://solr:8983
                 - name: DOCUMENT_SAVE_DIRECTORY
                   value: /var/tmp
+                - name: PGSSLMODE
+                  value: disable
               resources:
                 requests:
                   memory: 512Mi
@@ -145,7 +153,10 @@ spec:
                   "atcodersearch",
                   "update",
                   "submission",
+                  "--migrate",
                   "--generate-concurrent=2",
                   "--post-concurrent=2",
                   "--chunk-size=10000",
                 ]
+          imagePullSecrets:
+            - name: regcred

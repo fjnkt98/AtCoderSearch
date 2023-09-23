@@ -14,8 +14,6 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/coocood/freecache"
-	cache "github.com/gitsight/go-echo-cache"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/spf13/cobra"
@@ -68,12 +66,13 @@ var serverCmd = &cobra.Command{
 
 		listSearcher := list.NewSearcher(db)
 
-		c := freecache.NewCache(100 * 1024 * 1024)
-
 		e := echo.New()
 		e.Use(middleware.Recover())
-		e.Use(cache.New(&cache.Config{}, c))
+		e.Use(middleware.GzipWithConfig(middleware.GzipConfig{
+			Level: 5,
+		}))
 		e.HideBanner = true
+		e.HidePort = true
 
 		// API handler registration
 		e.GET("/api/search/problem", problemSearcher.HandleGET)
@@ -85,18 +84,19 @@ var serverCmd = &cobra.Command{
 		e.GET("/api/list/contest", listSearcher.HandleContest)
 		e.GET("/api/list/problem", listSearcher.HandleProblem)
 
-		http.HandleFunc("/api/liveness", func(w http.ResponseWriter, r *http.Request) {
-			if problemSearcher.Liveness() && userSearcher.Liveness() && submissionSearcher.Liveness() && recommendSearcher.Liveness() {
-				w.WriteHeader(http.StatusOK)
+		e.GET("/api/liveness", func(c echo.Context) error {
+			if problemSearcher.Liveness() && userSearcher.Liveness() && submissionSearcher.Liveness() {
+				return c.String(http.StatusOK, "")
 			} else {
-				w.WriteHeader(http.StatusInternalServerError)
+				return c.String(http.StatusInternalServerError, "")
 			}
 		})
-		http.HandleFunc("/api/readiness", func(w http.ResponseWriter, r *http.Request) {
-			if problemSearcher.Readiness() && userSearcher.Readiness() && submissionSearcher.Readiness() && recommendSearcher.Readiness() {
-				w.WriteHeader(http.StatusOK)
+
+		e.GET("/api/readiness", func(c echo.Context) error {
+			if problemSearcher.Readiness() && userSearcher.Readiness() && submissionSearcher.Readiness() {
+				return c.String(http.StatusOK, "")
 			} else {
-				w.WriteHeader(http.StatusInternalServerError)
+				return c.String(http.StatusInternalServerError, "")
 			}
 		})
 

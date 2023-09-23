@@ -11,8 +11,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: problem-indexer-one-shot
-          image: atcodersearch-backend:0.1.0
-          imagePullPolicy: Never
+          image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.1
           env:
             - name: DATABASE_URL
               valueFrom:
@@ -23,6 +22,8 @@ spec:
               value: http://solr:8983
             - name: DOCUMENT_SAVE_DIRECTORY
               value: /var/tmp
+            - name: PGSSLMODE
+              value: disable
           resources:
             requests:
               memory: 1024Mi
@@ -36,6 +37,7 @@ spec:
               "atcodersearch",
               "update",
               "problem",
+              "--migrate",
               "--optimize",
               "--skip-fetch",
               "--generate-concurrent=2",
@@ -43,8 +45,7 @@ spec:
               "--chunk-size=1000",
             ]
         - name: user-indexer-one-shot
-          image: atcodersearch-backend:0.1.0
-          imagePullPolicy: Never
+          image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.1
           env:
             - name: DATABASE_URL
               valueFrom:
@@ -55,6 +56,8 @@ spec:
               value: http://solr:8983
             - name: DOCUMENT_SAVE_DIRECTORY
               value: /var/tmp
+            - name: PGSSLMODE
+              value: disable
           resources:
             requests:
               memory: 512Mi
@@ -68,6 +71,7 @@ spec:
               "atcodersearch",
               "update",
               "user",
+              "--migrate",
               "--optimize",
               "--skip-fetch",
               "--generate-concurrent=2",
@@ -75,8 +79,7 @@ spec:
               "--chunk-size=10000",
             ]
         - name: submission-indexer-one-shot
-          image: atcodersearch-backend:0.1.0
-          imagePullPolicy: Never
+          image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.1
           env:
             - name: DATABASE_URL
               valueFrom:
@@ -87,6 +90,8 @@ spec:
               value: http://solr:8983
             - name: DOCUMENT_SAVE_DIRECTORY
               value: /var/tmp
+            - name: PGSSLMODE
+              value: disable
           resources:
             requests:
               memory: 1024Mi
@@ -100,9 +105,12 @@ spec:
               "atcodersearch",
               "update",
               "submission",
+              "--migrate",
               "--optimize",
               "--all",
               "--generate-concurrent=2",
               "--post-concurrent=2",
               "--chunk-size=1000000",
             ]
+      imagePullSecrets:
+        - name: regcred

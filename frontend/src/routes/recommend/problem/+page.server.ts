@@ -1,5 +1,5 @@
 import type { ProblemSearchResult, RecommendResult } from "$lib/search";
-import { API_HOST } from "$env/static/private";
+import { env } from "$env/dynamic/private";
 import type { Data } from "./data.d.ts";
 
 export const csr = false;
@@ -10,7 +10,7 @@ async function fetchProblems() {
     ["page", "1"],
     ["sort", "-start_at"],
   ]);
-  const response = await fetch(`${API_HOST}/api/search/problem?${params.toString()}`);
+  const response = await fetch(`${env.API_HOST}/api/search/problem?${params.toString()}`);
   const result: ProblemSearchResult = await response.json();
 
   return result;
@@ -23,7 +23,7 @@ async function fetchRecommendByRating(url: URL, user: string | null) {
 
   const params = new URLSearchParams(url.searchParams);
   params.set("user_id", user);
-  const response = await fetch(`${API_HOST}/api/recommend/problem?${params.toString()}`);
+  const response = await fetch(`${env.API_HOST}/api/recommend/problem?${params.toString()}`);
   const result: RecommendResult = await response.json();
 
   return result;

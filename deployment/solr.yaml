@@ -36,8 +36,7 @@ spec:
       terminationGracePeriodSeconds: 10
       containers:
         - name: solr
-          image: atcodersearch-solr:0.1.0
-          imagePullPolicy: Never
+          image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-solr:0.1.0
           ports:
             - containerPort: 8983
               name: solr
@@ -54,6 +53,8 @@ spec:
               mountPath: /var/solr/data/submission/data
             - name: recommend-pvc
               mountPath: /var/solr/data/recommend/data
+      imagePullSecrets:
+        - name: regcred
   volumeClaimTemplates:
     - metadata:
         name: problem-pvc

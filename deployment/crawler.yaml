@@ -17,9 +17,8 @@ spec:
         spec:
           restartPolicy: Never
           containers:
-            - name: indexer
-              image: atcodersearch-backend:0.1.0
-              imagePullPolicy: Never
+            - name: crawler
+              image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.1
               env:
                 - name: DATABASE_URL
                   valueFrom:
@@ -29,12 +28,12 @@ spec:
                 - name: ATCODER_USER_NAME
                   valueFrom:
                     secretKeyRef:
-                      name: secret-backend
+                      name: secret-crawler
                       key: atcoder-username
                 - name: ATCODER_USER_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: secret-backend
+                      name: secret-crawler
                       key: atcoder-password
               resources:
                 requests:
@@ -72,9 +71,8 @@ spec:
         spec:
           restartPolicy: Never
           containers:
-            - name: indexer
-              image: atcodersearch-backend:0.1.0
-              imagePullPolicy: Never
+            - name: crawler
+              image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.1
               env:
                 - name: DATABASE_URL
                   valueFrom:
@@ -84,12 +82,12 @@ spec:
                 - name: ATCODER_USER_NAME
                   valueFrom:
                     secretKeyRef:
-                      name: secret-backend
+                      name: secret-crawler
                       key: atcoder-username
                 - name: ATCODER_USER_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: secret-backend
+                      name: secret-crawler
                       key: atcoder-password
               resources:
                 requests:
@@ -108,3 +106,5 @@ spec:
                   "--retry=10",
                   "--target=ABC,ABC-Like,ARC,ARC-Like,AGC,AGC-Like,JOI,Other Sponsored,PAST",
                 ]
+          imagePullSecrets:
+            - name: regcred

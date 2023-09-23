@@ -204,3 +204,51 @@ func scrapeSubmissions(html io.Reader) (SubmissionList, error) {
 		Submissions: submissions,
 	}, nil
 }
+
+func (c *AtCoderClient) FetchSubmissionResult(ctx context.Context, contestID string, submissionID int64) (string, error) {
+	p, err := url.JoinPath("https://atcoder.jp/contests", contestID, "submissions", strconv.Itoa(int(submissionID)))
+	if err != nil {
+		return "", failure.Translate(err, acs.InvalidURL, failure.Context{"contestID": contestID, "submissionID": strconv.Itoa(int(submissionID))}, failure.Message("invalid contestID or submissionID was given"))
+	}
+	u, err := url.Parse(p)
+	if err != nil {
+		return "", failure.Translate(err, acs.InvalidURL, failure.Context{"contestID": contestID, "submissionID": strconv.Itoa(int(submissionID))}, failure.Message("invalid contestID or submissionID was given"))
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u.String(), nil)
+	if err != nil {
+		return "", failure.Translate(err, acs.RequestError, failure.Context{"url": u.String()}, failure.Message("failed to create new request to get submission html"))
+	}
+
+	res, err := c.client.Do(req)
+	if err != nil {
+		return "", failure.Translate(err, acs.RequestError, failure.Context{"url": u.String()}, failure.Message("failed to get submission html"))
+	}
+	if res.StatusCode == http.StatusNotFound {
+		return "", nil
+	}
+	if res.StatusCode != http.StatusOK {
+		defer res.Body.Close()
+		buf := new(bytes.Buffer)
+		buf.ReadFrom(res.Body)
+		return "", failure.New(acs.RequestError, failure.Context{"url": u.String(), "response": buf.String()}, failure.Message("non-ok status returned"))
+	}
+
+	defer res.Body.Close()
+	result, err := scrapeSubmission(res.Body)
+	if err != nil {
+		return "", failure.Translate(err, acs.ScrapeError, failure.Context{"url": u.String()}, failure.Message("failed to scrape submission from html"))
+	}
+
+	return result, nil
+}
+
+func scrapeSubmission(html io.Reader) (string, error) {
+	doc, err := goquery.NewDocumentFromReader(html)
+	if err != nil {
+		return "", failure.Translate(err, acs.ReadError, failure.Message("failed to read html from reader"))
+	}
+
+	result := strings.TrimSpace(doc.Find("#judge-status").Find("span").Text())
+	return result, nil
+}

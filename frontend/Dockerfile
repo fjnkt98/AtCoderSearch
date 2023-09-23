@@ -5,14 +5,15 @@ FROM node:18-bullseye-slim AS stage
 WORKDIR /app
 
 COPY . .
-ARG HOST='http://localhost:8000'
-ENV API_HOST=${HOST}
 RUN npm install && npm run build
 
 FROM node:18-bullseye-slim
 
 COPY --from=stage /app/package.json .
 COPY --from=stage /app/build /app/build
+
+RUN ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
+ENV TZ="Asia/Tokyo"
 
 RUN npm install --omit=dev
 

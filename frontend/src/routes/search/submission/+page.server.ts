@@ -1,32 +1,32 @@
 import type { SubmissionResult } from "$lib/search";
-import { API_HOST } from "$env/static/private";
+import { env } from "$env/dynamic/private";
 import type { Data } from "./data.js";
 
 export const csr = false;
 
 async function fetchResult(url: URL): Promise<SubmissionResult> {
-  const response = await fetch(`${API_HOST}/api/search/submission?${url.searchParams.toString()}`);
+  const response = await fetch(`${env.API_HOST}/api/search/submission?${url.searchParams.toString()}`);
   const result = await response.json();
 
   return result;
 }
 
 async function fetchCategories(): Promise<string[]> {
-  const response = await fetch(`${API_HOST}/api/list/category`);
+  const response = await fetch(`${env.API_HOST}/api/list/category`);
   const result = await response.json();
 
   return result;
 }
 
 async function fetchLanguages(): Promise<string[]> {
-  const response = await fetch(`${API_HOST}/api/list/language`);
+  const response = await fetch(`${env.API_HOST}/api/list/language`);
   const result = await response.json();
 
   return result;
 }
 
 async function fetchContests(category: string | null): Promise<string[]> {
-  const url = category != null ? `${API_HOST}/api/list/contest?category=${category}` : `${API_HOST}/api/list/contest`;
+  const url = category != null ? `${env.API_HOST}/api/list/contest?category=${category}` : `${env.API_HOST}/api/list/contest`;
   const response = await fetch(url);
   const result = await response.json();
 
@@ -34,7 +34,7 @@ async function fetchContests(category: string | null): Promise<string[]> {
 }
 
 async function fetchProblems(contestId: string | null): Promise<string[]> {
-  const url = contestId != null ? `${API_HOST}/api/list/problem?contest_id=${contestId}` : `${API_HOST}/api/list/problem`;
+  const url = contestId != null ? `${env.API_HOST}/api/list/problem?contest_id=${contestId}` : `${env.API_HOST}/api/list/problem`;
   const response = await fetch(url);
   const result = await response.json();
 
