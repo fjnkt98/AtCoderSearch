@@ -151,7 +151,12 @@ var crawlSubmissionCmd = &cobra.Command{
 			slog.Error("`retry` must be greater than or equals to 0")
 			os.Exit(1)
 		}
-		targets := strings.Split(GetString(cmd, "target"), ",")
+		var targets []string
+		if target := GetString(cmd, "target"); target == "" {
+			targets = make([]string, 0)
+		} else {
+			targets = strings.Split(target, ",")
+		}
 
 		ctx, cancel := context.WithCancel(context.Background())
 		eg, ctx := errgroup.WithContext(ctx)
