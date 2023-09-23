@@ -7,9 +7,11 @@ import (
 	"fjnkt98/atcodersearch/acs"
 	"fjnkt98/atcodersearch/atcoder"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
+	mapset "github.com/deckarep/golang-set/v2"
 	"github.com/jmoiron/sqlx"
 	"github.com/morikuni/failure"
 	"golang.org/x/exp/slog"
@@ -125,6 +127,16 @@ loop:
 		return nil
 	}
 
+	noDupSubmissions := make([]atcoder.Submission, 0, len(submissions))
+	ids := mapset.NewSet[int64]()
+	for _, s := range submissions {
+		if ids.Contains(s.ID) {
+			continue
+		}
+		ids.Add(s.ID)
+		noDupSubmissions = append(noDupSubmissions, s)
+	}
+
 	tx, err := c.db.Beginx()
 	if err != nil {
 		return failure.Translate(err, acs.DBError, failure.Message("failed to start transaction to save submission"))
@@ -161,7 +173,7 @@ loop:
 	ON CONFLICT DO NOTHING;
 	`
 	affected := 0
-	for _, submission := range submissions {
+	for _, submission := range noDupSubmissions {
 		if result, err := tx.NamedExecContext(ctx, sql, submission); err != nil {
 			return failure.Translate(err, acs.DBError, failure.Context{"contestID": contestID}, failure.Message("failed to exec sql to save submission"))
 		} else {
