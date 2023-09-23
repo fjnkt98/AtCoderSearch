@@ -1,5 +1,5 @@
-# docker build -t atcodersearch-solr:0.1.0 .
-# docker container run --rm --name solr -p 8983:8983 atcodersearch-solr:0.1.0
+# docker build -t atcodersearch-solr:latest .
+# docker container run --rm --name solr -p 8983:8983 atcodersearch-solr:latest
 
 FROM solr:9.1.0
 

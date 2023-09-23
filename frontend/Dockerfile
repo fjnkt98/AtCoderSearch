@@ -1,5 +1,5 @@
-# docker build -t atcodersearch-frontend:0.1.0 .
-# docker container run --rm --name atcodersearch-frontend -p 3000:3000 atcodersearch-frontend:0.1.0
+# docker build -t atcodersearch-frontend:latest .
+# docker container run --rm --name atcodersearch-frontend -p 3000:3000 atcodersearch-frontend:latest
 
 FROM node:18-bullseye-slim AS stage
 WORKDIR /app
