@@ -213,6 +213,83 @@ func (c *Crawler) Run(ctx context.Context, targets []string, duration int, retry
 	return nil
 }
 
+type Target struct {
+	ID        int64  `db:"id"`
+	ContestID string `db:"contest_id"`
+	Result    string `db:"result"`
+}
+
+func (c *Crawler) ReCrawl(ctx context.Context, duration int) error {
+	rows, err := c.db.QueryxContext(
+		ctx,
+		`
+		SELECT
+			"id",
+			"contest_id",
+			"result"
+		FROM
+			"submissions"
+		WHERE
+			"result" NOT IN ('AC', 'CE', 'IE', 'MLE', 'NG', 'OLE', 'QLE', 'RE', 'TLE', 'WA', 'WJ', 'WR')
+		`,
+	)
+	if err != nil {
+		return failure.Translate(err, acs.DBError, failure.Message("failed to get submissions `submissions` table"))
+	}
+
+	update := func(ctx context.Context, db *sqlx.DB, target Target) error {
+		tx, err := db.Beginx()
+		if err != nil {
+			return failure.Translate(err, acs.DBError, failure.Message("failed to start transaction to save submission"))
+		}
+		defer tx.Rollback()
+
+		sql := `
+		UPDATE
+			"submissions"
+		SET
+			"result" = :result
+		WHERE
+			"id" = :id
+			AND "contest_id" = :contest_id
+		`
+
+		if _, err := tx.NamedExecContext(ctx, sql, target); err != nil {
+			return failure.Translate(err, acs.DBError, failure.Context{"submissionID": strconv.Itoa(int(target.ID)), "contestID": target.ContestID}, failure.Message("failed to exec sql to update submission result"))
+		}
+
+		if err := tx.Commit(); err != nil {
+			return failure.Translate(err, acs.DBError, failure.Context{"submissionID": strconv.Itoa(int(target.ID)), "contestID": target.ContestID}, failure.Message("failed to commit transaction to update submission result"))
+		}
+		slog.Info(fmt.Sprintf("commit transaction updating submission `%d` result.", target.ID))
+
+		return nil
+	}
+
+	defer rows.Close()
+	for rows.Next() {
+		var t Target
+		if err := rows.StructScan(&t); err != nil {
+			return failure.Translate(err, acs.DBError, failure.Message("failed to scan row"))
+		}
+
+		var result string
+		if result, err = c.client.FetchSubmissionResult(ctx, t.ContestID, t.ID); err != nil {
+			return failure.Translate(err, acs.CrawlError, failure.Context{"contestID": t.ContestID, "submissionID": strconv.Itoa(int(t.ID))}, failure.Message("failed to crawl submission"))
+		}
+		slog.Info(fmt.Sprintf("update submission result of `%d` in contest `%s` from `%s` into `%s`", t.ID, t.ContestID, t.Result, result))
+		t.Result = result
+
+		if err := update(ctx, c.db, t); err != nil {
+			return failure.Wrap(err)
+		}
+
+		time.Sleep(time.Duration(duration) * time.Millisecond)
+	}
+
+	return nil
+}
+
 type CrawlHistory struct {
 	db        *sqlx.DB
 	StartedAt int
