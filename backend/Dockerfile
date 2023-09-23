@@ -15,6 +15,9 @@ COPY --from=stage /app/atcodersearch /usr/local/bin/atcodersearch
 COPY ./schema.sql /etc/schema.sql
 ENV DB_SCHEMA_FILE='/etc/schema.sql'
 
+RUN ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
+ENV TZ="Asia/Tokyo"
+
 RUN groupadd --gid 1000 atcodersearch \
     && useradd --uid 1000 --gid atcodersearch --shell /bin/bash --create-home atcodersearch
 USER atcodersearch
