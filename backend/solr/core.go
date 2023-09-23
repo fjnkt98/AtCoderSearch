@@ -40,7 +40,7 @@ func NewSolrCore(coreName string, baseURL string) (*Core, error) {
 }
 
 func Ping(core *Core) (PingResponse, error) {
-	u := core.baseURL.JoinPath("solr", core.name, "ping").String()
+	u := core.baseURL.JoinPath("solr", core.name, "admin", "ping").String()
 	req, err := http.NewRequest("GET", u, nil)
 	if err != nil {
 		return PingResponse{}, failure.Translate(err, RequestError, failure.Context{"url": u}, failure.Message("failed to prepare request"))
