@@ -28,12 +28,12 @@ spec:
                 - name: ATCODER_USER_NAME
                   valueFrom:
                     secretKeyRef:
-                      name: secret-backend
+                      name: secret-crawler
                       key: atcoder-username
                 - name: ATCODER_USER_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: secret-backend
+                      name: secret-crawler
                       key: atcoder-password
               resources:
                 requests:
@@ -82,12 +82,12 @@ spec:
                 - name: ATCODER_USER_NAME
                   valueFrom:
                     secretKeyRef:
-                      name: secret-backend
+                      name: secret-crawler
                       key: atcoder-username
                 - name: ATCODER_USER_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: secret-backend
+                      name: secret-crawler
                       key: atcoder-password
               resources:
                 requests:
@@ -108,4 +108,3 @@ spec:
                 ]
           imagePullSecrets:
             - name: regcred
-
