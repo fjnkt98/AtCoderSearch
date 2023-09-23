@@ -293,6 +293,7 @@ func (s *Searcher) search(r *http.Request, params SearchParams) (int, acs.Search
 func (s *Searcher) Liveness() bool {
 	ping, err := solr.Ping(s.core)
 	if err != nil {
+		slog.Error("user core doesn't alive", slog.String("error", fmt.Sprintf("%+v", err)))
 		return false
 	}
 
@@ -302,6 +303,7 @@ func (s *Searcher) Liveness() bool {
 func (s *Searcher) Readiness() bool {
 	status, err := solr.Status(s.core)
 	if err != nil {
+		slog.Error("user core isn't ready", slog.String("error", fmt.Sprintf("%+v", err)))
 		return false
 	}
 
