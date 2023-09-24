@@ -39,9 +39,9 @@ spec:
               "problem",
               "--migrate",
               "--optimize",
-              "--skip-fetch",
               "--generate-concurrent=2",
               "--post-concurrent=2",
+              "--duration=1000",
               "--chunk-size=1000",
             ]
         - name: user-indexer-one-shot
@@ -73,9 +73,9 @@ spec:
               "user",
               "--migrate",
               "--optimize",
-              "--skip-fetch",
               "--generate-concurrent=2",
               "--post-concurrent=2",
+              "--duration=1000",
               "--chunk-size=10000",
             ]
         - name: submission-indexer-one-shot
@@ -110,7 +110,7 @@ spec:
               "--all",
               "--generate-concurrent=2",
               "--post-concurrent=2",
-              "--chunk-size=1000000",
+              "--chunk-size=10000",
             ]
       imagePullSecrets:
         - name: regcred
