@@ -48,7 +48,7 @@ var generateProblemCmd = &cobra.Command{
 
 		eg.Go(func() error {
 			if err := problem.Generate(ctx, db, saveDir, chunkSize, concurrent); err != nil {
-				failure.Wrap(err)
+				return failure.Wrap(err)
 			}
 			done <- Msg{}
 			return nil
@@ -103,7 +103,7 @@ var generateUserCmd = &cobra.Command{
 
 		eg.Go(func() error {
 			if err := user.Generate(ctx, db, saveDir, chunkSize, concurrent); err != nil {
-				failure.Wrap(err)
+				return failure.Wrap(err)
 			}
 			done <- Msg{}
 			return nil
@@ -158,7 +158,7 @@ var generateSubmissionCmd = &cobra.Command{
 
 		eg.Go(func() error {
 			if err := submission.Generate(ctx, db, saveDir, chunkSize, concurrent, time.Time{}); err != nil {
-				failure.Wrap(err)
+				return failure.Wrap(err)
 			}
 			done <- Msg{}
 			return nil
@@ -213,7 +213,7 @@ var generateRecommendCmd = &cobra.Command{
 
 		eg.Go(func() error {
 			if err := recommend.Generate(ctx, db, saveDir, chunkSize, concurrent); err != nil {
-				failure.Wrap(err)
+				return failure.Wrap(err)
 			}
 			done <- Msg{}
 			return nil
