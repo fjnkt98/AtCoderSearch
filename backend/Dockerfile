@@ -15,6 +15,12 @@ COPY --from=stage /app/atcodersearch /usr/local/bin/atcodersearch
 COPY ./schema.sql /etc/schema.sql
 ENV DB_SCHEMA_FILE='/etc/schema.sql'
 
+RUN apt-get update \
+    && apt-get install -y \
+    ca-certificates \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
 RUN ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
 ENV TZ="Asia/Tokyo"
 
