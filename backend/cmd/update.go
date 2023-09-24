@@ -74,7 +74,7 @@ var updateProblemCmd = &cobra.Command{
 
 		eg.Go(func() error {
 			if err := problem.Update(ctx, cfg, db, core); err != nil {
-				failure.Wrap(err)
+				return failure.Wrap(err)
 			}
 			done <- Msg{}
 			return nil
@@ -153,7 +153,7 @@ var updateUserCmd = &cobra.Command{
 
 		eg.Go(func() error {
 			if err := user.Update(ctx, cfg, db, core); err != nil {
-				failure.Wrap(err)
+				return failure.Wrap(err)
 			}
 			done <- Msg{}
 			return nil
