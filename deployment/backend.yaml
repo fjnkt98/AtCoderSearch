@@ -32,7 +32,7 @@ spec:
       terminationGracePeriodSeconds: 10
       containers:
         - name: backend
-          image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.1
+          image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.2
           env:
             - name: DATABASE_URL
               valueFrom:
@@ -53,6 +53,17 @@ spec:
             runAsGroup: 1000
             runAsNonRoot: true
           args: ["atcodersearch", "server"]
+          livenessProbe:
+            httpGet:
+              path: /api/liveness
+              port: 8000
+            initialDelaySeconds: 3
+            periodSeconds: 3
+          readinessProbe:
+            httpGet:
+              path: /api/readiness
+              port: 8000
+            initialDelaySeconds: 3
+            periodSeconds: 3
       imagePullSecrets:
         - name: regcred
-

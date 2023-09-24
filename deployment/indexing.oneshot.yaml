@@ -11,7 +11,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: problem-indexer-one-shot
-          image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.1
+          image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.2
           env:
             - name: DATABASE_URL
               valueFrom:
@@ -45,7 +45,7 @@ spec:
               "--chunk-size=1000",
             ]
         - name: user-indexer-one-shot
-          image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.1
+          image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.2
           env:
             - name: DATABASE_URL
               valueFrom:
@@ -79,7 +79,7 @@ spec:
               "--chunk-size=10000",
             ]
         - name: submission-indexer-one-shot
-          image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.1
+          image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.2
           env:
             - name: DATABASE_URL
               valueFrom:
