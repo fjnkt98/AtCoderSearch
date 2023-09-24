@@ -53,5 +53,17 @@ spec:
             runAsGroup: 1000
             runAsNonRoot: true
           args: ["atcodersearch", "server"]
+          livenessProbe:
+            httpGet:
+              path: /api/liveness
+              port: 8000
+            initialDelaySeconds: 3
+            periodSeconds: 3
+          readinessProbe:
+            httpGet:
+              path: /api/readiness
+              port: 8000
+            initialDelaySeconds: 3
+            periodSeconds: 3
       imagePullSecrets:
         - name: regcred
