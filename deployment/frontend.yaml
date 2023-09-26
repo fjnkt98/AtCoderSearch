@@ -41,8 +41,8 @@ spec:
               containerPort: 3000
           resources:
             requests:
-              memory: 512Mi
-              cpu: 500m
+              memory: 256Mi
+              cpu: 200m
           securityContext:
             runAsUser: 1000
             runAsGroup: 1000

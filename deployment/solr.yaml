@@ -42,7 +42,7 @@ spec:
           resources:
             requests:
               memory: 512Mi
-              cpu: 1000m
+              cpu: 200m
           volumeMounts:
             - name: problem-pvc
               mountPath: /var/solr/data/problem/data
@@ -55,13 +55,13 @@ spec:
           livenessProbe:
             httpGet:
               path: /solr/admin/cores
-              port: 8000
+              port: 8983
             initialDelaySeconds: 5
             periodSeconds: 5
           readinessProbe:
             httpGet:
               path: /solr/admin/cores
-              port: 8000
+              port: 8983
             initialDelaySeconds: 5
             periodSeconds: 5
       imagePullSecrets:

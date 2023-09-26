@@ -56,7 +56,7 @@ spec:
           resources:
             requests:
               memory: 512Mi
-              cpu: 1000m
+              cpu: 200m
           volumeMounts:
             - name: postgres-pvc
               mountPath: /var/lib/postgresql/data
