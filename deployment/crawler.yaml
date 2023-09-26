@@ -38,7 +38,7 @@ spec:
               resources:
                 requests:
                   memory: 512Mi
-                  cpu: 250m
+                  cpu: 200m
               securityContext:
                 runAsUser: 1000
                 runAsGroup: 1000
@@ -92,7 +92,7 @@ spec:
               resources:
                 requests:
                   memory: 512Mi
-                  cpu: 250m
+                  cpu: 200m
               securityContext:
                 runAsUser: 1000
                 runAsGroup: 1000
