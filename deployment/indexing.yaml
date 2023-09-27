@@ -13,6 +13,7 @@ spec:
       backoffLimit: 0
       completions: 1
       parallelism: 1
+      ttlSecondsAfterFinished: 30
       template:
         spec:
           restartPolicy: OnFailure
@@ -66,6 +67,7 @@ spec:
       backoffLimit: 0
       completions: 1
       parallelism: 1
+      ttlSecondsAfterFinished: 30
       template:
         spec:
           restartPolicy: OnFailure
@@ -122,6 +124,7 @@ spec:
       backoffLimit: 0
       completions: 1
       parallelism: 1
+      ttlSecondsAfterFinished: 30
       template:
         spec:
           restartPolicy: OnFailure
