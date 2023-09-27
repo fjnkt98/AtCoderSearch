@@ -4,7 +4,7 @@ kind: CronJob
 metadata:
   name: submission-crawler-1
 spec:
-  schedule: "*/10 0 * * 1-5"
+  schedule: "*/10 * * * 1-5"
   concurrencyPolicy: Forbid
   startingDeadlineSeconds: 30
   suspend: false
