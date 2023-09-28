@@ -4,7 +4,7 @@ metadata:
   name: http-ingress
 spec:
   rules:
-    - host: localhost
+    - host: atcoder-search.fjnkt98.com
       http:
         paths:
           - path: /api
