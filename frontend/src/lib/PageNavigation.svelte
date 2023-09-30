@@ -4,7 +4,7 @@
   export let end: number;
   export let current: number;
 
-  const width = 5;
+  const width = 4;
 
   const generateLabels = (c: number, e: number): string[] => {
     if ((c === 1 && e === 1) || e === 0) {
