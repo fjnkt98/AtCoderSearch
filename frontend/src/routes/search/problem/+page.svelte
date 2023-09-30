@@ -48,7 +48,7 @@
       {/if}
     </div>
 
-    <div class={`mx-4 flex ${expand ? "basis-4/5" : ""} flex-col items-center justify-center`}>
+    <div class={`mx-4 flex ${expand ? "basis-4/5" : "sm:basis-4/5"} flex-col items-center justify-center`}>
       <div class="flex-rows flex w-full max-w-5xl items-center sm:justify-between md:justify-between lg:justify-end">
         <button
           class={`rounded-xl ${expand ? "bg-green-600 text-slate-50" : "bg-white text-green-600"} px-4 py-1 text-lg font-medium shadow-sm shadow-gray-300 lg:hidden`}
