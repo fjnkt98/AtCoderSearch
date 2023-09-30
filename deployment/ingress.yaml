@@ -21,3 +21,26 @@ spec:
                 name: frontend
                 port:
                   number: 3000
+    - host: localhost
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: backend
+                port:
+                  number: 8000
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend
+                port:
+                  number: 3000
+          - path: /solr
+            pathType: Prefix
+            backend:
+              service:
+                name: solr
+                port: 8983
