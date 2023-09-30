@@ -22,22 +22,24 @@
   }
 </script>
 
-<nav class="flex w-full items-center justify-between border px-6 py-1">
-  <a href="/" class="mx-4 my-2 font-roboto text-3xl">AtCoder Search</a>
-  <div class="white flex flex-row items-center justify-center rounded-full border border-gray-400 bg-white p-2 text-gray-900">
-    <div class="px-2">
-      <Icon src={AiOutlineSearch} />
+<nav class="flex w-full items-center justify-between border px-2 py-1 sm:px-6">
+  <a href="/" class="font-roboto mx-1 my-2 text-xl sm:text-3xl">AtCoder Search</a>
+  <div class="basis-1/2">
+    <div class="flex flex-row items-center justify-center rounded-full border border-gray-400 bg-white p-1 text-gray-900 sm:p-2">
+      <div class="px-2">
+        <Icon src={AiOutlineSearch} />
+      </div>
+      <input type="text" class="w-full appearance-none bg-transparent text-gray-900 focus:border-none focus:outline-none" placeholder="User ID" on:keydown={handleKeyDown} bind:value={userId} />
+      <button
+        type="button"
+        class=""
+        on:click={() => {
+          search();
+        }}
+      >
+        <Icon src={HiOutlinePaperAirplane} className="rotate-90" />
+      </button>
     </div>
-    <input type="text" class="flex-1 appearance-none bg-transparent text-gray-900 focus:border-none focus:outline-none" placeholder="User ID" on:keydown={handleKeyDown} bind:value={userId} />
-    <button
-      type="button"
-      class=""
-      on:click={() => {
-        search();
-      }}
-    >
-      <Icon src={HiOutlinePaperAirplane} className="rotate-90" />
-    </button>
   </div>
 </nav>
 

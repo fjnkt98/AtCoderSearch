@@ -6,7 +6,7 @@
   <a href="/" class="font-roboto mx-4 my-2 text-3xl">AtCoder Search</a>
 </nav>
 
-<div class="flex flex-1 justify-center overflow-auto p-2 py-8">
+<div class="flex flex-1 justify-center overflow-auto py-8 sm:px-2">
   <div class="grid h-4/6 w-5/6 max-w-6xl gap-4 p-2 sm:grid-cols-1 md:grid-cols-2">
     <a class="block rounded-3xl bg-white p-4 no-underline shadow-lg" href={`/search/problem?${defaultProblemSearchParams.toString()}`}>
       <h3 class="font-roboto text-2xl font-medium">Search Problems</h3>

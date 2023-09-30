@@ -4,7 +4,7 @@
   export let end: number;
   export let current: number;
 
-  const width = 5;
+  const width = 4;
 
   const generateLabels = (c: number, e: number): string[] => {
     if ((c === 1 && e === 1) || e === 0) {
@@ -13,7 +13,9 @@
     let labels: string[] = [];
     let containsBegin = false;
     let containsEnd = false;
-    for (let i = Math.max(c - width, 1); i <= Math.min(c + width, e); i++) {
+    const left = Math.max(c - Math.floor(width / 2), 1);
+    const right = Math.min(left + width, e);
+    for (let i = left; i <= right; i++) {
       if (i === 1) {
         containsBegin = true;
       } else if (i === e) {
@@ -22,7 +24,11 @@
       labels.push(i.toString());
     }
     if (!containsBegin) {
-      labels = ["1", "...", ...labels];
+      if (labels[0] == "2") {
+        labels = ["1", ...labels];
+      } else {
+        labels = ["1", "...", ...labels];
+      }
     }
     if (!containsEnd) {
       labels = [...labels, "...", e.toString()];
@@ -36,10 +42,10 @@
 <div class="flex flex-row items-center justify-center text-sm">
   {#each labels as label}
     {#if label === "..."}
-      <p class="m-1 flex h-10 w-10 select-none items-center justify-center rounded-md bg-white text-center font-medium shadow-sm shadow-gray-500">{label}</p>
+      <p class="m-1 flex h-8 w-8 select-none items-center justify-center rounded-md bg-white text-center font-medium shadow-sm shadow-gray-500 sm:h-10 sm:w-10">{label}</p>
     {:else}
       <button
-        class={"m-1 flex h-10 w-10 items-center justify-center rounded-md text-center font-medium shadow-sm shadow-gray-500 hover:bg-gray-100 " +
+        class={"m-1 flex h-8 w-8 items-center justify-center rounded-md text-center font-medium shadow-sm shadow-gray-500 hover:bg-gray-100 sm:h-10 sm:w-10 " +
           (current.toString() === label ? "bg-gray-700 text-white hover:bg-gray-800" : "bg-white")}
         on:click={() => {
           const params = new URLSearchParams($page.url.searchParams);

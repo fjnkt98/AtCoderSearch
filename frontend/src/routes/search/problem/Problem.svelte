@@ -20,14 +20,14 @@
   }
 </script>
 
-<div class="my-2 w-full max-w-5xl rounded-2xl bg-white px-4 py-4 shadow-md shadow-gray-300">
+<div class="my-2 w-full min-w-[320px] max-w-5xl rounded-2xl bg-white px-2 py-2 shadow-md shadow-gray-300 sm:px-4 sm:py-4">
   <div class="flex flex-row items-center">
     <a href={problem.contest_url} target="_blank" rel="noreferrer">
-      <img alt="AtCoder Logo" src={atcoderLogo} class="m-2 aspect-square h-12 rounded-full bg-white" />
+      <img alt="AtCoder Logo" src={atcoderLogo} class="mx-2 my-1 aspect-square h-8 rounded-full bg-white sm:m-2 sm:h-12" />
     </a>
     <div class="mx-2">
-      <a class="my-1 block text-xl" href={problem.problem_url} target="_blank" rel="noreferrer">{problem.problem_title}</a>
-      <a class="text-md text-blue-500" href={problem.problem_url} target="_blank" rel="noreferrer">{problem.problem_url}</a>
+      <a class="block break-all text-lg sm:my-1 sm:text-xl" href={problem.problem_url} target="_blank" rel="noreferrer">{problem.problem_title}</a>
+      <a class="sm:text-md break-all text-sm text-blue-500" href={problem.problem_url} target="_blank" rel="noreferrer">{problem.problem_url}</a>
     </div>
   </div>
 

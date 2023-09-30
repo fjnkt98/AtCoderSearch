@@ -22,6 +22,9 @@ async function fetchRecommendByRating(url: URL, user: string | null) {
   }
 
   const params = new URLSearchParams(url.searchParams);
+  if (user === "") {
+    user = "empty";
+  }
   params.set("user_id", user);
   const response = await fetch(`${env.API_HOST}/api/recommend/problem?${params.toString()}`);
   const result: RecommendResult = await response.json();

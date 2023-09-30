@@ -16,13 +16,13 @@
   }
 </script>
 
-<div class="mx-2 my-4 flex min-w-[350px] flex-col justify-between rounded-2xl bg-white px-4 py-4 shadow-md shadow-gray-300">
+<div class="mx-2 my-1 flex min-w-[280px] flex-col justify-between rounded-2xl bg-white px-2 py-3 shadow-md shadow-gray-300 sm:my-4 sm:px-4 sm:py-4">
   <div class="flex flex-row items-center">
     <a href={problem.contest_url} target="_blank" rel="noreferrer">
-      <img alt="AtCoder Logo" src={atcoderLogo} class="m-1 aspect-square h-12 rounded-full bg-white" />
+      <img alt="AtCoder Logo" src={atcoderLogo} class="m-1 aspect-square h-8 rounded-full bg-white sm:h-12" />
     </a>
     <div class="mx-2">
-      <a class="block text-xl" href={problem.problem_url} target="_blank" rel="noreferrer">{problem.problem_title}</a>
+      <a class="block text-lg sm:text-xl" href={problem.problem_url} target="_blank" rel="noreferrer">{problem.problem_title}</a>
     </div>
   </div>
 
@@ -32,7 +32,7 @@
         {problem.contest_title}
       </a>
     </div>
-    <div class="m-1 px-2 text-sm text-slate-500">
+    <div class="px-2 text-sm text-slate-500 sm:my-1">
       {convertDateTime(problem.start_at)}
     </div>
   </div>
