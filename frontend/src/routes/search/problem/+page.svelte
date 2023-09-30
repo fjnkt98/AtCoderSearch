@@ -25,7 +25,7 @@
 <div class="w-full flex-1 overflow-y-auto px-8 py-8">
   <PageNavigation end={data.stats.pages} current={data.stats.index} />
 
-  <div class="my-2 flex min-w-min flex-row justify-center">
+  <div class="my-2 flex min-w-min flex-row items-start justify-center">
     <div class={`mx-4 ${expand ? "block" : "hidden"} basis-1/5 lg:block`}>
       <select
         class="my-2 block w-full rounded-lg bg-white p-2.5 text-sm shadow-sm shadow-gray-300"
