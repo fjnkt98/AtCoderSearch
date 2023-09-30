@@ -16,7 +16,7 @@
   }
 </script>
 
-<div class="mx-2 my-4 flex min-w-[350px] flex-col justify-between rounded-2xl bg-white px-4 py-4 shadow-md shadow-gray-300">
+<div class="mx-2 my-4 flex min-w-[320px] flex-col justify-between rounded-2xl bg-white px-4 py-4 shadow-md shadow-gray-300">
   <div class="flex flex-row items-center">
     <a href={problem.contest_url} target="_blank" rel="noreferrer">
       <img alt="AtCoder Logo" src={atcoderLogo} class="m-1 aspect-square h-12 rounded-full bg-white" />
