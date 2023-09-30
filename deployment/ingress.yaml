@@ -43,4 +43,5 @@ spec:
             backend:
               service:
                 name: solr
-                port: 8983
+                port:
+                  number: 8983
