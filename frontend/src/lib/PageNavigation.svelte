@@ -3,6 +3,7 @@
   import { goto } from "$app/navigation";
   export let end: number;
   export let current: number;
+  export let enableEnd: boolean = true;
 
   const width = 4;
 
@@ -31,7 +32,11 @@
       }
     }
     if (!containsEnd) {
-      labels = [...labels, "...", e.toString()];
+      if (enableEnd) {
+        labels = [...labels, "...", e.toString()];
+      } else {
+        labels = [...labels, "..."];
+      }
     }
     return labels;
   };
