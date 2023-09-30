@@ -25,7 +25,7 @@
 </script>
 
 <div class="w-full flex-1 overflow-y-auto py-8 sm:px-8">
-  <PageNavigation end={data.result.stats.pages} current={data.result.stats.index} />
+  <PageNavigation end={data.result.stats.pages} current={data.result.stats.index} enableEnd={false} />
 
   <div class="my-2 flex min-w-min flex-row items-start justify-center">
     <div class={`mx-4 ${expand ? "block basis-1/5" : "hidden"} lg:block`}>
