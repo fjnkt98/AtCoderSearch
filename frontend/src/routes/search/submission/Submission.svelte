@@ -23,7 +23,7 @@
   ]);
 </script>
 
-<div class="my-2 w-2/3 min-w-[600px] rounded-2xl bg-white px-4 py-2 shadow-md shadow-gray-300">
+<div class="my-2 w-full max-w-5xl rounded-2xl bg-white px-4 py-4 shadow-md shadow-gray-300">
   <div class="flex flex-row items-center justify-between">
     <div class="mx-2 flex basis-4/5 flex-col pr-4">
       <a class="inline-block text-sm font-bold text-blue-600" href={submission.submission_url} target="_blank" rel="noreferrer">#{submission.submission_id}</a>
