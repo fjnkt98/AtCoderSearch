@@ -20,7 +20,7 @@
   }
 </script>
 
-<div class="my-2 w-2/3 min-w-[600px] rounded-2xl bg-white px-4 py-4 shadow-md shadow-gray-300">
+<div class="my-2 w-full max-w-5xl rounded-2xl bg-white px-4 py-4 shadow-md shadow-gray-300">
   <div class="flex flex-row items-center">
     <a href={problem.contest_url} target="_blank" rel="noreferrer">
       <img alt="AtCoder Logo" src={atcoderLogo} class="m-2 aspect-square h-12 rounded-full bg-white" />

@@ -19,15 +19,15 @@
 <div class="mx-2 my-4 flex min-w-[350px] flex-col justify-between rounded-2xl bg-white px-4 py-4 shadow-md shadow-gray-300">
   <div class="flex flex-row items-center">
     <a href={problem.contest_url} target="_blank" rel="noreferrer">
-      <img alt="AtCoder Logo" src={atcoderLogo} class="m-2 aspect-square h-12 rounded-full bg-white" />
+      <img alt="AtCoder Logo" src={atcoderLogo} class="m-1 aspect-square h-12 rounded-full bg-white" />
     </a>
     <div class="mx-2">
-      <a class="my-1 block text-xl" href={problem.problem_url} target="_blank" rel="noreferrer">{problem.problem_title}</a>
+      <a class="block text-xl" href={problem.problem_url} target="_blank" rel="noreferrer">{problem.problem_title}</a>
     </div>
   </div>
 
-  <div class="my-1">
-    <div class="m-1 px-2 text-sm text-gray-900">
+  <div>
+    <div class="px-2 text-sm text-gray-600">
       <a href={problem.contest_url} target="_blank" rel="noreferrer">
         {problem.contest_title}
       </a>

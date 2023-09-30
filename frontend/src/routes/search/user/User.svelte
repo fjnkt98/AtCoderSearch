@@ -5,7 +5,7 @@
   export let user: User;
 </script>
 
-<div class="my-2 w-2/3 min-w-[600px] rounded-2xl bg-white px-4 py-4 shadow-md shadow-gray-300">
+<div class="my-2 w-full max-w-5xl rounded-2xl bg-white px-4 py-4 shadow-md shadow-gray-300">
   <div class="flex flex-row items-center">
     <p class="mx-3 text-xl">{user.rank}</p>
     <div class="flex-grow">
