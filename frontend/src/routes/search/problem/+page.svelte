@@ -18,13 +18,15 @@
 
   let selections: string[] = ["-start_at", "start_at", "-score", "difficulty", "-difficulty"];
   let selected = $page.url.searchParams.get("sort") ?? "-start_at";
+
+  let expand: boolean = false;
 </script>
 
-<div class="flex-1 overflow-auto px-12 py-8">
+<div class="w-full flex-1 overflow-y-auto px-8 py-8">
   <PageNavigation end={data.stats.pages} current={data.stats.index} />
 
-  <div class="container flex flex-row justify-between">
-    <div>
+  <div class="my-2 flex min-w-min flex-row justify-center">
+    <div class={`mx-4 ${expand ? "block" : "hidden"} basis-1/5 lg:block`}>
       <select
         class="my-2 block w-full rounded-lg bg-white p-2.5 text-sm shadow-sm shadow-gray-300"
         bind:value={selected}
@@ -46,8 +48,16 @@
       {/if}
     </div>
 
-    <div class="mx-2 flex flex-1 flex-col items-center justify-center">
-      <p class="my-2 w-2/3 min-w-[600px] text-left text-slate-500">{data.stats.count}件/{data.stats.total}件 約{data.stats.time}ms</p>
+    <div class="mx-2 flex basis-4/5 flex-col items-center justify-center">
+      <div class="flex-rows flex w-full max-w-5xl items-center sm:justify-between md:justify-between lg:justify-end">
+        <button
+          class={`rounded-xl ${expand ? "bg-green-600 text-slate-50" : "bg-white text-green-600"} px-4 py-1 text-lg font-medium shadow-sm shadow-gray-300 lg:hidden`}
+          on:click={() => {
+            expand = !expand;
+          }}>Filter</button
+        >
+        <p class="my-2 w-full max-w-5xl text-right text-slate-500">{data.stats.count}件/{data.stats.total}件 約{data.stats.time}ms</p>
+      </div>
       {#each data.items as item}
         <Problem problem={item} />
       {/each}
