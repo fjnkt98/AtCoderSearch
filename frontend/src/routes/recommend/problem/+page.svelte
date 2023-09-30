@@ -52,8 +52,8 @@
   }
 </script>
 
-<div class="flex-1 overflow-auto px-12 py-8">
-  <h1 class="text-3xl">Recent Problems</h1>
+<div class="flex-1 overflow-auto px-4 py-3 sm:px-12 sm:py-8">
+  <h1 class="text-2xl sm:text-3xl">Recent Problems</h1>
   <div class="flex flex-row overflow-x-auto">
     {#each data.recent.items as item}
       <Recommend problem={item} />
@@ -61,10 +61,10 @@
   </div>
 
   {#if data.recByRating != null}
-    <h1 class="mb-4 mt-12 text-3xl">Recommend by Rating</h1>
+    <h1 class="mb-2 mt-6 text-2xl sm:mb-4 sm:mt-12 sm:text-3xl">Recommend by Rating</h1>
 
     <div class="flex flex-row flex-wrap items-center">
-      <div class="m-1 rounded-xl bg-white px-4 py-2 shadow-sm shadow-gray-400">
+      <div class="m-1 rounded-xl bg-white px-4 py-0.5 shadow-sm shadow-gray-400 sm:py-2">
         <label class="mx-1 cursor-pointer select-none">
           <input type="radio" bind:group={difficulty} value="easy" on:change={() => search()} />
           easy
@@ -79,7 +79,7 @@
         </label>
       </div>
 
-      <div class="m-1 rounded-xl bg-white px-4 py-2 shadow-sm shadow-gray-400">
+      <div class="m-1 rounded-xl bg-white px-4 py-0.5 shadow-sm shadow-gray-400 sm:py-2">
         <label class="mx-1 cursor-pointer select-none">
           <input type="radio" bind:group={category} value="ALL" on:change={() => search()} />
           ALL
@@ -98,7 +98,7 @@
         </label>
       </div>
 
-      <div class="m-1 rounded-xl bg-white px-4 py-2 shadow-sm shadow-gray-400">
+      <div class="m-1 rounded-xl bg-white px-4 py-0.5 shadow-sm shadow-gray-400 sm:py-2">
         <label class="mx-1 cursor-pointer select-none">
           <input type="radio" bind:group={trend} value="recent" on:change={() => search()} />
           recent
@@ -109,7 +109,7 @@
         </label>
       </div>
 
-      <div class="m-1 rounded-xl bg-white px-4 py-2 shadow-sm shadow-gray-400">
+      <div class="m-1 rounded-xl bg-white px-4 py-0.5 shadow-sm shadow-gray-400 sm:py-2">
         <label class="mx-1 cursor-pointer select-none">
           <input type="checkbox" bind:checked={nonexperimental} on:change={() => search()} />
           prefer not-experimental

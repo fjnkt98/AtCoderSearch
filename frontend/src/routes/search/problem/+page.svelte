@@ -22,7 +22,7 @@
   let expand: boolean = false;
 </script>
 
-<div class="w-full flex-1 overflow-y-auto border py-8 sm:px-8">
+<div class="w-full flex-1 overflow-y-auto py-8 sm:px-8">
   <PageNavigation end={data.stats.pages} current={data.stats.index} />
 
   <div class="my-2 flex min-w-min flex-row items-start justify-center">

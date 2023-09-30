@@ -24,11 +24,11 @@
   let expand: boolean = false;
 </script>
 
-<div class="w-full flex-1 overflow-y-auto px-8 py-8">
+<div class="w-full flex-1 overflow-y-auto py-8 sm:px-8">
   <PageNavigation end={data.result.stats.pages} current={data.result.stats.index} />
 
   <div class="my-2 flex min-w-min flex-row items-start justify-center">
-    <div class={`mx-4 ${expand ? "block" : "hidden"} basis-1/5 lg:block`}>
+    <div class={`mx-4 ${expand ? "block basis-1/5" : "hidden"} lg:block`}>
       <select
         class="my-2 block w-full rounded-lg bg-white p-2.5 text-sm shadow-sm shadow-gray-300"
         bind:value={selected}
@@ -49,7 +49,7 @@
       <Filter categories={data.categories} languages={data.languages} contests={data.contests} problems={data.problems} />
     </div>
 
-    <div class="mx-2 flex basis-4/5 flex-col items-center justify-center">
+    <div class={`mx-4 flex ${expand ? "basis-4/5" : "sm:basis-4/5"} flex-col items-center justify-center`}>
       <div class="flex-rows flex w-full max-w-5xl items-center sm:justify-between md:justify-between lg:justify-end">
         <button
           class={`rounded-xl ${expand ? "bg-green-600 text-slate-50" : "bg-white text-green-600"} px-4 py-1 text-lg font-medium shadow-sm shadow-gray-300 lg:hidden`}
