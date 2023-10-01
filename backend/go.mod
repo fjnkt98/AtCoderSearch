@@ -13,6 +13,7 @@ require (
 	github.com/labstack/echo/v4 v4.11.1
 	github.com/lib/pq v1.10.9
 	github.com/morikuni/failure v1.1.2
+	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/spf13/cobra v1.7.0
 	github.com/tdewolff/minify v2.3.6+incompatible
 	golang.org/x/exp v0.0.0-20230713183714-613f0c0eb8a1

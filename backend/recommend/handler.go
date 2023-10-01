@@ -28,7 +28,7 @@ const (
 type SearchParams struct {
 	Model    int    `json:"model" schema:"model" validate:"required,model"`
 	Option   string `json:"option" schema:"option" validate:"omitempty,option"`
-	UserID   string `json:"user_id" schema:"user_id" validate:"required"`
+	UserID   string `json:"user_id" schema:"user_id"`
 	Rating   int    `json:"rating" schema:"rating"`
 	Limit    int    `json:"limit" schema:"limit" validate:"lte=200"`
 	Page     int    `json:"page" schema:"page"`
@@ -285,11 +285,14 @@ func (s *Searcher) HandleGET(c echo.Context) error {
 func (s *Searcher) search(r *http.Request, params SearchParams) (int, acs.SearchResultResponse[Response]) {
 	startTime := time.Now()
 
-	rating, err := s.getRating(params.UserID)
-	if err != nil {
-		slog.Error("invalid user id", slog.String("url", r.URL.String()), slog.Any("params", params), slog.String("error", fmt.Sprintf("%+v", err)))
+	var msg string
+	if params.UserID != "" {
+		if rating, err := s.getRating(params.UserID); err != nil {
+			msg = "invalid user id"
+		} else {
+			params.Rating = rating
+		}
 	}
-	params.Rating = rating
 
 	query := params.ToQuery()
 	res, err := solr.Select[Response, any](s.core, query)
@@ -308,9 +311,9 @@ func (s *Searcher) search(r *http.Request, params SearchParams) (int, acs.Search
 			Count:  int(len(res.Response.Docs)),
 			Pages:  (res.Response.NumFound + int(rows) - 1) / int(rows),
 			Params: &params,
-			Facet:  res.FacetCounts,
 		},
-		Items: res.Response.Docs,
+		Items:   res.Response.Docs,
+		Message: msg,
 	}
 	slog.Info("querylog", slog.String("domain", "recommend"), slog.Int("elapsed_time", result.Stats.Time), slog.Int("hits", res.Response.NumFound), slog.Any("params", params))
 

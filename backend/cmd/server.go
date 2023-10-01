@@ -68,8 +68,18 @@ var serverCmd = &cobra.Command{
 
 		e := echo.New()
 		e.Use(middleware.Recover())
-		e.Use(middleware.GzipWithConfig(middleware.GzipConfig{
-			Level: 5,
+		e.Use(middleware.Gzip())
+		e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+			AllowMethods: []string{
+				http.MethodGet,
+				http.MethodPost,
+			},
+			AllowHeaders: []string{
+				echo.HeaderOrigin,
+			},
+			AllowOrigins: []string{
+				"https://atcoder-search.fjnkt98.com",
+			},
 		}))
 		e.HideBanner = true
 		e.HidePort = true
