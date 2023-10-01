@@ -394,7 +394,7 @@ var updateLanguageCmd = &cobra.Command{
 func init() {
 	updateCmd.PersistentFlags().Bool("migrate", false, "Execute database migration before update index.")
 	updateCmd.PersistentFlags().String("save-dir", "", "Directory path at which generated documents will be saved.")
-	updateCmd.PersistentFlags().BoolP("optimize", "o", true, "Optimize index if true.")
+	updateCmd.PersistentFlags().BoolP("optimize", "o", false, "Optimize index if true.")
 	updateCmd.PersistentFlags().Int("chunk-size", 1000, "Number of documents to write in 1 file.")
 	updateCmd.PersistentFlags().Int("generate-concurrent", 6, "Number of concurrent document generation processes")
 	updateCmd.PersistentFlags().Int("post-concurrent", 4, "Number of concurrent document upload processes")
