@@ -1,0 +1,212 @@
+openapi: 3.0.0
+info:
+  title: AtCoder Search Backend API
+  description: AtCoder Search backend API
+  version: 0.1.2
+paths:
+  /api/search/problem:
+    get:
+      summary: Search problems with query parameter
+      description: Search problems
+      parameters:
+        - in: query
+          name: keyword
+          schema:
+            type: string
+            maxLength: 200
+          description: The search keyword.
+          required: false
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 200
+            default: 20
+          description: Maximum number of search results per page.
+          required: false
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: |
+            The page index of search results.  
+            [Caution] If a large value is specified, API server may be overloaded.
+          required: false
+        - in: query
+          name: filter.category
+          schema:
+            type: string
+          example: "ABC,ARC"
+          description: Filter by contest type. Multiple values can be specified by separating them with comma.
+        - in: query
+          name: filter.difficulty.from
+          schema:
+            type: integer
+          example: 1000
+          description: Filter by problem difficulty.
+        - in: query
+          name: filter.difficulty.to
+          schema:
+            type: integer
+          example: 2000
+          description: Filter by problem difficulty.
+        - in: query
+          name: filter.color
+          schema:
+            type: string
+          example: green
+          description: Filter by problem difficulty specified by color.
+        - in: query
+          name: sort
+          schema:
+            type: string
+            enum:
+              - "start_at"
+              - "-start_at"
+              - "difficulty"
+              - "-difficulty"
+              - "-score"
+            default: -start_at
+            description: Sort the search result.
+        - in: query
+          name: facet.term
+          schema:
+            type: string
+            enum:
+              - category
+              - color
+          example: "category,color"
+          description: Facetting by term. Multiple values can be specified by separating them with comma.
+        - in: query
+          name: facet.difficulty.from
+          schema:
+            type: number
+          example: "0"
+          description: Facetting by difficulty. If facet.difficulty.from, facet.difficulty.to, or facet.difficulty.gap is unspecified, facet count is not returned.
+        - in: query
+          name: facet.difficulty.to
+          schema:
+            type: number
+          example: "2800"
+          description: Facetting by difficulty. If facet.difficulty.from, facet.difficulty.to, or facet.difficulty.gap is unspecified, facet count is not returned.
+        - in: query
+          name: facet.difficulty.gap
+          schema:
+            type: number
+          example: "400"
+          description: Facetting by difficulty. If facet.difficulty.from, facet.difficulty.to, or facet.difficulty.gap is unspecified, facet count is not returned.
+      responses:
+        200:
+          description: "Search result"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchProblemResponse"
+        400:
+          description: "Bad request"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchProblemResponse"
+components:
+  schemas:
+    SearchProblemResponse:
+      type: object
+      properties:
+        stats:
+          type: object
+          $ref: "#/components/schemas/Stats"
+        items:
+          type: array
+          items:
+            type: object
+            $ref: "#/components/schemas/Problem"
+        message:
+          type: string
+          description: The error message
+      required:
+        - stats
+        - items
+    Stats:
+      type: object
+      properties:
+        time:
+          type: integer
+        total:
+          type: integer
+        index:
+          type: integer
+        pages:
+          type: integer
+        count:
+          type: integer
+        params:
+          type: object
+          $ref: "#/components/schemas/SearchParams"
+        facet:
+          type: object
+          $ref: "#/components/schemas/ProblemFacetResult"
+      required:
+        - time
+        - total
+        - index
+        - pages
+        - count
+    SearchParams:
+      type: object
+    ProblemFacetResult:
+      type: object
+      properties:
+        category:
+          type: array
+          items:
+            type: object
+            $ref: "#/components/schemas/FacetPart"
+        difficulty:
+          type: array
+          items:
+            type: object
+            $ref: "#/components/schemas/FacetPart"
+        color:
+          type: array
+          items:
+            type: object
+            $ref: "#/components/schemas/FacetPart"
+    FacetPart:
+      type: object
+      properties:
+        label:
+          type: string
+        count:
+          type: number
+    Problem:
+      type: object
+      properties:
+        problem_id:
+          type: string
+        problem_title:
+          type: string
+        problem_url:
+          type: string
+          format: uri
+        contest_id:
+          type: string
+        contest_title:
+          type: string
+        contest_url:
+          type: string
+          format: uri
+        difficulty:
+          type: integer
+        start_at:
+          type: string
+          format: date-time
+        duration:
+          type: integer
+        rate_change:
+          type: string
+        category:
+          type: string
