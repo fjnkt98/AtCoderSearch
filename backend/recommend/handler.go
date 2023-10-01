@@ -311,7 +311,6 @@ func (s *Searcher) search(r *http.Request, params SearchParams) (int, acs.Search
 			Count:  int(len(res.Response.Docs)),
 			Pages:  (res.Response.NumFound + int(rows) - 1) / int(rows),
 			Params: &params,
-			Facet:  res.FacetCounts,
 		},
 		Items:   res.Response.Docs,
 		Message: msg,
