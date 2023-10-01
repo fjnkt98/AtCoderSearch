@@ -13,6 +13,7 @@ require (
 	github.com/labstack/echo/v4 v4.11.1
 	github.com/lib/pq v1.10.9
 	github.com/morikuni/failure v1.1.2
+	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/spf13/cobra v1.7.0
 	github.com/tdewolff/minify v2.3.6+incompatible
 	golang.org/x/exp v0.0.0-20230713183714-613f0c0eb8a1
@@ -34,7 +35,6 @@ require (
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.19 // indirect
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
-	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
 	github.com/pganalyze/pg_query_go/v4 v4.2.3 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/tdewolff/parse v2.3.4+incompatible // indirect
