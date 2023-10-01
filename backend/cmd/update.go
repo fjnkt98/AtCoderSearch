@@ -6,6 +6,7 @@ package cmd
 import (
 	"context"
 	"fjnkt98/atcodersearch/acs"
+	"fjnkt98/atcodersearch/list"
 	"fjnkt98/atcodersearch/problem"
 	"fjnkt98/atcodersearch/recommend"
 	"fjnkt98/atcodersearch/solr"
@@ -338,6 +339,58 @@ var updateRecommendCmd = &cobra.Command{
 	},
 }
 
+var updateLanguageCmd = &cobra.Command{
+	Use:   "language",
+	Short: "update language index",
+	Long:  "update language index",
+	Run: func(cmd *cobra.Command, args []string) {
+		if doMigrate := GetBool(cmd, "migrate"); doMigrate {
+			DoMigrate()
+		}
+
+		db := GetDB()
+		ctx, cancel := context.WithCancel(context.Background())
+		eg, ctx := errgroup.WithContext(ctx)
+
+		quit := make(chan os.Signal, 1)
+		signal.Notify(quit, os.Interrupt)
+
+		done := make(chan Msg, 1)
+
+		eg.Go(func() error {
+			if err := list.Update(ctx, db); err != nil {
+				return failure.Wrap(err)
+			}
+			done <- Msg{}
+			return nil
+		})
+
+		eg.Go(func() error {
+			select {
+			case <-quit:
+				defer cancel()
+				return failure.New(acs.Interrupt, failure.Message("updating languages table has been canceled"))
+			case <-ctx.Done():
+				return nil
+			case <-done:
+				return nil
+			}
+		})
+
+		if err := eg.Wait(); err != nil {
+			if failure.Is(err, acs.Interrupt) {
+				slog.Error("updating languages table has been canceled", slog.String("error", fmt.Sprintf("%+v", err)))
+				return
+			} else {
+				slog.Error("failed to update languages table", slog.String("error", fmt.Sprintf("%+v", err)))
+				os.Exit(1)
+			}
+		}
+
+		slog.Info("updating languages table successfully finished.")
+	},
+}
+
 func init() {
 	updateCmd.PersistentFlags().Bool("migrate", false, "Execute database migration before update index.")
 	updateCmd.PersistentFlags().String("save-dir", "", "Directory path at which generated documents will be saved.")
@@ -359,6 +412,7 @@ func init() {
 	updateCmd.AddCommand(updateUserCmd)
 	updateCmd.AddCommand(updateSubmissionCmd)
 	updateCmd.AddCommand(updateRecommendCmd)
+	updateCmd.AddCommand(updateLanguageCmd)
 
 	rootCmd.AddCommand(updateCmd)
 }
