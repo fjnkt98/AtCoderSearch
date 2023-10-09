@@ -204,6 +204,7 @@ var updateSubmissionCmd = &cobra.Command{
 		cfg.GenerateConcurrent = GetInt(cmd, "generate-concurrent")
 		cfg.PostConcurrent = GetInt(cmd, "post-concurrent")
 		cfg.All = GetBool(cmd, "all")
+		cfg.Interval = GetInt(cmd, "interval")
 
 		solrURL := os.Getenv("SOLR_HOST")
 		if solrURL == "" {
@@ -407,6 +408,7 @@ func init() {
 	updateUserCmd.Flags().Int("duration", 1000, "Interval time[ms] for crawling.")
 
 	updateSubmissionCmd.Flags().BoolP("all", "a", false, "Update all submissions.")
+	updateSubmissionCmd.Flags().Int("interval", 90, "Indexing submissions for the past in N days.")
 
 	updateCmd.AddCommand(updateProblemCmd)
 	updateCmd.AddCommand(updateUserCmd)

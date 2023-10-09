@@ -20,8 +20,8 @@ import (
 )
 
 type SearchParams struct {
-	Limit  int          `json:"limit" schema:"limit" validate:"lte=200"`
-	Page   int          `json:"page" schema:"page"`
+	Limit  int          `json:"limit" schema:"limit" validate:"lte=1000"`
+	Page   int          `json:"page" schema:"page" validate:"lte=1000"`
 	Filter FilterParams `json:"filter" schema:"filter"`
 	Sort   string       `json:"sort" schema:"sort" validate:"omitempty,oneof=execution_time -execution_time submitted_at -submitted_at point -point length -length"`
 	Facet  FacetParams  `json:"facet" schema:"facet"`

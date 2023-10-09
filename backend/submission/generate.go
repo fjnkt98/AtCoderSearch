@@ -67,8 +67,9 @@ type Document struct {
 }
 
 type RowReader struct {
-	db     *sqlx.DB
-	period time.Time
+	db       *sqlx.DB
+	period   time.Time
+	interval int
 }
 
 func (r *RowReader) ReadRows(ctx context.Context, tx chan<- Row) error {
@@ -94,10 +95,10 @@ func (r *RowReader) ReadRows(ctx context.Context, tx chan<- Row) error {
 		LEFT JOIN "problems" ON "submissions"."problem_id" = "problems"."problem_id"
 		LEFT JOIN "difficulties" ON "submissions"."problem_id" = "difficulties"."problem_id"
 	WHERE
-		"submissions"."epoch_second" > EXTRACT(EPOCH FROM CURRENT_DATE - INTERVAL '30 day')
-		AND "submissions"."crawled_at" > $1::timestamp with time zone
+		"submissions"."epoch_second" > EXTRACT(EPOCH FROM CURRENT_DATE - CAST($1::integer || ' day' AS INTERVAL))
+		AND "submissions"."crawled_at" > $2::timestamp with time zone
 	`
-	rows, err := r.db.QueryxContext(ctx, sql, r.period)
+	rows, err := r.db.QueryxContext(ctx, sql, r.interval, r.period)
 	if err != nil {
 		return failure.Translate(err, acs.DBError, failure.Context{"sql": sql}, failure.Message("failed to read rows"))
 	}
@@ -122,12 +123,12 @@ func (r *RowReader) ReadRows(ctx context.Context, tx chan<- Row) error {
 	return nil
 }
 
-func Generate(ctx context.Context, db *sqlx.DB, saveDir string, chunkSize int, concurrent int, period time.Time) error {
+func Generate(ctx context.Context, db *sqlx.DB, saveDir string, chunkSize int, concurrent int, period time.Time, interval int) error {
 	if err := acs.CleanDocument(saveDir); err != nil {
 		return failure.Translate(err, acs.GenerateError, failure.Message("failed to clean submission save directory"))
 	}
 
-	reader := RowReader{db: db, period: period}
+	reader := RowReader{db: db, period: period, interval: interval}
 
 	if err := acs.GenerateDocument[Row, Document](ctx, saveDir, chunkSize, concurrent, reader.ReadRows, ToDocument); err != nil {
 		return failure.Translate(err, acs.GenerateError, failure.Message("failed to generate submission document"))
