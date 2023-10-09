@@ -4,7 +4,7 @@ kind: CronJob
 metadata:
   name: problem-indexer
 spec:
-  schedule: "0 10 * * 0"
+  schedule: "0 2 * * 0,1"
   concurrencyPolicy: Forbid
   startingDeadlineSeconds: 30
   suspend: false
@@ -58,7 +58,7 @@ kind: CronJob
 metadata:
   name: user-indexer
 spec:
-  schedule: "0 11 * * 0"
+  schedule: "0 3 * * 0,1"
   concurrencyPolicy: Forbid
   startingDeadlineSeconds: 30
   suspend: false
