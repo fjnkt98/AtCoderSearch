@@ -41,6 +41,7 @@ spec:
               "--all",
               "--migrate",
               "--optimize",
+              "--interval=90",
               "--generate-concurrent=2",
               "--post-concurrent=2",
               "--chunk-size=10000",
