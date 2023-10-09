@@ -18,6 +18,7 @@ type UpdateConfig struct {
 	GenerateConcurrent int    `json:"generate-concurrent"`
 	PostConcurrent     int    `json:"post-concurrent"`
 	All                bool   `json:"all"`
+	Interval           int    `json:"int"`
 }
 
 func Update(ctx context.Context, cfg UpdateConfig, db *sqlx.DB, core *solr.Core) error {
@@ -36,7 +37,7 @@ func Update(ctx context.Context, cfg UpdateConfig, db *sqlx.DB, core *solr.Core)
 	if cfg.All {
 		period = time.Time{}
 	}
-	if err := Generate(ctx, db, cfg.SaveDir, cfg.ChunkSize, cfg.GenerateConcurrent, period); err != nil {
+	if err := Generate(ctx, db, cfg.SaveDir, cfg.ChunkSize, cfg.GenerateConcurrent, period, cfg.Interval); err != nil {
 		return failure.Wrap(err)
 	}
 

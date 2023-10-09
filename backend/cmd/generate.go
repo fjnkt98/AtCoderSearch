@@ -157,7 +157,7 @@ var generateSubmissionCmd = &cobra.Command{
 		done := make(chan Msg, 1)
 
 		eg.Go(func() error {
-			if err := submission.Generate(ctx, db, saveDir, chunkSize, concurrent, time.Time{}); err != nil {
+			if err := submission.Generate(ctx, db, saveDir, chunkSize, concurrent, time.Time{}, 90); err != nil {
 				return failure.Wrap(err)
 			}
 			done <- Msg{}
