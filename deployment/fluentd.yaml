@@ -442,3 +442,7 @@ data:
         flush_at_shutdown true
       </buffer>
     </match>
+
+    <match **>
+      @type stdout
+    </match>
