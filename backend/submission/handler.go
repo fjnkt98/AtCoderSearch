@@ -34,6 +34,7 @@ type FilterParams struct {
 	Category      []string         `json:"category" schema:"category"`
 	UserID        []string         `json:"user_id" schema:"user_id"`
 	Language      []string         `json:"language" schema:"language"`
+	LanguageGroup []string         `json:"language_group" schema:"language_group"`
 	Point         acs.FloatRange   `json:"point" schema:"point"`
 	Length        acs.IntegerRange `json:"length" schema:"length"`
 	Result        []string         `json:"result" schema:"result"`
@@ -41,7 +42,7 @@ type FilterParams struct {
 }
 
 type FacetParams struct {
-	Term          []string            `json:"term" schema:"term" validate:"dive,oneof=problem_id user_id language result contest_id"`
+	Term          []string            `json:"term" schema:"term" validate:"dive,oneof=problem_id user_id language language_group result contest_id"`
 	Length        acs.RangeFacetParam `json:"length" schema:"length"`
 	ExecutionTime acs.RangeFacetParam `json:"execution_time" schema:"execution_time"`
 }
@@ -147,6 +148,9 @@ func (p *SearchParams) fq() []string {
 	if expr := strings.Join(acs.QuoteStrings(acs.SanitizeStrings(p.Filter.Language)), " OR "); expr != "" {
 		fq = append(fq, fmt.Sprintf("{!tag=language}language:(%s)", expr))
 	}
+	if expr := strings.Join(acs.QuoteStrings(acs.SanitizeStrings(p.Filter.LanguageGroup)), " OR "); expr != "" {
+		fq = append(fq, fmt.Sprintf("{!tag=language_group}language_group:(%s)", expr))
+	}
 	if expr := strings.Join(acs.SanitizeStrings(p.Filter.Result), " OR "); expr != "" {
 		fq = append(fq, fmt.Sprintf("{!tag=result}result:(%s)", expr))
 	}
@@ -178,6 +182,7 @@ type FacetCounts struct {
 	ProblemID     *solr.TermFacetCount       `json:"problem_id,omitempty"`
 	UserID        *solr.TermFacetCount       `json:"user_id,omitempty"`
 	Language      *solr.TermFacetCount       `json:"language,omitempty"`
+	LanguageGroup *solr.TermFacetCount       `json:"language_group,omitempty"`
 	Result        *solr.TermFacetCount       `json:"result,omitempty"`
 	Length        *solr.RangeFacetCount[int] `json:"length,omitempty"`
 	ExecutionTime *solr.RangeFacetCount[int] `json:"execution_time,omitempty"`
@@ -201,6 +206,10 @@ func (f *FacetCounts) Into(p FacetParams) FacetResponse {
 	if f.Language != nil {
 		language = acs.ConvertBucket[string](f.Language.Buckets)
 	}
+	var languageGroup []acs.FacetPart
+	if f.LanguageGroup != nil {
+		languageGroup = acs.ConvertBucket[string](f.LanguageGroup.Buckets)
+	}
 	var result []acs.FacetPart
 	if f.Result != nil {
 		result = acs.ConvertBucket[string](f.Result.Buckets)
@@ -219,6 +228,7 @@ func (f *FacetCounts) Into(p FacetParams) FacetResponse {
 		ProblemID:     problemID,
 		UserID:        userID,
 		Language:      language,
+		LanguageGroup: languageGroup,
 		Result:        result,
 		Length:        length,
 		ExecutionTime: executionTime,
@@ -230,6 +240,7 @@ type FacetResponse struct {
 	ProblemID     []acs.FacetPart `json:"problem_id,omitempty"`
 	UserID        []acs.FacetPart `json:"user_id,omitempty"`
 	Language      []acs.FacetPart `json:"language,omitempty"`
+	LanguageGroup []acs.FacetPart `json:"language_group,omitempty"`
 	Result        []acs.FacetPart `json:"result,omitempty"`
 	Length        []acs.FacetPart `json:"length,omitempty"`
 	ExecutionTime []acs.FacetPart `json:"execution_time,omitempty"`

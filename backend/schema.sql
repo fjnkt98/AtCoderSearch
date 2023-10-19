@@ -115,5 +115,8 @@ CREATE INDEX "submission_crawl_history_contest_id_start_at_index" ON "submission
 
 CREATE TABLE "languages" (
     "language" text NOT NULL,
+    "group" text,
     PRIMARY KEY ("language")
 );
+
+CREATE INDEX "languages_group_index" ON "languages" ("group");

@@ -97,6 +97,41 @@ func (s *Searcher) HandleLanguage(c echo.Context) error {
 	}
 }
 
+func (s *Searcher) HandleLanguageGroup(c echo.Context) error {
+	if languages, ok := s.c.Get("language_groups"); ok {
+		return c.JSON(http.StatusOK, languages)
+	} else {
+		rows, err := s.db.Query(
+			`
+			SELECT
+				DISTINCT "group"
+			FROM
+				"languages"
+			ORDER BY
+				"group"
+			`,
+		)
+		if err != nil {
+			slog.Error("failed to get a list of language group", slog.String("error", err.Error()))
+			return c.String(http.StatusInternalServerError, "failed to get language group list")
+		}
+		defer rows.Close()
+
+		groups := make([]string, 0, 12)
+		for rows.Next() {
+			var group string
+			if err := rows.Scan(&group); err != nil {
+				slog.Error("failed to scan row for fetching a list of language group", slog.String("error", err.Error()))
+				return c.String(http.StatusInternalServerError, "failed to scan language group")
+			}
+			groups = append(groups, group)
+		}
+		s.c.Set("language_groups", groups, cache.DefaultExpiration)
+
+		return c.JSON(http.StatusOK, groups)
+	}
+}
+
 func (s *Searcher) HandleContest(c echo.Context) error {
 	category := c.QueryParam("category")
 

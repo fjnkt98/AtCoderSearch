@@ -15,10 +15,11 @@ import (
 
 type Row struct {
 	atcoder.Submission
-	Category     string `db:"category"`
-	ProblemTitle string `db:"problem_title"`
-	ContestTitle string `db:"contest_title"`
-	Difficulty   int    `db:"difficulty"`
+	LanguageGroup string `db:"language_group"`
+	Category      string `db:"category"`
+	ProblemTitle  string `db:"problem_title"`
+	ContestTitle  string `db:"contest_title"`
+	Difficulty    int    `db:"difficulty"`
 }
 
 func ToDocument(ctx context.Context, r Row) (Document, error) {
@@ -39,6 +40,7 @@ func ToDocument(ctx context.Context, r Row) (Document, error) {
 		Category:      r.Category,
 		UserID:        r.UserID,
 		Language:      r.Language,
+		LanguageGroup: r.LanguageGroup,
 		Point:         r.Point,
 		Length:        r.Length,
 		Result:        r.Result,
@@ -60,6 +62,7 @@ type Document struct {
 	Category      string                `json:"category"`
 	UserID        string                `json:"user_id"`
 	Language      string                `json:"language"`
+	LanguageGroup string                `json:"language_group"`
 	Point         float64               `json:"point"`
 	Length        int64                 `json:"length"`
 	Result        string                `json:"result"`
@@ -85,6 +88,7 @@ func (r *RowReader) ReadRows(ctx context.Context, tx chan<- Row) error {
 		"contests"."category",
 		"submissions"."user_id",
 		"submissions"."language",
+		"languages"."group" AS "language_group",
 		"submissions"."point",
 		"submissions"."length",
 		"submissions"."result",
@@ -94,6 +98,7 @@ func (r *RowReader) ReadRows(ctx context.Context, tx chan<- Row) error {
 		LEFT JOIN "contests" USING("contest_id")
 		LEFT JOIN "problems" ON "submissions"."problem_id" = "problems"."problem_id"
 		LEFT JOIN "difficulties" ON "submissions"."problem_id" = "difficulties"."problem_id"
+		LEFT JOIN "languages" ON "submissions"."language" = "languages"."language"
 	WHERE
 		"submissions"."epoch_second" > EXTRACT(EPOCH FROM CURRENT_DATE - CAST($1::integer || ' day' AS INTERVAL))
 		AND "submissions"."crawled_at" > $2::timestamp with time zone
@@ -130,7 +135,7 @@ func Generate(ctx context.Context, db *sqlx.DB, saveDir string, chunkSize int, c
 
 	reader := RowReader{db: db, period: period, interval: interval}
 
-	if err := acs.GenerateDocument[Row, Document](ctx, saveDir, chunkSize, concurrent, reader.ReadRows, ToDocument); err != nil {
+	if err := acs.GenerateDocument(ctx, saveDir, chunkSize, concurrent, reader.ReadRows, ToDocument); err != nil {
 		return failure.Translate(err, acs.GenerateError, failure.Message("failed to generate submission document"))
 	}
 	return nil

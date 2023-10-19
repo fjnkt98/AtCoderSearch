@@ -91,6 +91,7 @@ var serverCmd = &cobra.Command{
 		e.GET("/api/recommend/problem", recommendSearcher.HandleGET)
 		e.GET("/api/list/category", listSearcher.HandleCategory)
 		e.GET("/api/list/language", listSearcher.HandleLanguage)
+		e.GET("/api/list/language/group", listSearcher.HandleLanguageGroup)
 		e.GET("/api/list/contest", listSearcher.HandleContest)
 		e.GET("/api/list/problem", listSearcher.HandleProblem)
 
