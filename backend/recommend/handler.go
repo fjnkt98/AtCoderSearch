@@ -30,7 +30,7 @@ type SearchParams struct {
 	Option   string `json:"option" schema:"option" validate:"omitempty,option"`
 	UserID   string `json:"user_id" schema:"user_id"`
 	Rating   int    `json:"rating" schema:"rating"`
-	Limit    int    `json:"limit" schema:"limit" validate:"lte=200"`
+	Limit    *int   `json:"limit" schema:"limit" validate:"omitempty,lte=200"`
 	Page     int    `json:"page" schema:"page"`
 	Unsolved bool   `json:"unsolved" schema:"unsolved"`
 }
@@ -48,14 +48,14 @@ func (p *SearchParams) ToQuery() url.Values {
 }
 
 func (p *SearchParams) rows() int {
-	if p.Limit == 0 {
-		return 20
+	if p.Limit == nil {
+		return 0
 	}
-	return p.Limit
+	return *p.Limit
 }
 
 func (p *SearchParams) start() int {
-	if p.Page == 0 {
+	if p.Page == 0 || p.rows() == 0 {
 		return 0
 	}
 
@@ -282,6 +282,22 @@ func (s *Searcher) HandleGET(c echo.Context) error {
 	return c.JSON(code, res)
 }
 
+func (s *Searcher) HandlePOST(c echo.Context) error {
+	var params SearchParams
+	if err := c.Bind(&params); err != nil {
+		slog.Error("failed to decode request parameter", slog.String("uri", c.Request().RequestURI), slog.String("error", fmt.Sprintf("%+v", err)))
+		return c.JSON(http.StatusBadRequest, NewErrorResponse("failed to decode request parameter", nil))
+	}
+
+	if err := s.validator.Struct(params); err != nil {
+		slog.Error("validation error", slog.String("uri", c.Request().RequestURI), slog.Any("params", params), slog.String("error", fmt.Sprintf("%+v", err)))
+		return c.JSON(http.StatusBadRequest, NewErrorResponse(fmt.Sprintf("validation error: %s", err.Error()), params))
+	}
+
+	code, res := s.search(c.Request(), params)
+	return c.JSON(code, res)
+}
+
 func (s *Searcher) search(r *http.Request, params SearchParams) (int, acs.SearchResultResponse[Response]) {
 	startTime := time.Now()
 
@@ -302,14 +318,20 @@ func (s *Searcher) search(r *http.Request, params SearchParams) (int, acs.Search
 	}
 
 	rows, _ := strconv.Atoi(query.Get("rows"))
+	var pages = 0
+	var index = 0
+	if rows != 0 {
+		pages = (res.Response.NumFound + rows) / rows
+		index = (res.Response.Start / rows) + 1
+	}
 
 	result := acs.SearchResultResponse[Response]{
 		Stats: acs.SearchResultStats{
 			Time:   int(time.Since(startTime).Milliseconds()),
 			Total:  res.Response.NumFound,
-			Index:  (res.Response.Start / int(rows)) + 1,
-			Count:  int(len(res.Response.Docs)),
-			Pages:  (res.Response.NumFound + int(rows) - 1) / int(rows),
+			Index:  index,
+			Count:  len(res.Response.Docs),
+			Pages:  pages,
 			Params: &params,
 		},
 		Items:   res.Response.Docs,

@@ -86,9 +86,13 @@ var serverCmd = &cobra.Command{
 
 		// API handler registration
 		e.GET("/api/search/problem", problemSearcher.HandleGET)
+		e.POST("/api/search/problem", problemSearcher.HandlePOST)
 		e.GET("/api/search/user", userSearcher.HandleGET)
+		e.POST("/api/search/user", userSearcher.HandlePOST)
 		e.GET("/api/search/submission", submissionSearcher.HandleGET)
+		e.POST("/api/search/submission", submissionSearcher.HandlePOST)
 		e.GET("/api/recommend/problem", recommendSearcher.HandleGET)
+		e.POST("/api/recommend/problem", recommendSearcher.HandlePOST)
 		e.GET("/api/list/category", listSearcher.HandleCategory)
 		e.GET("/api/list/language", listSearcher.HandleLanguage)
 		e.GET("/api/list/language/group", listSearcher.HandleLanguageGroup)
