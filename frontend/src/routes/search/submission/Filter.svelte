@@ -1,6 +1,7 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
+  // @ts-ignore
   import Icon from "svelte-icons-pack/Icon.svelte";
   import AiOutlineSearch from "svelte-icons-pack/ai/AiOutlineSearch";
   import HiOutlinePaperAirplane from "svelte-icons-pack/hi/HiOutlinePaperAirplane";
