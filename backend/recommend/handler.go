@@ -106,17 +106,17 @@ func (p *SearchParams) bq() []string {
 
 			switch opt[1] {
 			case '1':
-				w.ABC = 8
+				w.ABC = 16
 				w.ARC = 4
 				w.AGC = 2
 			case '2':
 				w.ABC = 2
-				w.ARC = 8
+				w.ARC = 16
 				w.AGC = 4
 			case '3':
 				w.ABC = 2
 				w.ARC = 4
-				w.AGC = 8
+				w.AGC = 16
 			default:
 			}
 
