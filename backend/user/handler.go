@@ -23,7 +23,7 @@ import (
 
 type SearchParams struct {
 	Keyword string       `json:"keyword" schema:"keyword" validate:"lte=200"`
-	Limit   int          `json:"limit" schema:"limit" validate:"lte=1000"`
+	Limit   *int         `json:"limit" schema:"limit" validate:"omitempty,lte=1000"`
 	Page    int          `json:"page" schema:"page"`
 	Filter  FilterParams `json:"filter" schema:"filter"`
 	Sort    string       `json:"sort" schema:"sort" validate:"omitempty,oneof=-score rating -rating birth_year -birth_year"`
@@ -63,14 +63,14 @@ func (p *SearchParams) ToQuery() url.Values {
 }
 
 func (p *SearchParams) rows() int {
-	if p.Limit == 0 {
+	if p.Limit == nil {
 		return 20
 	}
-	return p.Limit
+	return *p.Limit
 }
 
 func (p *SearchParams) start() int {
-	if p.Page == 0 {
+	if p.Page == 0 || p.rows() == 0 {
 		return 0
 	}
 
@@ -272,14 +272,20 @@ func (s *Searcher) search(r *http.Request, params SearchParams) (int, acs.Search
 	}
 
 	rows, _ := strconv.Atoi(query.Get("rows"))
+	var pages = 0
+	var index = 0
+	if rows != 0 {
+		pages = (res.Response.NumFound + rows) / rows
+		index = (res.Response.Start / rows) + 1
+	}
 
 	result := acs.SearchResultResponse[Response]{
 		Stats: acs.SearchResultStats{
 			Time:   int(time.Since(startTime).Milliseconds()),
 			Total:  res.Response.NumFound,
-			Index:  (res.Response.Start / int(rows)) + 1,
-			Count:  int(len(res.Response.Docs)),
-			Pages:  (res.Response.NumFound + int(rows) - 1) / int(rows),
+			Index:  index,
+			Count:  len(res.Response.Docs),
+			Pages:  pages,
 			Params: params,
 			Facet:  res.FacetCounts.Into(params.Facet),
 		},
@@ -288,6 +294,22 @@ func (s *Searcher) search(r *http.Request, params SearchParams) (int, acs.Search
 	slog.Info("querylog", slog.String("domain", "user"), slog.Int("elapsed_time", result.Stats.Time), slog.Int("hits", res.Response.NumFound), slog.Any("params", params))
 
 	return http.StatusOK, result
+}
+
+func (s *Searcher) HandlePOST(c echo.Context) error {
+	var params SearchParams
+	if err := c.Bind(&params); err != nil {
+		slog.Error("failed to decode request parameter", slog.String("uri", c.Request().RequestURI), slog.String("error", fmt.Sprintf("%+v", err)))
+		return c.JSON(http.StatusBadRequest, NewErrorResponse("failed to decode request parameter", nil))
+	}
+
+	if err := s.validator.Struct(params); err != nil {
+		slog.Error("validation error", slog.String("uri", c.Request().RequestURI), slog.Any("params", params), slog.String("error", fmt.Sprintf("%+v", err)))
+		return c.JSON(http.StatusBadRequest, NewErrorResponse(fmt.Sprintf("validation error: %s", err.Error()), params))
+	}
+
+	code, res := s.search(c.Request(), params)
+	return c.JSON(code, res)
 }
 
 func (s *Searcher) Liveness() bool {

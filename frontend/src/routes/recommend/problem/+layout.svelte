@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
+  // @ts-ignore
   import Icon from "svelte-icons-pack/Icon.svelte";
   import { defaultRecommendParams } from "$lib/defaults";
   import AiOutlineSearch from "svelte-icons-pack/ai/AiOutlineSearch";

@@ -20,7 +20,7 @@ import (
 )
 
 type SearchParams struct {
-	Limit  int          `json:"limit" schema:"limit" validate:"lte=1000"`
+	Limit  *int         `json:"limit" schema:"limit" validate:"omitempty,lte=1000"`
 	Page   int          `json:"page" schema:"page" validate:"lte=1000"`
 	Filter FilterParams `json:"filter" schema:"filter"`
 	Sort   string       `json:"sort" schema:"sort" validate:"omitempty,oneof=execution_time -execution_time submitted_at -submitted_at point -point length -length"`
@@ -34,6 +34,7 @@ type FilterParams struct {
 	Category      []string         `json:"category" schema:"category"`
 	UserID        []string         `json:"user_id" schema:"user_id"`
 	Language      []string         `json:"language" schema:"language"`
+	LanguageGroup []string         `json:"language_group" schema:"language_group"`
 	Point         acs.FloatRange   `json:"point" schema:"point"`
 	Length        acs.IntegerRange `json:"length" schema:"length"`
 	Result        []string         `json:"result" schema:"result"`
@@ -41,7 +42,7 @@ type FilterParams struct {
 }
 
 type FacetParams struct {
-	Term          []string            `json:"term" schema:"term" validate:"dive,oneof=problem_id user_id language result contest_id"`
+	Term          []string            `json:"term" schema:"term" validate:"dive,oneof=problem_id user_id language language_group result contest_id"`
 	Length        acs.RangeFacetParam `json:"length" schema:"length"`
 	ExecutionTime acs.RangeFacetParam `json:"execution_time" schema:"execution_time"`
 }
@@ -60,14 +61,14 @@ func (p *SearchParams) ToQuery() url.Values {
 }
 
 func (p *SearchParams) rows() int {
-	if p.Limit == 0 {
+	if p.Limit == nil {
 		return 20
 	}
-	return p.Limit
+	return *p.Limit
 }
 
 func (p *SearchParams) start() int {
-	if p.Page == 0 {
+	if p.Page == 0 || p.rows() == 0 {
 		return 0
 	}
 
@@ -147,6 +148,9 @@ func (p *SearchParams) fq() []string {
 	if expr := strings.Join(acs.QuoteStrings(acs.SanitizeStrings(p.Filter.Language)), " OR "); expr != "" {
 		fq = append(fq, fmt.Sprintf("{!tag=language}language:(%s)", expr))
 	}
+	if expr := strings.Join(acs.QuoteStrings(acs.SanitizeStrings(p.Filter.LanguageGroup)), " OR "); expr != "" {
+		fq = append(fq, fmt.Sprintf("{!tag=language_group}language_group:(%s)", expr))
+	}
 	if expr := strings.Join(acs.SanitizeStrings(p.Filter.Result), " OR "); expr != "" {
 		fq = append(fq, fmt.Sprintf("{!tag=result}result:(%s)", expr))
 	}
@@ -178,6 +182,7 @@ type FacetCounts struct {
 	ProblemID     *solr.TermFacetCount       `json:"problem_id,omitempty"`
 	UserID        *solr.TermFacetCount       `json:"user_id,omitempty"`
 	Language      *solr.TermFacetCount       `json:"language,omitempty"`
+	LanguageGroup *solr.TermFacetCount       `json:"language_group,omitempty"`
 	Result        *solr.TermFacetCount       `json:"result,omitempty"`
 	Length        *solr.RangeFacetCount[int] `json:"length,omitempty"`
 	ExecutionTime *solr.RangeFacetCount[int] `json:"execution_time,omitempty"`
@@ -201,6 +206,10 @@ func (f *FacetCounts) Into(p FacetParams) FacetResponse {
 	if f.Language != nil {
 		language = acs.ConvertBucket[string](f.Language.Buckets)
 	}
+	var languageGroup []acs.FacetPart
+	if f.LanguageGroup != nil {
+		languageGroup = acs.ConvertBucket[string](f.LanguageGroup.Buckets)
+	}
 	var result []acs.FacetPart
 	if f.Result != nil {
 		result = acs.ConvertBucket[string](f.Result.Buckets)
@@ -219,6 +228,7 @@ func (f *FacetCounts) Into(p FacetParams) FacetResponse {
 		ProblemID:     problemID,
 		UserID:        userID,
 		Language:      language,
+		LanguageGroup: languageGroup,
 		Result:        result,
 		Length:        length,
 		ExecutionTime: executionTime,
@@ -230,6 +240,7 @@ type FacetResponse struct {
 	ProblemID     []acs.FacetPart `json:"problem_id,omitempty"`
 	UserID        []acs.FacetPart `json:"user_id,omitempty"`
 	Language      []acs.FacetPart `json:"language,omitempty"`
+	LanguageGroup []acs.FacetPart `json:"language_group,omitempty"`
 	Result        []acs.FacetPart `json:"result,omitempty"`
 	Length        []acs.FacetPart `json:"length,omitempty"`
 	ExecutionTime []acs.FacetPart `json:"execution_time,omitempty"`
@@ -288,6 +299,22 @@ func (s *Searcher) HandleGET(c echo.Context) error {
 	return c.JSON(code, res)
 }
 
+func (s *Searcher) HandlePOST(c echo.Context) error {
+	var params SearchParams
+	if err := c.Bind(&params); err != nil {
+		slog.Error("failed to decode request parameter", slog.String("uri", c.Request().RequestURI), slog.String("error", fmt.Sprintf("%+v", err)))
+		return c.JSON(http.StatusBadRequest, NewErrorResponse("failed to decode request parameter", nil))
+	}
+
+	if err := s.validator.Struct(params); err != nil {
+		slog.Error("validation error", slog.String("uri", c.Request().RequestURI), slog.Any("params", params), slog.String("error", fmt.Sprintf("%+v", err)))
+		return c.JSON(http.StatusBadRequest, NewErrorResponse(fmt.Sprintf("validation error: %s", err.Error()), params))
+	}
+
+	code, res := s.search(c.Request(), params)
+	return c.JSON(code, res)
+}
+
 func (s *Searcher) search(r *http.Request, params SearchParams) (int, acs.SearchResultResponse[Response]) {
 	startTime := time.Now()
 
@@ -299,14 +326,20 @@ func (s *Searcher) search(r *http.Request, params SearchParams) (int, acs.Search
 	}
 
 	rows, _ := strconv.Atoi(query.Get("rows"))
+	var pages = 0
+	var index = 0
+	if rows != 0 {
+		pages = (res.Response.NumFound + rows) / rows
+		index = (res.Response.Start / rows) + 1
+	}
 
 	result := acs.SearchResultResponse[Response]{
 		Stats: acs.SearchResultStats{
 			Time:   int(time.Since(startTime).Milliseconds()),
 			Total:  res.Response.NumFound,
-			Index:  (res.Response.Start / int(rows)) + 1,
-			Count:  int(len(res.Response.Docs)),
-			Pages:  (res.Response.NumFound + int(rows) - 1) / int(rows),
+			Index:  index,
+			Count:  len(res.Response.Docs),
+			Pages:  pages,
 			Params: &params,
 			Facet:  res.FacetCounts.Into(params.Facet),
 		},

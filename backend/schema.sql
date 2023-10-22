@@ -108,12 +108,16 @@ CREATE INDEX "update_history_domain_index" ON "update_history" ("domain");
 CREATE TABLE "submission_crawl_history" (
     "id" bigserial NOT NULL,
     "contest_id" text NOT NULL,
-    "started_at" bigint NOT NULL
+    "started_at" bigint NOT NULL,
+    PRIMARY KEY ("id")
 );
 
 CREATE INDEX "submission_crawl_history_contest_id_start_at_index" ON "submission_crawl_history" ("contest_id", "started_at");
 
 CREATE TABLE "languages" (
     "language" text NOT NULL,
+    "group" text,
     PRIMARY KEY ("language")
 );
+
+CREATE INDEX "languages_group_index" ON "languages" ("group");

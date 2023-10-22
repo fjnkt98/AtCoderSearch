@@ -26,6 +26,7 @@
   <field name="category" type="String" indexed="true" stored="true" required="true" multiValued="false" docValues="true" />
   <field name="user_id" type="String" indexed="true" stored="true" required="true" multiValued="false" docValues="true" />
   <field name="language" type="String" indexed="true" stored="true" required="true" multiValued="false" docValues="false" />
+  <field name="language_group" type="String" indexed="true" stored="true" required="true" multiValued="false" docValues="false" />
   <field name="point" type="f64" indexed="true" stored="true" required="true" multiValued="false" docValues="false" />
   <field name="length" type="i64" indexed="true" stored="true" required="true" multiValued="false" docValues="false" sortMissingLast="true" />
   <field name="result" type="String" indexed="true" stored="true" required="true" multiValued="false" docValues="true" />

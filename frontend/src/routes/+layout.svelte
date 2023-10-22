@@ -1,5 +1,6 @@
 <script>
   import "../app.css";
+  // @ts-ignore
   import Icon from "svelte-icons-pack/Icon.svelte";
   import AiFillGithub from "svelte-icons-pack/ai/AiFillGithub";
   import AiFillTwitterCircle from "svelte-icons-pack/ai/AiFillTwitterCircle";
