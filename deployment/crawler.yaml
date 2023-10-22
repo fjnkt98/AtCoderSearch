@@ -49,7 +49,7 @@ spec:
                   "atcodersearch",
                   "crawl",
                   "submission",
-                  "--duration=1000",
+                  "--duration=3000",
                   "--retry=10",
                   "--target=ABC,ABC-Like,ARC,ARC-Like,AGC,AGC-Like,JOI,Other Sponsored,PAST",
                 ]
@@ -104,7 +104,7 @@ spec:
                   "atcodersearch",
                   "crawl",
                   "submission",
-                  "--duration=1000",
+                  "--duration=3000",
                   "--retry=10",
                   "--target=ABC,ABC-Like,ARC,ARC-Like,AGC,AGC-Like,JOI,Other Sponsored,PAST",
                 ]
