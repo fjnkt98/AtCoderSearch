@@ -26,7 +26,7 @@ type SearchParams struct {
 	Limit   int          `json:"limit" schema:"limit" validate:"lte=1000"`
 	Page    int          `json:"page" schema:"page"`
 	Filter  FilterParams `json:"filter" schema:"filter"`
-	Sort    string       `json:"sort" schema:"sort" validate:"omitempty,oneof=-score start_at -start_at difficulty -difficulty"`
+	Sort    []string     `json:"sort" schema:"sort" validate:"dive,oneof=-score start_at -start_at difficulty -difficulty problem_id -problem_id"`
 	Facet   FacetParams  `json:"facet" schema:"facet"`
 }
 
@@ -73,14 +73,20 @@ func (p *SearchParams) start() int {
 }
 
 func (p *SearchParams) sort() string {
-	if p.Sort == "" {
-		return "start_at desc"
+	if len(p.Sort) == 0 {
+		return "start_at desc,problem_id asc"
 	}
-	if strings.HasPrefix(p.Sort, "-") {
-		return fmt.Sprintf("%s desc", p.Sort[1:])
-	} else {
-		return fmt.Sprintf("%s asc", p.Sort)
+
+	orders := make([]string, 0, len(p.Sort))
+	for _, s := range p.Sort {
+		if strings.HasPrefix(s, "-") {
+			orders = append(orders, fmt.Sprintf("%s desc", s[1:]))
+		} else {
+			orders = append(orders, fmt.Sprintf("%s asc", s))
+		}
 	}
+
+	return strings.Join(orders, ",")
 }
 
 func (p *SearchParams) facet() string {
