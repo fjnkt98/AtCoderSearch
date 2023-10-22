@@ -32,7 +32,8 @@ type Document struct {
 }
 
 type RowReader struct {
-	db *sqlx.DB
+	db       *sqlx.DB
+	interval int
 }
 
 func (r *RowReader) ReadRows(ctx context.Context, tx chan<- Row) error {
@@ -43,8 +44,11 @@ func (r *RowReader) ReadRows(ctx context.Context, tx chan<- Row) error {
 			COUNT(1) AS "solved_count"
 		FROM
 			"submissions"
+			LEFT JOIN "contests" ON "submissions"."contest_id" = "contests"."contest_id"
 		WHERE
-			"result" = 'AC'
+			"epoch_second" > EXTRACT(EPOCH FROM CURRENT_DATE - CAST($1::integer || ' day' AS INTERVAL))
+			AND "result" = 'AC'
+			AND "category" IN ('ABC', 'ABC-Like', 'ARC', 'ARC-Like', 'AGC', 'AGC-Like', 'JOI', 'Other Sponsored', 'PAST')
 		GROUP BY
 			"problem_id"
 	)
@@ -57,7 +61,7 @@ func (r *RowReader) ReadRows(ctx context.Context, tx chan<- Row) error {
 	WHERE
 		"difficulty" IS NOT NULL
 	`
-	rows, err := r.db.QueryxContext(ctx, sql)
+	rows, err := r.db.QueryxContext(ctx, sql, r.interval)
 	if err != nil {
 		return failure.Translate(err, acs.DBError, failure.Context{"sql": sql}, failure.Message("failed to read rows"))
 	}
@@ -92,7 +96,7 @@ func Generate(ctx context.Context, db *sqlx.DB, saveDir string, chunkSize int, c
 		return failure.Translate(err, acs.GenerateError, failure.Message("failed to clean recommend save directory"))
 	}
 
-	reader := RowReader{db: db}
+	reader := RowReader{db: db, interval: 90}
 
 	if err := acs.GenerateDocument[Row, Document](ctx, saveDir, chunkSize, concurrent, reader.ReadRows, ToDocument); err != nil {
 		return failure.Translate(err, acs.GenerateError, failure.Message("failed to generate recommend document"))
