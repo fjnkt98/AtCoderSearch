@@ -25,6 +25,13 @@ async function fetchLanguages(): Promise<string[]> {
   return result;
 }
 
+async function fetchLanguageGroups(): Promise<string[]> {
+  const response = await fetch(`${env.API_HOST}/api/list/language/group`);
+  const result = await response.json();
+
+  return result;
+}
+
 async function fetchContests(category: string | null): Promise<string[]> {
   const url = category != null ? `${env.API_HOST}/api/list/contest?category=${category}` : `${env.API_HOST}/api/list/contest`;
   const response = await fetch(url);
@@ -54,12 +61,20 @@ export async function load({ url }): Promise<Data> {
     contestId = filterContestId[0];
   }
 
-  const [result, categories, languages, contests, problems] = await Promise.all([fetchResult(url), fetchCategories(), fetchLanguages(), fetchContests(category), fetchProblems(contestId)]);
+  const [result, categories, languages, languageGroups, contests, problems] = await Promise.all([
+    fetchResult(url),
+    fetchCategories(),
+    fetchLanguages(),
+    fetchLanguageGroups(),
+    fetchContests(category),
+    fetchProblems(contestId),
+  ]);
 
   return {
     result,
     categories: ["", ...categories],
     languages: ["", ...languages],
+    languageGroups: ["", ...languageGroups],
     contests: ["", ...contests],
     problems: ["", ...problems],
   };

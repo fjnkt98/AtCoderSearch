@@ -7,12 +7,14 @@
 
   export let categories: string[];
   export let languages: string[];
+  export let languageGroups: string[];
   export let contests: string[];
   export let problems: string[];
   export let results: string[] = ["", "AC", "WA", "TLE", "RE", "CE", "MLE"];
 
   let category: string = "";
   let language: string = "";
+  let languageGroup: string = "";
   let contest: string = "";
   let problem: string = "";
   let result: string = "";
@@ -104,6 +106,33 @@
       {#each languages as l}
         <option value={l}>
           {l}
+        </option>
+      {/each}
+    </select>
+  </div>
+
+  <div class="shadow-gra-400 my-1 w-full rounded-xl bg-white px-4 py-2 shadow-md">
+    <span>Language Group</span>
+    <select
+      class="my-2 block w-full rounded-lg bg-gray-50 p-2.5 text-sm shadow-sm shadow-gray-300 outline-none"
+      bind:value={languageGroup}
+      on:change={() => {
+        if (languageGroup !== "") {
+          const params = new URLSearchParams($page.url.searchParams);
+          params.set("filter.language_group", languageGroup);
+          params.set("page", "1");
+          goto(`${$page.url.pathname}?${params.toString()}`);
+        } else {
+          const params = new URLSearchParams($page.url.searchParams);
+          params.delete("filter.language_group");
+          params.set("page", "1");
+          goto(`${$page.url.pathname}?${params.toString()}`);
+        }
+      }}
+    >
+      {#each languageGroups as g}
+        <option value={g}>
+          {g}
         </option>
       {/each}
     </select>

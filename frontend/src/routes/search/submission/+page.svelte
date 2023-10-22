@@ -46,7 +46,7 @@
         {/each}
       </select>
 
-      <Filter categories={data.categories} languages={data.languages} contests={data.contests} problems={data.problems} />
+      <Filter categories={data.categories} languages={data.languages} languageGroups={data.languageGroups} contests={data.contests} problems={data.problems} />
     </div>
 
     <div class={`mx-4 flex ${expand ? "basis-4/5" : "sm:basis-4/5"} flex-col items-center justify-center`}>
