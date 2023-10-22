@@ -81,10 +81,9 @@ func (c *Crawler) getContestIDs(ctx context.Context, targets []string) ([]string
 
 func (c *Crawler) crawl(ctx context.Context, contestID string, period int64, duration int, retry int) error {
 	submissions := make([]atcoder.Submission, 0)
-	maxPage := 1
 loop:
-	for i := 1; i <= maxPage; i++ {
-		slog.Info(fmt.Sprintf("fetch submissions at page %d / %d of the contest `%s`", i, maxPage, contestID))
+	for i := 1; i <= 1_000_000_000; i++ {
+		slog.Info(fmt.Sprintf("fetch submissions at page %d of the contest `%s`", i, contestID))
 		list, err := c.client.FetchSubmissionList(ctx, contestID, i)
 		if err != nil {
 		retryLoop:
@@ -118,7 +117,6 @@ loop:
 			time.Sleep(time.Duration(duration) * time.Millisecond)
 			break loop
 		}
-		maxPage = int(list.MaxPage)
 		time.Sleep(time.Duration(duration) * time.Millisecond)
 	}
 

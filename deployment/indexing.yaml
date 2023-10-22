@@ -19,7 +19,7 @@ spec:
           restartPolicy: OnFailure
           containers:
             - name: problem-indexer
-              image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.5
+              image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.6
               env:
                 - name: DATABASE_URL
                   valueFrom:
@@ -73,7 +73,7 @@ spec:
           restartPolicy: OnFailure
           containers:
             - name: user-indexer
-              image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.5
+              image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.6
               env:
                 - name: DATABASE_URL
                   valueFrom:
@@ -129,7 +129,7 @@ spec:
           restartPolicy: OnFailure
           containers:
             - name: submission-indexer
-              image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.5
+              image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.6
               env:
                 - name: DATABASE_URL
                   valueFrom:
@@ -184,7 +184,7 @@ spec:
           restartPolicy: OnFailure
           containers:
             - name: submission-indexer
-              image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.5
+              image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.6
               env:
                 - name: DATABASE_URL
                   valueFrom:
@@ -241,7 +241,7 @@ spec:
           restartPolicy: OnFailure
           containers:
             - name: language-updater
-              image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.5
+              image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.6
               env:
                 - name: DATABASE_URL
                   valueFrom:
