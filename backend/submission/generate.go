@@ -88,7 +88,7 @@ func (r *RowReader) ReadRows(ctx context.Context, tx chan<- Row) error {
 		"contests"."category",
 		"submissions"."user_id",
 		"submissions"."language",
-		"languages"."group" AS "language_group",
+		COALESCE("languages"."group", '') AS "language_group",
 		"submissions"."point",
 		"submissions"."length",
 		"submissions"."result",
