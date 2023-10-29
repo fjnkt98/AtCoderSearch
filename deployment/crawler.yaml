@@ -19,7 +19,7 @@ spec:
           restartPolicy: Never
           containers:
             - name: crawler
-              image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.7
+              image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.8
               env:
                 - name: DATABASE_URL
                   valueFrom:
@@ -74,7 +74,7 @@ spec:
           restartPolicy: Never
           containers:
             - name: crawler
-              image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.7
+              image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.8
               env:
                 - name: DATABASE_URL
                   valueFrom:
@@ -125,13 +125,13 @@ spec:
       backoffLimit: 0
       completions: 1
       parallelism: 1
-      ttlSecondsAfterFinished: 30
+      ttlSecondsAfterFinished: 300
       template:
         spec:
           restartPolicy: Never
           containers:
             - name: crawler-other
-              image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.7
+              image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.8
               env:
                 - name: DATABASE_URL
                   valueFrom:

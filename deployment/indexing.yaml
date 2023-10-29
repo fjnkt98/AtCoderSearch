@@ -13,13 +13,13 @@ spec:
       backoffLimit: 0
       completions: 1
       parallelism: 1
-      ttlSecondsAfterFinished: 30
+      ttlSecondsAfterFinished: 86400
       template:
         spec:
-          restartPolicy: OnFailure
+          restartPolicy: Never
           containers:
             - name: problem-indexer
-              image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.7
+              image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.8
               env:
                 - name: DATABASE_URL
                   valueFrom:
@@ -67,13 +67,13 @@ spec:
       backoffLimit: 0
       completions: 1
       parallelism: 1
-      ttlSecondsAfterFinished: 30
+      ttlSecondsAfterFinished: 86400
       template:
         spec:
-          restartPolicy: OnFailure
+          restartPolicy: Never
           containers:
             - name: user-indexer
-              image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.7
+              image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.8
               env:
                 - name: DATABASE_URL
                   valueFrom:
@@ -114,7 +114,7 @@ kind: CronJob
 metadata:
   name: submission-indexer
 spec:
-  schedule: "*/10 0-2,4-23 * * *"
+  schedule: "*/5 0-2,4-23 * * *"
   concurrencyPolicy: Forbid
   startingDeadlineSeconds: 30
   suspend: false
@@ -123,13 +123,13 @@ spec:
       backoffLimit: 0
       completions: 1
       parallelism: 1
-      ttlSecondsAfterFinished: 30
+      ttlSecondsAfterFinished: 600
       template:
         spec:
-          restartPolicy: OnFailure
+          restartPolicy: Never
           containers:
             - name: submission-indexer
-              image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.7
+              image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.8
               env:
                 - name: DATABASE_URL
                   valueFrom:
@@ -178,13 +178,13 @@ spec:
       backoffLimit: 0
       completions: 1
       parallelism: 1
-      ttlSecondsAfterFinished: 30
+      ttlSecondsAfterFinished: 86400
       template:
         spec:
-          restartPolicy: OnFailure
+          restartPolicy: Never
           containers:
             - name: submission-indexer
-              image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.7
+              image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.8
               env:
                 - name: DATABASE_URL
                   valueFrom:
@@ -228,20 +228,20 @@ metadata:
 spec:
   schedule: "0 2 1 * *"
   concurrencyPolicy: Forbid
-  startingDeadlineSeconds: 30
+  startingDeadlineSeconds:
   suspend: false
   jobTemplate:
     spec:
       backoffLimit: 0
       completions: 1
       parallelism: 1
-      ttlSecondsAfterFinished: 30
+      ttlSecondsAfterFinished: 86400
       template:
         spec:
-          restartPolicy: OnFailure
+          restartPolicy: Never
           containers:
             - name: language-updater
-              image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.7
+              image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.8
               env:
                 - name: DATABASE_URL
                   valueFrom:
