@@ -4,7 +4,7 @@ kind: CronJob
 metadata:
   name: submission-crawler-1
 spec:
-  schedule: "*/10 * * * 1-5"
+  schedule: "2 */1 * * 1-5"
   concurrencyPolicy: Forbid
   startingDeadlineSeconds: 30
   suspend: false
@@ -13,7 +13,7 @@ spec:
       backoffLimit: 0
       completions: 1
       parallelism: 1
-      ttlSecondsAfterFinished: 300
+      ttlSecondsAfterFinished: 7200
       template:
         spec:
           restartPolicy: Never
@@ -59,7 +59,7 @@ kind: CronJob
 metadata:
   name: submission-crawler-2
 spec:
-  schedule: "*/10 0-20 * * 0,6"
+  schedule: "2 0-20/1 * * 0,6"
   concurrencyPolicy: Forbid
   startingDeadlineSeconds: 30
   suspend: false
@@ -68,7 +68,7 @@ spec:
       backoffLimit: 0
       completions: 1
       parallelism: 1
-      ttlSecondsAfterFinished: 300
+      ttlSecondsAfterFinished: 7200
       template:
         spec:
           restartPolicy: Never
@@ -116,16 +116,16 @@ kind: CronJob
 metadata:
   name: submission-crawler-3
 spec:
-  schedule: "* 5 * * *"
+  schedule: "2 5 * * *"
   concurrencyPolicy: Forbid
-  startingDeadlineSeconds: 300
+  startingDeadlineSeconds: 30
   suspend: false
   jobTemplate:
     spec:
       backoffLimit: 0
       completions: 1
       parallelism: 1
-      ttlSecondsAfterFinished: 300
+      ttlSecondsAfterFinished: 7200
       template:
         spec:
           restartPolicy: Never
