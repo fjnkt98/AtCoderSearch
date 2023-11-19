@@ -39,9 +39,9 @@ spec:
               "update",
               "user",
               "--migrate",
-              "--skip-fetch",
               "--optimize",
               "--generate-concurrent=2",
               "--post-concurrent=2",
+              "--duration=1000",
               "--chunk-size=10000",
             ]

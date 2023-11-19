@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: one-shot-user-indexer
+  name: one-shot-problem-indexer
 spec:
   backoffLimit: 0
   parallelism: 1
@@ -11,7 +11,7 @@ spec:
     spec:
       restartPolicy: Never
       containers:
-        - name: user-indexer
+        - name: problem-indexer
           image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.8
           env:
             - name: DATABASE_URL
@@ -37,11 +37,12 @@ spec:
             [
               "atcodersearch",
               "update",
-              "user",
+              "problem",
+              "--all",
               "--migrate",
-              "--skip-fetch",
               "--optimize",
               "--generate-concurrent=2",
               "--post-concurrent=2",
-              "--chunk-size=10000",
+              "--duration=1000",
+              "--chunk-size=1000",
             ]
