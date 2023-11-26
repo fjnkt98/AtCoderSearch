@@ -69,9 +69,6 @@ loop:
 }
 
 func SaveDocument[D any](ctx context.Context, rx <-chan D, saveDir string, chunkSize int) error {
-	suffix := 0
-	buffer := make([]any, 0, chunkSize)
-
 	writeDocument := func(documents []any, filePath string) error {
 		file, err := os.Create(filePath)
 		if err != nil {
@@ -79,11 +76,14 @@ func SaveDocument[D any](ctx context.Context, rx <-chan D, saveDir string, chunk
 		}
 		defer file.Close()
 
-		if err := json.NewEncoder(file).Encode(buffer); err != nil {
+		if err := json.NewEncoder(file).Encode(documents); err != nil {
 			return failure.Translate(err, FileOperationError, failure.Context{"file": filePath}, failure.Message("failed to write the file"))
 		}
 		return nil
 	}
+
+	suffix := 0
+	buffer := make([]any, 0, chunkSize)
 
 loop:
 	for {
@@ -125,8 +125,6 @@ loop:
 		if err := writeDocument(buffer, filePath); err != nil {
 			return failure.Wrap(err)
 		}
-
-		buffer = buffer[:0]
 	}
 
 	return nil
