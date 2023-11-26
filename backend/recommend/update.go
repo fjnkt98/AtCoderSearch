@@ -21,7 +21,7 @@ type UpdateConfig struct {
 func Update(ctx context.Context, cfg UpdateConfig, db *sqlx.DB, core *solr.Core) error {
 	options, err := json.Marshal(cfg)
 	if err != nil {
-		failure.Translate(err, acs.EncodeError, failure.Message("failed to encode update config"))
+		return failure.Translate(err, acs.EncodeError, failure.Message("failed to encode update config"))
 	}
 	history := acs.NewUpdateHistory(db, "recommend", string(options))
 	defer history.Cancel()
