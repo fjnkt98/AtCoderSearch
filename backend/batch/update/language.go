@@ -1,20 +1,13 @@
-package list
+package update
 
 import (
 	"context"
-	"fjnkt98/atcodersearch/acs"
-	"fmt"
+	"fjnkt98/atcodersearch/batch"
+	"fjnkt98/atcodersearch/batch/repository"
 	"regexp"
 
-	"github.com/jmoiron/sqlx"
-	"github.com/morikuni/failure"
-	"golang.org/x/exp/slog"
+	"github.com/goark/errs"
 )
-
-type Language struct {
-	Language string `db:"language"`
-	Group    string `db:"group"`
-}
 
 var MajorLanguageMapping = map[string]string{
 	"Ada2012 (GNAT 9.2.1)":                         "Ada",
@@ -346,64 +339,53 @@ func GetLanguageGroup(language string) string {
 	return "Other"
 }
 
-func Update(ctx context.Context, db *sqlx.DB) error {
-	rows, err := db.QueryContext(
-		ctx,
-		`
-		SELECT
-			DISTINCT "language"
-		FROM
-			"submissions"	
-		`,
-	)
+type LanguageUpdater interface {
+	batch.Batch
+	UpdateLanguage(ctx context.Context) error
+}
+
+type languageUpdater struct {
+	submissionRepo repository.SubmissionRepository
+	languageRepo   repository.LanguageRepository
+}
+
+func NewLanguageUpdater(submissionRepo repository.SubmissionRepository, languageRepo repository.LanguageRepository) LanguageUpdater {
+	return &languageUpdater{
+		submissionRepo: submissionRepo,
+		languageRepo:   languageRepo,
+	}
+}
+
+func (u *languageUpdater) Run(ctx context.Context) error {
+	return u.UpdateLanguage(ctx)
+}
+
+func (u *languageUpdater) Name() string {
+	return "LanguageUpdater"
+}
+
+func (u *languageUpdater) UpdateLanguage(ctx context.Context) error {
+	languages, err := u.submissionRepo.FetchLanguages(ctx)
 	if err != nil {
-		return failure.Translate(err, acs.DBError, failure.Message("failed to fetch languages from submissions table"))
-	}
-	defer rows.Close()
-
-	languages := make([]Language, 0, 32)
-	for rows.Next() {
-		var lang string
-		if err := rows.Scan(&lang); err != nil {
-			return failure.Translate(err, acs.DBError, failure.Message("failed to scan row"))
-		}
-		group := GetLanguageGroup(lang)
-		languages = append(languages, Language{Language: lang, Group: group})
+		return errs.New(
+			"failed to fetch languages",
+			errs.WithCause(err),
+		)
 	}
 
-	tx, err := db.Beginx()
-	if err != nil {
-		return failure.Translate(err, acs.DBError, failure.Message("failed to start transaction"))
-	}
-	defer tx.Rollback()
-
-	if _, err := tx.ExecContext(
-		ctx,
-		`
-		DELETE FROM "languages"
-		`,
-	); err != nil {
-		return failure.Translate(err, acs.DBError, failure.Message("failed to delete languages"))
+	languageGroups := make([]repository.Language, 0, 32)
+	for _, l := range languages {
+		languageGroups = append(languageGroups, repository.Language{
+			Language: l,
+			Group:    GetLanguageGroup(l),
+		})
 	}
 
-	affected := 0
-	if result, err := tx.NamedExecContext(
-		ctx,
-		`
-		INSERT INTO "languages" ("language", "group") VALUES (:language, :group)
-		`,
-		languages,
-	); err != nil {
-		return failure.Translate(err, acs.DBError, failure.Message("failed to insert languages"))
-	} else {
-		a, _ := result.RowsAffected()
-		affected = int(a)
-	}
-
-	if err := tx.Commit(); err != nil {
-		return failure.Translate(err, acs.DBError, failure.Message("failed to commit transaction to save languages"))
-	} else {
-		slog.Info(fmt.Sprintf("commit transaction. save %d rows.", affected))
+	if err := u.languageRepo.Save(ctx, languageGroups); err != nil {
+		return errs.New(
+			"failed to save languages",
+			errs.WithCause(err),
+		)
 	}
 
 	return nil
