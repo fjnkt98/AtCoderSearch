@@ -54,7 +54,6 @@ func (c *userController) HandleGET(ctx *gin.Context) {
 			slog.Any("error", err),
 		)
 		ctx.JSON(http.StatusBadRequest, c.pr.Error("failed to parse query string"))
-		ctx.Abort()
 		return
 	}
 
@@ -65,13 +64,11 @@ func (c *userController) HandleGET(ctx *gin.Context) {
 			slog.Any("error", err),
 		)
 		ctx.JSON(http.StatusBadRequest, c.pr.Error("failed to decode request parameter"))
-		ctx.Abort()
 		return
 	}
 
 	if !params.Validate() {
 		ctx.JSON(http.StatusBadRequest, c.pr.Error("validation error"))
-		ctx.Abort()
 		return
 	}
 
@@ -82,7 +79,6 @@ func (c *userController) HandleGET(ctx *gin.Context) {
 			slog.Any("error", err),
 		)
 		ctx.JSON(http.StatusInternalServerError, c.pr.Error("internal server error"))
-		ctx.Abort()
 		return
 	}
 
