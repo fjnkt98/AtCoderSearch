@@ -151,6 +151,7 @@ func (p *SearchParams) Query() url.Values {
 		Op("AND").
 		Q(solr.Sanitize(norm.NFKC.String(p.Keyword))).
 		QAlt("*:*").
+		Qf("text_ja text_en text_reading").
 		Rows(p.GetRows()).
 		Sort(p.GetSort()).
 		Sow(true).
