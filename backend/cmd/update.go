@@ -7,12 +7,12 @@ import (
 	"fjnkt98/atcodersearch/batch"
 	"fjnkt98/atcodersearch/batch/crawl"
 	"fjnkt98/atcodersearch/batch/generate"
-	"fjnkt98/atcodersearch/batch/repository"
 	"fjnkt98/atcodersearch/batch/update"
 	"fjnkt98/atcodersearch/batch/upload"
 	"fjnkt98/atcodersearch/config"
 	"fjnkt98/atcodersearch/pkg/atcoder"
 	"fjnkt98/atcodersearch/pkg/solr"
+	"fjnkt98/atcodersearch/repository"
 	"os"
 
 	"github.com/spf13/cobra"

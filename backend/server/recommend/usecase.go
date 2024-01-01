@@ -2,8 +2,8 @@ package recommend
 
 import (
 	"context"
-	"fjnkt98/atcodersearch/batch/repository"
 	"fjnkt98/atcodersearch/pkg/solr"
+	"fjnkt98/atcodersearch/repository"
 	"log/slog"
 
 	"github.com/goark/errs"

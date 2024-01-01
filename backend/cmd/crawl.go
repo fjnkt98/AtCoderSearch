@@ -3,9 +3,9 @@ package cmd
 import (
 	"fjnkt98/atcodersearch/batch"
 	"fjnkt98/atcodersearch/batch/crawl"
-	"fjnkt98/atcodersearch/batch/repository"
 	"fjnkt98/atcodersearch/config"
 	"fjnkt98/atcodersearch/pkg/atcoder"
+	"fjnkt98/atcodersearch/repository"
 	"os"
 
 	"github.com/spf13/cobra"

@@ -6,9 +6,9 @@ import (
 	"fjnkt98/atcodersearch/batch"
 	"fjnkt98/atcodersearch/batch/crawl"
 	"fjnkt98/atcodersearch/batch/generate"
-	"fjnkt98/atcodersearch/batch/repository"
 	"fjnkt98/atcodersearch/batch/upload"
 	"fjnkt98/atcodersearch/config"
+	"fjnkt98/atcodersearch/repository"
 	"log/slog"
 
 	"github.com/goark/errs"

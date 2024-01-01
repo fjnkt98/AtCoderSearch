@@ -3,8 +3,8 @@ package cmd
 import (
 	"fjnkt98/atcodersearch/batch"
 	"fjnkt98/atcodersearch/batch/generate"
-	"fjnkt98/atcodersearch/batch/repository"
 	"fjnkt98/atcodersearch/config"
+	"fjnkt98/atcodersearch/repository"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"

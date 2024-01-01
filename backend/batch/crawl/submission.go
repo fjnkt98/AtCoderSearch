@@ -3,9 +3,9 @@ package crawl
 import (
 	"context"
 	"fjnkt98/atcodersearch/batch"
-	"fjnkt98/atcodersearch/batch/repository"
 	"fjnkt98/atcodersearch/config"
 	"fjnkt98/atcodersearch/pkg/atcoder"
+	"fjnkt98/atcodersearch/repository"
 	"fmt"
 	"strings"
 	"time"

@@ -6,8 +6,8 @@ import (
 	"context"
 	"errors"
 	"fjnkt98/atcodersearch/batch"
-	"fjnkt98/atcodersearch/batch/repository"
 	"fjnkt98/atcodersearch/config"
+	"fjnkt98/atcodersearch/repository"
 	"testing"
 	"time"
 )

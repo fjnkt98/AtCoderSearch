@@ -1,9 +1,9 @@
 package server
 
 import (
-	"fjnkt98/atcodersearch/batch/repository"
 	"fjnkt98/atcodersearch/config"
 	"fjnkt98/atcodersearch/pkg/solr"
+	"fjnkt98/atcodersearch/repository"
 	"fjnkt98/atcodersearch/server/problem"
 	"fjnkt98/atcodersearch/server/recommend"
 	"fjnkt98/atcodersearch/server/submission"

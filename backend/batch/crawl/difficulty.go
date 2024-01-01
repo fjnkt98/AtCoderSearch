@@ -3,8 +3,8 @@ package crawl
 import (
 	"context"
 	"fjnkt98/atcodersearch/batch"
-	"fjnkt98/atcodersearch/batch/repository"
 	"fjnkt98/atcodersearch/pkg/atcoder"
+	"fjnkt98/atcodersearch/repository"
 
 	"github.com/goark/errs"
 	"golang.org/x/exp/slog"

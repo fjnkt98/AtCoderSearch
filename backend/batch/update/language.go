@@ -3,7 +3,7 @@ package update
 import (
 	"context"
 	"fjnkt98/atcodersearch/batch"
-	"fjnkt98/atcodersearch/batch/repository"
+	"fjnkt98/atcodersearch/repository"
 	"regexp"
 
 	"github.com/goark/errs"

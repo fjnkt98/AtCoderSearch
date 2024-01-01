@@ -3,9 +3,9 @@ package generate
 import (
 	"context"
 	"fjnkt98/atcodersearch/batch"
-	"fjnkt98/atcodersearch/batch/repository"
 	"fjnkt98/atcodersearch/config"
 	"fjnkt98/atcodersearch/pkg/solr"
+	"fjnkt98/atcodersearch/repository"
 	"fmt"
 	"time"
 
