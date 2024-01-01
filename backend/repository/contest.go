@@ -11,6 +11,7 @@ import (
 type ContestRepository interface {
 	Save(ctx context.Context, contests []Contest) error
 	FetchContestIDs(ctx context.Context, categories []string) ([]string, error)
+	FetchCategories(ctx context.Context) ([]string, error)
 }
 
 type Contest struct {
@@ -104,4 +105,24 @@ func (r *contestRepository) FetchContestIDs(ctx context.Context, targets []strin
 	}
 
 	return ids, nil
+}
+
+func (r *contestRepository) FetchCategories(ctx context.Context) ([]string, error) {
+	var categories []string
+
+	err := r.db.NewSelect().
+		Model(new(Contest)).
+		Column("category").
+		Distinct().
+		Order("category").
+		Scan(ctx, categories)
+
+	if err != nil {
+		return nil, errs.New(
+			"failed to fetch categories",
+			errs.WithCause(err),
+		)
+	}
+
+	return categories, nil
 }
