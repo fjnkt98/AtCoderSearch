@@ -1,0 +1,56 @@
+database_url: ""
+table_schema: ""
+solr_host: "http://localhost:8983"
+atcoder_username: ""
+atcoder_password: ""
+do_migrate: false
+problem:
+  core_name: "problem"
+  crawl:
+    duration: 3000
+    all: false
+  generate:
+    save_dir: "/var/tmp/atcoder/problem"
+    concurrent: 6
+    chunk_size: 1000
+  upload:
+    save_dir: "/var/tmp/atcoder/problem"
+    concurrent: 4
+    optimize: true
+    truncate: true
+  update:
+    skip_fetch: true
+user:
+  core_name: "user"
+  crawl:
+    duration: 1000
+    all: false
+  generate:
+    save_dir: "/var/tmp/atcoder/user"
+    concurrent: 6
+    chunk_size: 10000
+  upload:
+    save_dir: "/var/tmp/atcoder/user"
+    concurrent: 4
+    optimize: true
+    truncate: true
+  update:
+    skip_fetch: true
+submission:
+  core_name: "submission"
+  crawl:
+    duration: 1000
+    retry: 5
+    targets: "ABC,ABC-Like,ARC,ARC-Like,AGC,AGC-Like,JOI,Other Sponsored,PAST"
+  generate:
+    save_dir: "/var/tmp/atcoder/submission"
+    concurrent: 6
+    chunk_size: 10000
+  read:
+    interval: 90
+    all: false
+  upload:
+    save_dir: "/var/tmp/atcoder/submission"
+    concurrent: 4
+    optimize: true
+    truncate: true
