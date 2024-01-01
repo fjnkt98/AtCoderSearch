@@ -62,7 +62,7 @@ func (f *SolrFacetCounts) Into(p FacetParams) map[string][]utility.FacetPart {
 		res["category"] = utility.ConvertBucket(f.Category.Buckets)
 	}
 	if f.Color != nil {
-		res["color"] = utility.ConvertBucket[string](f.Color.Buckets)
+		res["color"] = utility.ConvertBucket(f.Color.Buckets)
 	}
 	if f.Difficulty != nil {
 		res["difficulty"] = utility.ConvertRangeBucket(*f.Difficulty, p.Difficulty)
