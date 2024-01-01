@@ -2,9 +2,8 @@ package main
 
 import (
 	"fjnkt98/atcodersearch/cmd"
+	"log/slog"
 	"os"
-
-	"golang.org/x/exp/slog"
 )
 
 func main() {
