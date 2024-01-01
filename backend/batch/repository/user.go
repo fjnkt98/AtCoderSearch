@@ -10,6 +10,7 @@ import (
 
 type UserRepository interface {
 	Save(ctx context.Context, users []User) error
+	FetchRatingByUserName(ctx context.Context, username string) (int, error)
 }
 
 type User struct {
@@ -100,4 +101,23 @@ func (r *userRepository) Save(ctx context.Context, users []User) error {
 	}
 
 	return nil
+}
+
+func (r *userRepository) FetchRatingByUserName(ctx context.Context, username string) (int, error) {
+	var rating int
+	err := r.db.NewSelect().
+		Model(new(User)).
+		Column("rating").
+		Where("? = ?", bun.Ident("user_name"), username).
+		Limit(1).
+		Scan(ctx, rating)
+	if err != nil {
+		return 0, errs.New(
+			"failed to get the rating of the specified user",
+			errs.WithCause(err),
+			errs.WithContext("user_name", username),
+		)
+	}
+
+	return rating, nil
 }
