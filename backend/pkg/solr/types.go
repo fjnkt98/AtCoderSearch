@@ -69,7 +69,7 @@ type CoreStatus struct {
 	Index       IndexInfo `json:"index"`
 }
 
-type CoreList struct {
+type CoreStatuses struct {
 	Header       ResponseHeader        `json:"responseHeader"`
 	InitFailures map[string]any        `json:"initFailures"`
 	Status       map[string]CoreStatus `json:"status"`
