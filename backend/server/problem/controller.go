@@ -54,7 +54,6 @@ func (c *problemController) HandleGET(ctx *gin.Context) {
 			slog.Any("error", err),
 		)
 		ctx.JSON(http.StatusBadRequest, c.pr.Error("failed to parse query string"))
-		ctx.Abort()
 		return
 	}
 
@@ -65,13 +64,11 @@ func (c *problemController) HandleGET(ctx *gin.Context) {
 			slog.Any("error", err),
 		)
 		ctx.JSON(http.StatusBadRequest, c.pr.Error("failed to decode request parameter"))
-		ctx.Abort()
 		return
 	}
 
 	if !params.Validate() {
 		ctx.JSON(http.StatusBadRequest, c.pr.Error("validation error"))
-		ctx.Abort()
 		return
 	}
 
@@ -82,7 +79,6 @@ func (c *problemController) HandleGET(ctx *gin.Context) {
 			slog.Any("error", err),
 		)
 		ctx.JSON(http.StatusInternalServerError, c.pr.Error("internal server error"))
-		ctx.Abort()
 		return
 	}
 
@@ -91,8 +87,37 @@ func (c *problemController) HandleGET(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, c.pr.Format(params, res, t))
 }
 
-func (ctr *problemController) HandlePOST(c *gin.Context) {
-	panic(0)
+func (c *problemController) HandlePOST(ctx *gin.Context) {
+	startTime := time.Now()
+
+	var params SearchParams
+	if err := ctx.ShouldBindJSON(&params); err != nil {
+		slog.Error(
+			"failed to bind request body",
+			slog.Any("error", err),
+		)
+		ctx.JSON(http.StatusBadRequest, c.pr.Error("failed to bind request body"))
+		return
+	}
+
+	if !params.Validate() {
+		ctx.JSON(http.StatusBadRequest, c.pr.Error("validation error"))
+		return
+	}
+
+	res, err := c.uc.Search(ctx, params)
+	if err != nil {
+		slog.Error(
+			"failed to execute search query",
+			slog.Any("error", err),
+		)
+		ctx.JSON(http.StatusInternalServerError, c.pr.Error("internal server error"))
+		return
+	}
+
+	t := int(time.Since(startTime).Milliseconds())
+
+	ctx.JSON(http.StatusOK, c.pr.Format(params, res, t))
 }
 
 type SearchParams struct {
