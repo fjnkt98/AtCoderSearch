@@ -1,4 +1,4 @@
-package category
+package controller
 
 import (
 	"fjnkt98/atcodersearch/repository"
@@ -7,21 +7,21 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type CategoryController interface {
+type CategoryListController interface {
 	HandleGET(*gin.Context)
 }
 
-type contestController struct {
+type categoryListController struct {
 	repo repository.ContestRepository
 }
 
-func NewCategoryController(repo repository.ContestRepository) CategoryController {
-	return &contestController{
+func NewCategoryListController(repo repository.ContestRepository) CategoryListController {
+	return &categoryListController{
 		repo: repo,
 	}
 }
 
-func (c *contestController) HandleGET(ctx *gin.Context) {
+func (c *categoryListController) HandleGET(ctx *gin.Context) {
 	categories, err := c.repo.FetchCategories(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, make([]string, 0))

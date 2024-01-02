@@ -11,6 +11,7 @@ import (
 type ProblemRepository interface {
 	Save(ctx context.Context, problems []Problem) error
 	FetchIDs(ctx context.Context) ([]string, error)
+	FetchIDsByContestID(ctx context.Context, contest_id []string) ([]string, error)
 }
 
 type Problem struct {
@@ -99,5 +100,26 @@ func (r *problemRepository) FetchIDs(ctx context.Context) ([]string, error) {
 			errs.WithCause(err),
 		)
 	}
+	return ids, nil
+}
+
+func (r *problemRepository) FetchIDsByContestID(ctx context.Context, contest_id []string) ([]string, error) {
+	query := r.db.NewSelect().
+		Model(new(Problem)).
+		Column("problem_id").
+		OrderExpr("? asc", bun.Ident("problem_id"))
+
+	if len(contest_id) > 0 {
+		query = query.Where("? IN (?)", bun.Ident("contest_id"), bun.In(contest_id))
+	}
+
+	var ids []string
+	if _, err := query.Exec(ctx, &ids); err != nil {
+		return nil, errs.New(
+			"failed to fetch problem ids",
+			errs.WithCause(err),
+		)
+	}
+
 	return ids, nil
 }

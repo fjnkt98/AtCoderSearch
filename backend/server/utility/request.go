@@ -261,12 +261,8 @@ loop:
 	return fq
 }
 
-type Validator interface {
-	Validate() bool
-}
-
-type SearchParams[F, C Validator] struct {
-	Limit  *int     `json:"limit" schema:"limit"`
+type SearchParams[F, C any] struct {
+	Limit  *int     `json:"limit" schema:"limit" validate:"omitempty,lte=1000"`
 	Page   int      `json:"page" schema:"page"`
 	Filter F        `json:"filter" schema:"filter"`
 	Sort   []string `json:"sort" schema:"sort"`

@@ -1,4 +1,4 @@
-package language
+package controller
 
 import (
 	"fjnkt98/atcodersearch/repository"
@@ -7,23 +7,23 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type LanguageController interface {
+type LanguageListController interface {
 	HandleGET(*gin.Context)
 }
 
-type languageController struct {
+type languageListController struct {
 	repo repository.LanguageRepository
 }
 
-func NewLanguageController(
+func NewLanguageListController(
 	repo repository.LanguageRepository,
-) LanguageController {
-	return &languageController{
+) LanguageListController {
+	return &languageListController{
 		repo: repo,
 	}
 }
 
-func (c *languageController) HandleGET(ctx *gin.Context) {
+func (c *languageListController) HandleGET(ctx *gin.Context) {
 	languages, err := c.repo.FetchLanguages(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, make([]string, 0))
@@ -32,23 +32,23 @@ func (c *languageController) HandleGET(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, languages)
 }
 
-type LanguageGroupController interface {
+type LanguageGroupListController interface {
 	HandleGET(*gin.Context)
 }
 
-type languageGroupController struct {
+type languageGroupListController struct {
 	repo repository.LanguageRepository
 }
 
-func NewLanguageGroupController(
+func NewLanguageGroupListController(
 	repo repository.LanguageRepository,
-) LanguageController {
-	return &languageGroupController{
+) LanguageListController {
+	return &languageGroupListController{
 		repo: repo,
 	}
 }
 
-func (c *languageGroupController) HandleGET(ctx *gin.Context) {
+func (c *languageGroupListController) HandleGET(ctx *gin.Context) {
 	groups, err := c.repo.FetchLanguageGroups(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, make([]string, 0))

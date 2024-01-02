@@ -1,4 +1,4 @@
-package contest
+package controller
 
 import (
 	"fjnkt98/atcodersearch/repository"
@@ -8,21 +8,21 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type ContestController interface {
+type ContestListController interface {
 	HandleGET(*gin.Context)
 }
 
-type contestController struct {
+type contestListController struct {
 	repo repository.ContestRepository
 }
 
-func NewContestController(repo repository.ContestRepository) ContestController {
-	return &contestController{
+func NewContestListController(repo repository.ContestRepository) ContestListController {
+	return &contestListController{
 		repo: repo,
 	}
 }
 
-func (c *contestController) HandleGET(ctx *gin.Context) {
+func (c *contestListController) HandleGET(ctx *gin.Context) {
 	categories := strings.Split(ctx.Query("category"), ",")
 
 	ids, err := c.repo.FetchContestIDs(ctx, categories)
