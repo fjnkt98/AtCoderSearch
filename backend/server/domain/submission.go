@@ -10,7 +10,7 @@ import (
 
 type SearchSubmissionParam struct {
 	Sort []string `json:"sort" schema:"sort" validate:"dive,oneof=-score rating -rating birth_year -birth_year"`
-	utility.SearchParams[SearchSubmissionFilterParam, SearchSubmissionFacetParam]
+	utility.SearchParam[SearchSubmissionFilterParam, SearchSubmissionFacetParam]
 }
 
 func (p *SearchSubmissionParam) GetSort() string {

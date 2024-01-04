@@ -13,7 +13,7 @@ import (
 type SearchUserParam struct {
 	Keyword string   `json:"keyword" schema:"keyword" validate:"lte=200"`
 	Sort    []string `json:"sort" schema:"sort" validate:"dive,oneof=-score rating -rating birth_year -birth_year"`
-	utility.SearchParams[SearchUserFilterParam, SearchUserFacetParam]
+	utility.SearchParam[SearchUserFilterParam, SearchUserFacetParam]
 }
 
 func (p *SearchUserParam) GetSort() string {

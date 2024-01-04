@@ -17,7 +17,7 @@ import (
 type SearchProblemParam struct {
 	Keyword string   `json:"keyword" schema:"keyword" validate:"lte=200"`
 	Sort    []string `json:"sort" schema:"sort" validate:"dive,oneof=-score start_at -start_at difficulty -difficulty problem_id -problem_id"`
-	utility.SearchParams[SearchProblemFilterParam, SearchProblemFacetParam]
+	utility.SearchParam[SearchProblemFilterParam, SearchProblemFacetParam]
 }
 
 func (p *SearchProblemParam) GetSort() string {

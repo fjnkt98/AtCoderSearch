@@ -270,7 +270,7 @@ func (p facetParams) Validate() bool {
 func TestBaseSearchParams(t *testing.T) {
 	type params struct {
 		Keyword string `json:"keyword" schema:"keyword"`
-		SearchParams[filterParams, facetParams]
+		SearchParam[filterParams, facetParams]
 	}
 
 	decoder := schema.NewDecoder()
@@ -296,7 +296,7 @@ func TestBaseSearchParams(t *testing.T) {
 	{
 		want := params{
 			Keyword: "foo",
-			SearchParams: SearchParams[filterParams, facetParams]{
+			SearchParam: SearchParam[filterParams, facetParams]{
 				Limit: ptr(100),
 				Page:  1,
 				Filter: filterParams{

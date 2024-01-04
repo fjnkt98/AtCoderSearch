@@ -261,7 +261,7 @@ loop:
 	return fq
 }
 
-type SearchParams[F, C any] struct {
+type SearchParam[F, C any] struct {
 	Limit  *int     `json:"limit" schema:"limit" validate:"omitempty,lte=1000"`
 	Page   int      `json:"page" schema:"page"`
 	Filter F        `json:"filter" schema:"filter"`
@@ -269,7 +269,7 @@ type SearchParams[F, C any] struct {
 	Facet  C        `json:"facet" schema:"facet"`
 }
 
-func (p *SearchParams[F, C]) GetRows() int {
+func (p *SearchParam[F, C]) GetRows() int {
 	if p.Limit == nil {
 		return 20
 	}
@@ -277,7 +277,7 @@ func (p *SearchParams[F, C]) GetRows() int {
 	return *p.Limit
 }
 
-func (p *SearchParams[F, C]) GetStart() int {
+func (p *SearchParam[F, C]) GetStart() int {
 	if p.Page == 0 || p.GetRows() == 0 {
 		return 0
 	}
@@ -285,7 +285,7 @@ func (p *SearchParams[F, C]) GetStart() int {
 	return (p.Page - 1) * p.GetRows()
 }
 
-func (p *SearchParams[F, C]) GetSort() string {
+func (p *SearchParam[F, C]) GetSort() string {
 	orders := make([]string, 0, len(p.Sort))
 	for _, s := range p.Sort {
 		if strings.HasPrefix(s, "-") {
@@ -298,11 +298,11 @@ func (p *SearchParams[F, C]) GetSort() string {
 	return strings.Join(orders, ",")
 }
 
-func (p *SearchParams[F, C]) GetFacet() string {
+func (p *SearchParam[F, C]) GetFacet() string {
 	return Facet(p.Facet)
 }
 
-func (p *SearchParams[F, C]) GetFilter() []string {
+func (p *SearchParam[F, C]) GetFilter() []string {
 	return Filter(p.Filter)
 }
 
