@@ -8,6 +8,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/gorilla/schema"
 )
 
 type IntegerRange struct {
@@ -259,6 +261,33 @@ loop:
 	}
 
 	return fq
+}
+
+func NewSchemaDecoder() *schema.Decoder {
+	decoder := schema.NewDecoder()
+	decoder.IgnoreUnknownKeys(true)
+	decoder.RegisterConverter([]string{}, func(input string) reflect.Value {
+		splitted := strings.Split(input, ",")
+		output := make([]string, 0, len(splitted))
+		for _, s := range splitted {
+			if s != "" {
+				output = append(output, s)
+			}
+		}
+		return reflect.ValueOf(output)
+	})
+	decoder.RegisterConverter(TermFacetParam{}, func(input string) reflect.Value {
+		splitted := strings.Split(input, ",")
+		output := make([]string, 0, len(splitted))
+		for _, s := range splitted {
+			if s != "" {
+				output = append(output, s)
+			}
+		}
+		return reflect.ValueOf(TermFacetParam(output))
+	})
+
+	return decoder
 }
 
 type SearchParam[F, C any] struct {

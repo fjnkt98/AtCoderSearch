@@ -3,11 +3,8 @@ package utility
 import (
 	"net/url"
 	"reflect"
-	"strings"
 	"testing"
 	"time"
-
-	"github.com/gorilla/schema"
 )
 
 func ptr[T any](v T) *T {
@@ -273,11 +270,7 @@ func TestBaseSearchParams(t *testing.T) {
 		SearchParam[filterParams, facetParams]
 	}
 
-	decoder := schema.NewDecoder()
-	decoder.IgnoreUnknownKeys(true)
-	decoder.RegisterConverter([]string{}, func(input string) reflect.Value {
-		return reflect.ValueOf(strings.Split(input, ","))
-	})
+	decoder := NewSchemaDecoder()
 
 	v := url.Values{}
 	v.Set("keyword", "foo")
@@ -349,4 +342,44 @@ func TestFieldList(t *testing.T) {
 	if !reflect.DeepEqual(fl, want) {
 		t.Errorf("expected %+v, but got %+v", want, fl)
 	}
+}
+
+func TestDecodeTermFacetParamType(t *testing.T) {
+	type param struct {
+		Term TermFacetParam `schema:"term"`
+	}
+
+	decoder := NewSchemaDecoder()
+
+	cases := []struct {
+		name   string
+		raw    string
+		want   TermFacetParam
+		assert func(expected, actual TermFacetParam) bool
+	}{
+		{name: "empty", raw: "term=", want: TermFacetParam([]string{}), assert: func(expected, actual TermFacetParam) bool { return len(actual) == 0 }},
+		{name: "one", raw: "term=category", want: TermFacetParam([]string{"category"}), assert: func(expected, actual TermFacetParam) bool { return reflect.DeepEqual(expected, actual) }},
+		{name: "many", raw: "term=category,difficulty", want: TermFacetParam([]string{"category", "difficulty"}), assert: func(expected, actual TermFacetParam) bool { return reflect.DeepEqual(expected, actual) }},
+	}
+
+	for _, tt := range cases {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			query, err := url.ParseQuery(tt.raw)
+			if err != nil {
+				t.Fatalf("failed to parse query: %s", err.Error())
+			}
+
+			var result param
+			err = decoder.Decode(&result, query)
+			if err != nil {
+				t.Fatalf("failed to decode query: %s", err.Error())
+			}
+
+			if !tt.assert(tt.want, result.Term) {
+				t.Errorf("expected %+v, but got %+v", tt.want, result.Term)
+			}
+		})
+	}
+
 }

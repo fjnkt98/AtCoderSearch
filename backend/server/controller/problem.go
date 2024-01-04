@@ -5,11 +5,11 @@ import (
 	"fjnkt98/atcodersearch/server/domain"
 	"fjnkt98/atcodersearch/server/presenter"
 	"fjnkt98/atcodersearch/server/usecase"
+	"fjnkt98/atcodersearch/server/utility"
 	"fmt"
 	"log/slog"
 	"net/http"
 	"net/url"
-	"reflect"
 	"strings"
 	"time"
 
@@ -34,11 +34,7 @@ func NewSearchProblemController(
 	uc usecase.SearchProblemUsecase,
 	pr presenter.SearchProblemPresenter,
 ) SearchProblemController {
-	decoder := schema.NewDecoder()
-	decoder.IgnoreUnknownKeys(true)
-	decoder.RegisterConverter([]string{}, func(input string) reflect.Value {
-		return reflect.ValueOf(strings.Split(input, ","))
-	})
+	decoder := utility.NewSchemaDecoder()
 
 	validator := govalidator.New()
 

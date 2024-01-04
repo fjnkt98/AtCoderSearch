@@ -4,12 +4,11 @@ import (
 	"fjnkt98/atcodersearch/server/domain"
 	"fjnkt98/atcodersearch/server/presenter"
 	"fjnkt98/atcodersearch/server/usecase"
+	"fjnkt98/atcodersearch/server/utility"
 	"fmt"
 	"log/slog"
 	"net/http"
 	"net/url"
-	"reflect"
-	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -33,11 +32,7 @@ func NewSearchSubmissionController(
 	uc usecase.SearchSubmissionUsecase,
 	pr presenter.SearchSubmissionPresenter,
 ) SearchSubmissionController {
-	decoder := schema.NewDecoder()
-	decoder.IgnoreUnknownKeys(true)
-	decoder.RegisterConverter([]string{}, func(input string) reflect.Value {
-		return reflect.ValueOf(strings.Split(input, ","))
-	})
+	decoder := utility.NewSchemaDecoder()
 
 	validator := govalidator.New()
 
