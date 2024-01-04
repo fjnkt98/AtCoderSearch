@@ -2,6 +2,8 @@ package repository
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 
 	"github.com/goark/errs"
 	_ "github.com/lib/pq"
@@ -110,13 +112,20 @@ func (r *userRepository) FetchRatingByUserName(ctx context.Context, username str
 		Column("rating").
 		Where("? = ?", bun.Ident("user_name"), username).
 		Limit(1).
-		Scan(ctx, rating)
+		Scan(ctx, &rating)
 	if err != nil {
-		return 0, errs.New(
-			"failed to get the rating of the specified user",
-			errs.WithCause(err),
-			errs.WithContext("user_name", username),
-		)
+		if errors.Is(err, sql.ErrNoRows) {
+			return 0, errs.Wrap(
+				err,
+				errs.WithContext("user_name", username),
+			)
+		} else {
+			return 0, errs.New(
+				"failed to get the rating of the specified user",
+				errs.WithCause(err),
+				errs.WithContext("user_name", username),
+			)
+		}
 	}
 
 	return rating, nil

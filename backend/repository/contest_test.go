@@ -37,7 +37,7 @@ func getTestDB() *bun.DB {
 	db := bun.NewDB(engine, pgdialect.New())
 	db.AddQueryHook(
 		bundebug.NewQueryHook(
-			bundebug.WithVerbose(true),
+			bundebug.WithVerbose(false),
 			bundebug.FromEnv("BUNDEBUG"),
 		),
 	)
@@ -85,5 +85,16 @@ func TestFetchSpecifiedContestIDs(t *testing.T) {
 	_, err := repository.FetchContestIDs(ctx, []string{"ABC", "ARC"})
 	if err != nil {
 		t.Fatalf("failed to fetch contest ids: %s", err.Error())
+	}
+}
+
+func TestFetchCategories(t *testing.T) {
+	db := getTestDB()
+	repository := NewContestRepository(db)
+
+	ctx := context.Background()
+	_, err := repository.FetchCategories(ctx)
+	if err != nil {
+		t.Fatalf("failed to fetch categories: %s", err.Error())
 	}
 }

@@ -115,7 +115,7 @@ func (r *contestRepository) FetchCategories(ctx context.Context) ([]string, erro
 		Column("category").
 		Distinct().
 		Order("category").
-		Scan(ctx, categories)
+		Scan(ctx, &categories)
 
 	if err != nil {
 		return nil, errs.New(

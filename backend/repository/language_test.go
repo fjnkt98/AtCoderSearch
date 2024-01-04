@@ -26,3 +26,22 @@ func TestSaveLanguages(t *testing.T) {
 		t.Fatalf("failed to save languages: %s", err.Error())
 	}
 }
+
+func TestFetchLanguages(t *testing.T) {
+
+	db := getTestDB()
+	repository := NewLanguageRepository(db)
+	ctx := context.Background()
+	if _, err := repository.FetchLanguages(ctx); err != nil {
+		t.Fatalf("failed to fetch languages: %s", err.Error())
+	}
+}
+
+func TestFetchLanguageGroups(t *testing.T) {
+	db := getTestDB()
+	repository := NewLanguageRepository(db)
+	ctx := context.Background()
+	if _, err := repository.FetchLanguageGroups(ctx); err != nil {
+		t.Fatalf("failed to fetch language groups: %s", err.Error())
+	}
+}

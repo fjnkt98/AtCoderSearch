@@ -67,7 +67,7 @@ func (r *languageRepository) FetchLanguages(ctx context.Context) ([]string, erro
 		Model(new(Language)).
 		Column("language").
 		Order("language").
-		Scan(ctx, languages)
+		Scan(ctx, &languages)
 
 	if err != nil {
 		return nil, errs.New(
@@ -86,7 +86,7 @@ func (r *languageRepository) FetchLanguageGroups(ctx context.Context) ([]string,
 		Column("group").
 		Distinct().
 		Order("group").
-		Scan(ctx, languages)
+		Scan(ctx, &languages)
 
 	if err != nil {
 		return nil, errs.New(
