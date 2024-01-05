@@ -233,6 +233,8 @@ loop:
 			} else {
 				field = tag
 			}
+		} else {
+			field = fieldType.Name
 		}
 
 		switch v := fieldValue.Interface().(type) {

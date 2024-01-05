@@ -252,6 +252,7 @@ func TestFilter(t *testing.T) {
 		Color      []string     `filter:"color"`
 		Difficulty IntegerRange `filter:"difficulty"`
 		User       []string     `filter:"-"`
+		Country    []string
 	}
 
 	p := param{
@@ -259,6 +260,7 @@ func TestFilter(t *testing.T) {
 		Color:      []string{"blue"},
 		Difficulty: IntegerRange{From: ptr(0), To: ptr(2000)},
 		User:       []string{"fjnkt98"},
+		Country:    []string{"JP"},
 	}
 
 	fq := Filter(p)
@@ -266,6 +268,7 @@ func TestFilter(t *testing.T) {
 		`category:("ABC" OR "Other Contests")`,
 		`color:(blue)`,
 		`difficulty:[0 TO 2000}`,
+		`Country:(JP)`,
 	}
 
 	if !reflect.DeepEqual(fq, want) {
