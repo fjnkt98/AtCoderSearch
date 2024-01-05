@@ -30,7 +30,7 @@ func (p *SearchUserParam) GetSort() string {
 }
 
 type SearchUserFilterParam struct {
-	UserID    []string             `json:"user_id" schema:"user_id" filter:"user_name,quote"`
+	UserID    []string             `json:"user_id" schema:"user_id" filter:"user_name"`
 	Rating    utility.IntegerRange `json:"rating" schema:"rating" filter:"rating"`
 	BirthYear utility.IntegerRange `json:"birth_year" schema:"birth_year" filter:"birth_year"`
 	JoinCount utility.IntegerRange `json:"join_count" schema:"join_count" filter:"join_count"`

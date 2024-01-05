@@ -248,8 +248,8 @@ func TestFacet(t *testing.T) {
 
 func TestFilter(t *testing.T) {
 	type param struct {
-		Category   []string     `filter:"category,quote"`
-		Color      []string     `filter:"color"`
+		Category   []string     `filter:"category"`
+		Color      []string     `filter:"color,unquote"`
 		Difficulty IntegerRange `filter:"difficulty"`
 		User       []string     `filter:"-"`
 		Country    []string
@@ -268,7 +268,7 @@ func TestFilter(t *testing.T) {
 		`{!tag=category}category:("ABC" OR "Other Contests")`,
 		`{!tag=color}color:(blue)`,
 		`{!tag=difficulty}difficulty:[0 TO 2000}`,
-		`{!tag=Country}Country:(JP)`,
+		`{!tag=Country}Country:("JP")`,
 	}
 
 	if !reflect.DeepEqual(fq, want) {
@@ -395,7 +395,7 @@ func TestSearchParamFilterAndFacet(t *testing.T) {
 
 	{
 		want := []string{
-			`{!tag=category}category:(ABC)`,
+			`{!tag=category}category:("ABC")`,
 		}
 		fq := p.GetFilter()
 

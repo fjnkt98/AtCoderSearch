@@ -218,7 +218,7 @@ loop:
 		fieldType := ty.Field(i)
 		fieldValue := val.Field(i)
 
-		quote := false
+		unquote := false
 		field := ""
 
 		if tag, ok := fieldType.Tag.Lookup("filter"); ok {
@@ -227,8 +227,8 @@ loop:
 			}
 			if f, opt, ok := strings.Cut(tag, ","); ok {
 				field = f
-				if opt == "quote" {
-					quote = true
+				if opt == "unquote" {
+					unquote = true
 				}
 			} else {
 				field = tag
@@ -252,7 +252,7 @@ loop:
 			}
 		case []string:
 			values := SanitizeStrings(v)
-			if quote {
+			if !unquote {
 				values = QuoteStrings(values)
 			}
 			if len(values) == 0 {

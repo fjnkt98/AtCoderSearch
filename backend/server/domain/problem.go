@@ -34,7 +34,7 @@ func (p *SearchProblemParam) GetSort() string {
 }
 
 type SearchProblemFilterParam struct {
-	Category   []string             `json:"category" schema:"category" filter:"category,quote"`
+	Category   []string             `json:"category" schema:"category" filter:"category"`
 	Difficulty utility.IntegerRange `json:"difficulty" schema:"difficulty" filter:"difficulty"`
 	Color      []string             `json:"color" schema:"color" filter:"color"`
 }
