@@ -273,23 +273,81 @@ func TestFilter(t *testing.T) {
 	}
 }
 
-type filterParams struct {
-	Category []string `filter:"category"`
+func TestSearchParamGetRows(t *testing.T) {
+	cases := []struct {
+		name  string
+		param SearchParam[any, any]
+		want  int
+	}{
+		{name: "normal", param: SearchParam[any, any]{Limit: ptr(50)}, want: 50},
+		{name: "empty", param: SearchParam[any, any]{Limit: nil}, want: 20},
+		{name: "zero", param: SearchParam[any, any]{Limit: ptr(0)}, want: 0},
+	}
+
+	for _, tt := range cases {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			result := tt.param.GetRows()
+			if result != tt.want {
+				t.Errorf("expected %d, but got %d", tt.want, result)
+			}
+		})
+	}
 }
 
-func (p filterParams) Validate() bool {
-	return true
+func TestSearchParamGetStart(t *testing.T) {
+	cases := []struct {
+		name  string
+		param SearchParam[any, any]
+		want  int
+	}{
+		{name: "normal", param: SearchParam[any, any]{Limit: ptr(20), Page: 5}, want: 80},
+		{name: "one", param: SearchParam[any, any]{Limit: ptr(20), Page: 1}, want: 0},
+		{name: "zero", param: SearchParam[any, any]{Limit: ptr(20), Page: 0}, want: 0},
+		{name: "page_when_limit_zero", param: SearchParam[any, any]{Limit: ptr(0), Page: 1}, want: 0},
+	}
+
+	for _, tt := range cases {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			result := tt.param.GetStart()
+			if result != tt.want {
+				t.Errorf("expected %d, but got %d", tt.want, result)
+			}
+		})
+	}
 }
 
-type facetParams struct {
-	Term TermFacetParam `facet:"category:category"`
+func TestSearchParamGetSort(t *testing.T) {
+	cases := []struct {
+		name  string
+		param SearchParam[any, any]
+		want  string
+	}{
+		{name: "normal", param: SearchParam[any, any]{Sort: []string{"score"}}, want: "score asc"},
+		{name: "multiple", param: SearchParam[any, any]{Sort: []string{"-score", "rating"}}, want: "score desc,rating asc"},
+		{name: "empty", param: SearchParam[any, any]{Sort: []string{}}, want: ""},
+	}
+
+	for _, tt := range cases {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			result := tt.param.GetSort()
+			if result != tt.want {
+				t.Errorf("expected %s, but got %s", tt.want, result)
+			}
+		})
+	}
 }
 
-func (p facetParams) Validate() bool {
-	return true
-}
+func TestSearchParamFilterAndFacet(t *testing.T) {
+	type filterParams struct {
+		Category []string `filter:"category"`
+	}
 
-func TestBaseSearchParams(t *testing.T) {
+	type facetParams struct {
+		Term TermFacetParam `facet:"category:category"`
+	}
 	type params struct {
 		Keyword string `json:"keyword" schema:"keyword"`
 		SearchParam[filterParams, facetParams]
@@ -355,14 +413,14 @@ func TestBaseSearchParams(t *testing.T) {
 
 func TestFieldList(t *testing.T) {
 	type doc struct {
-		ID    string `json:"id"`
+		ID    string
 		Name  string `json:"name"`
 		Grade string `json:"grade,omitempty"`
 		Class string `json:"-"`
 	}
 
 	fl := FieldList(new(doc))
-	want := []string{"id", "name", "grade"}
+	want := []string{"ID", "name", "grade"}
 
 	if !reflect.DeepEqual(fl, want) {
 		t.Errorf("expected %+v, but got %+v", want, fl)
