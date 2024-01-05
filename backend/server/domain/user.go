@@ -30,16 +30,16 @@ func (p *SearchUserParam) GetSort() string {
 }
 
 type SearchUserFilterParam struct {
-	UserID    []string             `json:"user_id" schema:"user_id"`
-	Rating    utility.IntegerRange `json:"rating" schema:"rating"`
-	BirthYear utility.IntegerRange `json:"birth_year" schema:"birth_year"`
-	JoinCount utility.IntegerRange `json:"join_count" schema:"join_count"`
-	Country   []string             `json:"country" schema:"country"`
-	Color     []string             `json:"color" schema:"color"`
+	UserID    []string             `json:"user_id" schema:"user_id" filter:"user_name,quote"`
+	Rating    utility.IntegerRange `json:"rating" schema:"rating" filter:"rating"`
+	BirthYear utility.IntegerRange `json:"birth_year" schema:"birth_year" filter:"birth_year"`
+	JoinCount utility.IntegerRange `json:"join_count" schema:"join_count" filter:"join_count"`
+	Country   []string             `json:"country" schema:"country" filter:"country"`
+	Color     []string             `json:"color" schema:"color" filter:"color"`
 }
 
 type SearchUserFacetParam struct {
-	Term      []string                `json:"term" schema:"term" validate:"dive,oneof=country" facet:"country:country"`
+	Term      utility.TermFacetParam  `json:"term" schema:"term" validate:"dive,oneof=country" facet:"country:country"`
 	Rating    utility.RangeFacetParam `json:"rating" schema:"rating" facet:"rating:rating"`
 	BirthYear utility.RangeFacetParam `json:"birth_year" schema:"birth_year" facet:"birth_year:birth_year"`
 	JoinCount utility.RangeFacetParam `json:"join_count" schema:"join_count" facet:"join_count:join_count"`
