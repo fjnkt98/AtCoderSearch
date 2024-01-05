@@ -160,6 +160,31 @@ func TestRangeFacet(t *testing.T) {
 	}
 }
 
+func TestLackedRangeFacet(t *testing.T) {
+	cases := []struct {
+		name  string
+		param RangeFacetParam
+	}{
+		{name: "from_is_nil", param: RangeFacetParam{From: nil, To: ptr(2000), Gap: ptr(400)}},
+		{name: "to_is_nil", param: RangeFacetParam{From: ptr(0), To: nil, Gap: ptr(400)}},
+		{name: "gap_is_nil", param: RangeFacetParam{From: ptr(0), To: ptr(2000), Gap: nil}},
+		{name: "from_is_not_nil", param: RangeFacetParam{From: ptr(0), To: nil, Gap: nil}},
+		{name: "to_is_not_nil", param: RangeFacetParam{From: nil, To: ptr(2000), Gap: nil}},
+		{name: "gap_is_not_nil", param: RangeFacetParam{From: nil, To: nil, Gap: ptr(400)}},
+	}
+
+	for _, tt := range cases {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			result := tt.param.ToFacet("foo", "foo")
+
+			if result != nil {
+				t.Errorf("expected nil, but got %+v", result)
+			}
+		})
+	}
+}
+
 func TestTermFacet(t *testing.T) {
 	p := TermFacetParam{"category", "difficulty", "color"}
 	result := p.ToFacet(map[string]string{"category": "contest_category", "difficulty": "difficulty"})
