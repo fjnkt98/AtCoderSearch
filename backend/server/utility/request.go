@@ -240,25 +240,25 @@ loop:
 		switch v := fieldValue.Interface().(type) {
 		case IntegerRange:
 			if r := v.ToRange(); r != "" {
-				fq = append(fq, fmt.Sprintf("%s:%s", field, r))
+				fq = append(fq, fmt.Sprintf("{!tag=%s}%s:%s", field, field, r))
 			}
 		case FloatRange:
 			if r := v.ToRange(); r != "" {
-				fq = append(fq, fmt.Sprintf("%s:%s", field, r))
+				fq = append(fq, fmt.Sprintf("{!tag=%s}%s:%s", field, field, r))
 			}
 		case DateRange:
 			if r := v.ToRange(); r != "" {
-				fq = append(fq, fmt.Sprintf("%s:%s", field, r))
+				fq = append(fq, fmt.Sprintf("{!tag=%s}%s:%s", field, field, r))
 			}
 		case []string:
 			values := SanitizeStrings(v)
 			if quote {
-				values = QuoteStrings(v)
+				values = QuoteStrings(values)
 			}
 			if len(values) == 0 {
 				continue loop
 			}
-			fq = append(fq, fmt.Sprintf("%s:(%s)", field, strings.Join(values, " OR ")))
+			fq = append(fq, fmt.Sprintf("{!tag=%s}%s:(%s)", field, field, strings.Join(values, " OR ")))
 		}
 	}
 

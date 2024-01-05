@@ -265,10 +265,10 @@ func TestFilter(t *testing.T) {
 
 	fq := Filter(p)
 	want := []string{
-		`category:("ABC" OR "Other Contests")`,
-		`color:(blue)`,
-		`difficulty:[0 TO 2000}`,
-		`Country:(JP)`,
+		`{!tag=category}category:("ABC" OR "Other Contests")`,
+		`{!tag=color}color:(blue)`,
+		`{!tag=difficulty}difficulty:[0 TO 2000}`,
+		`{!tag=Country}Country:(JP)`,
 	}
 
 	if !reflect.DeepEqual(fq, want) {
@@ -395,7 +395,7 @@ func TestSearchParamFilterAndFacet(t *testing.T) {
 
 	{
 		want := []string{
-			`category:(ABC)`,
+			`{!tag=category}category:(ABC)`,
 		}
 		fq := p.GetFilter()
 
