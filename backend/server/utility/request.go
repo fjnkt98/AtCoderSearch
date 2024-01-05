@@ -270,6 +270,7 @@ func NewSchemaDecoder() *schema.Decoder {
 		splitted := strings.Split(input, ",")
 		output := make([]string, 0, len(splitted))
 		for _, s := range splitted {
+			s = strings.TrimSpace(s)
 			if s != "" {
 				output = append(output, s)
 			}
@@ -280,6 +281,7 @@ func NewSchemaDecoder() *schema.Decoder {
 		splitted := strings.Split(input, ",")
 		output := make([]string, 0, len(splitted))
 		for _, s := range splitted {
+			s = strings.TrimSpace(s)
 			if s != "" {
 				output = append(output, s)
 			}

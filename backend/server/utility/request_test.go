@@ -360,6 +360,7 @@ func TestDecodeTermFacetParamType(t *testing.T) {
 		{name: "empty", raw: "term=", want: TermFacetParam([]string{}), assert: func(expected, actual TermFacetParam) bool { return len(actual) == 0 }},
 		{name: "one", raw: "term=category", want: TermFacetParam([]string{"category"}), assert: func(expected, actual TermFacetParam) bool { return reflect.DeepEqual(expected, actual) }},
 		{name: "many", raw: "term=category,difficulty", want: TermFacetParam([]string{"category", "difficulty"}), assert: func(expected, actual TermFacetParam) bool { return reflect.DeepEqual(expected, actual) }},
+		{name: "include_spaces", raw: "term=  category  ,     difficulty ", want: TermFacetParam([]string{"category", "difficulty"}), assert: func(expected, actual TermFacetParam) bool { return reflect.DeepEqual(expected, actual) }},
 	}
 
 	for _, tt := range cases {
