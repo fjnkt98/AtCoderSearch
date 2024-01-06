@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"reflect"
 	"strings"
 
 	"github.com/goark/errs"
@@ -11,6 +12,13 @@ import (
 var Config RootConfig
 
 func LoadConfig(file string, dst any) error {
+	if reflect.TypeOf(dst).Kind() != reflect.Pointer {
+		return errs.New(
+			"non-pointer dst was given",
+			errs.WithContext("dst", dst),
+		)
+	}
+
 	godotenv.Load()
 
 	viper.SetConfigFile(file)
@@ -25,7 +33,7 @@ func LoadConfig(file string, dst any) error {
 		)
 	}
 
-	if err := viper.Unmarshal(&Config); err != nil {
+	if err := viper.Unmarshal(dst); err != nil {
 		return errs.New(
 			"failed to unmarshal config file",
 			errs.WithCause(err),
