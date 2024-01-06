@@ -57,6 +57,8 @@ func StatusWithContext(ctx context.Context, core SolrCore) (CoreStatus, error) {
 				return res.Status[core.Name()], errs.Wrap(err)
 			}
 		}
+
+		return CoreStatus{}, errs.Wrap(err)
 	}
 
 	var res CoreStatuses
