@@ -8,6 +8,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/gorilla/schema"
 )
 
 type IntegerRange struct {
@@ -216,7 +218,7 @@ loop:
 		fieldType := ty.Field(i)
 		fieldValue := val.Field(i)
 
-		quote := false
+		unquote := false
 		field := ""
 
 		if tag, ok := fieldType.Tag.Lookup("filter"); ok {
@@ -225,43 +227,74 @@ loop:
 			}
 			if f, opt, ok := strings.Cut(tag, ","); ok {
 				field = f
-				if opt == "quote" {
-					quote = true
+				if opt == "unquote" {
+					unquote = true
 				}
 			} else {
 				field = tag
 			}
+		} else {
+			field = fieldType.Name
 		}
 
 		switch v := fieldValue.Interface().(type) {
 		case IntegerRange:
 			if r := v.ToRange(); r != "" {
-				fq = append(fq, fmt.Sprintf("%s:%s", field, r))
+				fq = append(fq, fmt.Sprintf("{!tag=%s}%s:%s", field, field, r))
 			}
 		case FloatRange:
 			if r := v.ToRange(); r != "" {
-				fq = append(fq, fmt.Sprintf("%s:%s", field, r))
+				fq = append(fq, fmt.Sprintf("{!tag=%s}%s:%s", field, field, r))
 			}
 		case DateRange:
 			if r := v.ToRange(); r != "" {
-				fq = append(fq, fmt.Sprintf("%s:%s", field, r))
+				fq = append(fq, fmt.Sprintf("{!tag=%s}%s:%s", field, field, r))
 			}
 		case []string:
 			values := SanitizeStrings(v)
-			if quote {
-				values = QuoteStrings(v)
+			if !unquote {
+				values = QuoteStrings(values)
 			}
 			if len(values) == 0 {
 				continue loop
 			}
-			fq = append(fq, fmt.Sprintf("%s:(%s)", field, strings.Join(values, " OR ")))
+			fq = append(fq, fmt.Sprintf("{!tag=%s}%s:(%s)", field, field, strings.Join(values, " OR ")))
 		}
 	}
 
 	return fq
 }
 
-type SearchParams[F, C any] struct {
+func NewSchemaDecoder() *schema.Decoder {
+	decoder := schema.NewDecoder()
+	decoder.IgnoreUnknownKeys(true)
+	decoder.RegisterConverter([]string{}, func(input string) reflect.Value {
+		splitted := strings.Split(input, ",")
+		output := make([]string, 0, len(splitted))
+		for _, s := range splitted {
+			s = strings.TrimSpace(s)
+			if s != "" {
+				output = append(output, s)
+			}
+		}
+		return reflect.ValueOf(output)
+	})
+	decoder.RegisterConverter(TermFacetParam{}, func(input string) reflect.Value {
+		splitted := strings.Split(input, ",")
+		output := make([]string, 0, len(splitted))
+		for _, s := range splitted {
+			s = strings.TrimSpace(s)
+			if s != "" {
+				output = append(output, s)
+			}
+		}
+		return reflect.ValueOf(TermFacetParam(output))
+	})
+
+	return decoder
+}
+
+type SearchParam[F, C any] struct {
 	Limit  *int     `json:"limit" schema:"limit" validate:"omitempty,lte=1000"`
 	Page   int      `json:"page" schema:"page"`
 	Filter F        `json:"filter" schema:"filter"`
@@ -269,7 +302,7 @@ type SearchParams[F, C any] struct {
 	Facet  C        `json:"facet" schema:"facet"`
 }
 
-func (p *SearchParams[F, C]) GetRows() int {
+func (p *SearchParam[F, C]) GetRows() int {
 	if p.Limit == nil {
 		return 20
 	}
@@ -277,7 +310,7 @@ func (p *SearchParams[F, C]) GetRows() int {
 	return *p.Limit
 }
 
-func (p *SearchParams[F, C]) GetStart() int {
+func (p *SearchParam[F, C]) GetStart() int {
 	if p.Page == 0 || p.GetRows() == 0 {
 		return 0
 	}
@@ -285,7 +318,7 @@ func (p *SearchParams[F, C]) GetStart() int {
 	return (p.Page - 1) * p.GetRows()
 }
 
-func (p *SearchParams[F, C]) GetSort() string {
+func (p *SearchParam[F, C]) GetSort() string {
 	orders := make([]string, 0, len(p.Sort))
 	for _, s := range p.Sort {
 		if strings.HasPrefix(s, "-") {
@@ -298,11 +331,11 @@ func (p *SearchParams[F, C]) GetSort() string {
 	return strings.Join(orders, ",")
 }
 
-func (p *SearchParams[F, C]) GetFacet() string {
+func (p *SearchParam[F, C]) GetFacet() string {
 	return Facet(p.Facet)
 }
 
-func (p *SearchParams[F, C]) GetFilter() []string {
+func (p *SearchParam[F, C]) GetFilter() []string {
 	return Filter(p.Filter)
 }
 

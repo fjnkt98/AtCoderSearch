@@ -1,6 +1,6 @@
 //go:build test_repository
 
-// docker run --rm -d -p 5432:5432 --name postgres -e POSTGRES_DB=atcodersearch -e POSTGRES_USER=atcodersearch -e POSTGRES_PASSWORD=atcodersearch --mount type=bind,src=./schema.sql,dst=/docker-entrypoint-initdb.d/schema.sql postgres:15
+// docker run --rm -d -p 5432:5432 --name postgres -e POSTGRES_DB=test_atcodersearch -e POSTGRES_USER=test_atcodersearch -e POSTGRES_PASSWORD=test_atcodersearch --mount type=bind,src=./schema.sql,dst=/docker-entrypoint-initdb.d/schema.sql postgres:15
 
 package repository
 
@@ -23,7 +23,7 @@ func ptr[T any](v T) *T {
 
 func getTestDB() *bun.DB {
 	os.Setenv("PGSSLMODE", "disable")
-	engine, err := sql.Open("postgres", "postgres://atcodersearch:atcodersearch@localhost/atcodersearch")
+	engine, err := sql.Open("postgres", "postgres://test_atcodersearch:test_atcodersearch@localhost/test_atcodersearch")
 	if err != nil {
 		slog.Error("failed to open database", slog.String("error", err.Error()))
 		os.Exit(1)
@@ -37,7 +37,7 @@ func getTestDB() *bun.DB {
 	db := bun.NewDB(engine, pgdialect.New())
 	db.AddQueryHook(
 		bundebug.NewQueryHook(
-			bundebug.WithVerbose(true),
+			bundebug.WithVerbose(false),
 			bundebug.FromEnv("BUNDEBUG"),
 		),
 	)
@@ -85,5 +85,16 @@ func TestFetchSpecifiedContestIDs(t *testing.T) {
 	_, err := repository.FetchContestIDs(ctx, []string{"ABC", "ARC"})
 	if err != nil {
 		t.Fatalf("failed to fetch contest ids: %s", err.Error())
+	}
+}
+
+func TestFetchCategories(t *testing.T) {
+	db := getTestDB()
+	repository := NewContestRepository(db)
+
+	ctx := context.Background()
+	_, err := repository.FetchCategories(ctx)
+	if err != nil {
+		t.Fatalf("failed to fetch categories: %s", err.Error())
 	}
 }

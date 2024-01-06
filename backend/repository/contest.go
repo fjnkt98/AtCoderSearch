@@ -1,3 +1,5 @@
+//go:generate mockgen -source=$GOFILE -destination=./mock/mock_$GOFILE -package=$GOPACKAGE
+
 package repository
 
 import (
@@ -115,7 +117,7 @@ func (r *contestRepository) FetchCategories(ctx context.Context) ([]string, erro
 		Column("category").
 		Distinct().
 		Order("category").
-		Scan(ctx, categories)
+		Scan(ctx, &categories)
 
 	if err != nil {
 		return nil, errs.New(

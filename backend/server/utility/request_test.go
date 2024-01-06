@@ -3,11 +3,8 @@ package utility
 import (
 	"net/url"
 	"reflect"
-	"strings"
 	"testing"
 	"time"
-
-	"github.com/gorilla/schema"
 )
 
 func ptr[T any](v T) *T {
@@ -163,6 +160,31 @@ func TestRangeFacet(t *testing.T) {
 	}
 }
 
+func TestLackedRangeFacet(t *testing.T) {
+	cases := []struct {
+		name  string
+		param RangeFacetParam
+	}{
+		{name: "from_is_nil", param: RangeFacetParam{From: nil, To: ptr(2000), Gap: ptr(400)}},
+		{name: "to_is_nil", param: RangeFacetParam{From: ptr(0), To: nil, Gap: ptr(400)}},
+		{name: "gap_is_nil", param: RangeFacetParam{From: ptr(0), To: ptr(2000), Gap: nil}},
+		{name: "from_is_not_nil", param: RangeFacetParam{From: ptr(0), To: nil, Gap: nil}},
+		{name: "to_is_not_nil", param: RangeFacetParam{From: nil, To: ptr(2000), Gap: nil}},
+		{name: "gap_is_not_nil", param: RangeFacetParam{From: nil, To: nil, Gap: ptr(400)}},
+	}
+
+	for _, tt := range cases {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			result := tt.param.ToFacet("foo", "foo")
+
+			if result != nil {
+				t.Errorf("expected nil, but got %+v", result)
+			}
+		})
+	}
+}
+
 func TestTermFacet(t *testing.T) {
 	p := TermFacetParam{"category", "difficulty", "color"}
 	result := p.ToFacet(map[string]string{"category": "contest_category", "difficulty": "difficulty"})
@@ -226,10 +248,11 @@ func TestFacet(t *testing.T) {
 
 func TestFilter(t *testing.T) {
 	type param struct {
-		Category   []string     `filter:"category,quote"`
-		Color      []string     `filter:"color"`
+		Category   []string     `filter:"category"`
+		Color      []string     `filter:"color,unquote"`
 		Difficulty IntegerRange `filter:"difficulty"`
 		User       []string     `filter:"-"`
+		Country    []string
 	}
 
 	p := param{
@@ -237,13 +260,15 @@ func TestFilter(t *testing.T) {
 		Color:      []string{"blue"},
 		Difficulty: IntegerRange{From: ptr(0), To: ptr(2000)},
 		User:       []string{"fjnkt98"},
+		Country:    []string{"JP"},
 	}
 
 	fq := Filter(p)
 	want := []string{
-		`category:("ABC" OR "Other Contests")`,
-		`color:(blue)`,
-		`difficulty:[0 TO 2000}`,
+		`{!tag=category}category:("ABC" OR "Other Contests")`,
+		`{!tag=color}color:(blue)`,
+		`{!tag=difficulty}difficulty:[0 TO 2000}`,
+		`{!tag=Country}Country:("JP")`,
 	}
 
 	if !reflect.DeepEqual(fq, want) {
@@ -251,33 +276,87 @@ func TestFilter(t *testing.T) {
 	}
 }
 
-type filterParams struct {
-	Category []string `filter:"category"`
-}
-
-func (p filterParams) Validate() bool {
-	return true
-}
-
-type facetParams struct {
-	Term TermFacetParam `facet:"category:category"`
-}
-
-func (p facetParams) Validate() bool {
-	return true
-}
-
-func TestBaseSearchParams(t *testing.T) {
-	type params struct {
-		Keyword string `json:"keyword" schema:"keyword"`
-		SearchParams[filterParams, facetParams]
+func TestSearchParamGetRows(t *testing.T) {
+	cases := []struct {
+		name  string
+		param SearchParam[any, any]
+		want  int
+	}{
+		{name: "normal", param: SearchParam[any, any]{Limit: ptr(50)}, want: 50},
+		{name: "empty", param: SearchParam[any, any]{Limit: nil}, want: 20},
+		{name: "zero", param: SearchParam[any, any]{Limit: ptr(0)}, want: 0},
 	}
 
-	decoder := schema.NewDecoder()
-	decoder.IgnoreUnknownKeys(true)
-	decoder.RegisterConverter([]string{}, func(input string) reflect.Value {
-		return reflect.ValueOf(strings.Split(input, ","))
-	})
+	for _, tt := range cases {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			result := tt.param.GetRows()
+			if result != tt.want {
+				t.Errorf("expected %d, but got %d", tt.want, result)
+			}
+		})
+	}
+}
+
+func TestSearchParamGetStart(t *testing.T) {
+	cases := []struct {
+		name  string
+		param SearchParam[any, any]
+		want  int
+	}{
+		{name: "normal", param: SearchParam[any, any]{Limit: ptr(20), Page: 5}, want: 80},
+		{name: "one", param: SearchParam[any, any]{Limit: ptr(20), Page: 1}, want: 0},
+		{name: "zero", param: SearchParam[any, any]{Limit: ptr(20), Page: 0}, want: 0},
+		{name: "page_when_limit_zero", param: SearchParam[any, any]{Limit: ptr(0), Page: 1}, want: 0},
+	}
+
+	for _, tt := range cases {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			result := tt.param.GetStart()
+			if result != tt.want {
+				t.Errorf("expected %d, but got %d", tt.want, result)
+			}
+		})
+	}
+}
+
+func TestSearchParamGetSort(t *testing.T) {
+	cases := []struct {
+		name  string
+		param SearchParam[any, any]
+		want  string
+	}{
+		{name: "normal", param: SearchParam[any, any]{Sort: []string{"score"}}, want: "score asc"},
+		{name: "multiple", param: SearchParam[any, any]{Sort: []string{"-score", "rating"}}, want: "score desc,rating asc"},
+		{name: "empty", param: SearchParam[any, any]{Sort: []string{}}, want: ""},
+	}
+
+	for _, tt := range cases {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			result := tt.param.GetSort()
+			if result != tt.want {
+				t.Errorf("expected %s, but got %s", tt.want, result)
+			}
+		})
+	}
+}
+
+func TestSearchParamFilterAndFacet(t *testing.T) {
+	type filterParams struct {
+		Category []string `filter:"category"`
+	}
+
+	type facetParams struct {
+		Term TermFacetParam `facet:"category:category"`
+	}
+	type params struct {
+		Keyword string `json:"keyword" schema:"keyword"`
+		SearchParam[filterParams, facetParams]
+	}
+
+	decoder := NewSchemaDecoder()
 
 	v := url.Values{}
 	v.Set("keyword", "foo")
@@ -296,7 +375,7 @@ func TestBaseSearchParams(t *testing.T) {
 	{
 		want := params{
 			Keyword: "foo",
-			SearchParams: SearchParams[filterParams, facetParams]{
+			SearchParam: SearchParam[filterParams, facetParams]{
 				Limit: ptr(100),
 				Page:  1,
 				Filter: filterParams{
@@ -316,7 +395,7 @@ func TestBaseSearchParams(t *testing.T) {
 
 	{
 		want := []string{
-			`category:(ABC)`,
+			`{!tag=category}category:("ABC")`,
 		}
 		fq := p.GetFilter()
 
@@ -337,16 +416,57 @@ func TestBaseSearchParams(t *testing.T) {
 
 func TestFieldList(t *testing.T) {
 	type doc struct {
-		ID    string `json:"id"`
+		ID    string
 		Name  string `json:"name"`
 		Grade string `json:"grade,omitempty"`
 		Class string `json:"-"`
 	}
 
 	fl := FieldList(new(doc))
-	want := []string{"id", "name", "grade"}
+	want := []string{"ID", "name", "grade"}
 
 	if !reflect.DeepEqual(fl, want) {
 		t.Errorf("expected %+v, but got %+v", want, fl)
 	}
+}
+
+func TestDecodeTermFacetParamType(t *testing.T) {
+	type param struct {
+		Term TermFacetParam `schema:"term"`
+	}
+
+	decoder := NewSchemaDecoder()
+
+	cases := []struct {
+		name   string
+		raw    string
+		want   TermFacetParam
+		assert func(expected, actual TermFacetParam) bool
+	}{
+		{name: "empty", raw: "term=", want: TermFacetParam([]string{}), assert: func(expected, actual TermFacetParam) bool { return len(actual) == 0 }},
+		{name: "one", raw: "term=category", want: TermFacetParam([]string{"category"}), assert: func(expected, actual TermFacetParam) bool { return reflect.DeepEqual(expected, actual) }},
+		{name: "many", raw: "term=category,difficulty", want: TermFacetParam([]string{"category", "difficulty"}), assert: func(expected, actual TermFacetParam) bool { return reflect.DeepEqual(expected, actual) }},
+		{name: "include_spaces", raw: "term=  category  ,     difficulty ", want: TermFacetParam([]string{"category", "difficulty"}), assert: func(expected, actual TermFacetParam) bool { return reflect.DeepEqual(expected, actual) }},
+	}
+
+	for _, tt := range cases {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			query, err := url.ParseQuery(tt.raw)
+			if err != nil {
+				t.Fatalf("failed to parse query: %s", err.Error())
+			}
+
+			var result param
+			err = decoder.Decode(&result, query)
+			if err != nil {
+				t.Fatalf("failed to decode query: %s", err.Error())
+			}
+
+			if !tt.assert(tt.want, result.Term) {
+				t.Errorf("expected %+v, but got %+v", tt.want, result.Term)
+			}
+		})
+	}
+
 }

@@ -32,7 +32,7 @@ func TestSaveSubmission(t *testing.T) {
 	}
 }
 
-func TestFetchLanguages(t *testing.T) {
+func TestFetchLanguagesFromSubmission(t *testing.T) {
 	db := getTestDB()
 	repository := NewSubmissionRepository(db)
 
