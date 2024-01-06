@@ -1,9 +1,9 @@
-//go:build test_repository
+//go:build test_solr
 
 // Run this tests with the Docker container started with the following command.
 //
 // ```
-// docker run --rm -d -p 8983:8983 --name solr_example solr:9.1.0 solr-precreate example
+// docker run --rm -d -p 18983:8983 --name solr_example solr:9.1.0 solr-precreate example
 // ```
 
 package solr
@@ -21,10 +21,9 @@ type SampleDocument struct {
 }
 
 func TestStatus(t *testing.T) {
-	core, err := NewSolrCore("http://localhost:8983", "example")
+	core, err := NewSolrCore("http://localhost:18983", "example")
 	if err != nil {
-		t.Errorf("failed to create solr core: %s", err.Error())
-		return
+		t.Fatalf("failed to create solr core: %s", err.Error())
 	}
 	status, err := Status(core)
 	if err != nil {
@@ -37,10 +36,9 @@ func TestStatus(t *testing.T) {
 }
 
 func TestReload(t *testing.T) {
-	core, err := NewSolrCore("http://localhost:8983", "example")
+	core, err := NewSolrCore("http://localhost:18983", "example")
 	if err != nil {
-		t.Errorf("failed to create solr core: %s", err.Error())
-		return
+		t.Fatalf("failed to create solr core: %s", err.Error())
 	}
 
 	before := time.Now()
@@ -59,9 +57,9 @@ func TestReload(t *testing.T) {
 }
 
 func TestPing(t *testing.T) {
-	core, err := NewSolrCore("http://localhost:8983", "example")
+	core, err := NewSolrCore("http://localhost:18983", "example")
 	if err != nil {
-		t.Errorf("failed to create solr core: %s", err.Error())
+		t.Fatalf("failed to create solr core: %s", err.Error())
 		return
 	}
 
@@ -72,10 +70,16 @@ func TestPing(t *testing.T) {
 }
 
 func TestScenario(t *testing.T) {
-	core, err := NewSolrCore("http://localhost:8983", "example")
+	core, err := NewSolrCore("http://localhost:18983", "example")
 	if err != nil {
-		t.Errorf("failed to create solr core: %s", err.Error())
-		return
+		t.Fatalf("failed to create solr core: %s", err.Error())
+	}
+
+	if _, err := Truncate(core); err != nil {
+		t.Fatalf("failed to truncate core: %s", err.Error())
+	}
+	if _, err := Commit(core); err != nil {
+		t.Fatalf("failed to commit core: %s", err.Error())
 	}
 
 	params := url.Values{}
@@ -83,53 +87,46 @@ func TestScenario(t *testing.T) {
 
 	res, err := Select[SampleDocument, any](core, params)
 	if err != nil {
-		t.Errorf("failed to select document")
-		return
+		t.Fatalf("failed to select document")
 	}
 	if res.Response.NumFound != 0 {
-		t.Errorf("unmatched number of document")
-		return
+		t.Fatalf("unmatched number of document: expected 0, but got %d", res.Response.NumFound)
 	}
 
 	document := strings.NewReader(`[{"id":"001"}]`)
 	if _, err := Post(core, document, "application/json"); err != nil {
-		t.Errorf("failed to post document: %s", err.Error())
-		return
+		t.Fatalf("failed to post document: %s", err.Error())
 	}
 
 	if _, err := Commit(core); err != nil {
-		t.Errorf("failed to commit document")
-		return
+		t.Fatalf("failed to commit document")
 	}
 
 	res, err = Select[SampleDocument, any](core, params)
 	if err != nil {
-		t.Errorf("failed to select document")
-		return
+		t.Fatalf("failed to select document")
 	}
 	if res.Response.NumFound != 1 {
-		t.Errorf("unmatched number of document")
-		return
+		t.Fatalf("unmatched number of document")
 	}
 
 	want := []SampleDocument{{ID: "001"}}
 	if !reflect.DeepEqual(res.Response.Docs, want) {
-		t.Errorf("collection doesn't match the expected: %s", err.Error())
-		return
+		t.Fatalf("collection doesn't match the expected: %s", err.Error())
 	}
 
 	if _, err := Truncate(core); err != nil {
-		t.Errorf("failed to truncate core: %s", err.Error())
-		return
+		t.Fatalf("failed to truncate core: %s", err.Error())
+	}
+	if _, err := Commit(core); err != nil {
+		t.Fatalf("failed to commit document")
 	}
 
 	res, err = Select[SampleDocument, any](core, params)
 	if err != nil {
-		t.Errorf("failed to select document")
-		return
+		t.Fatalf("failed to select document")
 	}
 	if res.Response.NumFound != 0 {
-		t.Errorf("unmatched number of document")
-		return
+		t.Fatalf("unmatched number of document: expected 0, but got %d", res.Response.NumFound)
 	}
 }
