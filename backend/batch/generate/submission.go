@@ -3,7 +3,6 @@ package generate
 import (
 	"context"
 	"fjnkt98/atcodersearch/batch"
-	"fjnkt98/atcodersearch/config"
 	"fjnkt98/atcodersearch/pkg/solr"
 	"fjnkt98/atcodersearch/repository"
 	"fmt"
@@ -23,13 +22,13 @@ type submissionGenerator struct {
 	defaultGenerator
 }
 
-func NewSubmissionGenerator(cfg config.GenerateSubmissionConfig, reader RowReader) SubmissionGenerator {
+func NewSubmissionGenerator(reader RowReader, saveDir string, chunkSize int, concurrent int) SubmissionGenerator {
 	return &submissionGenerator{
 		defaultGenerator{
-			cfg: config.GenerateCommonConfig{
-				SaveDir:    cfg.SaveDir,
-				ChunkSize:  cfg.ChunkSize,
-				Concurrent: cfg.Concurrent,
+			config: defaultGeneratorConfig{
+				SaveDir:    saveDir,
+				ChunkSize:  chunkSize,
+				Concurrent: concurrent,
 			},
 			reader: reader,
 		},
@@ -117,45 +116,27 @@ func (r *SubmissionRow) Document(ctx context.Context) (map[string]any, error) {
 }
 
 type submissionRowReader struct {
-	db   *bun.DB
-	repo repository.UpdateHistoryRepository
-	cfg  config.ReadSubmissionConfig
+	db       *bun.DB
+	repo     repository.UpdateHistoryRepository
+	interval int
+	all      bool
 }
 
 func NewSubmissionRowReader(
 	db *bun.DB,
-	repo repository.UpdateHistoryRepository,
-	cfg config.ReadSubmissionConfig,
+	interval int,
+	all bool,
 ) RowReader {
 	return &submissionRowReader{
-		db:   db,
-		repo: repo,
-		cfg:  cfg,
-	}
-}
-
-func (r *submissionRowReader) getPeriod(ctx context.Context) (time.Time, error) {
-	if r.cfg.All {
-		return time.Time{}, nil
-	} else {
-		latest, err := r.repo.GetLatest(ctx, "submission")
-		if err != nil {
-			return time.Time{}, errs.New(
-				"failed to get latest update submission history",
-				errs.WithCause(err),
-			)
-		}
-		return latest.StartedAt, nil
+		db:       db,
+		repo:     repository.NewUpdateHistoryRepository(db),
+		interval: interval,
+		all:      all,
 	}
 }
 
 func (r *submissionRowReader) ReadRows(ctx context.Context, tx chan<- Documenter) error {
-	period, err := r.getPeriod(ctx)
-	if err != nil {
-		return errs.Wrap(err)
-	}
-
-	rows, err := r.db.NewSelect().
+	query := r.db.NewSelect().
 		ColumnExpr("?.? AS ?", bun.Ident("s"), bun.Ident("id"), bun.Ident("id")).
 		ColumnExpr("?.? AS ?", bun.Ident("s"), bun.Ident("epoch_second"), bun.Ident("epoch_second")).
 		ColumnExpr("?.? AS ?", bun.Ident("s"), bun.Ident("problem_id"), bun.Ident("problem_id")).
@@ -176,10 +157,21 @@ func (r *submissionRowReader) ReadRows(ctx context.Context, tx chan<- Documenter
 		Join("LEFT JOIN ? AS ? ON ?.? = ?.?", bun.Ident("problems"), bun.Ident("p"), bun.Ident("s"), bun.Ident("problem_id"), bun.Ident("p"), bun.Ident("problem_id")).
 		Join("LEFT JOIN ? AS ? ON ?.? = ?.?", bun.Ident("difficulties"), bun.Ident("d"), bun.Ident("s"), bun.Ident("problem_id"), bun.Ident("d"), bun.Ident("problem_id")).
 		Join("LEFT JOIN ? AS ? ON ?.? = ?.?", bun.Ident("languages"), bun.Ident("l"), bun.Ident("s"), bun.Ident("language"), bun.Ident("l"), bun.Ident("language")).
-		Where("?.? > EXTRACT(EPOCH FROM CURRENT_DATE - CAST(? || ' day' AS INTERVAL))", bun.Ident("s"), bun.Ident("epoch_second"), r.cfg.Interval).
-		Where("?.? > ?", bun.Ident("s"), bun.Ident("crawled_at"), period).
-		Rows(ctx)
+		Where("?.? > EXTRACT(EPOCH FROM CURRENT_DATE - CAST(? || ' day' AS INTERVAL))", bun.Ident("s"), bun.Ident("epoch_second"), r.interval)
 
+	if !r.all {
+		latest, err := r.repo.GetLatest(ctx, "submission")
+		if err != nil {
+			return errs.New(
+				"failed to get latest update submission history",
+				errs.WithCause(err),
+			)
+		}
+
+		query = query.Where("?.? > ?", bun.Ident("s"), bun.Ident("crawled_at"), latest.StartedAt)
+	}
+
+	rows, err := query.Rows(ctx)
 	if err != nil {
 		return errs.New(
 			"failed to read rows",

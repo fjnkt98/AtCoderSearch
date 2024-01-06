@@ -7,7 +7,6 @@ import (
 	"fjnkt98/atcodersearch/batch/crawl"
 	"fjnkt98/atcodersearch/batch/generate"
 	"fjnkt98/atcodersearch/batch/upload"
-	"fjnkt98/atcodersearch/config"
 	"fjnkt98/atcodersearch/repository"
 	"log/slog"
 
@@ -19,26 +18,26 @@ type UserUpdater interface {
 }
 
 type userUpdater struct {
-	cfg       config.UserConfig
 	crawler   crawl.UserCrawler
 	generator generate.UserGenerator
 	uploader  upload.DocumentUploader
 	repo      repository.UpdateHistoryRepository
+	skipFetch bool
 }
 
 func NewUserUpdater(
-	cfg config.UserConfig,
 	crawler crawl.UserCrawler,
 	generator generate.UserGenerator,
 	uploader upload.DocumentUploader,
 	repo repository.UpdateHistoryRepository,
+	skipFetch bool,
 ) UserUpdater {
 	return &userUpdater{
-		cfg:       cfg,
 		crawler:   crawler,
 		generator: generator,
 		uploader:  uploader,
 		repo:      repo,
+		skipFetch: skipFetch,
 	}
 }
 
@@ -46,8 +45,18 @@ func (u *userUpdater) Name() string {
 	return "UserUpdater"
 }
 
+func (u *userUpdater) Config() any {
+	config := map[string]any{
+		"crawl":      u.crawler.Config(),
+		"generate":   u.generator.Config(),
+		"uploader":   u.uploader.Config(),
+		"skip_fetch": u.skipFetch,
+	}
+	return config
+}
+
 func (u *userUpdater) Run(ctx context.Context) error {
-	cfg, err := json.Marshal(u.cfg)
+	config, err := json.Marshal(u.Config())
 	if err != nil {
 		return errs.New(
 			"failed to encode update config",
@@ -55,11 +64,11 @@ func (u *userUpdater) Run(ctx context.Context) error {
 		)
 	}
 
-	history := repository.NewUpdateHistory("user", string(cfg))
+	history := repository.NewUpdateHistory("user", string(config))
 	defer u.repo.Cancel(ctx, &history)
 
 	slog.Info("Start to update user index.")
-	if u.cfg.Update.SkipFetch {
+	if u.skipFetch {
 		slog.Info("Skip to crawl.")
 	} else {
 		if err := u.crawler.CrawlUser(ctx); err != nil {

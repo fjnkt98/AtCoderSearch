@@ -364,6 +364,10 @@ func (u *languageUpdater) Name() string {
 	return "LanguageUpdater"
 }
 
+func (u *languageUpdater) Config() any {
+	return nil
+}
+
 func (u *languageUpdater) UpdateLanguage(ctx context.Context) error {
 	languages, err := u.submissionRepo.FetchLanguages(ctx)
 	if err != nil {

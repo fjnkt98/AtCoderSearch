@@ -6,7 +6,6 @@ import (
 	"fjnkt98/atcodersearch/batch"
 	"fjnkt98/atcodersearch/batch/generate"
 	"fjnkt98/atcodersearch/batch/upload"
-	"fjnkt98/atcodersearch/config"
 	"fjnkt98/atcodersearch/repository"
 	"log/slog"
 
@@ -18,20 +17,17 @@ type SubmissionUpdater interface {
 }
 
 type submissionUpdater struct {
-	cfg       config.SubmissionConfig
 	generator generate.SubmissionGenerator
 	uploader  upload.DocumentUploader
 	repo      repository.UpdateHistoryRepository
 }
 
 func NewSubmissionUpdater(
-	cfg config.SubmissionConfig,
 	generator generate.SubmissionGenerator,
 	uploader upload.DocumentUploader,
 	repo repository.UpdateHistoryRepository,
 ) SubmissionUpdater {
 	return &submissionUpdater{
-		cfg:       cfg,
 		generator: generator,
 		uploader:  uploader,
 		repo:      repo,
@@ -42,8 +38,16 @@ func (u *submissionUpdater) Name() string {
 	return "submissionUpdater"
 }
 
+func (u *submissionUpdater) Config() any {
+	config := map[string]any{
+		"generate": u.generator.Config(),
+		"upload":   u.uploader.Config(),
+	}
+	return config
+}
+
 func (u *submissionUpdater) Run(ctx context.Context) error {
-	cfg, err := json.Marshal(u.cfg)
+	config, err := json.Marshal(u.Config())
 	if err != nil {
 		return errs.New(
 			"failed to encode update config",
@@ -51,7 +55,7 @@ func (u *submissionUpdater) Run(ctx context.Context) error {
 		)
 	}
 
-	history := repository.NewUpdateHistory("submission", string(cfg))
+	history := repository.NewUpdateHistory("submission", string(config))
 	defer u.repo.Cancel(ctx, &history)
 
 	slog.Info("Start to update submission index.")

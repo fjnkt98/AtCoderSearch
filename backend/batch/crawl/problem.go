@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"fjnkt98/atcodersearch/batch"
-	"fjnkt98/atcodersearch/config"
 	"fjnkt98/atcodersearch/pkg/atcoder"
 	"fjnkt98/atcodersearch/repository"
 	"fmt"
@@ -29,14 +28,20 @@ type problemCrawler struct {
 	atcoderClient  atcoder.AtCoderClient
 	repo           repository.ProblemRepository
 	minifier       *minify.M
-	cfg            config.CrawlProblemConfig
+	config         problemCrawlerConfig
+}
+
+type problemCrawlerConfig struct {
+	Duration int  `json:"duration"`
+	All      bool `json:"all"`
 }
 
 func NewProblemCrawler(
 	problemsClient atcoder.AtCoderProblemsClient,
 	atcoderClient atcoder.AtCoderClient,
 	repo repository.ProblemRepository,
-	cfg config.CrawlProblemConfig,
+	duration int,
+	all bool,
 ) ProblemCrawler {
 	m := minify.New()
 	m.AddFunc("text/html", html.Minify)
@@ -46,12 +51,19 @@ func NewProblemCrawler(
 		atcoderClient:  atcoderClient,
 		repo:           repo,
 		minifier:       m,
-		cfg:            cfg,
+		config: problemCrawlerConfig{
+			Duration: duration,
+			All:      all,
+		},
 	}
 }
 
 func (c *problemCrawler) Name() string {
 	return "ProblemCrawler"
+}
+
+func (c *problemCrawler) Config() any {
+	return c.config
 }
 
 func (c *problemCrawler) DetectDiff(ctx context.Context) ([]atcoder.Problem, error) {
@@ -82,7 +94,7 @@ func (c *problemCrawler) DetectDiff(ctx context.Context) ([]atcoder.Problem, err
 func (c *problemCrawler) CrawlProblem(ctx context.Context) error {
 	var targets []atcoder.Problem
 	var err error
-	if c.cfg.All {
+	if c.config.All {
 		slog.Info("Start to fetch all problems.")
 		targets, err = c.problemsClient.FetchProblems(ctx)
 		slog.Info("Finish fetching all problems.")
@@ -121,7 +133,7 @@ func (c *problemCrawler) CrawlProblem(ctx context.Context) error {
 			HTML:         buf.String(),
 		})
 		slog.Info("Finish crawling problem `%s` successfully", target)
-		time.Sleep(time.Duration(c.cfg.Duration) * time.Millisecond)
+		time.Sleep(time.Duration(c.config.Duration) * time.Millisecond)
 	}
 
 	if err := c.repo.Save(ctx, problems); err != nil {

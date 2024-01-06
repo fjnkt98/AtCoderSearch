@@ -3,7 +3,6 @@ package generate
 import (
 	"context"
 	"fjnkt98/atcodersearch/batch"
-	"fjnkt98/atcodersearch/config"
 	"fmt"
 
 	"github.com/goark/errs"
@@ -20,13 +19,13 @@ type userGenerator struct {
 	defaultGenerator
 }
 
-func NewUserGenerator(cfg config.GenerateUserConfig, reader RowReader) UserGenerator {
+func NewUserGenerator(reader RowReader, saveDir string, chunkSize int, concurrent int) UserGenerator {
 	return &userGenerator{
 		defaultGenerator{
-			cfg: config.GenerateCommonConfig{
-				SaveDir:    cfg.SaveDir,
-				ChunkSize:  cfg.ChunkSize,
-				Concurrent: cfg.Concurrent,
+			config: defaultGeneratorConfig{
+				SaveDir:    saveDir,
+				ChunkSize:  chunkSize,
+				Concurrent: concurrent,
 			},
 			reader: reader,
 		},

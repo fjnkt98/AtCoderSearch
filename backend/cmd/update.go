@@ -9,236 +9,321 @@ import (
 	"fjnkt98/atcodersearch/batch/generate"
 	"fjnkt98/atcodersearch/batch/update"
 	"fjnkt98/atcodersearch/batch/upload"
-	"fjnkt98/atcodersearch/config"
 	"fjnkt98/atcodersearch/pkg/atcoder"
 	"fjnkt98/atcodersearch/pkg/solr"
 	"fjnkt98/atcodersearch/repository"
-	"os"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"golang.org/x/exp/slog"
 )
 
-// updateCmd represents the update command
-var updateCmd = &cobra.Command{
-	Use:   "update",
-	Short: "update index",
-	Long:  "update index",
+func newUpdateCmd(args []string, sub ...*cobra.Command) *cobra.Command {
+	updateCmd := &cobra.Command{
+		Use:   "update",
+		Short: "update index",
+		Long:  "update index",
+	}
+
+	updateCmd.SetArgs(args)
+	updateCmd.AddCommand(sub...)
+
+	return updateCmd
 }
 
-var updateProblemCmd = &cobra.Command{
-	Use:   "problem",
-	Short: "update problem index",
-	Long:  "update problem index",
-	Run: func(cmd *cobra.Command, args []string) {
-		db := GetDB(GetEngine())
-		atcoderClient, err := atcoder.NewAtCoderClient()
-		if err != nil {
-			slog.Error("failed to instantiate atcoder client", slog.Any("error", err))
-			os.Exit(1)
-		}
-		atcoderProblemsClient := atcoder.NewAtCoderProblemsClient()
+func newUpdateProblemCmd(args []string, runFunc func(cmd *cobra.Command, args []string)) *cobra.Command {
+	updateProblemCmd := &cobra.Command{
+		Use:   "problem",
+		Short: "update problem index",
+		Long:  "update problem index",
+		PreRun: func(cmd *cobra.Command, args []string) {
+			cmd.Flags().IntP("duration", "d", 1000, "Duration[ms] in crawling problem.")
+			viper.BindPFlag("crawl.problem.duration", cmd.Flags().Lookup("duration"))
 
-		contestCrawler := crawl.NewContestCrawler(
-			atcoderProblemsClient,
-			repository.NewContestRepository(db),
-		)
-		difficultyCrawler := crawl.NewDifficultyCrawler(
-			atcoderProblemsClient,
-			repository.NewDifficultyRepository(db),
-		)
-		problemCrawler := crawl.NewProblemCrawler(
-			atcoderProblemsClient,
-			atcoderClient,
-			repository.NewProblemRepository(db),
-			config.Config.Problem.Crawl,
-		)
-		generator := generate.NewProblemGenerator(
-			config.Config.Problem.Generate,
-			generate.NewProblemRowReader(db),
-		)
-		core, err := solr.NewSolrCore(config.Config.SolrHost, config.Config.Problem.CoreName)
-		if err != nil {
-			slog.Error("failed to create core", slog.Any("error", err))
-			os.Exit(1)
-		}
+			cmd.Flags().BoolP("all", "a", false, "When true, crawl all problems. Otherwise, crawl the problems which doesn't have been crawled.")
+			viper.BindPFlag("crawl.problem.all", cmd.Flags().Lookup("all"))
 
-		uploader := upload.NewProblemUploader(
-			config.Config.Problem.Upload,
-			core,
-		)
+			cmd.Flags().String("save-dir", "", "Directory path at which generated documents will be saved.")
+			viper.BindPFlag("generate.problem.save_dir", cmd.Flags().Lookup("save-dir"))
+			viper.BindPFlag("upload.problem.save_dir", cmd.Flags().Lookup("save-dir"))
 
-		updater := update.NewProblemUpdater(
-			config.Config.Problem,
-			problemCrawler,
-			contestCrawler,
-			difficultyCrawler,
-			generator,
-			uploader,
-			repository.NewUpdateHistoryRepository(db),
-		)
+			cmd.Flags().Int("chunk-size", 1000, "Number of documents to write in 1 file.")
+			viper.BindPFlag("generate.problem.chunk_size", cmd.Flags().Lookup("chunk-size"))
 
-		batch.RunBatch(updater)
-	},
+			cmd.Flags().Int("generate-concurrent", 10, "Concurrent number of document generation processes.")
+			viper.BindPFlag("generate.problem.concurrent", cmd.Flags().Lookup("generate-concurrent"))
+
+			cmd.Flags().BoolP("optimize", "o", false, "When true, send optimize request to Solr")
+			viper.BindPFlag("upload.problem.optimize", cmd.Flags().Lookup("optimize"))
+
+			cmd.Flags().BoolP("truncate", "t", false, "When true, truncate index before upload")
+			viper.BindPFlag("upload.problem.truncate", cmd.Flags().Lookup("truncate"))
+
+			cmd.Flags().Int("upload-concurrent", 3, "Concurrent number of document upload processes")
+			viper.BindPFlag("upload.problem.concurrent", cmd.Flags().Lookup("upload-concurrent"))
+
+			cmd.Flags().Bool("skip-fetch", false, "When true, skip to crawl problems.")
+			viper.BindPFlag("update.problem.skip_fetch", cmd.Flags().Lookup("skip-fetch"))
+		},
+		Run: func(cmd *cobra.Command, args []string) {
+			db := repository.MustGetDB(Config.DataBaseURL)
+			atcoderClient, err := atcoder.NewAtCoderClient()
+			if err != nil {
+				slog.Error("failed to instantiate atcoder client", slog.Any("error", err))
+				panic("failed to instantiate atcoder client")
+			}
+			atcoderProblemsClient := atcoder.NewAtCoderProblemsClient()
+
+			contestCrawler := crawl.NewContestCrawler(
+				atcoderProblemsClient,
+				repository.NewContestRepository(db),
+			)
+			difficultyCrawler := crawl.NewDifficultyCrawler(
+				atcoderProblemsClient,
+				repository.NewDifficultyRepository(db),
+			)
+			problemCrawler := crawl.NewProblemCrawler(
+				atcoder.NewAtCoderProblemsClient(),
+				atcoderClient,
+				repository.NewProblemRepository(db),
+				Config.Crawl.Problem.Duration,
+				Config.Crawl.Problem.All,
+			)
+			generator := generate.NewProblemGenerator(
+				generate.NewProblemRowReader(db),
+				Config.Generate.Problem.SaveDir,
+				Config.Generate.Problem.ChunkSize,
+				Config.Generate.Problem.Concurrent,
+			)
+
+			core, err := solr.NewSolrCore(Config.SolrHost, Config.ProblemCoreName)
+			if err != nil {
+				slog.Error("failed to create core", slog.Any("error", err))
+				panic("failed to create core")
+			}
+			uploader := upload.NewDocumentUploader(
+				core,
+				Config.Upload.Problem.SaveDir,
+				Config.Upload.Problem.Concurrent,
+				Config.Upload.Problem.Optimize,
+				Config.Upload.Problem.Truncate,
+			)
+
+			updater := update.NewProblemUpdater(
+				problemCrawler,
+				contestCrawler,
+				difficultyCrawler,
+				generator,
+				uploader,
+				repository.NewUpdateHistoryRepository(db),
+				Config.Update.Problem.SkipFetch,
+			)
+
+			batch.RunBatch(updater)
+		},
+	}
+
+	updateProblemCmd.SetArgs(args)
+	if runFunc != nil {
+		updateProblemCmd.Run = runFunc
+	}
+
+	return updateProblemCmd
 }
 
-var updateUserCmd = &cobra.Command{
-	Use:   "user",
-	Short: "update user index",
-	Long:  "update user index",
-	Run: func(cmd *cobra.Command, args []string) {
-		db := GetDB(GetEngine())
-		atcoderClient, err := atcoder.NewAtCoderClient()
-		if err != nil {
-			slog.Error("failed to instantiate atcoder client", slog.Any("error", err))
-			os.Exit(1)
-		}
+func newUpdateUserCmd(args []string, runFunc func(cmd *cobra.Command, args []string)) *cobra.Command {
+	updateUserCmd := &cobra.Command{
+		Use:   "user",
+		Short: "update user index",
+		Long:  "update user index",
+		PreRun: func(cmd *cobra.Command, args []string) {
+			cmd.Flags().IntP("duration", "d", 1000, "Duration[ms] in crawling user.")
+			viper.BindPFlag("crawl.user.duration", cmd.Flags().Lookup("duration"))
 
-		crawler := crawl.NewUserCrawler(
-			atcoderClient,
-			repository.NewUserRepository(db),
-			config.Config.User.Crawl,
-		)
-		generator := generate.NewUserGenerator(
-			config.Config.User.Generate,
-			generate.NewUserRowReader(db),
-		)
-		core, err := solr.NewSolrCore(config.Config.SolrHost, config.Config.User.CoreName)
-		if err != nil {
-			slog.Error("failed to create core", slog.Any("error", err))
-			os.Exit(1)
-		}
-		uploader := upload.NewUserUploader(
-			config.Config.User.Upload,
-			core,
-		)
+			cmd.Flags().String("save-dir", "", "Directory path at which generated documents will be saved.")
+			viper.BindPFlag("generate.user.save_dir", cmd.Flags().Lookup("save-dir"))
+			viper.BindPFlag("upload.user.save_dir", cmd.Flags().Lookup("save-dir"))
 
-		updater := update.NewUserUpdater(
-			config.Config.User,
-			crawler,
-			generator,
-			uploader,
-			repository.NewUpdateHistoryRepository(db),
-		)
+			cmd.Flags().Int("chunk-size", 1000, "Number of documents to write in 1 file.")
+			viper.BindPFlag("generate.user.chunk_size", cmd.Flags().Lookup("chunk-size"))
 
-		batch.RunBatch(updater)
-	},
+			cmd.Flags().Int("generate-concurrent", 10, "Concurrent number of document generation processes.")
+			viper.BindPFlag("generate.user.concurrent", cmd.Flags().Lookup("generate-concurrent"))
+
+			cmd.Flags().BoolP("optimize", "o", false, "When true, send optimize request to Solr")
+			viper.BindPFlag("upload.user.optimize", cmd.Flags().Lookup("optimize"))
+
+			cmd.Flags().BoolP("truncate", "t", false, "When true, truncate index before upload")
+			viper.BindPFlag("upload.user.truncate", cmd.Flags().Lookup("truncate"))
+
+			cmd.Flags().Int("upload-concurrent", 3, "Concurrent number of document upload processes")
+			viper.BindPFlag("upload.user.concurrent", cmd.Flags().Lookup("upload-concurrent"))
+
+			cmd.Flags().Bool("skip-fetch", false, "When true, skip to crawl users.")
+			viper.BindPFlag("update.user.skip_fetch", cmd.Flags().Lookup("skip-fetch"))
+		},
+		Run: func(cmd *cobra.Command, args []string) {
+			db := repository.MustGetDB(Config.DataBaseURL)
+
+			client, err := atcoder.NewAtCoderClient()
+			if err != nil {
+				slog.Error("failed to instantiate atcoder client", slog.Any("error", err))
+				panic("failed to instantiate atcoder client")
+			}
+			crawler := crawl.NewUserCrawler(
+				client,
+				repository.NewUserRepository(db),
+				Config.Crawl.User.Duration,
+			)
+
+			generator := generate.NewUserGenerator(
+				generate.NewUserRowReader(db),
+				Config.Generate.User.SaveDir,
+				Config.Generate.User.ChunkSize,
+				Config.Generate.User.Concurrent,
+			)
+
+			core, err := solr.NewSolrCore(Config.SolrHost, Config.UserCoreName)
+			if err != nil {
+				slog.Error("failed to create core", slog.Any("error", err))
+				panic("failed to create core")
+			}
+
+			uploader := upload.NewDocumentUploader(
+				core,
+				Config.Upload.User.SaveDir,
+				Config.Upload.User.Concurrent,
+				Config.Upload.User.Optimize,
+				Config.Upload.User.Truncate,
+			)
+
+			updater := update.NewUserUpdater(
+				crawler,
+				generator,
+				uploader,
+				repository.NewUpdateHistoryRepository(db),
+				Config.Update.User.SkipFetch,
+			)
+
+			batch.RunBatch(updater)
+		},
+	}
+
+	updateUserCmd.SetArgs(args)
+	if runFunc != nil {
+		updateUserCmd.Run = runFunc
+	}
+
+	return updateUserCmd
 }
 
-var updateSubmissionCmd = &cobra.Command{
-	Use:   "submission",
-	Short: "update submission index",
-	Long:  "update submission index",
-	Run: func(cmd *cobra.Command, args []string) {
-		db := GetDB(GetEngine())
+func newUpdateSubmissionCmd(args []string, runFunc func(cmd *cobra.Command, args []string)) *cobra.Command {
+	updateSubmissionCmd := &cobra.Command{
+		Use:   "submission",
+		Short: "update submission index",
+		Long:  "update submission index",
+		PreRun: func(cmd *cobra.Command, args []string) {
+			cmd.Flags().IntP("duration", "d", 1000, "Duration[ms] in crawling user.")
+			viper.BindPFlag("crawl.submission.duration", cmd.Flags().Lookup("duration"))
 
-		historyRepo := repository.NewUpdateHistoryRepository(db)
-		generator := generate.NewSubmissionGenerator(
-			config.Config.Submission.Generate,
-			generate.NewSubmissionRowReader(
-				db,
-				historyRepo,
-				config.Config.Submission.Read,
-			),
-		)
-		core, err := solr.NewSolrCore(config.Config.SolrHost, config.Config.Submission.CoreName)
-		if err != nil {
-			slog.Error("failed to create core", slog.Any("error", err))
-			os.Exit(1)
-		}
-		uploader := upload.NewSubmissionUploader(
-			config.Config.Submission.Upload,
-			core,
-		)
+			cmd.Flags().IntP("retry", "r", 0, "Limit of the number of retry when an error occurred in crawling submissions.")
+			viper.BindPFlag("crawl.submission.retry", cmd.Flags().Lookup("retry"))
 
-		updater := update.NewSubmissionUpdater(
-			config.Config.Submission,
-			generator,
-			uploader,
-			historyRepo,
-		)
+			cmd.Flags().String("target", "", "Target category to crawl. Multiple categories can be specified by separating tem with comma. If not specified, all categories will be crawled.")
+			viper.BindPFlag("crawl.submission.target", cmd.Flags().Lookup("target"))
 
-		batch.RunBatch(updater)
-	},
+			cmd.Flags().String("save-dir", "", "Directory path at which generated documents will be saved.")
+			viper.BindPFlag("generate.submission.save_dir", cmd.Flags().Lookup("save-dir"))
+			viper.BindPFlag("upload.submission.save_dir", cmd.Flags().Lookup("save-dir"))
+
+			cmd.Flags().Int("chunk-size", 1000, "Number of documents to write in 1 file.")
+			viper.BindPFlag("generate.submission.chunk_size", cmd.Flags().Lookup("chunk-size"))
+
+			cmd.Flags().Int("generate-concurrent", 10, "Concurrent number of document generation processes.")
+			viper.BindPFlag("generate.submission.concurrent", cmd.Flags().Lookup("generate-concurrent"))
+
+			cmd.Flags().Int("interval", 10, "The latest N days' submissions shall be considered.")
+			viper.BindPFlag("generate.submission.interval", cmd.Flags().Lookup("interval"))
+
+			cmd.Flags().BoolP("all", "a", false, "When false, crawl only the submissions which doesn't have been crawled (in the interval).")
+			viper.BindPFlag("generate.submission.all", cmd.Flags().Lookup("all"))
+
+			cmd.Flags().BoolP("optimize", "o", false, "When true, send optimize request to Solr")
+			viper.BindPFlag("upload.submission.optimize", cmd.Flags().Lookup("optimize"))
+
+			cmd.Flags().BoolP("truncate", "t", false, "When true, truncate index before upload")
+			viper.BindPFlag("upload.submission.truncate", cmd.Flags().Lookup("truncate"))
+
+			cmd.Flags().Int("upload-concurrent", 3, "Concurrent number of document upload processes")
+			viper.BindPFlag("upload.submission.concurrent", cmd.Flags().Lookup("upload-concurrent"))
+		},
+		Run: func(cmd *cobra.Command, args []string) {
+			db := repository.MustGetDB(Config.DataBaseURL)
+
+			generator := generate.NewSubmissionGenerator(
+				generate.NewSubmissionRowReader(
+					db,
+					Config.Generate.Submission.Interval,
+					Config.Generate.Submission.All,
+				),
+				Config.Generate.Submission.SaveDir,
+				Config.Generate.Submission.ChunkSize,
+				Config.Generate.Submission.Concurrent,
+			)
+
+			core, err := solr.NewSolrCore(Config.SolrHost, Config.SubmissionCoreName)
+			if err != nil {
+				slog.Error("failed to create core", slog.Any("error", err))
+				panic("failed to create core")
+			}
+			uploader := upload.NewDocumentUploader(
+				core,
+				Config.Upload.Submission.SaveDir,
+				Config.Upload.Submission.Concurrent,
+				Config.Upload.Submission.Optimize,
+				Config.Upload.Submission.Truncate,
+			)
+
+			updater := update.NewSubmissionUpdater(
+				generator,
+				uploader,
+				repository.NewUpdateHistoryRepository(db),
+			)
+
+			batch.RunBatch(updater)
+		},
+	}
+
+	updateSubmissionCmd.SetArgs(args)
+	if runFunc != nil {
+		updateSubmissionCmd.Run = runFunc
+	}
+
+	return updateSubmissionCmd
 }
 
-var updateRecommendCmd = &cobra.Command{
-	Use:   "recommend",
-	Short: "update recommend index",
-	Long:  "update recommend index",
-	Run: func(cmd *cobra.Command, args []string) {
-	},
-}
+func newUpdateLanguageCmd(args []string, runFunc func(cmd *cobra.Command, args []string)) *cobra.Command {
+	updateLanguageCmd := &cobra.Command{
+		Use:   "language",
+		Short: "update language index",
+		Long:  "update language index",
+		PreRun: func(cmd *cobra.Command, args []string) {
+		},
+		Run: func(cmd *cobra.Command, args []string) {
+			db := repository.MustGetDB(Config.DataBaseURL)
 
-var updateLanguageCmd = &cobra.Command{
-	Use:   "language",
-	Short: "update language index",
-	Long:  "update language index",
-	Run: func(cmd *cobra.Command, args []string) {
-		db := GetDB(GetEngine())
-		updater := update.NewLanguageUpdater(
-			repository.NewSubmissionRepository(db),
-			repository.NewLanguageRepository(db),
-		)
-		batch.RunBatch(updater)
-	},
-}
+			updater := update.NewLanguageUpdater(
+				repository.NewSubmissionRepository(db),
+				repository.NewLanguageRepository(db),
+			)
 
-func init() {
-	updateCmd.PersistentFlags().Bool("migrate", false, "Execute database migration before update index.")
-	viper.BindPFlag("do_migrate", updateCmd.PersistentFlags().Lookup("migrate"))
+			batch.RunBatch(updater)
+		},
+	}
+	updateLanguageCmd.SetArgs(args)
+	if runFunc != nil {
+		updateLanguageCmd.Run = runFunc
+	}
 
-	updateCmd.PersistentFlags().String("save-dir", "", "Directory path at which generated documents will be saved.")
-	viper.BindPFlag("problem.generate.save_dir", updateCmd.PersistentFlags().Lookup("save-dir"))
-	viper.BindPFlag("problem.upload.save_dir", updateCmd.PersistentFlags().Lookup("save-dir"))
-	viper.BindPFlag("user.generate.save_dir", updateCmd.PersistentFlags().Lookup("save-dir"))
-	viper.BindPFlag("user.upload.save_dir", updateCmd.PersistentFlags().Lookup("save-dir"))
-	viper.BindPFlag("submission.generate.save_dir", updateCmd.PersistentFlags().Lookup("save-dir"))
-	viper.BindPFlag("submission.upload.save_dir", updateCmd.PersistentFlags().Lookup("save-dir"))
-
-	updateCmd.PersistentFlags().BoolP("optimize", "o", false, "Optimize index if true.")
-	viper.BindPFlag("problem.upload.optimize", updateCmd.PersistentFlags().Lookup("optimize"))
-	viper.BindPFlag("user.upload.optimize", updateCmd.PersistentFlags().Lookup("optimize"))
-	viper.BindPFlag("submission.upload.optimize", updateCmd.PersistentFlags().Lookup("optimize"))
-
-	updateCmd.PersistentFlags().Int("chunk-size", 1000, "Number of documents to write in 1 file.")
-	viper.BindPFlag("problem.upload.chunk_size", updateCmd.PersistentFlags().Lookup("chunk-size"))
-	viper.BindPFlag("user.upload.chunk_size", updateCmd.PersistentFlags().Lookup("chunk-size"))
-	viper.BindPFlag("submission.upload.chunk_size", updateCmd.PersistentFlags().Lookup("chunk-size"))
-
-	updateCmd.PersistentFlags().Int("generate-concurrent", 6, "Number of concurrent document generation processes")
-	viper.BindPFlag("problem.generate.concurrent", updateCmd.PersistentFlags().Lookup("generate-concurrent"))
-	viper.BindPFlag("user.generate.concurrent", updateCmd.PersistentFlags().Lookup("generate-concurrent"))
-	viper.BindPFlag("submission.generate.concurrent", updateCmd.PersistentFlags().Lookup("generate-concurrent"))
-
-	updateCmd.PersistentFlags().Int("upload-concurrent", 4, "Number of concurrent document upload processes")
-	viper.BindPFlag("problem.upload.concurrent", updateCmd.PersistentFlags().Lookup("upload-concurrent"))
-	viper.BindPFlag("user.upload.concurrent", updateCmd.PersistentFlags().Lookup("upload-concurrent"))
-	viper.BindPFlag("submission.upload.concurrent", updateCmd.PersistentFlags().Lookup("upload-concurrent"))
-
-	updateProblemCmd.Flags().BoolP("all", "a", false, "Crawl all problems if true.")
-	viper.BindPFlag("problem.crawl.all", updateProblemCmd.Flags().Lookup("all"))
-	updateProblemCmd.Flags().BoolP("skip-fetch", "f", false, "Skip crawling if true.")
-	viper.BindPFlag("problem.update.skip_fetch", updateProblemCmd.Flags().Lookup("skip-fetch"))
-	updateProblemCmd.Flags().Int("duration", 1000, "Interval time[ms] for crawling.")
-	viper.BindPFlag("problem.crawl.duration", updateProblemCmd.Flags().Lookup("duration"))
-
-	updateUserCmd.Flags().BoolP("skip-fetch", "f", false, "Skip crawling if true.")
-	viper.BindPFlag("user.update.skip_fetch", updateUserCmd.Flags().Lookup("skip-fetch"))
-	updateUserCmd.Flags().Int("duration", 1000, "Interval time[ms] for crawling.")
-	viper.BindPFlag("user.crawl.duration", updateUserCmd.Flags().Lookup("duration"))
-
-	updateSubmissionCmd.Flags().BoolP("all", "a", false, "Update all submissions.")
-	viper.BindPFlag("submission.read.all", updateSubmissionCmd.Flags().Lookup("all"))
-	updateSubmissionCmd.Flags().Int("interval", 90, "Indexing submissions for the past in N days.")
-	viper.BindPFlag("submission.read.interval", updateSubmissionCmd.Flags().Lookup("interval"))
-
-	updateCmd.AddCommand(updateProblemCmd)
-	updateCmd.AddCommand(updateUserCmd)
-	updateCmd.AddCommand(updateSubmissionCmd)
-	updateCmd.AddCommand(updateRecommendCmd)
-	updateCmd.AddCommand(updateLanguageCmd)
-
-	rootCmd.AddCommand(updateCmd)
+	return updateLanguageCmd
 }

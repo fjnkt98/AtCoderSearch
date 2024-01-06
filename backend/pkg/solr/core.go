@@ -44,6 +44,15 @@ func NewSolrCore(host string, name string) (SolrCore, error) {
 	}, nil
 }
 
+func MustNewSolrCore(host string, name string) SolrCore {
+	core, err := NewSolrCore(host, name)
+	if err != nil {
+		panic(err)
+	}
+
+	return core
+}
+
 func (c *core) Name() string {
 	return c.name
 }

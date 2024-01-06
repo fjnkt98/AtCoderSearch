@@ -3,7 +3,6 @@ package generate
 import (
 	"context"
 	"fjnkt98/atcodersearch/batch"
-	"fjnkt98/atcodersearch/config"
 	"fjnkt98/atcodersearch/pkg/solr"
 	"fmt"
 	"io"
@@ -25,13 +24,13 @@ type problemGenerator struct {
 	defaultGenerator
 }
 
-func NewProblemGenerator(cfg config.GenerateProblemConfig, reader RowReader) ProblemGenerator {
+func NewProblemGenerator(reader RowReader, saveDir string, chunkSize int, concurrent int) ProblemGenerator {
 	return &problemGenerator{
 		defaultGenerator{
-			cfg: config.GenerateCommonConfig{
-				SaveDir:    cfg.SaveDir,
-				ChunkSize:  cfg.ChunkSize,
-				Concurrent: cfg.Concurrent,
+			config: defaultGeneratorConfig{
+				SaveDir:    saveDir,
+				ChunkSize:  chunkSize,
+				Concurrent: concurrent,
 			},
 			reader: reader,
 		},

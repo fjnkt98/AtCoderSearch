@@ -2,7 +2,6 @@ package batch
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
@@ -17,11 +16,14 @@ var ErrInterrupt = errs.New("interrupted")
 type Batch interface {
 	Run(ctx context.Context) error
 	Name() string
+	Config() any
 }
 
 type Done struct{}
 
 func RunBatch(batch Batch) {
+	slog.Info("Start batch", slog.String("name", batch.Name()), slog.Any("config", batch.Config()))
+
 	cancelCtx, cancel := context.WithCancel(context.Background())
 	eg, ctx := errgroup.WithContext(cancelCtx)
 
@@ -54,16 +56,20 @@ func RunBatch(batch Batch) {
 	if err := eg.Wait(); err != nil {
 		if errs.Is(err, ErrInterrupt) {
 			slog.Error(
-				fmt.Sprintf("the batch `%s` has been interrupted", batch.Name()),
+				"the batch has been interrupted",
+				slog.String("name", batch.Name()),
+				slog.Any("config", batch.Config()),
 				slog.Any("error", err),
 			)
 		} else {
 			slog.Error(
-				fmt.Sprintf("the batch `%s` failed", batch.Name()),
+				"the batch failed",
+				slog.String("name", batch.Name()),
+				slog.Any("config", batch.Config()),
 				slog.Any("error", err),
 			)
 		}
 		os.Exit(1)
 	}
-	slog.Info(fmt.Sprintf("the batch `%s` finished successfully.", batch.Name()))
+	slog.Info("the batch finished successfully.", slog.String("name", batch.Name()), slog.Any("config", batch.Config()))
 }

@@ -7,7 +7,6 @@ import (
 	"fjnkt98/atcodersearch/batch/crawl"
 	"fjnkt98/atcodersearch/batch/generate"
 	"fjnkt98/atcodersearch/batch/upload"
-	"fjnkt98/atcodersearch/config"
 	"fjnkt98/atcodersearch/repository"
 	"log/slog"
 
@@ -19,32 +18,32 @@ type ProblemUpdater interface {
 }
 
 type problemUpdater struct {
-	cfg               config.ProblemConfig
 	problemCrawler    crawl.ProblemCrawler
 	contestCrawler    crawl.ContestCrawler
 	difficultyCrawler crawl.DifficultyCrawler
 	generator         generate.ProblemGenerator
 	uploader          upload.DocumentUploader
 	repo              repository.UpdateHistoryRepository
+	skipFetch         bool
 }
 
 func NewProblemUpdater(
-	cfg config.ProblemConfig,
 	problemCrawler crawl.ProblemCrawler,
 	contestCrawler crawl.ContestCrawler,
 	difficultyCrawler crawl.DifficultyCrawler,
 	generator generate.ProblemGenerator,
 	uploader upload.DocumentUploader,
 	repo repository.UpdateHistoryRepository,
+	skipFetch bool,
 ) ProblemUpdater {
 	return &problemUpdater{
-		cfg:               cfg,
 		problemCrawler:    problemCrawler,
 		contestCrawler:    contestCrawler,
 		difficultyCrawler: difficultyCrawler,
 		generator:         generator,
 		uploader:          uploader,
 		repo:              repo,
+		skipFetch:         skipFetch,
 	}
 }
 
@@ -52,8 +51,23 @@ func (u *problemUpdater) Name() string {
 	return "ProblemUpdater"
 }
 
+func (u *problemUpdater) Config() any {
+	config := map[string]any{
+		"crawl": map[string]any{
+			"problem":    u.problemCrawler.Config(),
+			"contest":    u.contestCrawler.Config(),
+			"difficulty": u.difficultyCrawler.Config(),
+		},
+		"generate":   u.generator.Config(),
+		"upload":     u.uploader.Config(),
+		"skip_fetch": u.skipFetch,
+	}
+
+	return config
+}
+
 func (u *problemUpdater) Run(ctx context.Context) error {
-	cfg, err := json.Marshal(u.cfg)
+	config, err := json.Marshal(u.Config())
 	if err != nil {
 		return errs.New(
 			"failed to encode update config",
@@ -61,11 +75,11 @@ func (u *problemUpdater) Run(ctx context.Context) error {
 		)
 	}
 
-	history := repository.NewUpdateHistory("problem", string(cfg))
+	history := repository.NewUpdateHistory("problem", string(config))
 	defer u.repo.Cancel(ctx, &history)
 
 	slog.Info("Start to update problem index.")
-	if u.cfg.Update.SkipFetch {
+	if u.skipFetch {
 		slog.Info("Skip to crawl.")
 	} else {
 		if err := u.problemCrawler.CrawlProblem(ctx); err != nil {

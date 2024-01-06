@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fjnkt98/atcodersearch/batch"
-	"fjnkt98/atcodersearch/config"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -19,8 +18,14 @@ import (
 )
 
 type defaultGenerator struct {
-	cfg    config.GenerateCommonConfig
 	reader RowReader
+	config defaultGeneratorConfig
+}
+
+type defaultGeneratorConfig struct {
+	SaveDir    string `json:"save_dir"`
+	ChunkSize  int    `json:"chunk_size"`
+	Concurrent int    `json:"concurrent"`
 }
 
 func (g *defaultGenerator) Generate(ctx context.Context) error {
@@ -28,14 +33,18 @@ func (g *defaultGenerator) Generate(ctx context.Context) error {
 	if err := GenerateDocument(
 		ctx,
 		g.reader,
-		g.cfg.SaveDir,
-		g.cfg.ChunkSize,
-		g.cfg.Concurrent,
+		g.config.SaveDir,
+		g.config.ChunkSize,
+		g.config.Concurrent,
 	); err != nil {
 		return errs.Wrap(err)
 	}
 	slog.Info("Finished generating documents successfully.")
 	return nil
+}
+
+func (g *defaultGenerator) Config() any {
+	return g.config
 }
 
 type Documenter interface {

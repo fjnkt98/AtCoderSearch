@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"errors"
-	"fjnkt98/atcodersearch/config"
 	"net/url"
 	"os"
 	"strconv"
@@ -18,13 +17,13 @@ import (
 )
 
 func Migrate() error {
-	u, err := url.Parse(config.Config.DataBaseURL)
+	u, err := url.Parse(Config.DataBaseURL)
 	if err != nil {
 		return errs.New(
 			"invalid database url was given",
 			errs.WithCause(err),
-			errs.WithContext("database url", config.Config.DataBaseURL),
-			errs.WithContext("schema", config.Config.TableSchema),
+			errs.WithContext("database url", Config.DataBaseURL),
+			errs.WithContext("schema", Config.TableSchema),
 		)
 	}
 	password, ok := u.User.Password()
@@ -32,8 +31,8 @@ func Migrate() error {
 		return errs.New(
 			"failed to get password from the database url",
 			errs.WithCause(err),
-			errs.WithContext("database url", config.Config.DataBaseURL),
-			errs.WithContext("schema", config.Config.TableSchema),
+			errs.WithContext("database url", Config.DataBaseURL),
+			errs.WithContext("schema", Config.TableSchema),
 		)
 	}
 
@@ -45,8 +44,8 @@ func Migrate() error {
 			return errs.New(
 				"failed to convert port number from given database url",
 				errs.WithCause(err),
-				errs.WithContext("database url", config.Config.DataBaseURL),
-				errs.WithContext("schema", config.Config.TableSchema),
+				errs.WithContext("database url", Config.DataBaseURL),
+				errs.WithContext("schema", Config.TableSchema),
 			)
 		}
 	}
@@ -62,19 +61,19 @@ func Migrate() error {
 		return errs.New(
 			"failed to create a database adapter",
 			errs.WithCause(err),
-			errs.WithContext("database url", config.Config.DataBaseURL),
-			errs.WithContext("schema", config.Config.TableSchema),
+			errs.WithContext("database url", Config.DataBaseURL),
+			errs.WithContext("schema", Config.TableSchema),
 		)
 	}
 
 	sqlParser := database.NewParser(parser.ParserModePostgres)
-	desiredDDLs, err := sqldef.ReadFile(config.Config.TableSchema)
+	desiredDDLs, err := sqldef.ReadFile(Config.TableSchema)
 	if err != nil {
 		return errs.New(
 			"failed to read schema file",
 			errs.WithCause(err),
-			errs.WithContext("database url", config.Config.DataBaseURL),
-			errs.WithContext("schema", config.Config.TableSchema),
+			errs.WithContext("database url", Config.DataBaseURL),
+			errs.WithContext("schema", Config.TableSchema),
 		)
 	}
 	options := &sqldef.Options{DesiredDDLs: desiredDDLs}
@@ -89,20 +88,25 @@ func Migrate() error {
 func MustMigrate() {
 	if err := Migrate(); err != nil {
 		slog.Error("failed to migrate database schema", slog.Any("error", err))
-		os.Exit(1)
+		panic("failed to migrate database schema")
 	}
 	slog.Info("finished migrating database schema successfully.")
 }
 
-var migrateCmd = &cobra.Command{
-	Use:   "migrate",
-	Short: "Migrate database table schema",
-	Long:  "Migrate database table schema",
-	Run: func(cmd *cobra.Command, args []string) {
-		MustMigrate()
-	},
-}
+func newMigrateCmd(args []string, runFunc func(cmd *cobra.Command, args []string)) *cobra.Command {
+	migrateCmd := &cobra.Command{
+		Use:   "migrate",
+		Short: "Migrate database table schema",
+		Long:  "Migrate database table schema",
+		Run: func(cmd *cobra.Command, args []string) {
+			MustMigrate()
+		},
+	}
 
-func init() {
-	rootCmd.AddCommand(migrateCmd)
+	migrateCmd.SetArgs(args)
+	if runFunc != nil {
+		migrateCmd.Run = runFunc
+	}
+
+	return migrateCmd
 }

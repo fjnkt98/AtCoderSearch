@@ -3,99 +3,134 @@ package cmd
 import (
 	"fjnkt98/atcodersearch/batch"
 	"fjnkt98/atcodersearch/batch/generate"
-	"fjnkt98/atcodersearch/config"
 	"fjnkt98/atcodersearch/repository"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-var generateCmd = &cobra.Command{
-	Use:   "generate",
-	Short: "Generate document JSON files",
-	Long:  "Generate document JSON files",
+func newGenerateCmd(args []string, sub ...*cobra.Command) *cobra.Command {
+	generateCmd := &cobra.Command{
+		Use:   "generate",
+		Short: "Generate document JSON files",
+		Long:  "Generate document JSON files",
+	}
+
+	generateCmd.SetArgs(args)
+	generateCmd.AddCommand(sub...)
+
+	return generateCmd
 }
 
-var generateProblemCmd = &cobra.Command{
-	Use:   "problem",
-	Short: "Generate problem document JSON files",
-	Long:  "Generate problem document JSON files",
-	Run: func(cmd *cobra.Command, args []string) {
-		db := GetDB(GetEngine())
+func newGenerateProblemCmd(args []string, runFunc func(cmd *cobra.Command, args []string)) *cobra.Command {
+	generateProblemCmd := &cobra.Command{
+		Use:   "problem",
+		Short: "Generate problem document JSON files",
+		Long:  "Generate problem document JSON files",
+		PreRun: func(cmd *cobra.Command, args []string) {
+			cmd.Flags().String("save-dir", "", "Directory path at which generated documents will be saved.")
+			viper.BindPFlag("generate.problem.save_dir", cmd.Flags().Lookup("save-dir"))
+			cmd.Flags().Int("chunk-size", 1000, "Number of documents to write in 1 file.")
+			viper.BindPFlag("generate.problem.chunk_size", cmd.Flags().Lookup("chunk-size"))
+			cmd.Flags().Int("concurrent", 10, "Concurrent number of document generation processes.")
+			viper.BindPFlag("generate.problem.concurrent", cmd.Flags().Lookup("concurrent"))
+		},
+		Run: func(cmd *cobra.Command, args []string) {
+			db := repository.MustGetDB(Config.DataBaseURL)
 
-		generator := generate.NewProblemGenerator(
-			config.Config.Problem.Generate,
-			generate.NewProblemRowReader(db),
-		)
+			generator := generate.NewProblemGenerator(
+				generate.NewProblemRowReader(db),
+				Config.Generate.Problem.SaveDir,
+				Config.Generate.Problem.ChunkSize,
+				Config.Generate.Problem.Concurrent,
+			)
 
-		batch.RunBatch(generator)
-	},
+			batch.RunBatch(generator)
+		},
+	}
+
+	generateProblemCmd.SetArgs(args)
+	if runFunc != nil {
+		generateProblemCmd.Run = runFunc
+	}
+
+	return generateProblemCmd
+
 }
 
-var generateUserCmd = &cobra.Command{
-	Use:   "user",
-	Short: "Generate user document JSON files",
-	Long:  "Generate user document JSON files",
-	Run: func(cmd *cobra.Command, args []string) {
-		db := GetDB(GetEngine())
+func newGenerateUserCmd(args []string, runFunc func(cmd *cobra.Command, args []string)) *cobra.Command {
+	generateUserCmd := &cobra.Command{
+		Use:   "user",
+		Short: "Generate user document JSON files",
+		Long:  "Generate user document JSON files",
+		PreRun: func(cmd *cobra.Command, args []string) {
+			cmd.Flags().String("save-dir", "", "Directory path at which generated documents will be saved.")
+			viper.BindPFlag("generate.user.save_dir", cmd.Flags().Lookup("save-dir"))
+			cmd.Flags().Int("chunk-size", 1000, "Number of documents to write in 1 file.")
+			viper.BindPFlag("generate.user.chunk_size", cmd.Flags().Lookup("chunk-size"))
+			cmd.Flags().Int("concurrent", 10, "Concurrent number of document generation processes.")
+			viper.BindPFlag("generate.user.concurrent", cmd.Flags().Lookup("concurrent"))
+		},
+		Run: func(cmd *cobra.Command, args []string) {
+			db := repository.MustGetDB(Config.DataBaseURL)
 
-		generator := generate.NewUserGenerator(
-			config.Config.User.Generate,
-			generate.NewUserRowReader(db),
-		)
+			generator := generate.NewUserGenerator(
+				generate.NewUserRowReader(db),
+				Config.Generate.User.SaveDir,
+				Config.Generate.User.ChunkSize,
+				Config.Generate.User.Concurrent,
+			)
 
-		batch.RunBatch(generator)
-	},
+			batch.RunBatch(generator)
+		},
+	}
+
+	generateUserCmd.SetArgs(args)
+	if runFunc != nil {
+		generateUserCmd.Run = runFunc
+	}
+
+	return generateUserCmd
 }
 
-var generateSubmissionCmd = &cobra.Command{
-	Use:   "submission",
-	Short: "Generate submission document JSON files",
-	Long:  "Generate submission document JSON files",
-	Run: func(cmd *cobra.Command, args []string) {
-		db := GetDB(GetEngine())
+func newGenerateSubmissionCmd(args []string, runFunc func(cmd *cobra.Command, args []string)) *cobra.Command {
+	generateSubmissionCmd := &cobra.Command{
+		Use:   "submission",
+		Short: "Generate submission document JSON files",
+		Long:  "Generate submission document JSON files",
+		PreRun: func(cmd *cobra.Command, args []string) {
+			cmd.Flags().String("save-dir", "", "Directory path at which generated documents will be saved.")
+			viper.BindPFlag("generate.submission.save_dir", cmd.Flags().Lookup("save-dir"))
+			cmd.Flags().Int("chunk-size", 1000, "Number of documents to write in 1 file.")
+			viper.BindPFlag("generate.submission.chunk_size", cmd.Flags().Lookup("chunk-size"))
+			cmd.Flags().Int("concurrent", 10, "Concurrent number of document generation processes.")
+			viper.BindPFlag("generate.submission.concurrent", cmd.Flags().Lookup("concurrent"))
+			cmd.Flags().Int("interval", 10, "The latest N days' submissions shall be considered.")
+			viper.BindPFlag("generate.submission.interval", cmd.Flags().Lookup("interval"))
+			cmd.Flags().BoolP("all", "a", false, "When false, crawl only the submissions which doesn't have been crawled (in the interval).")
+			viper.BindPFlag("generate.submission.all", cmd.Flags().Lookup("all"))
+		},
+		Run: func(cmd *cobra.Command, args []string) {
+			db := repository.MustGetDB(Config.DataBaseURL)
 
-		generator := generate.NewSubmissionGenerator(
-			config.Config.Submission.Generate,
-			generate.NewSubmissionRowReader(
-				db,
-				repository.NewUpdateHistoryRepository(db),
-				config.Config.Submission.Read,
-			),
-		)
+			generator := generate.NewSubmissionGenerator(
+				generate.NewSubmissionRowReader(
+					db,
+					Config.Generate.Submission.Interval,
+					Config.Generate.Submission.All,
+				),
+				Config.Generate.Submission.SaveDir,
+				Config.Generate.Submission.ChunkSize,
+				Config.Generate.Submission.Concurrent,
+			)
 
-		batch.RunBatch(generator)
-	},
-}
+			batch.RunBatch(generator)
+		},
+	}
+	generateSubmissionCmd.SetArgs(args)
+	if runFunc != nil {
+		generateSubmissionCmd.Run = runFunc
+	}
 
-var generateRecommendCmd = &cobra.Command{
-	Use:   "recommend",
-	Short: "Generate recommend document JSON files",
-	Long:  "Generate recommend document JSON files",
-	Run: func(cmd *cobra.Command, args []string) {
-	},
-}
-
-func init() {
-	generateCmd.PersistentFlags().String("save-dir", "", "Directory path at which generated documents will be saved")
-	viper.BindPFlag("problem.generate.save_dir", generateCmd.PersistentFlags().Lookup("save-dir"))
-	viper.BindPFlag("user.generate.save_dir", generateCmd.PersistentFlags().Lookup("save-dir"))
-	viper.BindPFlag("submission.generate.save_dir", generateCmd.PersistentFlags().Lookup("save-dir"))
-
-	generateCmd.PersistentFlags().Int("concurrent", 10, "Concurrent number of document generation processes")
-	viper.BindPFlag("problem.generate.concurrent", generateCmd.PersistentFlags().Lookup("concurrent"))
-	viper.BindPFlag("user.generate.concurrent", generateCmd.PersistentFlags().Lookup("concurrent"))
-	viper.BindPFlag("submission.generate.concurrent", generateCmd.PersistentFlags().Lookup("concurrent"))
-
-	generateCmd.PersistentFlags().Int("chunk-size", 1000, "Number of documents to write in 1 file.")
-	viper.BindPFlag("problem.generate.chunk_size", generateCmd.PersistentFlags().Lookup("chunk-size"))
-	viper.BindPFlag("user.generate.chunk_size", generateCmd.PersistentFlags().Lookup("chunk-size"))
-	viper.BindPFlag("submission.generate.chunk_size", generateCmd.PersistentFlags().Lookup("chunk-size"))
-
-	generateCmd.AddCommand(generateProblemCmd)
-	generateCmd.AddCommand(generateUserCmd)
-	generateCmd.AddCommand(generateSubmissionCmd)
-	generateCmd.AddCommand(generateRecommendCmd)
-
-	rootCmd.AddCommand(generateCmd)
+	return generateSubmissionCmd
 }

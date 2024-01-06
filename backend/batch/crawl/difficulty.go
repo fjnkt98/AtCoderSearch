@@ -31,6 +31,10 @@ func (c *difficultyCrawler) Name() string {
 	return "DifficultyCrawler"
 }
 
+func (c *difficultyCrawler) Config() any {
+	return nil
+}
+
 func (c *difficultyCrawler) CrawlDifficulty(ctx context.Context) error {
 	slog.Info("Start to crawl difficulties.")
 	difficulties, err := c.client.FetchDifficulties(ctx)

@@ -3,7 +3,6 @@ package upload
 import (
 	"context"
 	"fjnkt98/atcodersearch/batch"
-	"fjnkt98/atcodersearch/config"
 	"fjnkt98/atcodersearch/pkg/solr"
 	"fmt"
 	"log/slog"
@@ -21,14 +20,26 @@ type DocumentUploader interface {
 }
 
 type documentUploader struct {
-	cfg  config.UploadCommonConfig
-	core solr.SolrCore
+	core   solr.SolrCore
+	config documentUploaderConfig
 }
 
-func NewDocumentUploader(cfg config.UploadCommonConfig, core solr.SolrCore) DocumentUploader {
+type documentUploaderConfig struct {
+	SaveDir    string `json:"save_dir"`
+	Concurrent int    `json:"concurrent"`
+	Optimize   bool   `json:"optimize"`
+	Truncate   bool   `json:"truncate"`
+}
+
+func NewDocumentUploader(core solr.SolrCore, saveDir string, concurrent int, optimize bool, truncate bool) DocumentUploader {
 	return &documentUploader{
-		cfg:  cfg,
 		core: core,
+		config: documentUploaderConfig{
+			SaveDir:    saveDir,
+			Concurrent: concurrent,
+			Optimize:   optimize,
+			Truncate:   truncate,
+		},
 	}
 }
 
@@ -36,19 +47,23 @@ func (u *documentUploader) Name() string {
 	return "DocumentUploader"
 }
 
+func (u *documentUploader) Config() any {
+	return u.config
+}
+
 func (u *documentUploader) Run(ctx context.Context) error {
 	return u.Upload(ctx)
 }
 
 func (u *documentUploader) Upload(ctx context.Context) error {
-	slog.Info(fmt.Sprintf("Start to post documents in `%s`", u.cfg.SaveDir))
+	slog.Info(fmt.Sprintf("Start to post documents in `%s`", u.config.SaveDir))
 
-	paths, err := filepath.Glob(filepath.Join(u.cfg.SaveDir, "doc-*.json"))
+	paths, err := filepath.Glob(filepath.Join(u.config.SaveDir, "doc-*.json"))
 	if err != nil {
 		return errs.New(
 			"failed to get files from the directory",
 			errs.WithCause(err),
-			errs.WithContext("directory", u.cfg.SaveDir),
+			errs.WithContext("directory", u.config.SaveDir),
 		)
 	}
 
@@ -78,7 +93,7 @@ func (u *documentUploader) Upload(ctx context.Context) error {
 		return nil
 	}
 
-	for i := 0; i < u.cfg.Concurrent; i++ {
+	for i := 0; i < u.config.Concurrent; i++ {
 		wg.Add(1)
 		workerNum := i
 		eg.Go(func() error {
@@ -112,7 +127,7 @@ func (u *documentUploader) Upload(ctx context.Context) error {
 	}
 
 	eg.Go(func() error {
-		if u.cfg.Truncate {
+		if u.config.Truncate {
 			slog.Info("Start to truncate index...")
 			if _, err := solr.TruncateWithContext(ctx, u.core); err != nil {
 				return errs.New(
@@ -141,7 +156,7 @@ func (u *documentUploader) Upload(ctx context.Context) error {
 			slog.Info("rollback finished successfully.")
 			return batch.ErrInterrupt
 		default:
-			if u.cfg.Optimize {
+			if u.config.Optimize {
 				slog.Info("Start to optimize index...")
 				if _, err := solr.OptimizeWithContext(ctx, u.core); err != nil {
 					return errs.New(
@@ -170,52 +185,4 @@ func (u *documentUploader) Upload(ctx context.Context) error {
 	}
 
 	return nil
-}
-
-func NewProblemUploader(cfg config.UploadProblemConfig, core solr.SolrCore) DocumentUploader {
-	return &documentUploader{
-		cfg: config.UploadCommonConfig{
-			SaveDir:    cfg.SaveDir,
-			Concurrent: cfg.Concurrent,
-			Optimize:   cfg.Optimize,
-			Truncate:   cfg.Truncate,
-		},
-		core: core,
-	}
-}
-
-func NewUserUploader(cfg config.UploadUserConfig, core solr.SolrCore) DocumentUploader {
-	return &documentUploader{
-		cfg: config.UploadCommonConfig{
-			SaveDir:    cfg.SaveDir,
-			Concurrent: cfg.Concurrent,
-			Optimize:   cfg.Optimize,
-			Truncate:   cfg.Truncate,
-		},
-		core: core,
-	}
-}
-
-func NewSubmissionUploader(cfg config.UploadSubmissionConfig, core solr.SolrCore) DocumentUploader {
-	return &documentUploader{
-		cfg: config.UploadCommonConfig{
-			SaveDir:    cfg.SaveDir,
-			Concurrent: cfg.Concurrent,
-			Optimize:   cfg.Optimize,
-			Truncate:   cfg.Truncate,
-		},
-		core: core,
-	}
-}
-
-func NewRecommendUploader(cfg config.UploadRecommendConfig, core solr.SolrCore) DocumentUploader {
-	return &documentUploader{
-		cfg: config.UploadCommonConfig{
-			SaveDir:    cfg.SaveDir,
-			Concurrent: cfg.Concurrent,
-			Optimize:   cfg.Optimize,
-			Truncate:   cfg.Truncate,
-		},
-		core: core,
-	}
 }

@@ -31,6 +31,10 @@ func (c *contestCrawler) Name() string {
 	return "ContestCrawler"
 }
 
+func (c *contestCrawler) Config() any {
+	return nil
+}
+
 func (c *contestCrawler) CrawlContest(ctx context.Context) error {
 	slog.Info("Start to fetch contests.")
 	contests, err := c.client.FetchContests(ctx)

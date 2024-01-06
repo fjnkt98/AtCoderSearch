@@ -3,7 +3,6 @@ package crawl
 import (
 	"context"
 	"fjnkt98/atcodersearch/batch"
-	"fjnkt98/atcodersearch/config"
 	"fjnkt98/atcodersearch/pkg/atcoder"
 	"fjnkt98/atcodersearch/repository"
 	"time"
@@ -20,23 +19,33 @@ type UserCrawler interface {
 type userCrawler struct {
 	client atcoder.AtCoderClient
 	repo   repository.UserRepository
-	cfg    config.CrawlUserConfig
+	config userCrawlerConfig
+}
+
+type userCrawlerConfig struct {
+	Duration int `json:"duration"`
 }
 
 func NewUserCrawler(
 	client atcoder.AtCoderClient,
 	repo repository.UserRepository,
-	cfg config.CrawlUserConfig,
+	duration int,
 ) *userCrawler {
 	return &userCrawler{
 		client: client,
 		repo:   repo,
-		cfg:    cfg,
+		config: userCrawlerConfig{
+			Duration: duration,
+		},
 	}
 }
 
 func (c *userCrawler) Name() string {
 	return "UserCrawler"
+}
+
+func (c *userCrawler) Config() any {
+	return c.config
 }
 
 func (c *userCrawler) CrawlUser(ctx context.Context) error {
@@ -57,7 +66,7 @@ loop:
 
 		allUsers = append(allUsers, convertUsers(users)...)
 
-		time.Sleep(time.Duration(c.cfg.Duration) * time.Millisecond)
+		time.Sleep(time.Duration(c.config.Duration) * time.Millisecond)
 	}
 
 	if err := c.repo.Save(ctx, allUsers); err != nil {
