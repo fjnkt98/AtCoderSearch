@@ -27,17 +27,17 @@ func (p *SearchSubmissionParam) GetSort() string {
 }
 
 type SearchSubmissionFilterParam struct {
-	EpochSecond   utility.IntegerRange `json:"epoch_second" schema:"epoch_second"`
-	ProblemID     []string             `json:"problem_id" schema:"problem_id"`
-	ContestID     []string             `json:"contest_id" schema:"contest_id"`
-	Category      []string             `json:"category" schema:"category"`
-	UserID        []string             `json:"user_id" schema:"user_id"`
-	Language      []string             `json:"language" schema:"language"`
-	LanguageGroup []string             `json:"language_group" schema:"language_group"`
-	Point         utility.FloatRange   `json:"point" schema:"point"`
-	Length        utility.IntegerRange `json:"length" schema:"length"`
-	Result        []string             `json:"result" schema:"result"`
-	ExecutionTime utility.IntegerRange `json:"execution_time" schema:"execution_time"`
+	EpochSecond   utility.IntegerRange `json:"epoch_second" schema:"epoch_second" filter:"epoch_second"`
+	ProblemID     []string             `json:"problem_id" schema:"problem_id" filter:"problem_id"`
+	ContestID     []string             `json:"contest_id" schema:"contest_id" filter:"contest_id"`
+	Category      []string             `json:"category" schema:"category" filter:"category"`
+	UserID        []string             `json:"user_id" schema:"user_id" filter:"user_id"`
+	Language      []string             `json:"language" schema:"language" filter:"language"`
+	LanguageGroup []string             `json:"language_group" schema:"language_group" filter:"language_group"`
+	Point         utility.FloatRange   `json:"point" schema:"point" filter:"point"`
+	Length        utility.IntegerRange `json:"length" schema:"length" filter:"length"`
+	Result        []string             `json:"result" schema:"result" filter:"result"`
+	ExecutionTime utility.IntegerRange `json:"execution_time" schema:"execution_time" filter:"execution_time"`
 }
 
 type SearchSubmissionFacetParam struct {
