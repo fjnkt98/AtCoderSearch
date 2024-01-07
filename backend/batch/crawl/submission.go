@@ -148,6 +148,7 @@ func (c *submissionCrawler) CrawlSubmission(ctx context.Context) error {
 			return errs.Wrap(err)
 		}
 		c.historyRepo.Save(ctx, history)
+		time.Sleep(time.Duration(c.config.Duration) * time.Millisecond)
 	}
 	return nil
 }
