@@ -55,7 +55,7 @@ func (c *userCrawler) CrawlUser(ctx context.Context) error {
 	allUsers := make([]repository.User, 0)
 
 loop:
-	for i := 0; ; i++ {
+	for i := 1; ; i++ {
 		slog.Info("Crawl users", slog.Int("page", i))
 		users, err := c.client.FetchUsers(ctx, i)
 		if err != nil {
