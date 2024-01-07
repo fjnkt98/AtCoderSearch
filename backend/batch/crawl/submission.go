@@ -132,7 +132,14 @@ loop:
 		noDupSubmissions = append(noDupSubmissions, s)
 	}
 
-	c.submissionRepo.Save(ctx, convertSubmissions(noDupSubmissions))
+	if err := c.submissionRepo.Save(ctx, convertSubmissions(noDupSubmissions)); err != nil {
+		return errs.New(
+			"failed to save submissions",
+			errs.WithCause(err),
+			errs.WithContext("contest id", contestID),
+		)
+	}
+	slog.Info("Save submissions successfully", slog.String("contest id", contestID))
 	return nil
 }
 
@@ -157,7 +164,9 @@ func (c *submissionCrawler) CrawlSubmission(ctx context.Context) error {
 		if err := c.crawl(ctx, id, latest); err != nil {
 			return errs.Wrap(err)
 		}
-		c.historyRepo.Save(ctx, history)
+		if err := c.historyRepo.Save(ctx, history); err != nil {
+			return errs.Wrap(err)
+		}
 		time.Sleep(time.Duration(c.config.Duration) * time.Millisecond)
 	}
 	return nil
