@@ -56,12 +56,14 @@ func (c *userCrawler) CrawlUser(ctx context.Context) error {
 
 loop:
 	for i := 0; ; i++ {
+		slog.Info("Crawl users", slog.Int("page", i))
 		users, err := c.client.FetchUsers(ctx, i)
 		if err != nil {
 			return errs.Wrap(err)
 		}
 
 		if len(users) == 0 {
+			slog.Info("There is no more crawl target.")
 			break loop
 		}
 
@@ -74,6 +76,7 @@ loop:
 		return errs.Wrap(err)
 	}
 
+	slog.Info("Finish crawling users successfully.")
 	return nil
 }
 
