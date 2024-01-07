@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"strings"
 
+	"log/slog"
+
 	"github.com/goark/errs"
 	"github.com/joho/godotenv"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
-	"golang.org/x/exp/slog"
 )
 
 func LoadConfig(file string, config *RootConfig) error {

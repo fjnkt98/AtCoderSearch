@@ -9,10 +9,11 @@ import (
 	"strings"
 	"time"
 
+	"log/slog"
+
 	"github.com/PuerkitoBio/goquery"
 	"github.com/goark/errs"
 	"github.com/uptrace/bun"
-	"golang.org/x/exp/slog"
 )
 
 type ProblemGenerator interface {

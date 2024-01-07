@@ -7,9 +7,10 @@ import (
 	"fjnkt98/atcodersearch/repository"
 	"os"
 
+	"log/slog"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"golang.org/x/exp/slog"
 )
 
 func newCrawlCmd(args []string, sub ...*cobra.Command) *cobra.Command {

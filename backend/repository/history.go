@@ -9,10 +9,11 @@ import (
 	"fmt"
 	"time"
 
+	"log/slog"
+
 	"github.com/goark/errs"
 	_ "github.com/lib/pq"
 	"github.com/uptrace/bun"
-	"golang.org/x/exp/slog"
 )
 
 type SubmissionCrawlHistoryRepository interface {

@@ -8,9 +8,10 @@ import (
 	"fmt"
 	"time"
 
+	"log/slog"
+
 	mapset "github.com/deckarep/golang-set/v2"
 	"github.com/goark/errs"
-	"golang.org/x/exp/slog"
 )
 
 type SubmissionCrawler interface {

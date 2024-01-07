@@ -6,6 +6,8 @@ import (
 	"os"
 	"strconv"
 
+	"log/slog"
+
 	"github.com/goark/errs"
 	"github.com/k0kubun/sqldef"
 	"github.com/k0kubun/sqldef/database"
@@ -13,7 +15,6 @@ import (
 	"github.com/k0kubun/sqldef/parser"
 	"github.com/k0kubun/sqldef/schema"
 	"github.com/spf13/cobra"
-	"golang.org/x/exp/slog"
 )
 
 func Migrate(dsn, schemaFile string) error {

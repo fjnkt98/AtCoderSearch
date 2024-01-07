@@ -5,9 +5,10 @@ import (
 	"fjnkt98/atcodersearch/batch/upload"
 	"fjnkt98/atcodersearch/pkg/solr"
 
+	"log/slog"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"golang.org/x/exp/slog"
 )
 
 func newUploadCmd(args []string, sub ...*cobra.Command) *cobra.Command {

@@ -5,9 +5,10 @@ import (
 	"fjnkt98/atcodersearch/batch"
 	"fmt"
 
+	"log/slog"
+
 	"github.com/goark/errs"
 	"github.com/uptrace/bun"
-	"golang.org/x/exp/slog"
 )
 
 type UserGenerator interface {

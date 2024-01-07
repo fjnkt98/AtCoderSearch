@@ -7,8 +7,9 @@ import (
 	"fjnkt98/atcodersearch/repository"
 	"time"
 
+	"log/slog"
+
 	"github.com/goark/errs"
-	"golang.org/x/exp/slog"
 )
 
 type UserCrawler interface {

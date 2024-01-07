@@ -6,8 +6,9 @@ import (
 	"fjnkt98/atcodersearch/pkg/atcoder"
 	"fjnkt98/atcodersearch/repository"
 
+	"log/slog"
+
 	"github.com/goark/errs"
-	"golang.org/x/exp/slog"
 )
 
 type ContestCrawler interface {

@@ -6,8 +6,9 @@ import (
 	"os/signal"
 	"syscall"
 
+	"log/slog"
+
 	"github.com/goark/errs"
-	"golang.org/x/exp/slog"
 	"golang.org/x/sync/errgroup"
 )
 

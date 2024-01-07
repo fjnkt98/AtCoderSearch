@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"golang.org/x/exp/slog"
+	"log/slog"
 
 	mapset "github.com/deckarep/golang-set/v2"
 	"github.com/goark/errs"

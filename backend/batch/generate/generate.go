@@ -11,9 +11,10 @@ import (
 	"strings"
 	"sync"
 
+	"log/slog"
+
 	"github.com/goark/errs"
 	_ "github.com/lib/pq"
-	"golang.org/x/exp/slog"
 	"golang.org/x/sync/errgroup"
 )
 
