@@ -139,6 +139,7 @@ func (c *problemCrawler) CrawlProblem(ctx context.Context) error {
 	if err := c.repo.Save(ctx, problems); err != nil {
 		return errs.Wrap(err)
 	}
+	slog.Info("Save problems successfully.")
 
 	return nil
 }
