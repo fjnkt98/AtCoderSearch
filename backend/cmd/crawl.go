@@ -146,6 +146,8 @@ func newCrawlSubmissionCmd(args []string, config *RootConfig, runFunc func(cmd *
 				config.Crawl.Submission.Duration,
 				config.Crawl.Submission.Retry,
 				config.Crawl.Submission.Targets,
+				config.AtCoderUserName,
+				config.AtCoderPassword,
 			)
 
 			batch.RunBatch(crawler)

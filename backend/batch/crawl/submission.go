@@ -31,6 +31,8 @@ type submissionCrawlerConfig struct {
 	Duration int      `json:"duration"`
 	Retry    int      `json:"retry"`
 	Targets  []string `json:"targets"`
+	username string
+	password string
 }
 
 func NewSubmissionCrawler(
@@ -41,6 +43,8 @@ func NewSubmissionCrawler(
 	duration int,
 	retry int,
 	targets []string,
+	username string,
+	password string,
 ) SubmissionCrawler {
 	return &submissionCrawler{
 		client:         client,
@@ -51,6 +55,8 @@ func NewSubmissionCrawler(
 			Duration: duration,
 			Retry:    retry,
 			Targets:  targets,
+			username: username,
+			password: password,
 		},
 	}
 }
@@ -131,6 +137,10 @@ loop:
 }
 
 func (c *submissionCrawler) CrawlSubmission(ctx context.Context) error {
+	if err := c.client.Login(ctx, c.config.username, c.config.password); err != nil {
+		return errs.Wrap(err)
+	}
+
 	ids, err := c.contestRepo.FetchContestIDs(ctx, c.config.Targets)
 	if err != nil {
 		return errs.Wrap(err)
