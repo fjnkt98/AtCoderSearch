@@ -295,8 +295,8 @@ func NewSchemaDecoder() *schema.Decoder {
 }
 
 type SearchParam[F, C any] struct {
-	Limit  *int     `json:"limit" schema:"limit" validate:"omitempty,lte=1000"`
-	Page   int      `json:"page" schema:"page"`
+	Limit  *int     `json:"limit" schema:"limit" validate:"omitempty,gte=0,lte=1000"`
+	Page   int      `json:"page" schema:"page" validate:"gte=0"`
 	Filter F        `json:"filter" schema:"filter"`
 	Sort   []string `json:"sort" schema:"sort"`
 	Facet  C        `json:"facet" schema:"facet"`
