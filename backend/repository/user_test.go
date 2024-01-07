@@ -11,7 +11,10 @@ import (
 )
 
 func TestSaveUser(t *testing.T) {
-	db := getTestDB()
+	db, err := getTestDB()
+	if err != nil {
+		t.Fatalf("%+v", err)
+	}
 	repository := NewUserRepository(db)
 
 	users := []User{
@@ -37,7 +40,10 @@ func TestSaveUser(t *testing.T) {
 }
 
 func TestFetchRatingByUserName(t *testing.T) {
-	db := getTestDB()
+	db, err := getTestDB()
+	if err != nil {
+		t.Fatalf("%+v", err)
+	}
 	repository := NewUserRepository(db)
 
 	ctx := context.Background()

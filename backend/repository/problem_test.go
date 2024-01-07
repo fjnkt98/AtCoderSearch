@@ -8,7 +8,10 @@ import (
 )
 
 func TestSaveProblem(t *testing.T) {
-	db := getTestDB()
+	db, err := getTestDB()
+	if err != nil {
+		t.Fatalf("%+v", err)
+	}
 	repository := NewProblemRepository(db)
 
 	problems := []Problem{
@@ -30,18 +33,24 @@ func TestSaveProblem(t *testing.T) {
 }
 
 func TestFetchIDs(t *testing.T) {
-	db := getTestDB()
+	db, err := getTestDB()
+	if err != nil {
+		t.Fatalf("%+v", err)
+	}
 	repository := NewProblemRepository(db)
 
 	ctx := context.Background()
-	_, err := repository.FetchIDs(ctx)
+	_, err = repository.FetchIDs(ctx)
 	if err != nil {
 		t.Fatalf("failed to fetch problem ids: %s", err.Error())
 	}
 }
 
 func TestFetchIDsByContestID(t *testing.T) {
-	db := getTestDB()
+	db, err := getTestDB()
+	if err != nil {
+		t.Fatalf("%+v", err)
+	}
 	repository := NewProblemRepository(db)
 
 	cases := []struct {

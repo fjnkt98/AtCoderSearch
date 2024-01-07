@@ -10,7 +10,6 @@ import (
 	"fjnkt98/atcodersearch/server/controller"
 	"fjnkt98/atcodersearch/server/presenter"
 	"fjnkt98/atcodersearch/server/usecase"
-	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -18,22 +17,21 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
+	"github.com/goark/errs"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
 	"github.com/uptrace/bun/extra/bundebug"
 )
 
-func getTestDB() *bun.DB {
+func getTestDB() (*bun.DB, error) {
 	os.Setenv("PGSSLMODE", "disable")
 	engine, err := sql.Open("postgres", "postgres://test_atcodersearch:test_atcodersearch@localhost/test_atcodersearch")
 	if err != nil {
-		slog.Error("failed to open database", slog.String("error", err.Error()))
-		os.Exit(1)
+		return nil, errs.New("failed to open database", errs.WithCause(err))
 	}
 
 	if err := engine.Ping(); err != nil {
-		slog.Error("failed to connect database", slog.String("error", err.Error()))
-		os.Exit(1)
+		return nil, errs.New("failed to connect database", errs.WithCause(err))
 	}
 
 	db := bun.NewDB(engine, pgdialect.New())
@@ -44,7 +42,7 @@ func getTestDB() *bun.DB {
 		),
 	)
 
-	return db
+	return db, nil
 }
 
 func TestSearchProblemRequest(t *testing.T) {

@@ -11,7 +11,11 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	db := getTestDB()
+	db, err := getTestDB()
+	if err != nil {
+		fmt.Printf("%+v", err)
+		os.Exit(1)
+	}
 	ctx := context.Background()
 	if _, err := db.NewDelete().Model(new(UpdateHistory)).Where("0 = 0").Exec(ctx); err != nil {
 		fmt.Printf("failed to delete records from `update_history`: %s", err.Error())
@@ -26,7 +30,11 @@ func TestMain(m *testing.M) {
 }
 
 func TestSaveAndGetSubmissionCrawlHistory(t *testing.T) {
-	db := getTestDB()
+	db, err := getTestDB()
+	if err != nil {
+		t.Fatalf("%+v", err)
+	}
+
 	repository := NewSubmissionCrawlHistoryRepository(db)
 
 	// Get the latest history
@@ -63,7 +71,10 @@ func TestSaveAndGetSubmissionCrawlHistory(t *testing.T) {
 }
 
 func TestSaveAndGetUpdateHistory(t *testing.T) {
-	db := getTestDB()
+	db, err := getTestDB()
+	if err != nil {
+		t.Fatalf("%+v", err)
+	}
 	repository := NewUpdateHistoryRepository(db)
 
 	ctx := context.Background()

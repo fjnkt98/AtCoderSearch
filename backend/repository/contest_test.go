@@ -7,10 +7,10 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"log/slog"
 	"os"
 	"testing"
 
+	"github.com/goark/errs"
 	_ "github.com/lib/pq"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
@@ -21,17 +21,15 @@ func ptr[T any](v T) *T {
 	return &v
 }
 
-func getTestDB() *bun.DB {
+func getTestDB() (*bun.DB, error) {
 	os.Setenv("PGSSLMODE", "disable")
 	engine, err := sql.Open("postgres", "postgres://test_atcodersearch:test_atcodersearch@localhost/test_atcodersearch")
 	if err != nil {
-		slog.Error("failed to open database", slog.String("error", err.Error()))
-		os.Exit(1)
+		return nil, errs.New("failed to open database", errs.WithCause(err))
 	}
 
 	if err := engine.Ping(); err != nil {
-		slog.Error("failed to connect database", slog.String("error", err.Error()))
-		os.Exit(1)
+		return nil, errs.New("failed to connect database", errs.WithCause(err))
 	}
 
 	db := bun.NewDB(engine, pgdialect.New())
@@ -42,11 +40,14 @@ func getTestDB() *bun.DB {
 		),
 	)
 
-	return db
+	return db, nil
 }
 
 func TestSaveContest(t *testing.T) {
-	db := getTestDB()
+	db, err := getTestDB()
+	if err != nil {
+		t.Fatalf("%+v", err)
+	}
 	repository := NewContestRepository(db)
 
 	contests := []Contest{
@@ -67,33 +68,42 @@ func TestSaveContest(t *testing.T) {
 }
 
 func TestFetchALlContestIDs(t *testing.T) {
-	db := getTestDB()
+	db, err := getTestDB()
+	if err != nil {
+		t.Fatalf("%+v", err)
+	}
 	repository := NewContestRepository(db)
 
 	ctx := context.Background()
-	_, err := repository.FetchContestIDs(ctx, nil)
+	_, err = repository.FetchContestIDs(ctx, nil)
 	if err != nil {
 		t.Fatalf("failed to fetch contest ids: %s", err.Error())
 	}
 }
 
 func TestFetchSpecifiedContestIDs(t *testing.T) {
-	db := getTestDB()
+	db, err := getTestDB()
+	if err != nil {
+		t.Fatalf("%+v", err)
+	}
 	repository := NewContestRepository(db)
 
 	ctx := context.Background()
-	_, err := repository.FetchContestIDs(ctx, []string{"ABC", "ARC"})
+	_, err = repository.FetchContestIDs(ctx, []string{"ABC", "ARC"})
 	if err != nil {
 		t.Fatalf("failed to fetch contest ids: %s", err.Error())
 	}
 }
 
 func TestFetchCategories(t *testing.T) {
-	db := getTestDB()
+	db, err := getTestDB()
+	if err != nil {
+		t.Fatalf("%+v", err)
+	}
 	repository := NewContestRepository(db)
 
 	ctx := context.Background()
-	_, err := repository.FetchCategories(ctx)
+	_, err = repository.FetchCategories(ctx)
 	if err != nil {
 		t.Fatalf("failed to fetch categories: %s", err.Error())
 	}

@@ -8,7 +8,10 @@ import (
 )
 
 func TestSaveLanguages(t *testing.T) {
-	db := getTestDB()
+	db, err := getTestDB()
+	if err != nil {
+		t.Fatalf("%+v", err)
+	}
 	repository := NewLanguageRepository(db)
 
 	languages := []Language{
@@ -28,8 +31,11 @@ func TestSaveLanguages(t *testing.T) {
 }
 
 func TestFetchLanguages(t *testing.T) {
+	db, err := getTestDB()
+	if err != nil {
+		t.Fatalf("%+v", err)
+	}
 
-	db := getTestDB()
 	repository := NewLanguageRepository(db)
 	ctx := context.Background()
 	if _, err := repository.FetchLanguages(ctx); err != nil {
@@ -38,7 +44,11 @@ func TestFetchLanguages(t *testing.T) {
 }
 
 func TestFetchLanguageGroups(t *testing.T) {
-	db := getTestDB()
+	db, err := getTestDB()
+	if err != nil {
+		t.Fatalf("%+v", err)
+	}
+
 	repository := NewLanguageRepository(db)
 	ctx := context.Background()
 	if _, err := repository.FetchLanguageGroups(ctx); err != nil {

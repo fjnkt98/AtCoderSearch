@@ -70,7 +70,8 @@ func RunBatch(batch Batch) {
 				slog.Any("error", err),
 			)
 		}
-		os.Exit(1)
+		return
+	} else {
+		slog.Info("the batch finished successfully.", slog.String("name", batch.Name()), slog.Any("config", batch.Config()))
 	}
-	slog.Info("the batch finished successfully.", slog.String("name", batch.Name()), slog.Any("config", batch.Config()))
 }

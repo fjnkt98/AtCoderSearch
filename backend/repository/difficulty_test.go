@@ -8,7 +8,10 @@ import (
 )
 
 func TestSaveDifficulty(t *testing.T) {
-	db := getTestDB()
+	db, err := getTestDB()
+	if err != nil {
+		t.Fatalf("%+v", err)
+	}
 	repository := NewDifficultyRepository(db)
 
 	difficulties := []Difficulty{

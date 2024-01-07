@@ -8,7 +8,10 @@ import (
 )
 
 func TestSaveSubmission(t *testing.T) {
-	db := getTestDB()
+	db, err := getTestDB()
+	if err != nil {
+		t.Fatalf("%+v", err)
+	}
 	repository := NewSubmissionRepository(db)
 
 	submissions := []Submission{
@@ -33,7 +36,10 @@ func TestSaveSubmission(t *testing.T) {
 }
 
 func TestFetchLanguagesFromSubmission(t *testing.T) {
-	db := getTestDB()
+	db, err := getTestDB()
+	if err != nil {
+		t.Fatalf("%+v", err)
+	}
 	repository := NewSubmissionRepository(db)
 
 	ctx := context.Background()

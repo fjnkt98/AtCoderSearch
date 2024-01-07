@@ -5,7 +5,6 @@ import (
 	"fjnkt98/atcodersearch/batch/crawl"
 	"fjnkt98/atcodersearch/pkg/atcoder"
 	"fjnkt98/atcodersearch/repository"
-	"os"
 
 	"log/slog"
 
@@ -119,7 +118,6 @@ func newCrawlUserCmd(args []string, config *RootConfig, runFunc func(cmd *cobra.
 }
 
 func newCrawlSubmissionCmd(args []string, config *RootConfig, runFunc func(cmd *cobra.Command, args []string)) *cobra.Command {
-
 	crawlSubmissionCmd := &cobra.Command{
 		Use:   "submission",
 		Short: "Crawl and save submissions",
@@ -137,7 +135,7 @@ func newCrawlSubmissionCmd(args []string, config *RootConfig, runFunc func(cmd *
 			client, err := atcoder.NewAtCoderClient()
 			if err != nil {
 				slog.Error("failed to instantiate atcoder client", slog.Any("error", err))
-				os.Exit(1)
+				panic("failed to instantiate atcoder client")
 			}
 
 			crawler := crawl.NewSubmissionCrawler(

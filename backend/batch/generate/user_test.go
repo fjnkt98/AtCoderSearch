@@ -11,14 +11,17 @@ import (
 )
 
 func TestReadUsers(t *testing.T) {
-	db := getTestDB()
+	db, err := getTestDB()
+	if err != nil {
+		t.Fatalf("%+v", err)
+	}
 	reader := NewUserRowReader(db)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
 	ch := make(chan Documenter, 1)
 
-	err := reader.ReadRows(ctx, ch)
+	err = reader.ReadRows(ctx, ch)
 	if err != nil && !errors.Is(err, batch.ErrInterrupt) {
 		t.Errorf("an error occurred in read user rows: %s", err.Error())
 	}
