@@ -173,3 +173,73 @@ func TestSearchUserRequest(t *testing.T) {
 		})
 	}
 }
+
+func TestSearchSubmissionRequest(t *testing.T) {
+	r := gin.New()
+	r.Use(
+		gin.Recovery(),
+	)
+
+	core, err := solr.NewSolrCore("http://localhost:8983", "submission")
+	if err != nil {
+		t.Fatalf("failed to initialize solr core: %s", err.Error())
+	}
+
+	c := controller.NewSearchSubmissionController(
+		usecase.NewSearchSubmissionUsecase(core),
+		presenter.NewSearchSubmissionPresenter(),
+	)
+
+	r.GET("/api/search/submission", c.HandleGET)
+	r.POST("/api/search/submission", c.HandlePOST)
+
+	cases := []struct {
+		name  string
+		query string
+		code  int
+	}{
+		{name: "default", query: "", code: 200},
+		{name: "limit", query: "limit=50", code: 200},
+		{name: "invalid limit", query: "limit=-10", code: 400},
+		{name: "page", query: "page=2", code: 200},
+		{name: "invalid page", query: "page=-1", code: 400},
+		{name: "filter by epoch second", query: "filter.epoch_second.from=400&filter.epoch_second.to=1000", code: 200},
+		{name: "filter by problem id", query: "filter.problem_id=abc123_a", code: 200},
+		{name: "filter by contest id", query: "filter.contest_id=abc123", code: 200},
+		{name: "filter by category", query: "filter.category=ABC", code: 200},
+		{name: "filter by user id", query: "filter.user_id=fjnkt98", code: 200},
+		{name: "filter by language", query: "filter.language=C%2B%2B+%28GCC+9.2.1%29", code: 200},
+		{name: "filter by language group", query: "filter.language_group=C%2B%2B", code: 200},
+		{name: "filter by point", query: "filter.point.from=400&filter.point.to=1000", code: 200},
+		{name: "filter by length", query: "filter.length.from=400&filter.length.to=1000", code: 200},
+		{name: "filter by result", query: "filter.result=AC", code: 200},
+		{name: "filter by execution time", query: "filter.length.from=400&filter.length.to=1000", code: 200},
+		{name: "term facet", query: "facet.term=problem_id,user_id,contest_id,language,result", code: 200},
+		{name: "invalid term facet", query: "facet.term=country", code: 400},
+		{name: "facet by length", query: "facet.length.from=0&facet.length.to=2000&facet.length.gap=500", code: 200},
+		{name: "facet by execution time", query: "facet.execution_time.from=0&facet.execution_time.to=2000&facet.execution_time.gap=500", code: 200},
+		{name: "valid sort", query: "sort=submitted_at", code: 200},
+		{name: "invalid sort", query: "sort=-score", code: 400},
+	}
+
+	for _, tt := range cases {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			w := httptest.NewRecorder()
+			v, err := url.ParseQuery(tt.query)
+			if err != nil {
+				t.Fatalf("failed to parse query: %s", err.Error())
+			}
+			req, err := http.NewRequest("GET", "/api/search/submission?"+v.Encode(), nil)
+			if err != nil {
+				t.Fatalf("failed to create request: %s", err.Error())
+			}
+
+			r.ServeHTTP(w, req)
+
+			if w.Code != tt.code {
+				t.Errorf("expected code %d, but got code %d", tt.code, w.Code)
+			}
+		})
+	}
+}
