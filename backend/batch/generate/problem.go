@@ -70,10 +70,10 @@ type ProblemRow struct {
 
 type ProblemDocument struct {
 	ProblemID      string                `solr:"problem_id"`
-	ProblemTitle   string                `solr:"problem_title"`
+	ProblemTitle   string                `solr:"problem_title,text_ja,text_en"`
 	ProblemURL     string                `solr:"problem_url"`
 	ContestID      string                `solr:"contest_id"`
-	ContestTitle   string                `solr:"contest_title"`
+	ContestTitle   string                `solr:"contest_title,text_ja,text_en"`
 	ContestURL     string                `solr:"contest_url"`
 	Color          string                `solr:"color"`
 	StartAt        solr.IntoSolrDateTime `solr:"start_at"`
@@ -82,8 +82,8 @@ type ProblemDocument struct {
 	Category       string                `solr:"category"`
 	Difficulty     *int                  `solr:"difficulty"`
 	IsExperimental bool                  `solr:"is_experimental"`
-	StatementJa    []string              `solr:"statement_ja"`
-	StatementEn    []string              `solr:"statement_en"`
+	StatementJa    []string              `solr:"statement_ja,text_ja,text_reading"`
+	StatementEn    []string              `solr:"statement_en,text_en"`
 }
 
 func (r *ProblemRow) Document(ctx context.Context) (map[string]any, error) {

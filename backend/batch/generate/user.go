@@ -63,10 +63,10 @@ type UserRow struct {
 }
 
 type UserDocument struct {
-	UserName      string  `solr:"user_name"`
+	UserName      string  `solr:"user_name,text_unigram"`
 	Rating        int     `solr:"rating"`
 	HighestRating int     `solr:"highest_rating"`
-	Affiliation   *string `solr:"affiliation"`
+	Affiliation   *string `solr:"affiliation,text_unigram"`
 	BirthYear     *int    `solr:"birth_year"`
 	Country       *string `solr:"country"`
 	Crown         *string `solr:"crown"`
