@@ -126,7 +126,7 @@ func (p *RecommendProblemParam) GetStart() int {
 
 func (p *RecommendProblemParam) GetFq() []string {
 	fq := make([]string, 1)
-	if p.Unsolved {
+	if p.Unsolved && p.UserID != "" {
 		fq = append(fq, fmt.Sprintf(`-{!join fromIndex=submission from=problem_id to=problem_id v="+user_id:%s +result:AC"}`, solr.Sanitize(p.UserID)))
 	}
 	return fq

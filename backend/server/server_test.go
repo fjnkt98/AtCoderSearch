@@ -7,6 +7,7 @@ package server
 import (
 	"database/sql"
 	"fjnkt98/atcodersearch/pkg/solr"
+	"fjnkt98/atcodersearch/repository"
 	"fjnkt98/atcodersearch/server/controller"
 	"fjnkt98/atcodersearch/server/presenter"
 	"fjnkt98/atcodersearch/server/usecase"
@@ -231,6 +232,76 @@ func TestSearchSubmissionRequest(t *testing.T) {
 				t.Fatalf("failed to parse query: %s", err.Error())
 			}
 			req, err := http.NewRequest("GET", "/api/search/submission?"+v.Encode(), nil)
+			if err != nil {
+				t.Fatalf("failed to create request: %s", err.Error())
+			}
+
+			r.ServeHTTP(w, req)
+
+			if w.Code != tt.code {
+				t.Errorf("expected code %d, but got code %d", tt.code, w.Code)
+			}
+		})
+	}
+}
+
+func TestRecommendProblemRequest(t *testing.T) {
+	r := gin.New()
+	r.Use(
+		gin.Recovery(),
+	)
+
+	core, err := solr.NewSolrCore("http://localhost:8983", "problem")
+	if err != nil {
+		t.Fatalf("failed to initialize solr core: %s", err.Error())
+	}
+
+	db, err := getTestDB()
+	if err != nil {
+		t.Fatalf("failed to initialize database: %s", err.Error())
+	}
+
+	c := controller.NewRecommendProblemController(
+		usecase.NewRecommendProblemUsecase(core, repository.NewUserRepository(db)),
+		presenter.NewRecommendProblemPresenter(),
+	)
+
+	r.GET("/api/recommend/problem", c.HandleGET)
+	r.POST("/api/recommend/problem", c.HandlePOST)
+
+	cases := []struct {
+		name  string
+		query string
+		code  int
+	}{
+		{name: "default", query: "", code: 200},
+		{name: "model_1", query: "model=1", code: 200},
+		{name: "model_2", query: "model=2", code: 200},
+		{name: "model_3", query: "model=3", code: 200},
+		{name: "valid option1", query: "model=2&option=0000", code: 200},
+		{name: "valid option2", query: "model=2&option=1000", code: 200},
+		{name: "valid option3", query: "model=2&option=2000", code: 200},
+		{name: "valid option4", query: "model=2&option=0100", code: 200},
+		{name: "valid option5", query: "model=2&option=0200", code: 200},
+		{name: "valid option6", query: "model=2&option=0300", code: 200},
+		{name: "valid option7", query: "model=2&option=0010", code: 200},
+		{name: "valid option8", query: "model=2&option=0001", code: 200},
+		{name: "user_id", query: "model=2&user_id=fjnkt98", code: 200},
+		{name: "rating", query: "model=2&rating=1100", code: 200},
+		{name: "limit", query: "model=2&limit=10", code: 200},
+		{name: "page", query: "model=2&page=2", code: 200},
+		{name: "unsolved", query: "model=2&unsolved=true", code: 200},
+	}
+
+	for _, tt := range cases {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			w := httptest.NewRecorder()
+			v, err := url.ParseQuery(tt.query)
+			if err != nil {
+				t.Fatalf("failed to parse query: %s", err.Error())
+			}
+			req, err := http.NewRequest("GET", "/api/recommend/problem?"+v.Encode(), nil)
 			if err != nil {
 				t.Fatalf("failed to create request: %s", err.Error())
 			}
