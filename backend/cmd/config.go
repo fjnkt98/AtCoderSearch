@@ -1,24 +1,17 @@
 package cmd
 
 import (
-	"reflect"
+	"fmt"
 	"strings"
 
 	"github.com/goark/errs"
 	"github.com/joho/godotenv"
+	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
+	"golang.org/x/exp/slog"
 )
 
-var Config RootConfig
-
-func LoadConfig(file string, dst any) error {
-	if reflect.TypeOf(dst).Kind() != reflect.Pointer {
-		return errs.New(
-			"non-pointer dst was given",
-			errs.WithContext("dst", dst),
-		)
-	}
-
+func LoadConfig(file string, config *RootConfig) error {
 	godotenv.Load()
 
 	viper.SetConfigFile(file)
@@ -33,7 +26,7 @@ func LoadConfig(file string, dst any) error {
 		)
 	}
 
-	if err := viper.Unmarshal(dst); err != nil {
+	if err := viper.Unmarshal(config); err != nil {
 		return errs.New(
 			"failed to unmarshal config file",
 			errs.WithCause(err),
@@ -41,6 +34,29 @@ func LoadConfig(file string, dst any) error {
 		)
 	}
 	return nil
+}
+
+func MustLoadConfig(file string, config *RootConfig) {
+	if err := LoadConfig(file, config); err != nil {
+		slog.Error("failed to load config", slog.Any("error", err))
+		panic("failed to load config.")
+	} else {
+		slog.Info(fmt.Sprintf("using config file: %s", viper.ConfigFileUsed()))
+	}
+}
+
+func MustLoadConfigFromFlags(flags *pflag.FlagSet, config *RootConfig) {
+	file, err := flags.GetString("config")
+	if err != nil {
+		panic("failed to get config file path from flags")
+	}
+
+	if err := LoadConfig(file, config); err != nil {
+		slog.Error("failed to load config", slog.Any("error", err))
+		panic("failed to load config.")
+	} else {
+		slog.Info(fmt.Sprintf("using config file: %s", viper.ConfigFileUsed()))
+	}
 }
 
 type RootConfig struct {
@@ -75,14 +91,13 @@ type CrawlProblemConfig struct {
 }
 
 type CrawlUserConfig struct {
-	Duration int  `mapstructure:"duration" json:"duration"`
-	All      bool `mapstructure:"all" json:"all"`
+	Duration int `mapstructure:"duration" json:"duration"`
 }
 
 type CrawlSubmissionConfig struct {
-	Duration int    `mapstructure:"duration" json:"duration"`
-	Retry    int    `mapstructure:"retry" json:"retry"`
-	Targets  string `mapstructure:"targets" json:"targets"`
+	Duration int      `mapstructure:"duration" json:"duration"`
+	Retry    int      `mapstructure:"retry" json:"retry"`
+	Targets  []string `mapstructure:"targets" json:"targets"`
 }
 
 type GenerateConfig struct {

@@ -6,7 +6,6 @@ import (
 	"fjnkt98/atcodersearch/pkg/atcoder"
 	"fjnkt98/atcodersearch/repository"
 	"os"
-	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -26,19 +25,19 @@ func newCrawlCmd(args []string, sub ...*cobra.Command) *cobra.Command {
 	return crawlCmd
 }
 
-func newCrawlProblemCmd(args []string, runFunc func(cmd *cobra.Command, args []string)) *cobra.Command {
+func newCrawlProblemCmd(args []string, config *RootConfig, runFunc func(cmd *cobra.Command, args []string)) *cobra.Command {
 	crawlProblemCmd := &cobra.Command{
 		Use:   "problem",
 		Short: "Crawl and save problem information",
 		Long:  "Crawl and save problem information",
 		PreRun: func(cmd *cobra.Command, args []string) {
-			cmd.Flags().IntP("duration", "d", 1000, "Duration[ms] in crawling problem.")
 			viper.BindPFlag("crawl.problem.duration", cmd.Flags().Lookup("duration"))
-			cmd.Flags().BoolP("all", "a", false, "When true, crawl all problems. Otherwise, crawl the problems which doesn't have been crawled.")
 			viper.BindPFlag("crawl.problem.all", cmd.Flags().Lookup("all"))
+
+			MustLoadConfigFromFlags(cmd.Flags(), config)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			db := repository.MustGetDB(Config.DataBaseURL)
+			db := repository.MustGetDB(config.DataBaseURL)
 
 			atcoderClient, err := atcoder.NewAtCoderClient()
 			if err != nil {
@@ -63,8 +62,8 @@ func newCrawlProblemCmd(args []string, runFunc func(cmd *cobra.Command, args []s
 				atcoder.NewAtCoderProblemsClient(),
 				atcoderClient,
 				repository.NewProblemRepository(db),
-				Config.Crawl.Problem.Duration,
-				Config.Crawl.Problem.All,
+				config.Crawl.Problem.Duration,
+				config.Crawl.Problem.All,
 			)
 			batch.RunBatch(problemCrawler)
 		},
@@ -74,21 +73,24 @@ func newCrawlProblemCmd(args []string, runFunc func(cmd *cobra.Command, args []s
 	if runFunc != nil {
 		crawlProblemCmd.Run = runFunc
 	}
+	crawlProblemCmd.Flags().IntP("duration", "d", 1000, "Duration[ms] in crawling problem.")
+	crawlProblemCmd.Flags().BoolP("all", "a", false, "When true, crawl all problems. Otherwise, crawl the problems which doesn't have been crawled.")
 
 	return crawlProblemCmd
 }
 
-func newCrawlUserCmd(args []string, runFunc func(cmd *cobra.Command, args []string)) *cobra.Command {
+func newCrawlUserCmd(args []string, config *RootConfig, runFunc func(cmd *cobra.Command, args []string)) *cobra.Command {
 	crawlUserCmd := &cobra.Command{
 		Use:   "user",
 		Short: "Crawl and save user information",
 		Long:  "Crawl and save user information",
 		PreRun: func(cmd *cobra.Command, args []string) {
-			cmd.Flags().IntP("duration", "d", 1000, "Duration[ms] in crawling user.")
 			viper.BindPFlag("crawl.user.duration", cmd.Flags().Lookup("duration"))
+
+			MustLoadConfigFromFlags(cmd.Flags(), config)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			db := repository.MustGetDB(Config.DataBaseURL)
+			db := repository.MustGetDB(config.DataBaseURL)
 
 			client, err := atcoder.NewAtCoderClient()
 			if err != nil {
@@ -99,7 +101,7 @@ func newCrawlUserCmd(args []string, runFunc func(cmd *cobra.Command, args []stri
 			crawler := crawl.NewUserCrawler(
 				client,
 				repository.NewUserRepository(db),
-				Config.Crawl.User.Duration,
+				config.Crawl.User.Duration,
 			)
 
 			batch.RunBatch(crawler)
@@ -110,25 +112,26 @@ func newCrawlUserCmd(args []string, runFunc func(cmd *cobra.Command, args []stri
 	if runFunc != nil {
 		crawlUserCmd.Run = runFunc
 	}
+	crawlUserCmd.Flags().IntP("duration", "d", 1000, "Duration[ms] in crawling user.")
 
 	return crawlUserCmd
 }
 
-func newCrawlSubmissionCmd(args []string, runFunc func(cmd *cobra.Command, args []string)) *cobra.Command {
+func newCrawlSubmissionCmd(args []string, config *RootConfig, runFunc func(cmd *cobra.Command, args []string)) *cobra.Command {
+
 	crawlSubmissionCmd := &cobra.Command{
 		Use:   "submission",
 		Short: "Crawl and save submissions",
 		Long:  "Crawl and save submissions",
 		PreRun: func(cmd *cobra.Command, args []string) {
-			cmd.Flags().IntP("duration", "d", 1000, "Duration[ms] in crawling user.")
 			viper.BindPFlag("crawl.submission.duration", cmd.Flags().Lookup("duration"))
-			cmd.Flags().IntP("retry", "r", 0, "Limit of the number of retry when an error occurred in crawling submissions.")
 			viper.BindPFlag("crawl.submission.retry", cmd.Flags().Lookup("retry"))
-			cmd.Flags().String("target", "", "Target category to crawl. Multiple categories can be specified by separating tem with comma. If not specified, all categories will be crawled.")
-			viper.BindPFlag("crawl.submission.target", cmd.Flags().Lookup("target"))
+			viper.BindPFlag("crawl.submission.targets", cmd.Flags().Lookup("target"))
+
+			MustLoadConfigFromFlags(cmd.Flags(), config)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			db := repository.MustGetDB(Config.DataBaseURL)
+			db := repository.MustGetDB(config.DataBaseURL)
 
 			client, err := atcoder.NewAtCoderClient()
 			if err != nil {
@@ -136,16 +139,14 @@ func newCrawlSubmissionCmd(args []string, runFunc func(cmd *cobra.Command, args 
 				os.Exit(1)
 			}
 
-			targets := strings.Split(Config.Crawl.Submission.Targets, ",")
-
 			crawler := crawl.NewSubmissionCrawler(
 				client,
 				repository.NewSubmissionRepository(db),
 				repository.NewContestRepository(db),
 				repository.NewSubmissionCrawlHistoryRepository(db),
-				Config.Crawl.Submission.Duration,
-				Config.Crawl.Submission.Retry,
-				targets,
+				config.Crawl.Submission.Duration,
+				config.Crawl.Submission.Retry,
+				config.Crawl.Submission.Targets,
 			)
 
 			batch.RunBatch(crawler)
@@ -155,5 +156,9 @@ func newCrawlSubmissionCmd(args []string, runFunc func(cmd *cobra.Command, args 
 	if runFunc != nil {
 		crawlSubmissionCmd.Run = runFunc
 	}
+	crawlSubmissionCmd.Flags().IntP("duration", "d", 1000, "Duration[ms] in crawling user.")
+	crawlSubmissionCmd.Flags().IntP("retry", "r", 0, "Limit of the number of retry when an error occurred in crawling submissions.")
+	crawlSubmissionCmd.Flags().StringSlice("target", nil, "Target category to crawl. Multiple categories can be specified by separating tem with comma. If not specified, all categories will be crawled.")
+
 	return crawlSubmissionCmd
 }

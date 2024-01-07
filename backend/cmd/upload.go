@@ -23,26 +23,21 @@ func newUploadCmd(args []string, sub ...*cobra.Command) *cobra.Command {
 	return uploadCmd
 }
 
-func newUploadProblemCmd(args []string, runFunc func(cmd *cobra.Command, args []string)) *cobra.Command {
+func newUploadProblemCmd(args []string, config *RootConfig, runFunc func(cmd *cobra.Command, args []string)) *cobra.Command {
 	uploadProblemCmd := &cobra.Command{
 		Use:   "problem",
 		Short: "Upload document JSON files into problem core",
 		Long:  "Upload document JSON files into problem core",
 		PreRun: func(cmd *cobra.Command, args []string) {
-			cmd.Flags().BoolP("optimize", "o", false, "When true, send optimize request to Solr")
 			viper.BindPFlag("upload.problem.optimize", cmd.Flags().Lookup("optimize"))
-
-			cmd.Flags().BoolP("truncate", "t", false, "When true, truncate index before upload")
 			viper.BindPFlag("upload.problem.truncate", cmd.Flags().Lookup("truncate"))
-
-			cmd.Flags().String("save-dir", "", "Directory path at which generated documents will be saved")
 			viper.BindPFlag("upload.problem.save_dir", cmd.Flags().Lookup("save-dir"))
-
-			cmd.Flags().Int("concurrent", 3, "Concurrent number of document upload processes")
 			viper.BindPFlag("upload.problem.concurrent", cmd.Flags().Lookup("concurrent"))
+
+			MustLoadConfigFromFlags(cmd.Flags(), config)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			core, err := solr.NewSolrCore(Config.SolrHost, Config.ProblemCoreName)
+			core, err := solr.NewSolrCore(config.SolrHost, config.ProblemCoreName)
 			if err != nil {
 				slog.Error("failed to create core", slog.Any("error", err))
 				panic("failed to create core")
@@ -50,10 +45,10 @@ func newUploadProblemCmd(args []string, runFunc func(cmd *cobra.Command, args []
 
 			uploader := upload.NewDocumentUploader(
 				core,
-				Config.Upload.Problem.SaveDir,
-				Config.Upload.Problem.Concurrent,
-				Config.Upload.Problem.Optimize,
-				Config.Upload.Problem.Truncate,
+				config.Upload.Problem.SaveDir,
+				config.Upload.Problem.Concurrent,
+				config.Upload.Problem.Optimize,
+				config.Upload.Problem.Truncate,
 			)
 
 			batch.RunBatch(uploader)
@@ -64,30 +59,29 @@ func newUploadProblemCmd(args []string, runFunc func(cmd *cobra.Command, args []
 	if runFunc != nil {
 		uploadProblemCmd.Run = runFunc
 	}
+	uploadProblemCmd.Flags().BoolP("optimize", "o", false, "When true, send optimize request to Solr")
+	uploadProblemCmd.Flags().BoolP("truncate", "t", false, "When true, truncate index before upload")
+	uploadProblemCmd.Flags().String("save-dir", "", "Directory path at which generated documents will be saved")
+	uploadProblemCmd.Flags().Int("concurrent", 3, "Concurrent number of document upload processes")
 
 	return uploadProblemCmd
 }
 
-func newUploadUserCmd(args []string, runFunc func(cmd *cobra.Command, args []string)) *cobra.Command {
+func newUploadUserCmd(args []string, config *RootConfig, runFunc func(cmd *cobra.Command, args []string)) *cobra.Command {
 	var uploadUserCmd = &cobra.Command{
 		Use:   "user",
 		Short: "Upload document JSON files into user core",
 		Long:  "Upload document JSON files into user core",
 		PreRun: func(cmd *cobra.Command, args []string) {
-			cmd.Flags().BoolP("optimize", "o", false, "When true, send optimize request to Solr")
 			viper.BindPFlag("upload.user.optimize", cmd.Flags().Lookup("optimize"))
-
-			cmd.Flags().BoolP("truncate", "t", false, "When true, truncate index before upload")
 			viper.BindPFlag("upload.user.truncate", cmd.Flags().Lookup("truncate"))
-
-			cmd.Flags().String("save-dir", "", "Directory path at which generated documents will be saved")
 			viper.BindPFlag("upload.user.save_dir", cmd.Flags().Lookup("save-dir"))
-
-			cmd.Flags().Int("concurrent", 3, "Concurrent number of document upload processes")
 			viper.BindPFlag("upload.user.concurrent", cmd.Flags().Lookup("concurrent"))
+
+			MustLoadConfigFromFlags(cmd.Flags(), config)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			core, err := solr.NewSolrCore(Config.SolrHost, Config.UserCoreName)
+			core, err := solr.NewSolrCore(config.SolrHost, config.UserCoreName)
 			if err != nil {
 				slog.Error("failed to create core", slog.Any("error", err))
 				panic("failed to create core")
@@ -95,10 +89,10 @@ func newUploadUserCmd(args []string, runFunc func(cmd *cobra.Command, args []str
 
 			uploader := upload.NewDocumentUploader(
 				core,
-				Config.Upload.User.SaveDir,
-				Config.Upload.User.Concurrent,
-				Config.Upload.User.Optimize,
-				Config.Upload.User.Truncate,
+				config.Upload.User.SaveDir,
+				config.Upload.User.Concurrent,
+				config.Upload.User.Optimize,
+				config.Upload.User.Truncate,
 			)
 
 			batch.RunBatch(uploader)
@@ -109,30 +103,29 @@ func newUploadUserCmd(args []string, runFunc func(cmd *cobra.Command, args []str
 	if runFunc != nil {
 		uploadUserCmd.Run = runFunc
 	}
+	uploadUserCmd.Flags().BoolP("optimize", "o", false, "When true, send optimize request to Solr")
+	uploadUserCmd.Flags().BoolP("truncate", "t", false, "When true, truncate index before upload")
+	uploadUserCmd.Flags().String("save-dir", "", "Directory path at which generated documents will be saved")
+	uploadUserCmd.Flags().Int("concurrent", 3, "Concurrent number of document upload processes")
 
 	return uploadUserCmd
 }
 
-func newUploadSubmissionCmd(args []string, runFunc func(cmd *cobra.Command, args []string)) *cobra.Command {
+func newUploadSubmissionCmd(args []string, config *RootConfig, runFunc func(cmd *cobra.Command, args []string)) *cobra.Command {
 	uploadSubmissionCmd := &cobra.Command{
 		Use:   "submission",
 		Short: "Upload document JSON files into submission core",
 		Long:  "Upload document JSON files into submission core",
 		PreRun: func(cmd *cobra.Command, args []string) {
-			cmd.Flags().BoolP("optimize", "o", false, "When true, send optimize request to Solr")
 			viper.BindPFlag("upload.submission.optimize", cmd.Flags().Lookup("optimize"))
-
-			cmd.Flags().BoolP("truncate", "t", false, "When true, truncate index before upload")
 			viper.BindPFlag("upload.submission.truncate", cmd.Flags().Lookup("truncate"))
-
-			cmd.Flags().String("save-dir", "", "Directory path at which generated documents will be saved")
 			viper.BindPFlag("upload.submission.save_dir", cmd.Flags().Lookup("save-dir"))
-
-			cmd.Flags().Int("concurrent", 3, "Concurrent number of document upload processes")
 			viper.BindPFlag("upload.submission.concurrent", cmd.Flags().Lookup("concurrent"))
+
+			MustLoadConfigFromFlags(cmd.Flags(), config)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			core, err := solr.NewSolrCore(Config.SolrHost, Config.SubmissionCoreName)
+			core, err := solr.NewSolrCore(config.SolrHost, config.SubmissionCoreName)
 			if err != nil {
 				slog.Error("failed to create core", slog.Any("error", err))
 				panic("failed to create core")
@@ -140,10 +133,10 @@ func newUploadSubmissionCmd(args []string, runFunc func(cmd *cobra.Command, args
 
 			uploader := upload.NewDocumentUploader(
 				core,
-				Config.Upload.Submission.SaveDir,
-				Config.Upload.Submission.Concurrent,
-				Config.Upload.Submission.Optimize,
-				Config.Upload.Submission.Truncate,
+				config.Upload.Submission.SaveDir,
+				config.Upload.Submission.Concurrent,
+				config.Upload.Submission.Optimize,
+				config.Upload.Submission.Truncate,
 			)
 
 			batch.RunBatch(uploader)
@@ -154,6 +147,10 @@ func newUploadSubmissionCmd(args []string, runFunc func(cmd *cobra.Command, args
 	if runFunc != nil {
 		uploadSubmissionCmd.Run = runFunc
 	}
+	uploadSubmissionCmd.Flags().BoolP("optimize", "o", false, "When true, send optimize request to Solr")
+	uploadSubmissionCmd.Flags().BoolP("truncate", "t", false, "When true, truncate index before upload")
+	uploadSubmissionCmd.Flags().String("save-dir", "", "Directory path at which generated documents will be saved")
+	uploadSubmissionCmd.Flags().Int("concurrent", 3, "Concurrent number of document upload processes")
 
 	return uploadSubmissionCmd
 }

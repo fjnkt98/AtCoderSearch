@@ -16,7 +16,16 @@ crawl:
   submission:
     duration: 3000
     retry: 5
-    targets: "ABC,ABC-Like,ARC,ARC-Like,AGC,AGC-Like,JOI,Other Sponsored,PAST"
+    targets:
+      - "ABC"
+      - "ABC-Like"
+      - "ARC"
+      - "ARC-Like"
+      - "AGC"
+      - "AGC-Like"
+      - "JOI"
+      - "Other Sponsored"
+      - "PAST"
 generate:
   problem:
     save_dir: "/var/tmp/atcoder/problem"
@@ -36,18 +45,18 @@ upload:
   problem:
     save_dir: "/var/tmp/atcoder/problem"
     concurrent: 4
-    optimize: true
-    truncate: true
+    optimize: false
+    truncate: false
   user:
     save_dir: "/var/tmp/atcoder/user"
     concurrent: 4
-    optimize: true
-    truncate: true
+    optimize: false
+    truncate: false
   submission:
     save_dir: "/var/tmp/atcoder/submission"
     concurrent: 4
-    optimize: true
-    truncate: true
+    optimize: false
+    truncate: false
 update:
   problem:
     skip_fetch: false

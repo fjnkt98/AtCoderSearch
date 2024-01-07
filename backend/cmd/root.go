@@ -1,13 +1,9 @@
 package cmd
 
 import (
-	"fmt"
 	"os"
 
-	"golang.org/x/exp/slog"
-
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func newRootCmd(args []string, sub ...*cobra.Command) *cobra.Command {
@@ -19,20 +15,7 @@ func newRootCmd(args []string, sub ...*cobra.Command) *cobra.Command {
 
 	rootCmd.SetArgs(args)
 
-	var configFile string
-	cobra.OnInitialize(func() {
-		if configFile == "" {
-			configFile = "config/config.yaml"
-		}
-
-		if err := LoadConfig(configFile, &Config); err == nil {
-			slog.Error("failed to load config", slog.String("error", fmt.Sprintf("%+v", err)))
-			panic("failed to load config.")
-		} else {
-			slog.Info(fmt.Sprintf("using config file: %s", viper.ConfigFileUsed()))
-		}
-	})
-	rootCmd.PersistentFlags().StringVar(&configFile, "config", "", "path to the config file")
+	rootCmd.PersistentFlags().String("config", "cmd/config.yaml", "path to the config file")
 	rootCmd.AddCommand(sub...)
 
 	return rootCmd
@@ -40,35 +23,37 @@ func newRootCmd(args []string, sub ...*cobra.Command) *cobra.Command {
 
 func Execute() error {
 	args := os.Args[1:]
-	rootCmd := newRootCmd(args)
-	rootCmd.AddCommand(
+	var config RootConfig
+
+	rootCmd := newRootCmd(
+		args,
 		newCrawlCmd(
 			args,
-			newCrawlProblemCmd(args, nil),
-			newCrawlUserCmd(args, nil),
-			newCrawlSubmissionCmd(args, nil),
+			newCrawlProblemCmd(args, &config, nil),
+			newCrawlUserCmd(args, &config, nil),
+			newCrawlSubmissionCmd(args, &config, nil),
 		),
 		newGenerateCmd(
 			args,
-			newGenerateProblemCmd(args, nil),
-			newGenerateUserCmd(args, nil),
-			newGenerateSubmissionCmd(args, nil),
+			newGenerateProblemCmd(args, &config, nil),
+			newGenerateUserCmd(args, &config, nil),
+			newGenerateSubmissionCmd(args, &config, nil),
 		),
 		newUploadCmd(
 			args,
-			newUploadProblemCmd(args, nil),
-			newUploadUserCmd(args, nil),
-			newUploadSubmissionCmd(args, nil),
+			newUploadProblemCmd(args, &config, nil),
+			newUploadUserCmd(args, &config, nil),
+			newUploadSubmissionCmd(args, &config, nil),
 		),
 		newUpdateCmd(
 			args,
-			newUpdateProblemCmd(args, nil),
-			newUpdateUserCmd(args, nil),
-			newUpdateSubmissionCmd(args, nil),
-			newUpdateLanguageCmd(args, nil),
+			newUpdateProblemCmd(args, &config, nil),
+			newUpdateUserCmd(args, &config, nil),
+			newUpdateSubmissionCmd(args, &config, nil),
+			newUpdateLanguageCmd(args, &config, nil),
 		),
-		newServerCmd(args, nil),
-		newMigrateCmd(args, nil),
+		newServerCmd(args, &config, nil),
+		newMigrateCmd(args, &config, nil),
 	)
 
 	return rootCmd.Execute()
