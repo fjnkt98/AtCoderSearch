@@ -103,8 +103,8 @@ type RecommendProblemParam struct {
 	Option   string `json:"option" form:"option" validate:"omitempty,option"`
 	UserID   string `json:"user_id" form:"user_id"`
 	Rating   int    `json:"rating" form:"rating"`
-	Limit    *int   `json:"limit" form:"limit" validate:"omitempty,lte=200"`
-	Page     int    `json:"page" form:"page"`
+	Limit    *int   `json:"limit" form:"limit" validate:"omitempty,gte=0,lte=200"`
+	Page     int    `json:"page" form:"page" validate:"gte=0"`
 	Unsolved bool   `json:"unsolved" form:"unsolved"`
 }
 
