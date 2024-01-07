@@ -35,7 +35,7 @@ func RegisterSearchUserRoute(r *gin.Engine, core solr.SolrCore) {
 func RegisterSearchSubmissionRoute(r *gin.Engine, core solr.SolrCore) {
 	c := controller.NewSearchSubmissionController(
 		usecase.NewSearchSubmissionUsecase(core),
-		presenter.NewSubmissionPresenter(),
+		presenter.NewSearchSubmissionPresenter(),
 	)
 	r.GET("/api/search/submission", c.HandleGET)
 	r.POST("/api/search/submission", c.HandlePOST)

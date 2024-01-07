@@ -17,7 +17,7 @@ type SearchSubmissionPresenter interface {
 type searchSubmissionPresenter struct {
 }
 
-func NewSubmissionPresenter() SearchSubmissionPresenter {
+func NewSearchSubmissionPresenter() SearchSubmissionPresenter {
 	return &searchSubmissionPresenter{}
 }
 
