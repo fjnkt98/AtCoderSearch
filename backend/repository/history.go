@@ -106,7 +106,7 @@ type UpdateHistory struct {
 	StartedAt     time.Time `bun:"started_at"`
 	FinishedAt    time.Time `bun:"finished_at"`
 	Status        string    `bun:"status,type:text"`
-	Options       string    `bun:"options,type:json"`
+	Options       string    `bun:"options"`
 	wasSaved      bool
 }
 
