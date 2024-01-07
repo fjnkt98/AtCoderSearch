@@ -411,6 +411,10 @@ func scrapeUsers(html io.Reader) ([]User, error) {
 			switch j {
 			case 0:
 				m := RANK_RE.FindStringSubmatch(td.Find("span").Text())
+				if m == nil || len(m) < 1 {
+					errors = append(errors, errs.New("rank text is not match the regexp", errs.WithContext("row number", i), errs.WithContext("col number", j)))
+					break
+				}
 				if rank, err := strconv.Atoi(m[1]); err != nil {
 					errors = append(errors, err)
 				} else {
@@ -419,7 +423,7 @@ func scrapeUsers(html io.Reader) ([]User, error) {
 
 				activeRankStr := strings.TrimSpace(td.Contents().Not("span").Text())
 				if r, err := strconv.Atoi(activeRankStr); err != nil {
-					errors = append(errors, err)
+					user.ActiveRank = nil
 				} else {
 					rank := int(r)
 					user.ActiveRank = &rank
@@ -450,34 +454,32 @@ func scrapeUsers(html io.Reader) ([]User, error) {
 				}
 			case 2:
 				if year, err := strconv.Atoi(td.Text()); err != nil {
-					errors = append(errors, err)
+					user.BirthYear = nil
 				} else {
 					year := int(year)
 					user.BirthYear = &year
-
 				}
 			case 3:
 				if rating, err := strconv.Atoi(td.Text()); err != nil {
-					errors = append(errors, err)
+					errors = append(errors, errs.New("failed to convert the rating", errs.WithCause(err), errs.WithContext("row number", i), errs.WithContext("col number", j)))
 				} else {
 					user.Rating = rating
-
 				}
 			case 4:
 				if highestRating, err := strconv.Atoi(td.Text()); err != nil {
-					errors = append(errors, err)
+					errors = append(errors, errs.New("failed to convert the highest rating", errs.WithCause(err), errs.WithContext("row number", i), errs.WithContext("col number", j)))
 				} else {
 					user.HighestRating = highestRating
 				}
 			case 5:
 				if joinCount, err := strconv.Atoi(td.Text()); err != nil {
-					errors = append(errors, err)
+					errors = append(errors, errs.New("failed to convert the join count", errs.WithCause(err), errs.WithContext("row number", i), errs.WithContext("col number", j)))
 				} else {
 					user.JoinCount = int(joinCount)
 				}
 			case 6:
 				if wins, err := strconv.Atoi(td.Text()); err != nil {
-					errors = append(errors, err)
+					errors = append(errors, errs.New("failed to convert the win count", errs.WithCause(err), errs.WithContext("row number", i), errs.WithContext("col number", j)))
 				} else {
 					user.Wins = int(wins)
 				}
