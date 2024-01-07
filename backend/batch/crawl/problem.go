@@ -110,7 +110,7 @@ func (c *problemCrawler) CrawlProblem(ctx context.Context) error {
 
 	problems := make([]repository.Problem, 0, len(targets))
 	for _, target := range targets {
-		slog.Info("Start to crawl problem `%s`", target)
+		slog.Info("Start to crawl the problem", slog.String("target", target.ID))
 		html, err := c.atcoderClient.FetchProblem(ctx, target.ContestID, target.ID)
 		if err != nil {
 			return errs.Wrap(err)
@@ -132,7 +132,7 @@ func (c *problemCrawler) CrawlProblem(ctx context.Context) error {
 			URL:          fmt.Sprintf("https://atcoder.jp/contests/%s/tasks/%s", target.ContestID, target.ID),
 			HTML:         buf.String(),
 		})
-		slog.Info("Finish crawling problem `%s` successfully", target)
+		slog.Info("Finish crawling the problem successfully", slog.String("target", target.ID))
 		time.Sleep(time.Duration(c.config.Duration) * time.Millisecond)
 	}
 
