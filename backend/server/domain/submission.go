@@ -9,7 +9,7 @@ import (
 )
 
 type SearchSubmissionParam struct {
-	Sort []string `json:"sort" schema:"sort" validate:"dive,oneof=-score rating -rating birth_year -birth_year"`
+	Sort []string `json:"sort" schema:"sort" validate:"dive,oneof=execution_time -execution_time submitted_at -submitted_at point -point length -length"`
 	utility.SearchParam[SearchSubmissionFilterParam, SearchSubmissionFacetParam]
 }
 
