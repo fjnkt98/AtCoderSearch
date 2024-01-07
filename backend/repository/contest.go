@@ -45,9 +45,9 @@ func (r *contestRepository) Save(ctx context.Context, contests []Contest) error 
 	defer tx.Rollback()
 
 	for _, chunk := range Chunks(contests, 1000) {
-		_, err = r.db.NewMerge().
+		_, err = tx.NewMerge().
 			Model(new(Contest)).
-			With("contest", r.db.NewValues(&chunk)).
+			With("contest", tx.NewValues(&chunk)).
 			Using("contest").
 			On("?TableAlias.? = ?.?", bun.Ident("contest_id"), bun.Ident("contest"), bun.Ident("contest_id")).
 			WhenUpdate("MATCHED", func(q *bun.UpdateQuery) *bun.UpdateQuery {

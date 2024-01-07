@@ -51,9 +51,9 @@ func (r *userRepository) Save(ctx context.Context, users []User) error {
 	defer tx.Rollback()
 
 	for _, chunk := range Chunks(users, 1000) {
-		_, err = r.db.NewMerge().
+		_, err = tx.NewMerge().
 			Model(new(User)).
-			With("user", r.db.NewValues(&chunk)).
+			With("user", tx.NewValues(&chunk)).
 			Using("?", bun.Ident("user")).
 			On("?TableAlias.? = ?.?", bun.Ident("user_name"), bun.Ident("user"), bun.Ident("user_name")).
 			WhenUpdate("MATCHED", func(q *bun.UpdateQuery) *bun.UpdateQuery {

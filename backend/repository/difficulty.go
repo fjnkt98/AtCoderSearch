@@ -46,9 +46,9 @@ func (r *difficultyRepository) Save(ctx context.Context, difficulties []Difficul
 	defer tx.Rollback()
 
 	for _, chunk := range Chunks(difficulties, 1000) {
-		_, err = r.db.NewMerge().
+		_, err = tx.NewMerge().
 			Model(new(Difficulty)).
-			With("difficulty", r.db.NewValues(&chunk)).
+			With("difficulty", tx.NewValues(&chunk)).
 			Using("difficulty").
 			On("?TableAlias.? = ?.?", bun.Ident("problem_id"), bun.Ident("difficulty"), bun.Ident("problem_id")).
 			WhenUpdate("MATCHED", func(q *bun.UpdateQuery) *bun.UpdateQuery {

@@ -54,7 +54,7 @@ func (r *submissionCrawlHistoryRepository) Save(ctx context.Context, history Sub
 	}
 	defer tx.Rollback()
 
-	if _, err := r.db.NewInsert().Model(&history).Exec(ctx); err != nil {
+	if _, err := tx.NewInsert().Model(&history).Exec(ctx); err != nil {
 		return errs.New(
 			"failed to execute sql",
 			errs.WithCause(err),
@@ -141,7 +141,7 @@ func (r *updateHistoryRepository) save(ctx context.Context, history *UpdateHisto
 	}
 	defer tx.Rollback()
 
-	if _, err := r.db.NewInsert().Model(history).Exec(ctx); err != nil {
+	if _, err := tx.NewInsert().Model(history).Exec(ctx); err != nil {
 		return errs.New(
 			"failed to execute sql",
 			errs.WithCause(err),

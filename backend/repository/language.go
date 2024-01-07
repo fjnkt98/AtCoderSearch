@@ -41,7 +41,7 @@ func (r *languageRepository) Save(ctx context.Context, languages []Language) err
 	}
 	defer tx.Rollback()
 
-	_, err = r.db.NewInsert().
+	_, err = tx.NewInsert().
 		Model(&languages).
 		On("CONFLICT (?PKs) DO UPDATE").
 		Set("? = EXCLUDED.?", bun.Ident("group"), bun.Ident("group")).

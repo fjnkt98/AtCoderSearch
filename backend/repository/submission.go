@@ -48,9 +48,9 @@ func (r *submissionRepository) Save(ctx context.Context, submissions []Submissio
 	defer tx.Rollback()
 
 	for _, chunk := range Chunks(submissions, 1000) {
-		_, err := r.db.NewMerge().
+		_, err := tx.NewMerge().
 			Model(new(Submission)).
-			With("submission", r.db.NewValues(&chunk)).
+			With("submission", tx.NewValues(&chunk)).
 			Using("submission").
 			On("?TableAlias.? = ?.?", bun.Ident("id"), bun.Ident("submission"), bun.Ident("id")).
 			WhenUpdate("MATCHED", func(q *bun.UpdateQuery) *bun.UpdateQuery {
