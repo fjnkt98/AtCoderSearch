@@ -254,7 +254,12 @@ func NewProblemListController(repo repository.ProblemRepository) ProblemListCont
 }
 
 func (c *problemListController) HandleGET(ctx *gin.Context) {
-	targets := strings.Split(ctx.Query("contest_id"), ",")
+	targets := make([]string, 0)
+	for _, id := range strings.Split(ctx.Query("contest_id"), ",") {
+		if id != "" {
+			targets = append(targets, id)
+		}
+	}
 
 	ids, err := c.repo.FetchIDsByContestID(ctx, targets)
 	if err != nil {
