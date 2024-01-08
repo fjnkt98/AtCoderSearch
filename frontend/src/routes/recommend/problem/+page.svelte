@@ -47,6 +47,7 @@
     }
 
     params.set("option", option.join(""));
+    params.set("unsolved", unsolved ? "true" : "false");
 
     goto(`${$page.url.pathname}?${params.toString()}`, { replaceState: false });
   }
