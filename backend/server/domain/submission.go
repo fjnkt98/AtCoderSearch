@@ -23,6 +23,10 @@ func (p *SearchSubmissionParam) GetSort() string {
 		}
 	}
 
+	if len(orders) == 0 {
+		orders = []string{"submitted_at desc"}
+	}
+
 	return strings.Join(orders, ",")
 }
 

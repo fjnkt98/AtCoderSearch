@@ -26,6 +26,10 @@ func (p *SearchUserParam) GetSort() string {
 		}
 	}
 
+	if len(orders) == 0 {
+		orders = []string{"rating desc"}
+	}
+
 	return strings.Join(orders, ",")
 }
 

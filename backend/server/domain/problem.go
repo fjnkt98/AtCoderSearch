@@ -30,6 +30,10 @@ func (p *SearchProblemParam) GetSort() string {
 		}
 	}
 
+	if len(orders) == 0 {
+		orders = []string{"start_at desc", "problem_id asc"}
+	}
+
 	return strings.Join(orders, ",")
 }
 
