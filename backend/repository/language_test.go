@@ -38,8 +38,12 @@ func TestFetchLanguages(t *testing.T) {
 
 	repository := NewLanguageRepository(db)
 	ctx := context.Background()
-	if _, err := repository.FetchLanguages(ctx); err != nil {
-		t.Fatalf("failed to fetch languages: %s", err.Error())
+	if _, err := repository.FetchLanguagesByGroup(ctx, nil); err != nil {
+		t.Errorf("failed to fetch languages: %s", err.Error())
+	}
+
+	if _, err := repository.FetchLanguagesByGroup(ctx, []string{"C++", "Python"}); err != nil {
+		t.Errorf("failed to fetch languages: %s", err.Error())
 	}
 }
 

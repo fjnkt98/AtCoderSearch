@@ -17,7 +17,7 @@ type Language struct {
 
 type LanguageRepository interface {
 	Save(ctx context.Context, languages []Language) error
-	FetchLanguages(ctx context.Context) ([]string, error)
+	FetchLanguagesByGroup(ctx context.Context, groups []string) ([]string, error)
 	FetchLanguageGroups(ctx context.Context) ([]string, error)
 }
 
@@ -63,15 +63,17 @@ func (r *languageRepository) Save(ctx context.Context, languages []Language) err
 	return nil
 }
 
-func (r *languageRepository) FetchLanguages(ctx context.Context) ([]string, error) {
+func (r *languageRepository) FetchLanguagesByGroup(ctx context.Context, groups []string) ([]string, error) {
 	var languages []string
-	err := r.db.NewSelect().
+	query := r.db.NewSelect().
 		Model(new(Language)).
 		Column("language").
-		Order("language").
-		Scan(ctx, &languages)
+		Order("language")
+	if len(groups) > 0 {
+		query = query.Where("? IN (?)", bun.Ident("group"), bun.In(groups))
+	}
 
-	if err != nil {
+	if err := query.Scan(ctx, &languages); err != nil {
 		return nil, errs.New(
 			"failed to fetch languages",
 			errs.WithCause(err),
