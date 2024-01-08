@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fjnkt98/atcodersearch/repository"
+	"log/slog"
 	"net/http"
 	"strings"
 
@@ -27,6 +28,7 @@ func (c *contestListController) HandleGET(ctx *gin.Context) {
 
 	ids, err := c.repo.FetchContestIDs(ctx, categories)
 	if err != nil {
+		slog.Error("failed to fetch contests", slog.String("category", ctx.Query("category")), slog.Any("error", err))
 		ctx.JSON(http.StatusInternalServerError, make([]string, 0))
 		return
 	}

@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fjnkt98/atcodersearch/repository"
+	"log/slog"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -24,6 +25,7 @@ func NewCategoryListController(repo repository.ContestRepository) CategoryListCo
 func (c *categoryListController) HandleGET(ctx *gin.Context) {
 	categories, err := c.repo.FetchCategories(ctx)
 	if err != nil {
+		slog.Error("failed to fetch categories", slog.Any("error", err))
 		ctx.JSON(http.StatusInternalServerError, make([]string, 0))
 		return
 	}

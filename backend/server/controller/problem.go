@@ -234,6 +234,7 @@ func (c *problemListController) HandleGET(ctx *gin.Context) {
 
 	ids, err := c.repo.FetchIDsByContestID(ctx, targets)
 	if err != nil {
+		slog.Error("failed to fetch problem ids", slog.String("contest id", ctx.Query("contest_id")), slog.Any("error", err))
 		ctx.JSON(http.StatusInternalServerError, make([]string, 0))
 		return
 	}
