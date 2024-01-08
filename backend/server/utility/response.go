@@ -8,8 +8,8 @@ import (
 )
 
 type SearchResultResponse[I any] struct {
-	Stats   SearchResultStats `json:"stats,omitempty"`
-	Items   []I               `json:"items,omitempty"`
+	Stats   SearchResultStats `json:"stats"`
+	Items   []I               `json:"items"`
 	Message string            `json:"message,omitempty"`
 }
 
