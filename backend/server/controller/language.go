@@ -4,6 +4,7 @@ import (
 	"fjnkt98/atcodersearch/repository"
 	"log/slog"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -25,7 +26,14 @@ func NewLanguageListController(
 }
 
 func (c *languageListController) HandleGET(ctx *gin.Context) {
-	languages, err := c.repo.FetchLanguages(ctx)
+	groups := make([]string, 0)
+	for _, group := range strings.Split(ctx.Query("group"), ",") {
+		if group != "" {
+			groups = append(groups, group)
+		}
+	}
+
+	languages, err := c.repo.FetchLanguagesByGroup(ctx, groups)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, make([]string, 0))
 		slog.Error("failed to fetch languages", slog.Any("error", err))

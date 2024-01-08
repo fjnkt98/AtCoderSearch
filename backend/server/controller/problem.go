@@ -254,14 +254,14 @@ func NewProblemListController(repo repository.ProblemRepository) ProblemListCont
 }
 
 func (c *problemListController) HandleGET(ctx *gin.Context) {
-	targets := make([]string, 0)
+	contest_ids := make([]string, 0)
 	for _, id := range strings.Split(ctx.Query("contest_id"), ",") {
 		if id != "" {
-			targets = append(targets, id)
+			contest_ids = append(contest_ids, id)
 		}
 	}
 
-	ids, err := c.repo.FetchIDsByContestID(ctx, targets)
+	ids, err := c.repo.FetchIDsByContestID(ctx, contest_ids)
 	if err != nil {
 		slog.Error("failed to fetch problem ids", slog.String("contest id", ctx.Query("contest_id")), slog.Any("error", err))
 		ctx.JSON(http.StatusInternalServerError, make([]string, 0))

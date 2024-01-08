@@ -24,7 +24,12 @@ func NewContestListController(repo repository.ContestRepository) ContestListCont
 }
 
 func (c *contestListController) HandleGET(ctx *gin.Context) {
-	categories := strings.Split(ctx.Query("category"), ",")
+	categories := make([]string, 0)
+	for _, category := range strings.Split(ctx.Query("category"), ",") {
+		if category != "" {
+			categories = append(categories, category)
+		}
+	}
 
 	ids, err := c.repo.FetchContestIDs(ctx, categories)
 	if err != nil {
