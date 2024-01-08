@@ -3,6 +3,8 @@ table_schema: ""
 solr_host: "http://localhost:8983"
 atcoder_username: ""
 atcoder_password: ""
+trusted_proxies:
+  - "127.0.0.1"
 do_migrate: false
 problem_core_name: "problem"
 user_core_name: "user"

@@ -69,15 +69,16 @@ type RootConfig struct {
 }
 
 type CommonConfig struct {
-	DataBaseURL        string `mapstructure:"database_url" json:"database_url"`
-	TableSchema        string `mapstructure:"table_schema" json:"table_schema"`
-	SolrHost           string `mapstructure:"solr_host" json:"solr_host"`
-	AtCoderUserName    string `mapstructure:"atcoder_username" json:"atcoder_username"`
-	AtCoderPassword    string `mapstructure:"atcoder_password" json:"atcoder_password"`
-	DoMigrate          bool   `mapstructure:"do_migrate" json:"do_migrate"`
-	ProblemCoreName    string `mapstructure:"problem_core_name" json:"problem_core_name"`
-	UserCoreName       string `mapstructure:"user_core_name" json:"user_core_name"`
-	SubmissionCoreName string `mapstructure:"submission_core_name" json:"submission_core_name"`
+	DataBaseURL        string   `mapstructure:"database_url" json:"database_url"`
+	TableSchema        string   `mapstructure:"table_schema" json:"table_schema"`
+	SolrHost           string   `mapstructure:"solr_host" json:"solr_host"`
+	AtCoderUserName    string   `mapstructure:"atcoder_username" json:"atcoder_username"`
+	AtCoderPassword    string   `mapstructure:"atcoder_password" json:"atcoder_password"`
+	TrustedProxies     []string `mapstructure:"trusted_proxies" json:"trusted_proxies"`
+	DoMigrate          bool     `mapstructure:"do_migrate" json:"do_migrate"`
+	ProblemCoreName    string   `mapstructure:"problem_core_name" json:"problem_core_name"`
+	UserCoreName       string   `mapstructure:"user_core_name" json:"user_core_name"`
+	SubmissionCoreName string   `mapstructure:"submission_core_name" json:"submission_core_name"`
 }
 
 type CrawlConfig struct {

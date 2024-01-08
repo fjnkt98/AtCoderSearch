@@ -24,6 +24,7 @@ func newServerCmd(args []string, config *RootConfig, runFunc func(cmd *cobra.Com
 			r.Use(
 				gin.Recovery(),
 			)
+			r.SetTrustedProxies(config.TrustedProxies)
 
 			server.RegisterSearchProblemRoute(r, solr.MustNewSolrCore(config.SolrHost, config.ProblemCoreName))
 			server.RegisterSearchUserRoute(r, solr.MustNewSolrCore(config.SolrHost, config.UserCoreName))
