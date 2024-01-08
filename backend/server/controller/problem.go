@@ -94,9 +94,15 @@ func (c *searchProblemController) HandleGET(ctx *gin.Context) {
 		return
 	}
 
-	t := int(time.Since(startTime).Milliseconds())
-
-	ctx.JSON(http.StatusOK, c.pr.Format(params, res, t))
+	result := c.pr.Format(params, res, int(time.Since(startTime).Milliseconds()))
+	slog.Info(
+		"querylog",
+		slog.String("domain", "search/problem"),
+		slog.Int("elapsed_time", result.Stats.Time),
+		slog.Int("hits", res.Response.NumFound),
+		slog.Any("params", params),
+	)
+	ctx.JSON(http.StatusOK, result)
 }
 
 func (c *searchProblemController) HandlePOST(ctx *gin.Context) {
@@ -134,9 +140,15 @@ func (c *searchProblemController) HandlePOST(ctx *gin.Context) {
 		return
 	}
 
-	t := int(time.Since(startTime).Milliseconds())
-
-	ctx.JSON(http.StatusOK, c.pr.Format(params, res, t))
+	result := c.pr.Format(params, res, int(time.Since(startTime).Milliseconds()))
+	slog.Info(
+		"querylog",
+		slog.String("domain", "search/problem"),
+		slog.Int("elapsed_time", result.Stats.Time),
+		slog.Int("hits", res.Response.NumFound),
+		slog.Any("params", params),
+	)
+	ctx.JSON(http.StatusOK, result)
 }
 
 type RecommendProblemController interface {
@@ -182,9 +194,15 @@ func (c *recommendProblemController) HandleGET(ctx *gin.Context) {
 		return
 	}
 
-	t := int(time.Since(startTime).Milliseconds())
-
-	ctx.JSON(http.StatusOK, c.pr.Format(params, res, t))
+	result := c.pr.Format(params, res, int(time.Since(startTime).Milliseconds()))
+	slog.Info(
+		"querylog",
+		slog.String("domain", "recommend/problem"),
+		slog.Int("elapsed_time", result.Stats.Time),
+		slog.Int("hits", res.Response.NumFound),
+		slog.Any("params", params),
+	)
+	ctx.JSON(http.StatusOK, result)
 }
 
 func (c *recommendProblemController) HandlePOST(ctx *gin.Context) {
@@ -210,9 +228,15 @@ func (c *recommendProblemController) HandlePOST(ctx *gin.Context) {
 		return
 	}
 
-	t := int(time.Since(startTime).Milliseconds())
-
-	ctx.JSON(http.StatusOK, c.pr.Format(params, res, t))
+	result := c.pr.Format(params, res, int(time.Since(startTime).Milliseconds()))
+	slog.Info(
+		"querylog",
+		slog.String("domain", "recommend/problem"),
+		slog.Int("elapsed_time", result.Stats.Time),
+		slog.Int("hits", res.Response.NumFound),
+		slog.Any("params", params),
+	)
+	ctx.JSON(http.StatusOK, result)
 }
 
 type ProblemListController interface {

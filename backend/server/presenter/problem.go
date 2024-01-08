@@ -4,7 +4,6 @@ import (
 	"fjnkt98/atcodersearch/pkg/solr"
 	"fjnkt98/atcodersearch/server/domain"
 	"fjnkt98/atcodersearch/server/utility"
-	"log/slog"
 )
 
 type SearchProblemResponse utility.SearchResultResponse[domain.Problem]
@@ -41,13 +40,6 @@ func (p *searchProblemPresenter) Format(req domain.SearchProblemParam, res solr.
 		},
 		Items: res.Response.Docs,
 	}
-	slog.Info(
-		"querylog",
-		slog.String("domain", "problem"),
-		slog.Int("elapsed_time", result.Stats.Time),
-		slog.Int("hits", res.Response.NumFound),
-		slog.Any("params", req),
-	)
 	return result
 }
 
@@ -90,13 +82,6 @@ func (p *recommendProblemPresenter) Format(req domain.RecommendProblemParam, res
 		},
 		Items: res.Response.Docs,
 	}
-	slog.Info(
-		"querylog",
-		slog.String("domain", "recommend"),
-		slog.Int("elapsed_time", result.Stats.Time),
-		slog.Int("hits", res.Response.NumFound),
-		slog.Any("params", req),
-	)
 	return result
 }
 

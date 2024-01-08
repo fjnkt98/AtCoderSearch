@@ -92,9 +92,15 @@ func (c *searchSubmissionController) HandleGET(ctx *gin.Context) {
 		return
 	}
 
-	t := int(time.Since(startTime).Milliseconds())
-
-	ctx.JSON(http.StatusOK, c.pr.Format(params, res, t))
+	result := c.pr.Format(params, res, int(time.Since(startTime).Milliseconds()))
+	slog.Info(
+		"querylog",
+		slog.String("domain", "search/submission"),
+		slog.Int("elapsed_time", result.Stats.Time),
+		slog.Int("hits", res.Response.NumFound),
+		slog.Any("params", params),
+	)
+	ctx.JSON(http.StatusOK, result)
 }
 
 func (c *searchSubmissionController) HandlePOST(ctx *gin.Context) {
@@ -132,7 +138,13 @@ func (c *searchSubmissionController) HandlePOST(ctx *gin.Context) {
 		return
 	}
 
-	t := int(time.Since(startTime).Milliseconds())
-
-	ctx.JSON(http.StatusOK, c.pr.Format(params, res, t))
+	result := c.pr.Format(params, res, int(time.Since(startTime).Milliseconds()))
+	slog.Info(
+		"querylog",
+		slog.String("domain", "search/submission"),
+		slog.Int("elapsed_time", result.Stats.Time),
+		slog.Int("hits", res.Response.NumFound),
+		slog.Any("params", params),
+	)
+	ctx.JSON(http.StatusOK, result)
 }

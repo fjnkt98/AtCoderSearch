@@ -4,7 +4,6 @@ import (
 	"fjnkt98/atcodersearch/pkg/solr"
 	"fjnkt98/atcodersearch/server/domain"
 	"fjnkt98/atcodersearch/server/utility"
-	"log/slog"
 )
 
 type SearchSubmissionResponse utility.SearchResultResponse[domain.Submission]
@@ -42,13 +41,6 @@ func (p *searchSubmissionPresenter) Format(req domain.SearchSubmissionParam, res
 		},
 		Items: res.Response.Docs,
 	}
-	slog.Info(
-		"querylog",
-		slog.String("domain", "submission"),
-		slog.Int("elapsed_time", result.Stats.Time),
-		slog.Int("hits", res.Response.NumFound),
-		slog.Any("params", req),
-	)
 	return result
 }
 

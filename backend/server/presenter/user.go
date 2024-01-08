@@ -4,7 +4,6 @@ import (
 	"fjnkt98/atcodersearch/pkg/solr"
 	"fjnkt98/atcodersearch/server/domain"
 	"fjnkt98/atcodersearch/server/utility"
-	"log/slog"
 )
 
 type SearchUserResponse utility.SearchResultResponse[domain.User]
@@ -42,13 +41,6 @@ func (p *searchYserPresenter) Format(req domain.SearchUserParam, res solr.Select
 		},
 		Items: res.Response.Docs,
 	}
-	slog.Info(
-		"querylog",
-		slog.String("domain", "user"),
-		slog.Int("elapsed_time", result.Stats.Time),
-		slog.Int("hits", res.Response.NumFound),
-		slog.Any("params", req),
-	)
 	return result
 }
 
