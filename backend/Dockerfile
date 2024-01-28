@@ -32,4 +32,8 @@ ENV ATCODERSEARCH_CONFIG_FILE='/etc/config.yaml'
 
 USER atcodersearch
 
+RUN mkdir -p /var/tmp/atcoder/problem
+RUN mkdir -p /var/tmp/atcoder/user
+RUN mkdir -p /var/tmp/atcoder/submission
+
 CMD ["atcodersearch"]
