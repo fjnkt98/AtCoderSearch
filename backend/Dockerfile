@@ -1,7 +1,7 @@
 # docker build -t atcodersearch-backend:latest .
 # docker container run --rm --name atcodersearch-backend -p 8080:8080 -e API_SERVER_LISTEN_PORT=8000 atcodersearch-backend:latest
 
-FROM golang:1.20-bullseye AS stage
+FROM golang:1.21-bullseye AS stage
 
 WORKDIR /app
 
