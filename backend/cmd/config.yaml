@@ -31,32 +31,32 @@ crawl:
 generate:
   problem:
     save_dir: "/var/tmp/atcoder/problem"
-    concurrent: 6
+    concurrent: 2
     chunk_size: 1000
   user:
     save_dir: "/var/tmp/atcoder/user"
-    concurrent: 6
+    concurrent: 2
     chunk_size: 10000
   submission:
     save_dir: "/var/tmp/atcoder/submission"
-    concurrent: 6
+    concurrent: 2
     chunk_size: 10000
     interval: 90
     all: false
 upload:
   problem:
     save_dir: "/var/tmp/atcoder/problem"
-    concurrent: 4
-    optimize: false
-    truncate: false
+    concurrent: 2
+    optimize: true
+    truncate: true
   user:
     save_dir: "/var/tmp/atcoder/user"
-    concurrent: 4
-    optimize: false
-    truncate: false
+    concurrent: 2
+    optimize: true
+    truncate: true
   submission:
     save_dir: "/var/tmp/atcoder/submission"
-    concurrent: 4
+    concurrent: 2
     optimize: false
     truncate: false
 update:

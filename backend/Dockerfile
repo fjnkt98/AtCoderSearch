@@ -13,6 +13,7 @@ FROM debian:bullseye-slim
 
 COPY --from=stage /app/atcodersearch /usr/local/bin/atcodersearch
 COPY ./schema.sql /etc/schema.sql
+COPY ./cmd/config.yaml /etc/config.yaml
 ENV DB_SCHEMA_FILE='/etc/schema.sql'
 
 RUN apt-get update \
