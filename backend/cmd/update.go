@@ -49,7 +49,7 @@ func newUpdateProblemCmd(args []string, config *RootConfig, runFunc func(cmd *co
 			viper.BindPFlag("upload.problem.concurrent", cmd.Flags().Lookup("upload-concurrent"))
 			viper.BindPFlag("update.problem.skip_fetch", cmd.Flags().Lookup("skip-fetch"))
 
-			MustLoadConfigFromFlags(cmd.Flags(), config)
+			MustLoadConfig(cmd.Flags(), config)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			db := repository.MustGetDB(config.DataBaseURL)
@@ -142,7 +142,7 @@ func newUpdateUserCmd(args []string, config *RootConfig, runFunc func(cmd *cobra
 			viper.BindPFlag("upload.user.concurrent", cmd.Flags().Lookup("upload-concurrent"))
 			viper.BindPFlag("update.user.skip_fetch", cmd.Flags().Lookup("skip-fetch"))
 
-			MustLoadConfigFromFlags(cmd.Flags(), config)
+			MustLoadConfig(cmd.Flags(), config)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			db := repository.MustGetDB(config.DataBaseURL)
@@ -226,7 +226,7 @@ func newUpdateSubmissionCmd(args []string, config *RootConfig, runFunc func(cmd 
 			viper.BindPFlag("upload.submission.truncate", cmd.Flags().Lookup("truncate"))
 			viper.BindPFlag("upload.submission.concurrent", cmd.Flags().Lookup("upload-concurrent"))
 
-			MustLoadConfigFromFlags(cmd.Flags(), config)
+			MustLoadConfig(cmd.Flags(), config)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			db := repository.MustGetDB(config.DataBaseURL)
@@ -290,7 +290,7 @@ func newUpdateLanguageCmd(args []string, config *RootConfig, runFunc func(cmd *c
 		Short: "update language index",
 		Long:  "update language index",
 		PreRun: func(cmd *cobra.Command, args []string) {
-			MustLoadConfigFromFlags(cmd.Flags(), config)
+			MustLoadConfig(cmd.Flags(), config)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			db := repository.MustGetDB(config.DataBaseURL)

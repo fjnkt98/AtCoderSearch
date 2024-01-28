@@ -47,13 +47,13 @@ upload:
   problem:
     save_dir: "/var/tmp/atcoder/problem"
     concurrent: 2
-    optimize: true
-    truncate: true
+    optimize: false
+    truncate: false
   user:
     save_dir: "/var/tmp/atcoder/user"
     concurrent: 2
-    optimize: true
-    truncate: true
+    optimize: false
+    truncate: false
   submission:
     save_dir: "/var/tmp/atcoder/submission"
     concurrent: 2

@@ -15,7 +15,7 @@ func newRootCmd(args []string, sub ...*cobra.Command) *cobra.Command {
 
 	rootCmd.SetArgs(args)
 
-	rootCmd.PersistentFlags().String("config", "cmd/config.yaml", "path to the config file")
+	rootCmd.PersistentFlags().String("config", "", "path to the config file")
 	rootCmd.AddCommand(sub...)
 
 	return rootCmd
