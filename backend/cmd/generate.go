@@ -1,257 +1,142 @@
 package cmd
 
 import (
-	"context"
-	"fjnkt98/atcodersearch/acs"
-	"fjnkt98/atcodersearch/problem"
-	"fjnkt98/atcodersearch/recommend"
-	"fjnkt98/atcodersearch/submission"
-	"fjnkt98/atcodersearch/user"
-	"fmt"
-	"os"
-	"os/signal"
-	"time"
+	"fjnkt98/atcodersearch/batch"
+	"fjnkt98/atcodersearch/batch/generate"
+	"fjnkt98/atcodersearch/repository"
 
-	"github.com/morikuni/failure"
 	"github.com/spf13/cobra"
-	"golang.org/x/exp/slog"
-	"golang.org/x/sync/errgroup"
+	"github.com/spf13/viper"
 )
 
-var generateCmd = &cobra.Command{
-	Use:   "generate",
-	Short: "Generate document JSON files",
-	Long:  "Generate document JSON files",
+func newGenerateCmd(args []string, sub ...*cobra.Command) *cobra.Command {
+	generateCmd := &cobra.Command{
+		Use:   "generate",
+		Short: "Generate document JSON files",
+		Long:  "Generate document JSON files",
+	}
+
+	generateCmd.SetArgs(args)
+	generateCmd.AddCommand(sub...)
+
+	return generateCmd
 }
 
-var generateProblemCmd = &cobra.Command{
-	Use:   "problem",
-	Short: "Generate problem document JSON files",
-	Long:  "Generate problem document JSON files",
-	Run: func(cmd *cobra.Command, args []string) {
-		saveDir, err := GetSaveDir(cmd, "problem")
-		if err != nil {
-			slog.Error("failed to get save dir", slog.String("error", fmt.Sprintf("%+v", err)))
-			os.Exit(1)
-		}
-		db := GetDB()
-		concurrent := GetInt(cmd, "concurrent")
-		chunkSize := GetInt(cmd, "chunk-size")
+func newGenerateProblemCmd(args []string, config *RootConfig, runFunc func(cmd *cobra.Command, args []string)) *cobra.Command {
+	generateProblemCmd := &cobra.Command{
+		Use:   "problem",
+		Short: "Generate problem document JSON files",
+		Long:  "Generate problem document JSON files",
+		PreRun: func(cmd *cobra.Command, args []string) {
+			viper.BindPFlag("generate.problem.save_dir", cmd.Flags().Lookup("save-dir"))
+			viper.BindPFlag("generate.problem.chunk_size", cmd.Flags().Lookup("chunk-size"))
+			viper.BindPFlag("generate.problem.concurrent", cmd.Flags().Lookup("concurrent"))
 
-		ctx, cancel := context.WithCancel(context.Background())
-		eg, ctx := errgroup.WithContext(ctx)
+			MustLoadConfigFromFlags(cmd.Flags(), config)
+		},
+		Run: func(cmd *cobra.Command, args []string) {
+			db := repository.MustGetDB(config.DataBaseURL)
 
-		quit := make(chan os.Signal, 1)
-		signal.Notify(quit, os.Interrupt)
+			generator := generate.NewProblemGenerator(
+				generate.NewProblemRowReader(db),
+				config.Generate.Problem.SaveDir,
+				config.Generate.Problem.ChunkSize,
+				config.Generate.Problem.Concurrent,
+			)
 
-		done := make(chan Msg, 1)
+			batch.RunBatch(generator)
+		},
+	}
 
-		eg.Go(func() error {
-			if err := problem.Generate(ctx, db, saveDir, chunkSize, concurrent); err != nil {
-				return failure.Wrap(err)
-			}
-			done <- Msg{}
-			return nil
-		})
+	generateProblemCmd.SetArgs(args)
+	if runFunc != nil {
+		generateProblemCmd.Run = runFunc
+	}
+	generateProblemCmd.Flags().String("save-dir", "", "Directory path at which generated documents will be saved.")
+	generateProblemCmd.Flags().Int("chunk-size", 1000, "Number of documents to write in 1 file.")
+	generateProblemCmd.Flags().Int("concurrent", 10, "Concurrent number of document generation processes.")
 
-		eg.Go(func() error {
-			select {
-			case <-quit:
-				defer cancel()
-				return failure.New(acs.Interrupt, failure.Message("generating problem documents has been interrupted"))
-			case <-ctx.Done():
-				return nil
-			case <-done:
-				return nil
-			}
-		})
+	return generateProblemCmd
 
-		if err := eg.Wait(); err != nil {
-			if failure.Is(err, acs.Interrupt) {
-				slog.Error("generating problem documents has been interrupted", slog.String("error", fmt.Sprintf("%+v", err)))
-				return
-			} else {
-				slog.Error("failed to generate problem documents", slog.String("error", fmt.Sprintf("%+v", err)))
-				os.Exit(1)
-			}
-		}
-		slog.Info("finished generating problem documents successfully.")
-	},
 }
 
-var generateUserCmd = &cobra.Command{
-	Use:   "user",
-	Short: "Generate user document JSON files",
-	Long:  "Generate user document JSON files",
-	Run: func(cmd *cobra.Command, args []string) {
-		saveDir, err := GetSaveDir(cmd, "user")
-		if err != nil {
-			slog.Error("failed to get save dir", slog.String("error", fmt.Sprintf("%+v", err)))
-			os.Exit(1)
-		}
-		db := GetDB()
-		concurrent := GetInt(cmd, "concurrent")
-		chunkSize := GetInt(cmd, "chunk-size")
+func newGenerateUserCmd(args []string, config *RootConfig, runFunc func(cmd *cobra.Command, args []string)) *cobra.Command {
+	generateUserCmd := &cobra.Command{
+		Use:   "user",
+		Short: "Generate user document JSON files",
+		Long:  "Generate user document JSON files",
+		PreRun: func(cmd *cobra.Command, args []string) {
+			viper.BindPFlag("generate.user.save_dir", cmd.Flags().Lookup("save-dir"))
+			viper.BindPFlag("generate.user.chunk_size", cmd.Flags().Lookup("chunk-size"))
+			viper.BindPFlag("generate.user.concurrent", cmd.Flags().Lookup("concurrent"))
 
-		ctx, cancel := context.WithCancel(context.Background())
-		eg, ctx := errgroup.WithContext(ctx)
+			MustLoadConfigFromFlags(cmd.Flags(), config)
+		},
+		Run: func(cmd *cobra.Command, args []string) {
+			db := repository.MustGetDB(config.DataBaseURL)
 
-		quit := make(chan os.Signal, 1)
-		signal.Notify(quit, os.Interrupt)
+			generator := generate.NewUserGenerator(
+				generate.NewUserRowReader(db),
+				config.Generate.User.SaveDir,
+				config.Generate.User.ChunkSize,
+				config.Generate.User.Concurrent,
+			)
 
-		done := make(chan Msg, 1)
+			batch.RunBatch(generator)
+		},
+	}
 
-		eg.Go(func() error {
-			if err := user.Generate(ctx, db, saveDir, chunkSize, concurrent); err != nil {
-				return failure.Wrap(err)
-			}
-			done <- Msg{}
-			return nil
-		})
+	generateUserCmd.SetArgs(args)
+	if runFunc != nil {
+		generateUserCmd.Run = runFunc
+	}
+	generateUserCmd.Flags().String("save-dir", "", "Directory path at which generated documents will be saved.")
+	generateUserCmd.Flags().Int("chunk-size", 1000, "Number of documents to write in 1 file.")
+	generateUserCmd.Flags().Int("concurrent", 10, "Concurrent number of document generation processes.")
 
-		eg.Go(func() error {
-			select {
-			case <-quit:
-				defer cancel()
-				return failure.New(acs.Interrupt, failure.Message("generating user documents has been interrupted"))
-			case <-ctx.Done():
-				return nil
-			case <-done:
-				return nil
-			}
-		})
-
-		if err := eg.Wait(); err != nil {
-			if failure.Is(err, acs.Interrupt) {
-				slog.Error("generating user documents has been interrupted", slog.String("error", fmt.Sprintf("%+v", err)))
-				return
-			} else {
-				slog.Error("failed to generate user documents", slog.String("error", fmt.Sprintf("%+v", err)))
-				os.Exit(1)
-			}
-		}
-		slog.Info("finished generating user documents successfully.")
-	},
+	return generateUserCmd
 }
 
-var generateSubmissionCmd = &cobra.Command{
-	Use:   "submission",
-	Short: "Generate submission document JSON files",
-	Long:  "Generate submission document JSON files",
-	Run: func(cmd *cobra.Command, args []string) {
-		saveDir, err := GetSaveDir(cmd, "submission")
-		if err != nil {
-			slog.Error("failed to get save dir", slog.String("error", fmt.Sprintf("%+v", err)))
-			os.Exit(1)
-		}
-		db := GetDB()
-		concurrent := GetInt(cmd, "concurrent")
-		chunkSize := GetInt(cmd, "chunk-size")
+func newGenerateSubmissionCmd(args []string, config *RootConfig, runFunc func(cmd *cobra.Command, args []string)) *cobra.Command {
+	generateSubmissionCmd := &cobra.Command{
+		Use:   "submission",
+		Short: "Generate submission document JSON files",
+		Long:  "Generate submission document JSON files",
+		PreRun: func(cmd *cobra.Command, args []string) {
+			viper.BindPFlag("generate.submission.save_dir", cmd.Flags().Lookup("save-dir"))
+			viper.BindPFlag("generate.submission.chunk_size", cmd.Flags().Lookup("chunk-size"))
+			viper.BindPFlag("generate.submission.concurrent", cmd.Flags().Lookup("concurrent"))
+			viper.BindPFlag("generate.submission.interval", cmd.Flags().Lookup("interval"))
+			viper.BindPFlag("generate.submission.all", cmd.Flags().Lookup("all"))
 
-		ctx, cancel := context.WithCancel(context.Background())
-		eg, ctx := errgroup.WithContext(ctx)
+			MustLoadConfigFromFlags(cmd.Flags(), config)
+		},
+		Run: func(cmd *cobra.Command, args []string) {
+			db := repository.MustGetDB(config.DataBaseURL)
 
-		quit := make(chan os.Signal, 1)
-		signal.Notify(quit, os.Interrupt)
+			generator := generate.NewSubmissionGenerator(
+				generate.NewSubmissionRowReader(
+					db,
+					config.Generate.Submission.Interval,
+					config.Generate.Submission.All,
+				),
+				config.Generate.Submission.SaveDir,
+				config.Generate.Submission.ChunkSize,
+				config.Generate.Submission.Concurrent,
+			)
 
-		done := make(chan Msg, 1)
+			batch.RunBatch(generator)
+		},
+	}
+	generateSubmissionCmd.SetArgs(args)
+	if runFunc != nil {
+		generateSubmissionCmd.Run = runFunc
+	}
+	generateSubmissionCmd.Flags().String("save-dir", "", "Directory path at which generated documents will be saved.")
+	generateSubmissionCmd.Flags().Int("chunk-size", 1000, "Number of documents to write in 1 file.")
+	generateSubmissionCmd.Flags().Int("concurrent", 10, "Concurrent number of document generation processes.")
+	generateSubmissionCmd.Flags().Int("interval", 10, "The latest N days' submissions shall be considered.")
+	generateSubmissionCmd.Flags().BoolP("all", "a", false, "When false, crawl only the submissions which doesn't have been crawled (in the interval).")
 
-		eg.Go(func() error {
-			if err := submission.Generate(ctx, db, saveDir, chunkSize, concurrent, time.Time{}, 90); err != nil {
-				return failure.Wrap(err)
-			}
-			done <- Msg{}
-			return nil
-		})
-
-		eg.Go(func() error {
-			select {
-			case <-quit:
-				defer cancel()
-				return failure.New(acs.Interrupt, failure.Message("generating problem documents has been interrupted"))
-			case <-ctx.Done():
-				return nil
-			case <-done:
-				return nil
-			}
-		})
-
-		if err := eg.Wait(); err != nil {
-			if failure.Is(err, acs.Interrupt) {
-				slog.Error("generating submission documents has been interrupted", slog.String("error", fmt.Sprintf("%+v", err)))
-				return
-			} else {
-				slog.Error("failed to generate submission documents", slog.String("error", fmt.Sprintf("%+v", err)))
-				os.Exit(1)
-			}
-		}
-		slog.Info("finished generating submission documents successfully.")
-	},
-}
-
-var generateRecommendCmd = &cobra.Command{
-	Use:   "recommend",
-	Short: "Generate recommend document JSON files",
-	Long:  "Generate recommend document JSON files",
-	Run: func(cmd *cobra.Command, args []string) {
-		saveDir, err := GetSaveDir(cmd, "recommend")
-		if err != nil {
-			slog.Error("failed to get save dir", slog.String("error", fmt.Sprintf("%+v", err)))
-			os.Exit(1)
-		}
-		db := GetDB()
-		concurrent := GetInt(cmd, "concurrent")
-		chunkSize := GetInt(cmd, "chunk-size")
-
-		ctx, cancel := context.WithCancel(context.Background())
-		eg, ctx := errgroup.WithContext(ctx)
-
-		quit := make(chan os.Signal, 1)
-		signal.Notify(quit, os.Interrupt)
-
-		done := make(chan Msg, 1)
-
-		eg.Go(func() error {
-			if err := recommend.Generate(ctx, db, saveDir, chunkSize, concurrent); err != nil {
-				return failure.Wrap(err)
-			}
-			done <- Msg{}
-			return nil
-		})
-
-		eg.Go(func() error {
-			select {
-			case <-quit:
-				defer cancel()
-				return failure.New(acs.Interrupt, failure.Message("generating recommend documents has been interrupted"))
-			case <-ctx.Done():
-				return nil
-			case <-done:
-				return nil
-			}
-		})
-
-		if err := eg.Wait(); err != nil {
-			if failure.Is(err, acs.Interrupt) {
-				slog.Error("generating recommend documents has been interrupted", slog.String("error", fmt.Sprintf("%+v", err)))
-				return
-			} else {
-				slog.Error("failed to generate recommend documents", slog.String("error", fmt.Sprintf("%+v", err)))
-				os.Exit(1)
-			}
-		}
-		slog.Info("finished generating recommend documents successfully.")
-	},
-}
-
-func init() {
-	generateCmd.PersistentFlags().String("save-dir", "", "Directory path at which generated documents will be saved")
-	generateCmd.PersistentFlags().Int("concurrent", 10, "Concurrent number of document generation processes")
-	generateCmd.PersistentFlags().Int("chunk-size", 1000, "Number of documents to write in 1 file.")
-	generateCmd.AddCommand(generateProblemCmd)
-	generateCmd.AddCommand(generateUserCmd)
-	generateCmd.AddCommand(generateSubmissionCmd)
-	generateCmd.AddCommand(generateRecommendCmd)
-
-	rootCmd.AddCommand(generateCmd)
+	return generateSubmissionCmd
 }

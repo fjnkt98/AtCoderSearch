@@ -1,228 +1,165 @@
 package cmd
 
 import (
-	"context"
-	"fjnkt98/atcodersearch/acs"
-	"fjnkt98/atcodersearch/atcoder"
-	"fjnkt98/atcodersearch/problem"
-	"fjnkt98/atcodersearch/submission"
-	"fjnkt98/atcodersearch/user"
-	"fmt"
-	"os"
-	"os/signal"
-	"strings"
+	"fjnkt98/atcodersearch/batch"
+	"fjnkt98/atcodersearch/batch/crawl"
+	"fjnkt98/atcodersearch/pkg/atcoder"
+	"fjnkt98/atcodersearch/repository"
 
-	"github.com/morikuni/failure"
+	"log/slog"
+
 	"github.com/spf13/cobra"
-	"golang.org/x/exp/slog"
-	"golang.org/x/sync/errgroup"
+	"github.com/spf13/viper"
 )
 
-var crawlCmd = &cobra.Command{
-	Use:   "crawl",
-	Short: "Crawl and save",
-	Long:  "Crawl and save",
+func newCrawlCmd(args []string, sub ...*cobra.Command) *cobra.Command {
+	crawlCmd := &cobra.Command{
+		Use:   "crawl",
+		Short: "Crawl and save",
+		Long:  "Crawl and save",
+	}
+
+	crawlCmd.SetArgs(args)
+	crawlCmd.AddCommand(sub...)
+
+	return crawlCmd
 }
 
-var crawlProblemCmd = &cobra.Command{
-	Use:   "problem",
-	Short: "Crawl and save problem information",
-	Long:  "Crawl and save problem information",
-	Run: func(cmd *cobra.Command, args []string) {
-		db := GetDB()
+func newCrawlProblemCmd(args []string, config *RootConfig, runFunc func(cmd *cobra.Command, args []string)) *cobra.Command {
+	crawlProblemCmd := &cobra.Command{
+		Use:   "problem",
+		Short: "Crawl and save problem information",
+		Long:  "Crawl and save problem information",
+		PreRun: func(cmd *cobra.Command, args []string) {
+			viper.BindPFlag("crawl.problem.duration", cmd.Flags().Lookup("duration"))
+			viper.BindPFlag("crawl.problem.all", cmd.Flags().Lookup("all"))
 
-		ctx, cancel := context.WithCancel(context.Background())
-		eg, ctx := errgroup.WithContext(ctx)
+			MustLoadConfigFromFlags(cmd.Flags(), config)
+		},
+		Run: func(cmd *cobra.Command, args []string) {
+			db := repository.MustGetDB(config.DataBaseURL)
 
-		quit := make(chan os.Signal, 1)
-		signal.Notify(quit, os.Interrupt)
-
-		done := make(chan Msg, 1)
-
-		eg.Go(func() error {
-			contestCrawler := problem.NewContestCrawler(db)
-			if err := contestCrawler.Run(ctx); err != nil {
-				return failure.Wrap(err)
-			}
-
-			difficultyCrawler := problem.NewDifficultyCrawler(db)
-			if err := difficultyCrawler.Run(ctx); err != nil {
-				return failure.Wrap(err)
-			}
-
-			all := GetBool(cmd, "all")
-			duration := GetInt(cmd, "duration")
-
-			problemCrawler := problem.NewProblemCrawler(db)
-			if err := problemCrawler.Run(ctx, all, duration); err != nil {
-				return failure.Wrap(err)
-			}
-
-			done <- Msg{}
-
-			return nil
-		})
-
-		eg.Go(func() error {
-			select {
-			case <-quit:
-				defer cancel()
-				return failure.New(acs.Interrupt, failure.Message("problem crawling has been interrupted"))
-			case <-ctx.Done():
-				return nil
-			case <-done:
-				return nil
-			}
-		})
-
-		if err := eg.Wait(); err != nil {
-			if failure.Is(err, acs.Interrupt) {
-				slog.Error("problem crawling has been interrupted", slog.String("error", fmt.Sprintf("%+v", err)))
-				return
-			} else {
-				slog.Error("failed to crawl problems", slog.String("error", fmt.Sprintf("%+v", err)))
-				os.Exit(1)
-			}
-		}
-		slog.Info("finished crawl problems successfully.")
-	},
-}
-
-var crawlUserCmd = &cobra.Command{
-	Use:   "user",
-	Short: "Crawl and save user information",
-	Long:  "Crawl and save user information",
-	Run: func(cmd *cobra.Command, args []string) {
-		db := GetDB()
-
-		ctx, cancel := context.WithCancel(context.Background())
-		eg, ctx := errgroup.WithContext(ctx)
-
-		quit := make(chan os.Signal, 1)
-		signal.Notify(quit, os.Interrupt)
-
-		done := make(chan Msg, 1)
-
-		eg.Go(func() error {
-			crawler := user.NewUserCrawler(db)
-			duration := GetInt(cmd, "duration")
-
-			if err := crawler.Run(ctx, duration); err != nil {
-				return failure.Wrap(err)
-			}
-
-			return nil
-		})
-
-		eg.Go(func() error {
-			select {
-			case <-quit:
-				defer cancel()
-				return failure.New(acs.Interrupt, failure.Message("problem crawling has been interrupted"))
-			case <-ctx.Done():
-				return nil
-			case <-done:
-				return nil
-			}
-		})
-
-		if err := eg.Wait(); err != nil {
-			if failure.Is(err, acs.Interrupt) {
-				slog.Error("user crawling has been interrupted", slog.String("error", fmt.Sprintf("%+v", err)))
-				return
-			} else {
-				slog.Error("failed to crawl users", slog.String("error", fmt.Sprintf("%+v", err)))
-				os.Exit(1)
-			}
-		}
-		slog.Info("finished crawl problems successfully.")
-	},
-}
-
-var crawlSubmissionCmd = &cobra.Command{
-	Use:   "submission",
-	Short: "Crawl and save submissions",
-	Long:  "Crawl and save submissions",
-	Run: func(cmd *cobra.Command, args []string) {
-		db := GetDB()
-
-		retry := GetInt(cmd, "retry")
-		if retry < 0 {
-			slog.Error("`retry` must be greater than or equals to 0")
-			os.Exit(1)
-		}
-		var targets []string
-		if target := GetString(cmd, "target"); target == "" {
-			targets = make([]string, 0)
-		} else {
-			targets = strings.Split(target, ",")
-		}
-
-		ctx, cancel := context.WithCancel(context.Background())
-		eg, ctx := errgroup.WithContext(ctx)
-
-		quit := make(chan os.Signal, 1)
-		signal.Notify(quit, os.Interrupt)
-
-		done := make(chan Msg, 1)
-
-		username := os.Getenv("ATCODER_USER_NAME")
-		password := os.Getenv("ATCODER_USER_PASSWORD")
-
-		eg.Go(func() error {
-			slog.Info("Login to AtCoder...")
-			client, err := atcoder.NewAtCoderClient(ctx, username, password)
+			atcoderClient, err := atcoder.NewAtCoderClient()
 			if err != nil {
-				return failure.Wrap(err)
+				slog.Error("failed to instantiate atcoder client", slog.Any("error", err))
+				panic("failed to instantiate atcoder client")
 			}
-			slog.Info("Successfully logged in to AtCoder.")
+			atcoderProblemsClient := atcoder.NewAtCoderProblemsClient()
 
-			crawler := submission.NewCrawler(client, db)
-			duration := GetInt(cmd, "duration")
+			contestCrawler := crawl.NewContestCrawler(
+				atcoderProblemsClient,
+				repository.NewContestRepository(db),
+			)
+			batch.RunBatch(contestCrawler)
 
-			slog.Info("Start to crawl submissions")
-			if err := crawler.Run(ctx, targets, duration, retry); err != nil {
-				return failure.Wrap(err)
-			}
+			difficultyCrawler := crawl.NewDifficultyCrawler(
+				atcoderProblemsClient,
+				repository.NewDifficultyRepository(db),
+			)
+			batch.RunBatch(difficultyCrawler)
 
-			done <- Msg{}
+			problemCrawler := crawl.NewProblemCrawler(
+				atcoder.NewAtCoderProblemsClient(),
+				atcoderClient,
+				repository.NewProblemRepository(db),
+				config.Crawl.Problem.Duration,
+				config.Crawl.Problem.All,
+			)
+			batch.RunBatch(problemCrawler)
+		},
+	}
 
-			return nil
-		})
+	crawlProblemCmd.SetArgs(args)
+	if runFunc != nil {
+		crawlProblemCmd.Run = runFunc
+	}
+	crawlProblemCmd.Flags().IntP("duration", "d", 1000, "Duration[ms] in crawling problem.")
+	crawlProblemCmd.Flags().BoolP("all", "a", false, "When true, crawl all problems. Otherwise, crawl the problems which doesn't have been crawled.")
 
-		eg.Go(func() error {
-			select {
-			case <-quit:
-				defer cancel()
-				return failure.New(acs.Interrupt, failure.Message("problem crawling has been interrupted"))
-			case <-ctx.Done():
-				return nil
-			case <-done:
-				return nil
-			}
-		})
-
-		if err := eg.Wait(); err != nil {
-			if failure.Is(err, acs.Interrupt) {
-				slog.Error("submissions crawling has been interrupted", slog.String("error", fmt.Sprintf("%+v", err)))
-				return
-			} else {
-				slog.Error("failed to crawl submissions", slog.String("error", fmt.Sprintf("%+v", err)))
-				os.Exit(1)
-			}
-		}
-		slog.Info("finished crawl submissions successfully.")
-	},
+	return crawlProblemCmd
 }
 
-func init() {
-	crawlProblemCmd.Flags().BoolP("all", "a", false, "When true, crawl all problems")
-	crawlSubmissionCmd.Flags().IntP("retry", "r", 0, "Limit of the number of retry when an error occurred in crawling submissions.")
-	crawlSubmissionCmd.Flags().String("target", "", "Target category to crawl. Multiple categories can be specified by separating tem with comma. If not specified, all categories will be crawled.")
-	crawlCmd.PersistentFlags().Int("duration", 1000, "Duration[ms] in crawling problem")
+func newCrawlUserCmd(args []string, config *RootConfig, runFunc func(cmd *cobra.Command, args []string)) *cobra.Command {
+	crawlUserCmd := &cobra.Command{
+		Use:   "user",
+		Short: "Crawl and save user information",
+		Long:  "Crawl and save user information",
+		PreRun: func(cmd *cobra.Command, args []string) {
+			viper.BindPFlag("crawl.user.duration", cmd.Flags().Lookup("duration"))
 
-	crawlCmd.AddCommand(crawlProblemCmd)
-	crawlCmd.AddCommand(crawlUserCmd)
-	crawlCmd.AddCommand(crawlSubmissionCmd)
-	rootCmd.AddCommand(crawlCmd)
+			MustLoadConfigFromFlags(cmd.Flags(), config)
+		},
+		Run: func(cmd *cobra.Command, args []string) {
+			db := repository.MustGetDB(config.DataBaseURL)
+
+			client, err := atcoder.NewAtCoderClient()
+			if err != nil {
+				slog.Error("failed to instantiate atcoder client", slog.Any("error", err))
+				panic("failed to instantiate atcoder client")
+			}
+
+			crawler := crawl.NewUserCrawler(
+				client,
+				repository.NewUserRepository(db),
+				config.Crawl.User.Duration,
+			)
+
+			batch.RunBatch(crawler)
+		},
+	}
+
+	crawlUserCmd.SetArgs(args)
+	if runFunc != nil {
+		crawlUserCmd.Run = runFunc
+	}
+	crawlUserCmd.Flags().IntP("duration", "d", 1000, "Duration[ms] in crawling user.")
+
+	return crawlUserCmd
+}
+
+func newCrawlSubmissionCmd(args []string, config *RootConfig, runFunc func(cmd *cobra.Command, args []string)) *cobra.Command {
+	crawlSubmissionCmd := &cobra.Command{
+		Use:   "submission",
+		Short: "Crawl and save submissions",
+		Long:  "Crawl and save submissions",
+		PreRun: func(cmd *cobra.Command, args []string) {
+			viper.BindPFlag("crawl.submission.duration", cmd.Flags().Lookup("duration"))
+			viper.BindPFlag("crawl.submission.retry", cmd.Flags().Lookup("retry"))
+			viper.BindPFlag("crawl.submission.targets", cmd.Flags().Lookup("target"))
+
+			MustLoadConfigFromFlags(cmd.Flags(), config)
+		},
+		Run: func(cmd *cobra.Command, args []string) {
+			db := repository.MustGetDB(config.DataBaseURL)
+
+			client, err := atcoder.NewAtCoderClient()
+			if err != nil {
+				slog.Error("failed to instantiate atcoder client", slog.Any("error", err))
+				panic("failed to instantiate atcoder client")
+			}
+
+			crawler := crawl.NewSubmissionCrawler(
+				client,
+				repository.NewSubmissionRepository(db),
+				repository.NewContestRepository(db),
+				repository.NewSubmissionCrawlHistoryRepository(db),
+				config.Crawl.Submission.Duration,
+				config.Crawl.Submission.Retry,
+				config.Crawl.Submission.Targets,
+				config.AtCoderUserName,
+				config.AtCoderPassword,
+			)
+
+			batch.RunBatch(crawler)
+		},
+	}
+	crawlSubmissionCmd.SetArgs(args)
+	if runFunc != nil {
+		crawlSubmissionCmd.Run = runFunc
+	}
+	crawlSubmissionCmd.Flags().IntP("duration", "d", 1000, "Duration[ms] in crawling user.")
+	crawlSubmissionCmd.Flags().IntP("retry", "r", 0, "Limit of the number of retry when an error occurred in crawling submissions.")
+	crawlSubmissionCmd.Flags().StringSlice("target", nil, "Target category to crawl. Multiple categories can be specified by separating tem with comma. If not specified, all categories will be crawled.")
+
+	return crawlSubmissionCmd
 }

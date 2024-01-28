@@ -4,417 +4,309 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"context"
-	"fjnkt98/atcodersearch/acs"
-	"fjnkt98/atcodersearch/list"
-	"fjnkt98/atcodersearch/problem"
-	"fjnkt98/atcodersearch/recommend"
-	"fjnkt98/atcodersearch/solr"
-	"fjnkt98/atcodersearch/submission"
-	"fjnkt98/atcodersearch/user"
-	"fmt"
-	"os"
-	"os/signal"
+	"fjnkt98/atcodersearch/batch"
+	"fjnkt98/atcodersearch/batch/crawl"
+	"fjnkt98/atcodersearch/batch/generate"
+	"fjnkt98/atcodersearch/batch/update"
+	"fjnkt98/atcodersearch/batch/upload"
+	"fjnkt98/atcodersearch/pkg/atcoder"
+	"fjnkt98/atcodersearch/pkg/solr"
+	"fjnkt98/atcodersearch/repository"
 
-	"github.com/morikuni/failure"
+	"log/slog"
+
 	"github.com/spf13/cobra"
-	"golang.org/x/exp/slog"
-	"golang.org/x/sync/errgroup"
+	"github.com/spf13/viper"
 )
 
-// updateCmd represents the update command
-var updateCmd = &cobra.Command{
-	Use:   "update",
-	Short: "update index",
-	Long:  "update index",
+func newUpdateCmd(args []string, sub ...*cobra.Command) *cobra.Command {
+	updateCmd := &cobra.Command{
+		Use:   "update",
+		Short: "update index",
+		Long:  "update index",
+	}
+
+	updateCmd.SetArgs(args)
+	updateCmd.AddCommand(sub...)
+
+	return updateCmd
 }
 
-var updateProblemCmd = &cobra.Command{
-	Use:   "problem",
-	Short: "update problem index",
-	Long:  "update problem index",
-	Run: func(cmd *cobra.Command, args []string) {
-		cfg := problem.UpdateConfig{}
-		var err error
+func newUpdateProblemCmd(args []string, config *RootConfig, runFunc func(cmd *cobra.Command, args []string)) *cobra.Command {
+	updateProblemCmd := &cobra.Command{
+		Use:   "problem",
+		Short: "update problem index",
+		Long:  "update problem index",
+		PreRun: func(cmd *cobra.Command, args []string) {
+			viper.BindPFlag("crawl.problem.duration", cmd.Flags().Lookup("duration"))
+			viper.BindPFlag("crawl.problem.all", cmd.Flags().Lookup("all"))
+			viper.BindPFlag("generate.problem.save_dir", cmd.Flags().Lookup("save-dir"))
+			viper.BindPFlag("upload.problem.save_dir", cmd.Flags().Lookup("save-dir"))
+			viper.BindPFlag("generate.problem.chunk_size", cmd.Flags().Lookup("chunk-size"))
+			viper.BindPFlag("generate.problem.concurrent", cmd.Flags().Lookup("generate-concurrent"))
+			viper.BindPFlag("upload.problem.optimize", cmd.Flags().Lookup("optimize"))
+			viper.BindPFlag("upload.problem.truncate", cmd.Flags().Lookup("truncate"))
+			viper.BindPFlag("upload.problem.concurrent", cmd.Flags().Lookup("upload-concurrent"))
+			viper.BindPFlag("update.problem.skip_fetch", cmd.Flags().Lookup("skip-fetch"))
 
-		if cfg.SaveDir, err = GetSaveDir(cmd, "problem"); err != nil {
-			slog.Error("failed to get save dir", slog.String("error", fmt.Sprintf("%+v", err)))
-			os.Exit(1)
-		}
-		cfg.SkipFetch = GetBool(cmd, "skip-fetch")
-		cfg.Optimize = GetBool(cmd, "optimize")
-		cfg.ChunkSize = GetInt(cmd, "chunk-size")
-		cfg.GenerateConcurrent = GetInt(cmd, "generate-concurrent")
-		cfg.PostConcurrent = GetInt(cmd, "post-concurrent")
-		cfg.Duration = GetInt(cmd, "duration")
-		cfg.All = GetBool(cmd, "all")
-
-		solrURL := os.Getenv("SOLR_HOST")
-		if solrURL == "" {
-			slog.Error("environment variable `SOLR_HOST` must be set.")
-			os.Exit(1)
-		}
-		core, err := solr.NewSolrCore("problem", solrURL)
-		if err != nil {
-			slog.Error("failed to create `problem` core", slog.String("error", fmt.Sprintf("%+v", err)))
-			os.Exit(1)
-		}
-
-		if doMigrate := GetBool(cmd, "migrate"); doMigrate {
-			DoMigrate()
-		}
-
-		db := GetDB()
-		ctx, cancel := context.WithCancel(context.Background())
-		eg, ctx := errgroup.WithContext(ctx)
-
-		quit := make(chan os.Signal, 1)
-		signal.Notify(quit, os.Interrupt)
-
-		done := make(chan Msg, 1)
-
-		eg.Go(func() error {
-			if err := problem.Update(ctx, cfg, db, core); err != nil {
-				return failure.Wrap(err)
+			MustLoadConfigFromFlags(cmd.Flags(), config)
+		},
+		Run: func(cmd *cobra.Command, args []string) {
+			db := repository.MustGetDB(config.DataBaseURL)
+			atcoderClient, err := atcoder.NewAtCoderClient()
+			if err != nil {
+				slog.Error("failed to instantiate atcoder client", slog.Any("error", err))
+				panic("failed to instantiate atcoder client")
 			}
-			done <- Msg{}
-			return nil
-		})
+			atcoderProblemsClient := atcoder.NewAtCoderProblemsClient()
 
-		eg.Go(func() error {
-			select {
-			case <-quit:
-				defer cancel()
-				return failure.New(acs.Interrupt, failure.Message("updating problem index has been canceled"))
-			case <-ctx.Done():
-				return nil
-			case <-done:
-				return nil
+			contestCrawler := crawl.NewContestCrawler(
+				atcoderProblemsClient,
+				repository.NewContestRepository(db),
+			)
+			difficultyCrawler := crawl.NewDifficultyCrawler(
+				atcoderProblemsClient,
+				repository.NewDifficultyRepository(db),
+			)
+			problemCrawler := crawl.NewProblemCrawler(
+				atcoder.NewAtCoderProblemsClient(),
+				atcoderClient,
+				repository.NewProblemRepository(db),
+				config.Crawl.Problem.Duration,
+				config.Crawl.Problem.All,
+			)
+			generator := generate.NewProblemGenerator(
+				generate.NewProblemRowReader(db),
+				config.Generate.Problem.SaveDir,
+				config.Generate.Problem.ChunkSize,
+				config.Generate.Problem.Concurrent,
+			)
+
+			core, err := solr.NewSolrCore(config.SolrHost, config.ProblemCoreName)
+			if err != nil {
+				slog.Error("failed to create core", slog.Any("error", err))
+				panic("failed to create core")
 			}
-		})
+			uploader := upload.NewDocumentUploader(
+				core,
+				config.Upload.Problem.SaveDir,
+				config.Upload.Problem.Concurrent,
+				config.Upload.Problem.Optimize,
+				config.Upload.Problem.Truncate,
+			)
 
-		if err := eg.Wait(); err != nil {
-			if failure.Is(err, acs.Interrupt) {
-				slog.Error("updating problem index has been canceled", slog.String("error", fmt.Sprintf("%+v", err)))
-				return
-			} else {
-				slog.Error("failed to update problem index", slog.String("error", fmt.Sprintf("%+v", err)))
-				os.Exit(1)
-			}
-		}
+			updater := update.NewProblemUpdater(
+				problemCrawler,
+				contestCrawler,
+				difficultyCrawler,
+				generator,
+				uploader,
+				repository.NewUpdateHistoryRepository(db),
+				config.Update.Problem.SkipFetch,
+			)
 
-		slog.Info("updating problem index successfully finished.")
-	},
+			batch.RunBatch(updater)
+		},
+	}
+
+	updateProblemCmd.SetArgs(args)
+	if runFunc != nil {
+		updateProblemCmd.Run = runFunc
+	}
+	updateProblemCmd.Flags().IntP("duration", "d", 1000, "Duration[ms] in crawling problem.")
+	updateProblemCmd.Flags().BoolP("all", "a", false, "When true, crawl all problems. Otherwise, crawl the problems which doesn't have been crawled.")
+	updateProblemCmd.Flags().String("save-dir", "", "Directory path at which generated documents will be saved.")
+	updateProblemCmd.Flags().Int("chunk-size", 1000, "Number of documents to write in 1 file.")
+	updateProblemCmd.Flags().Int("generate-concurrent", 10, "Concurrent number of document generation processes.")
+	updateProblemCmd.Flags().BoolP("optimize", "o", false, "When true, send optimize request to Solr")
+	updateProblemCmd.Flags().BoolP("truncate", "t", false, "When true, truncate index before upload")
+	updateProblemCmd.Flags().Int("upload-concurrent", 3, "Concurrent number of document upload processes")
+	updateProblemCmd.Flags().Bool("skip-fetch", false, "When true, skip to crawl problems.")
+
+	return updateProblemCmd
 }
 
-var updateUserCmd = &cobra.Command{
-	Use:   "user",
-	Short: "update user index",
-	Long:  "update user index",
-	Run: func(cmd *cobra.Command, args []string) {
+func newUpdateUserCmd(args []string, config *RootConfig, runFunc func(cmd *cobra.Command, args []string)) *cobra.Command {
+	updateUserCmd := &cobra.Command{
+		Use:   "user",
+		Short: "update user index",
+		Long:  "update user index",
+		PreRun: func(cmd *cobra.Command, args []string) {
+			viper.BindPFlag("crawl.user.duration", cmd.Flags().Lookup("duration"))
+			viper.BindPFlag("generate.user.save_dir", cmd.Flags().Lookup("save-dir"))
+			viper.BindPFlag("upload.user.save_dir", cmd.Flags().Lookup("save-dir"))
+			viper.BindPFlag("generate.user.chunk_size", cmd.Flags().Lookup("chunk-size"))
+			viper.BindPFlag("generate.user.concurrent", cmd.Flags().Lookup("generate-concurrent"))
+			viper.BindPFlag("upload.user.optimize", cmd.Flags().Lookup("optimize"))
+			viper.BindPFlag("upload.user.truncate", cmd.Flags().Lookup("truncate"))
+			viper.BindPFlag("upload.user.concurrent", cmd.Flags().Lookup("upload-concurrent"))
+			viper.BindPFlag("update.user.skip_fetch", cmd.Flags().Lookup("skip-fetch"))
 
-		cfg := user.UpdateConfig{}
-		var err error
+			MustLoadConfigFromFlags(cmd.Flags(), config)
+		},
+		Run: func(cmd *cobra.Command, args []string) {
+			db := repository.MustGetDB(config.DataBaseURL)
 
-		if cfg.SaveDir, err = GetSaveDir(cmd, "user"); err != nil {
-			slog.Error("failed to get save dir", slog.String("error", fmt.Sprintf("%+v", err)))
-			os.Exit(1)
-		}
-
-		cfg.SkipFetch = GetBool(cmd, "skip-fetch")
-		cfg.Optimize = GetBool(cmd, "optimize")
-		cfg.ChunkSize = GetInt(cmd, "chunk-size")
-		cfg.GenerateConcurrent = GetInt(cmd, "generate-concurrent")
-		cfg.PostConcurrent = GetInt(cmd, "post-concurrent")
-		cfg.Duration = GetInt(cmd, "duration")
-
-		solrURL := os.Getenv("SOLR_HOST")
-		if solrURL == "" {
-			slog.Error("environment variable `SOLR_HOST` must be set.")
-			os.Exit(1)
-		}
-		core, err := solr.NewSolrCore("user", solrURL)
-		if err != nil {
-			slog.Error("failed to create `user` core", slog.String("error", fmt.Sprintf("%+v", err)))
-			os.Exit(1)
-		}
-
-		if doMigrate := GetBool(cmd, "migrate"); doMigrate {
-			DoMigrate()
-		}
-
-		db := GetDB()
-		ctx, cancel := context.WithCancel(context.Background())
-		eg, ctx := errgroup.WithContext(ctx)
-
-		quit := make(chan os.Signal, 1)
-		signal.Notify(quit, os.Interrupt)
-
-		done := make(chan Msg, 1)
-
-		eg.Go(func() error {
-			if err := user.Update(ctx, cfg, db, core); err != nil {
-				return failure.Wrap(err)
+			client, err := atcoder.NewAtCoderClient()
+			if err != nil {
+				slog.Error("failed to instantiate atcoder client", slog.Any("error", err))
+				panic("failed to instantiate atcoder client")
 			}
-			done <- Msg{}
-			return nil
-		})
+			crawler := crawl.NewUserCrawler(
+				client,
+				repository.NewUserRepository(db),
+				config.Crawl.User.Duration,
+			)
 
-		eg.Go(func() error {
-			select {
-			case <-quit:
-				defer cancel()
-				return failure.New(acs.Interrupt, failure.Message("updating user index has been canceled"))
-			case <-ctx.Done():
-				return nil
-			case <-done:
-				return nil
+			generator := generate.NewUserGenerator(
+				generate.NewUserRowReader(db),
+				config.Generate.User.SaveDir,
+				config.Generate.User.ChunkSize,
+				config.Generate.User.Concurrent,
+			)
+
+			core, err := solr.NewSolrCore(config.SolrHost, config.UserCoreName)
+			if err != nil {
+				slog.Error("failed to create core", slog.Any("error", err))
+				panic("failed to create core")
 			}
-		})
 
-		if err := eg.Wait(); err != nil {
-			if failure.Is(err, acs.Interrupt) {
-				slog.Error("updating user index has been canceled", slog.String("error", fmt.Sprintf("%+v", err)))
-				return
-			} else {
-				slog.Error("failed to update user index", slog.String("error", fmt.Sprintf("%+v", err)))
-				os.Exit(1)
-			}
-		}
+			uploader := upload.NewDocumentUploader(
+				core,
+				config.Upload.User.SaveDir,
+				config.Upload.User.Concurrent,
+				config.Upload.User.Optimize,
+				config.Upload.User.Truncate,
+			)
 
-		slog.Info("updating user index successfully finished.")
-	},
+			updater := update.NewUserUpdater(
+				crawler,
+				generator,
+				uploader,
+				repository.NewUpdateHistoryRepository(db),
+				config.Update.User.SkipFetch,
+			)
+
+			batch.RunBatch(updater)
+		},
+	}
+
+	updateUserCmd.SetArgs(args)
+	if runFunc != nil {
+		updateUserCmd.Run = runFunc
+	}
+	updateUserCmd.Flags().IntP("duration", "d", 1000, "Duration[ms] in crawling user.")
+	updateUserCmd.Flags().String("save-dir", "", "Directory path at which generated documents will be saved.")
+	updateUserCmd.Flags().Int("chunk-size", 1000, "Number of documents to write in 1 file.")
+	updateUserCmd.Flags().Int("generate-concurrent", 10, "Concurrent number of document generation processes.")
+	updateUserCmd.Flags().BoolP("optimize", "o", false, "When true, send optimize request to Solr")
+	updateUserCmd.Flags().BoolP("truncate", "t", false, "When true, truncate index before upload")
+	updateUserCmd.Flags().Int("upload-concurrent", 3, "Concurrent number of document upload processes")
+	updateUserCmd.Flags().Bool("skip-fetch", false, "When true, skip to crawl users.")
+
+	return updateUserCmd
 }
 
-var updateSubmissionCmd = &cobra.Command{
-	Use:   "submission",
-	Short: "update submission index",
-	Long:  "update submission index",
-	Run: func(cmd *cobra.Command, args []string) {
-		cfg := submission.UpdateConfig{}
-		var err error
+func newUpdateSubmissionCmd(args []string, config *RootConfig, runFunc func(cmd *cobra.Command, args []string)) *cobra.Command {
+	updateSubmissionCmd := &cobra.Command{
+		Use:   "submission",
+		Short: "update submission index",
+		Long:  "update submission index",
+		PreRun: func(cmd *cobra.Command, args []string) {
+			viper.BindPFlag("crawl.submission.duration", cmd.Flags().Lookup("duration"))
+			viper.BindPFlag("crawl.submission.retry", cmd.Flags().Lookup("retry"))
+			viper.BindPFlag("crawl.submission.targets", cmd.Flags().Lookup("target"))
+			viper.BindPFlag("generate.submission.save_dir", cmd.Flags().Lookup("save-dir"))
+			viper.BindPFlag("upload.submission.save_dir", cmd.Flags().Lookup("save-dir"))
+			viper.BindPFlag("generate.submission.chunk_size", cmd.Flags().Lookup("chunk-size"))
+			viper.BindPFlag("generate.submission.concurrent", cmd.Flags().Lookup("generate-concurrent"))
+			viper.BindPFlag("generate.submission.interval", cmd.Flags().Lookup("interval"))
+			viper.BindPFlag("generate.submission.all", cmd.Flags().Lookup("all"))
+			viper.BindPFlag("upload.submission.optimize", cmd.Flags().Lookup("optimize"))
+			viper.BindPFlag("upload.submission.truncate", cmd.Flags().Lookup("truncate"))
+			viper.BindPFlag("upload.submission.concurrent", cmd.Flags().Lookup("upload-concurrent"))
 
-		if cfg.SaveDir, err = GetSaveDir(cmd, "submission"); err != nil {
-			slog.Error("failed to get save dir", slog.String("error", fmt.Sprintf("%+v", err)))
-			os.Exit(1)
-		}
+			MustLoadConfigFromFlags(cmd.Flags(), config)
+		},
+		Run: func(cmd *cobra.Command, args []string) {
+			db := repository.MustGetDB(config.DataBaseURL)
 
-		cfg.Optimize = GetBool(cmd, "optimize")
-		cfg.ChunkSize = GetInt(cmd, "chunk-size")
-		cfg.GenerateConcurrent = GetInt(cmd, "generate-concurrent")
-		cfg.PostConcurrent = GetInt(cmd, "post-concurrent")
-		cfg.All = GetBool(cmd, "all")
-		cfg.Interval = GetInt(cmd, "interval")
+			generator := generate.NewSubmissionGenerator(
+				generate.NewSubmissionRowReader(
+					db,
+					config.Generate.Submission.Interval,
+					config.Generate.Submission.All,
+				),
+				config.Generate.Submission.SaveDir,
+				config.Generate.Submission.ChunkSize,
+				config.Generate.Submission.Concurrent,
+			)
 
-		solrURL := os.Getenv("SOLR_HOST")
-		if solrURL == "" {
-			slog.Error("environment variable `SOLR_HOST` must be set.")
-			os.Exit(1)
-		}
-		core, err := solr.NewSolrCore("submission", solrURL)
-		if err != nil {
-			slog.Error("failed to create `submission` core", slog.String("error", fmt.Sprintf("%+v", err)))
-			os.Exit(1)
-		}
-
-		if doMigrate := GetBool(cmd, "migrate"); doMigrate {
-			DoMigrate()
-		}
-
-		db := GetDB()
-		ctx, cancel := context.WithCancel(context.Background())
-		eg, ctx := errgroup.WithContext(ctx)
-
-		quit := make(chan os.Signal, 1)
-		signal.Notify(quit, os.Interrupt)
-
-		done := make(chan Msg, 1)
-
-		eg.Go(func() error {
-			if err := submission.Update(ctx, cfg, db, core); err != nil {
-				return failure.Wrap(err)
+			core, err := solr.NewSolrCore(config.SolrHost, config.SubmissionCoreName)
+			if err != nil {
+				slog.Error("failed to create core", slog.Any("error", err))
+				panic("failed to create core")
 			}
-			done <- Msg{}
-			return nil
-		})
+			uploader := upload.NewDocumentUploader(
+				core,
+				config.Upload.Submission.SaveDir,
+				config.Upload.Submission.Concurrent,
+				config.Upload.Submission.Optimize,
+				config.Upload.Submission.Truncate,
+			)
 
-		eg.Go(func() error {
-			select {
-			case <-quit:
-				defer cancel()
-				return failure.New(acs.Interrupt, failure.Message("updating submission index has been canceled"))
-			case <-ctx.Done():
-				return nil
-			case <-done:
-				return nil
-			}
-		})
+			updater := update.NewSubmissionUpdater(
+				generator,
+				uploader,
+				repository.NewUpdateHistoryRepository(db),
+			)
 
-		if err := eg.Wait(); err != nil {
-			if failure.Is(err, acs.Interrupt) {
-				slog.Error("updating submission index has been canceled", slog.String("error", fmt.Sprintf("%+v", err)))
-				return
-			} else {
-				slog.Error("failed to update submission index", slog.String("error", fmt.Sprintf("%+v", err)))
-				os.Exit(1)
-			}
-		}
+			batch.RunBatch(updater)
+		},
+	}
 
-		slog.Info("updating submission index successfully finished.")
-	},
+	updateSubmissionCmd.SetArgs(args)
+	if runFunc != nil {
+		updateSubmissionCmd.Run = runFunc
+	}
+	updateSubmissionCmd.Flags().IntP("duration", "d", 1000, "Duration[ms] in crawling user.")
+	updateSubmissionCmd.Flags().IntP("retry", "r", 0, "Limit of the number of retry when an error occurred in crawling submissions.")
+	updateSubmissionCmd.Flags().StringSlice("target", nil, "Target category to crawl. Multiple categories can be specified by separating tem with comma. If not specified, all categories will be crawled.")
+	updateSubmissionCmd.Flags().String("save-dir", "", "Directory path at which generated documents will be saved.")
+	updateSubmissionCmd.Flags().Int("chunk-size", 1000, "Number of documents to write in 1 file.")
+	updateSubmissionCmd.Flags().Int("generate-concurrent", 10, "Concurrent number of document generation processes.")
+	updateSubmissionCmd.Flags().Int("interval", 10, "The latest N days' submissions shall be considered.")
+	updateSubmissionCmd.Flags().BoolP("all", "a", false, "When false, crawl only the submissions which doesn't have been crawled (in the interval).")
+	updateSubmissionCmd.Flags().BoolP("optimize", "o", false, "When true, send optimize request to Solr")
+	updateSubmissionCmd.Flags().BoolP("truncate", "t", false, "When true, truncate index before upload")
+	updateSubmissionCmd.Flags().Int("upload-concurrent", 3, "Concurrent number of document upload processes")
+
+	return updateSubmissionCmd
 }
 
-var updateRecommendCmd = &cobra.Command{
-	Use:   "recommend",
-	Short: "update recommend index",
-	Long:  "update recommend index",
-	Run: func(cmd *cobra.Command, args []string) {
-		cfg := recommend.UpdateConfig{}
-		var err error
+func newUpdateLanguageCmd(args []string, config *RootConfig, runFunc func(cmd *cobra.Command, args []string)) *cobra.Command {
+	updateLanguageCmd := &cobra.Command{
+		Use:   "language",
+		Short: "update language index",
+		Long:  "update language index",
+		PreRun: func(cmd *cobra.Command, args []string) {
+			MustLoadConfigFromFlags(cmd.Flags(), config)
+		},
+		Run: func(cmd *cobra.Command, args []string) {
+			db := repository.MustGetDB(config.DataBaseURL)
 
-		if cfg.SaveDir, err = GetSaveDir(cmd, "recommend"); err != nil {
-			slog.Error("failed to get save dir", slog.String("error", fmt.Sprintf("%+v", err)))
-			os.Exit(1)
-		}
+			updater := update.NewLanguageUpdater(
+				repository.NewSubmissionRepository(db),
+				repository.NewLanguageRepository(db),
+			)
 
-		cfg.Optimize = GetBool(cmd, "optimize")
-		cfg.ChunkSize = GetInt(cmd, "chunk-size")
-		cfg.GenerateConcurrent = GetInt(cmd, "generate-concurrent")
-		cfg.PostConcurrent = GetInt(cmd, "post-concurrent")
+			batch.RunBatch(updater)
+		},
+	}
+	updateLanguageCmd.SetArgs(args)
+	if runFunc != nil {
+		updateLanguageCmd.Run = runFunc
+	}
 
-		solrURL := os.Getenv("SOLR_HOST")
-		if solrURL == "" {
-			slog.Error("environment variable `SOLR_HOST` must be set.")
-			os.Exit(1)
-		}
-		core, err := solr.NewSolrCore("recommend", solrURL)
-		if err != nil {
-			slog.Error("failed to create `recommend` core", slog.String("error", fmt.Sprintf("%+v", err)))
-			os.Exit(1)
-		}
-
-		if doMigrate := GetBool(cmd, "migrate"); doMigrate {
-			DoMigrate()
-		}
-
-		db := GetDB()
-		ctx, cancel := context.WithCancel(context.Background())
-		eg, ctx := errgroup.WithContext(ctx)
-
-		quit := make(chan os.Signal, 1)
-		signal.Notify(quit, os.Interrupt)
-
-		done := make(chan Msg, 1)
-
-		eg.Go(func() error {
-			if err := recommend.Update(ctx, cfg, db, core); err != nil {
-				return failure.Wrap(err)
-			}
-			done <- Msg{}
-			return nil
-		})
-
-		eg.Go(func() error {
-			select {
-			case <-quit:
-				defer cancel()
-				return failure.New(acs.Interrupt, failure.Message("updating recommend index has been canceled"))
-			case <-ctx.Done():
-				return nil
-			case <-done:
-				return nil
-			}
-		})
-
-		if err := eg.Wait(); err != nil {
-			if failure.Is(err, acs.Interrupt) {
-				slog.Error("updating recommend index has been canceled", slog.String("error", fmt.Sprintf("%+v", err)))
-				return
-			} else {
-				slog.Error("failed to update recommend index", slog.String("error", fmt.Sprintf("%+v", err)))
-				os.Exit(1)
-			}
-		}
-
-		slog.Info("updating recommend index successfully finished.")
-	},
-}
-
-var updateLanguageCmd = &cobra.Command{
-	Use:   "language",
-	Short: "update language index",
-	Long:  "update language index",
-	Run: func(cmd *cobra.Command, args []string) {
-		if doMigrate := GetBool(cmd, "migrate"); doMigrate {
-			DoMigrate()
-		}
-
-		db := GetDB()
-		ctx, cancel := context.WithCancel(context.Background())
-		eg, ctx := errgroup.WithContext(ctx)
-
-		quit := make(chan os.Signal, 1)
-		signal.Notify(quit, os.Interrupt)
-
-		done := make(chan Msg, 1)
-
-		eg.Go(func() error {
-			if err := list.Update(ctx, db); err != nil {
-				return failure.Wrap(err)
-			}
-			done <- Msg{}
-			return nil
-		})
-
-		eg.Go(func() error {
-			select {
-			case <-quit:
-				defer cancel()
-				return failure.New(acs.Interrupt, failure.Message("updating languages table has been canceled"))
-			case <-ctx.Done():
-				return nil
-			case <-done:
-				return nil
-			}
-		})
-
-		if err := eg.Wait(); err != nil {
-			if failure.Is(err, acs.Interrupt) {
-				slog.Error("updating languages table has been canceled", slog.String("error", fmt.Sprintf("%+v", err)))
-				return
-			} else {
-				slog.Error("failed to update languages table", slog.String("error", fmt.Sprintf("%+v", err)))
-				os.Exit(1)
-			}
-		}
-
-		slog.Info("updating languages table successfully finished.")
-	},
-}
-
-func init() {
-	updateCmd.PersistentFlags().Bool("migrate", false, "Execute database migration before update index.")
-	updateCmd.PersistentFlags().String("save-dir", "", "Directory path at which generated documents will be saved.")
-	updateCmd.PersistentFlags().BoolP("optimize", "o", false, "Optimize index if true.")
-	updateCmd.PersistentFlags().Int("chunk-size", 1000, "Number of documents to write in 1 file.")
-	updateCmd.PersistentFlags().Int("generate-concurrent", 6, "Number of concurrent document generation processes")
-	updateCmd.PersistentFlags().Int("post-concurrent", 4, "Number of concurrent document upload processes")
-
-	updateProblemCmd.Flags().BoolP("all", "a", false, "Crawl all problems if true.")
-	updateProblemCmd.Flags().BoolP("skip-fetch", "f", false, "Skip crawling if true.")
-	updateProblemCmd.Flags().Int("duration", 1000, "Interval time[ms] for crawling.")
-
-	updateUserCmd.Flags().BoolP("skip-fetch", "f", false, "Skip crawling if true.")
-	updateUserCmd.Flags().Int("duration", 1000, "Interval time[ms] for crawling.")
-
-	updateSubmissionCmd.Flags().BoolP("all", "a", false, "Update all submissions.")
-	updateSubmissionCmd.Flags().Int("interval", 90, "Indexing submissions for the past in N days.")
-
-	updateCmd.AddCommand(updateProblemCmd)
-	updateCmd.AddCommand(updateUserCmd)
-	updateCmd.AddCommand(updateSubmissionCmd)
-	updateCmd.AddCommand(updateRecommendCmd)
-	updateCmd.AddCommand(updateLanguageCmd)
-
-	rootCmd.AddCommand(updateCmd)
+	return updateLanguageCmd
 }

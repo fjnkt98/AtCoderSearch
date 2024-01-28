@@ -52,8 +52,5 @@
   <field name="text_unigram" type="TextUniGram" indexed="true" stored="false" multiValued="true" />
   <dynamicField name="*__text_unigram" type="TextUniGram" indexed="true" stored="false" multiValued="true" />
 
-  <copyField source="user_name" dest="user_name__text_unigram" />
-  <copyField source="user_name" dest="text_unigram" />
-  <copyField source="affiliation" dest="affiliation__text_unigram" />
-  <copyField source="affiliation" dest="text_unigram" />
+  <copyField source="*__text_unigram" dest="text_unigram" />
 </schema>

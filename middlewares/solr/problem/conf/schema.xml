@@ -134,18 +134,7 @@
   <dynamicField name="*__text_en" type="TextEn" indexed="true" stored="false" multiValued="true" />
   <dynamicField name="*__text_unigram" type="TextUniGram" indexed="true" stored="false" multiValued="true" />
 
-  <copyField source="problem_title" dest="problem_title__text_ja" />
-  <copyField source="problem_title" dest="problem_title__text_en" />
-  <copyField source="problem_title" dest="text_ja" />
-  <copyField source="problem_title" dest="text_en" />
-  <copyField source="contest_title" dest="contest_title__text_ja" />
-  <copyField source="contest_title" dest="contest_title__text_en" />
-  <copyField source="contest_title" dest="text_ja" />
-  <copyField source="contest_title" dest="text_en" />
-  <copyField source="statement_ja" dest="statement_ja__text_ja" />
-  <copyField source="statement_ja" dest="statement_ja__text_reading" />
-  <copyField source="statement_ja" dest="text_ja" />
-  <copyField source="statement_ja" dest="text_reading" />
-  <copyField source="statement_en" dest="statement_en__text_en" />
-  <copyField source="statement_en" dest="text_en" />
+  <copyField source="*__text_ja" dest="text_ja" />
+  <copyField source="*__text_en" dest="text_en" />
+  <copyField source="*__text_unigram" dest="text_unigram" />
 </schema>
