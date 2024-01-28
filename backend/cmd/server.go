@@ -26,15 +26,20 @@ func newServerCmd(args []string, config *RootConfig, runFunc func(cmd *cobra.Com
 			)
 			r.SetTrustedProxies(config.TrustedProxies)
 
-			server.RegisterSearchProblemRoute(r, solr.MustNewSolrCore(config.SolrHost, config.ProblemCoreName))
-			server.RegisterSearchUserRoute(r, solr.MustNewSolrCore(config.SolrHost, config.UserCoreName))
-			server.RegisterSearchSubmissionRoute(r, solr.MustNewSolrCore(config.SolrHost, config.SubmissionCoreName))
-			server.RegisterRecommendProblemRoute(r, solr.MustNewSolrCore(config.SolrHost, config.ProblemCoreName), db)
+			problemCore := solr.MustNewSolrCore(config.SolrHost, config.ProblemCoreName)
+			userCore := solr.MustNewSolrCore(config.SolrHost, config.UserCoreName)
+			submissionCore := solr.MustNewSolrCore(config.SolrHost, config.SubmissionCoreName)
+
+			server.RegisterSearchProblemRoute(r, problemCore)
+			server.RegisterSearchUserRoute(r, userCore)
+			server.RegisterSearchSubmissionRoute(r, submissionCore)
+			server.RegisterRecommendProblemRoute(r, problemCore, db)
 			server.RegisterCategoryListRoute(r, db)
 			server.RegisterContestListRoute(r, db)
 			server.RegisterLanguageListRoute(r, db)
 			server.RegisterLanguageGroupListRoute(r, db)
 			server.RegisterProblemListRoute(r, db)
+			server.RegisterLivenessRoute(r, []solr.SolrCore{problemCore, userCore, submissionCore})
 
 			r.Run("localhost:8000")
 		},

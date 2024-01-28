@@ -97,3 +97,9 @@ func RegisterProblemListRoute(r *gin.Engine, db *bun.DB) {
 
 	r.GET("/api/list/problem", c.HandleGET)
 }
+
+func RegisterLivenessRoute(r *gin.Engine, cores []solr.SolrCore) {
+	c := controller.NewLivenessController(cores)
+
+	r.GET("/api/liveness", c.HandleGET)
+}
