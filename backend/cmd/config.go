@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
 	"log/slog"
@@ -37,22 +38,24 @@ func LoadConfig(file string, config *RootConfig) error {
 	return nil
 }
 
-func MustLoadConfig(file string, config *RootConfig) {
-	if err := LoadConfig(file, config); err != nil {
-		slog.Error("failed to load config", slog.Any("error", err))
-		panic("failed to load config.")
-	} else {
-		slog.Info(fmt.Sprintf("using config file: %s", viper.ConfigFileUsed()))
-	}
-}
+func MustLoadConfig(flags *pflag.FlagSet, config *RootConfig) {
+	var configFile string
 
-func MustLoadConfigFromFlags(flags *pflag.FlagSet, config *RootConfig) {
-	file, err := flags.GetString("config")
-	if err != nil {
-		panic("failed to get config file path from flags")
+	if file := os.Getenv("ATCODERSEARCH_CONFIG_FILE"); file != "" {
+		configFile = file
 	}
 
-	if err := LoadConfig(file, config); err != nil {
+	if file, err := flags.GetString("config"); err != nil {
+		panic(fmt.Sprintf("failed to get config file path from flags %s", err.Error()))
+	} else if file != "" {
+		configFile = file
+	}
+
+	if configFile == "" {
+		configFile = "cmd/config.yaml"
+	}
+
+	if err := LoadConfig(configFile, config); err != nil {
 		slog.Error("failed to load config", slog.Any("error", err))
 		panic("failed to load config.")
 	} else {

@@ -34,7 +34,7 @@ func newCrawlProblemCmd(args []string, config *RootConfig, runFunc func(cmd *cob
 			viper.BindPFlag("crawl.problem.duration", cmd.Flags().Lookup("duration"))
 			viper.BindPFlag("crawl.problem.all", cmd.Flags().Lookup("all"))
 
-			MustLoadConfigFromFlags(cmd.Flags(), config)
+			MustLoadConfig(cmd.Flags(), config)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			db := repository.MustGetDB(config.DataBaseURL)
@@ -87,7 +87,7 @@ func newCrawlUserCmd(args []string, config *RootConfig, runFunc func(cmd *cobra.
 		PreRun: func(cmd *cobra.Command, args []string) {
 			viper.BindPFlag("crawl.user.duration", cmd.Flags().Lookup("duration"))
 
-			MustLoadConfigFromFlags(cmd.Flags(), config)
+			MustLoadConfig(cmd.Flags(), config)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			db := repository.MustGetDB(config.DataBaseURL)
@@ -127,7 +127,7 @@ func newCrawlSubmissionCmd(args []string, config *RootConfig, runFunc func(cmd *
 			viper.BindPFlag("crawl.submission.retry", cmd.Flags().Lookup("retry"))
 			viper.BindPFlag("crawl.submission.targets", cmd.Flags().Lookup("target"))
 
-			MustLoadConfigFromFlags(cmd.Flags(), config)
+			MustLoadConfig(cmd.Flags(), config)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			db := repository.MustGetDB(config.DataBaseURL)

@@ -15,7 +15,7 @@ func newServerCmd(args []string, config *RootConfig, runFunc func(cmd *cobra.Com
 		Short: "Launch API server",
 		Long:  "Launch API server",
 		PreRun: func(cmd *cobra.Command, args []string) {
-			MustLoadConfigFromFlags(cmd.Flags(), config)
+			MustLoadConfig(cmd.Flags(), config)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			db := repository.MustGetDB(config.DataBaseURL)

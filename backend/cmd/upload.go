@@ -35,7 +35,7 @@ func newUploadProblemCmd(args []string, config *RootConfig, runFunc func(cmd *co
 			viper.BindPFlag("upload.problem.save_dir", cmd.Flags().Lookup("save-dir"))
 			viper.BindPFlag("upload.problem.concurrent", cmd.Flags().Lookup("concurrent"))
 
-			MustLoadConfigFromFlags(cmd.Flags(), config)
+			MustLoadConfig(cmd.Flags(), config)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			core, err := solr.NewSolrCore(config.SolrHost, config.ProblemCoreName)
@@ -79,7 +79,7 @@ func newUploadUserCmd(args []string, config *RootConfig, runFunc func(cmd *cobra
 			viper.BindPFlag("upload.user.save_dir", cmd.Flags().Lookup("save-dir"))
 			viper.BindPFlag("upload.user.concurrent", cmd.Flags().Lookup("concurrent"))
 
-			MustLoadConfigFromFlags(cmd.Flags(), config)
+			MustLoadConfig(cmd.Flags(), config)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			core, err := solr.NewSolrCore(config.SolrHost, config.UserCoreName)
@@ -123,7 +123,7 @@ func newUploadSubmissionCmd(args []string, config *RootConfig, runFunc func(cmd 
 			viper.BindPFlag("upload.submission.save_dir", cmd.Flags().Lookup("save-dir"))
 			viper.BindPFlag("upload.submission.concurrent", cmd.Flags().Lookup("concurrent"))
 
-			MustLoadConfigFromFlags(cmd.Flags(), config)
+			MustLoadConfig(cmd.Flags(), config)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			core, err := solr.NewSolrCore(config.SolrHost, config.SubmissionCoreName)

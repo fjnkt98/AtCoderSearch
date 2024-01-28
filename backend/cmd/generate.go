@@ -32,7 +32,7 @@ func newGenerateProblemCmd(args []string, config *RootConfig, runFunc func(cmd *
 			viper.BindPFlag("generate.problem.chunk_size", cmd.Flags().Lookup("chunk-size"))
 			viper.BindPFlag("generate.problem.concurrent", cmd.Flags().Lookup("concurrent"))
 
-			MustLoadConfigFromFlags(cmd.Flags(), config)
+			MustLoadConfig(cmd.Flags(), config)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			db := repository.MustGetDB(config.DataBaseURL)
@@ -70,7 +70,7 @@ func newGenerateUserCmd(args []string, config *RootConfig, runFunc func(cmd *cob
 			viper.BindPFlag("generate.user.chunk_size", cmd.Flags().Lookup("chunk-size"))
 			viper.BindPFlag("generate.user.concurrent", cmd.Flags().Lookup("concurrent"))
 
-			MustLoadConfigFromFlags(cmd.Flags(), config)
+			MustLoadConfig(cmd.Flags(), config)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			db := repository.MustGetDB(config.DataBaseURL)
@@ -109,7 +109,7 @@ func newGenerateSubmissionCmd(args []string, config *RootConfig, runFunc func(cm
 			viper.BindPFlag("generate.submission.interval", cmd.Flags().Lookup("interval"))
 			viper.BindPFlag("generate.submission.all", cmd.Flags().Lookup("all"))
 
-			MustLoadConfigFromFlags(cmd.Flags(), config)
+			MustLoadConfig(cmd.Flags(), config)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			db := repository.MustGetDB(config.DataBaseURL)

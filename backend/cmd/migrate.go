@@ -100,7 +100,7 @@ func newMigrateCmd(args []string, config *RootConfig, runFunc func(cmd *cobra.Co
 		Short: "Migrate database table schema",
 		Long:  "Migrate database table schema",
 		PreRun: func(cmd *cobra.Command, args []string) {
-			MustLoadConfigFromFlags(cmd.Flags(), config)
+			MustLoadConfig(cmd.Flags(), config)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			MustMigrate(config.DataBaseURL, config.TableSchema)
