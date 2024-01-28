@@ -11,10 +11,6 @@ RUN go build -o /app/atcodersearch
 
 FROM debian:bullseye-slim
 
-COPY --from=stage /app/atcodersearch /usr/local/bin/atcodersearch
-COPY ./schema.sql /etc/schema.sql
-COPY ./cmd/config.yaml /etc/config.yaml
-ENV DB_SCHEMA_FILE='/etc/schema.sql'
 
 RUN apt-get update \
     && apt-get install -y \
@@ -27,6 +23,12 @@ ENV TZ="Asia/Tokyo"
 
 RUN groupadd --gid 1000 atcodersearch \
     && useradd --uid 1000 --gid atcodersearch --shell /bin/bash --create-home atcodersearch
+
+COPY --from=stage --chown=atcodersearch:atcodersearch /app/atcodersearch /usr/local/bin/atcodersearch
+COPY --chown=atcodersearch:atcodersearch ./schema.sql /etc/schema.sql
+COPY --chown=atcodersearch:atcodersearch ./cmd/config.yaml /etc/config.yaml
+ENV DB_SCHEMA_FILE='/etc/schema.sql'
+
 USER atcodersearch
 
 CMD ["atcodersearch"]
