@@ -7,7 +7,10 @@ import (
 	"fjnkt98/atcodersearch/server/domain"
 	"fjnkt98/atcodersearch/server/presenter"
 	"fjnkt98/atcodersearch/server/usecase"
+	"time"
 
+	"github.com/gin-contrib/cache"
+	"github.com/gin-contrib/cache/persistence"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator"
@@ -58,44 +61,44 @@ func RegisterRecommendProblemRoute(r *gin.Engine, core solr.SolrCore, db *bun.DB
 	r.POST("/api/recommend/problem", c.HandlePOST)
 }
 
-func RegisterCategoryListRoute(r *gin.Engine, db *bun.DB) {
+func RegisterCategoryListRoute(r *gin.Engine, db *bun.DB, store persistence.CacheStore) {
 	c := controller.NewCategoryListController(
 		repository.NewContestRepository(db),
 	)
 
-	r.GET("/api/list/category", c.HandleGET)
+	r.GET("/api/list/category", cache.CachePage(store, 10*time.Second, c.HandleGET))
 }
 
-func RegisterContestListRoute(r *gin.Engine, db *bun.DB) {
+func RegisterContestListRoute(r *gin.Engine, db *bun.DB, store persistence.CacheStore) {
 	c := controller.NewContestListController(
 		repository.NewContestRepository(db),
 	)
 
-	r.GET("/api/list/contest", c.HandleGET)
+	r.GET("/api/list/contest", cache.CachePage(store, 10*time.Second, c.HandleGET))
 }
 
-func RegisterLanguageListRoute(r *gin.Engine, db *bun.DB) {
+func RegisterLanguageListRoute(r *gin.Engine, db *bun.DB, store persistence.CacheStore) {
 	c := controller.NewLanguageListController(
 		repository.NewLanguageRepository(db),
 	)
 
-	r.GET("/api/list/language", c.HandleGET)
+	r.GET("/api/list/language", cache.CachePage(store, 10*time.Second, c.HandleGET))
 }
 
-func RegisterLanguageGroupListRoute(r *gin.Engine, db *bun.DB) {
+func RegisterLanguageGroupListRoute(r *gin.Engine, db *bun.DB, store persistence.CacheStore) {
 	c := controller.NewLanguageGroupListController(
 		repository.NewLanguageRepository(db),
 	)
 
-	r.GET("/api/list/language/group", c.HandleGET)
+	r.GET("/api/list/language/group", cache.CachePage(store, 10*time.Second, c.HandleGET))
 }
 
-func RegisterProblemListRoute(r *gin.Engine, db *bun.DB) {
+func RegisterProblemListRoute(r *gin.Engine, db *bun.DB, store persistence.CacheStore) {
 	c := controller.NewProblemListController(
 		repository.NewProblemRepository(db),
 	)
 
-	r.GET("/api/list/problem", c.HandleGET)
+	r.GET("/api/list/problem", cache.CachePage(store, 10*time.Second, c.HandleGET))
 }
 
 func RegisterLivenessRoute(r *gin.Engine, cores []solr.SolrCore) {

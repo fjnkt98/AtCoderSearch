@@ -27,7 +27,7 @@ RUN groupadd --gid 1000 atcodersearch \
 COPY --from=stage --chown=atcodersearch:atcodersearch /app/atcodersearch /usr/local/bin/atcodersearch
 COPY --chown=atcodersearch:atcodersearch ./schema.sql /etc/schema.sql
 COPY --chown=atcodersearch:atcodersearch ./cmd/config.yaml /etc/config.yaml
-ENV DB_SCHEMA_FILE='/etc/schema.sql'
+ENV TABLE_SCHEMA='/etc/schema.sql'
 ENV ATCODERSEARCH_CONFIG_FILE='/etc/config.yaml'
 
 USER atcodersearch
