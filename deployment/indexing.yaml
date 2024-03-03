@@ -19,7 +19,7 @@ spec:
           restartPolicy: Never
           containers:
             - name: problem-indexer
-              image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.8
+              image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.2.1
               env:
                 - name: DATABASE_URL
                   valueFrom:
@@ -28,8 +28,6 @@ spec:
                       key: database-url
                 - name: SOLR_HOST
                   value: http://solr:8983
-                - name: DOCUMENT_SAVE_DIRECTORY
-                  value: /var/tmp
                 - name: PGSSLMODE
                   value: disable
               resources:
@@ -40,18 +38,7 @@ spec:
                 runAsUser: 1000
                 runAsGroup: 1000
                 runAsNonRoot: true
-              args:
-                [
-                  "atcodersearch",
-                  "update",
-                  "problem",
-                  "--migrate",
-                  "--optimize",
-                  "--generate-concurrent=2",
-                  "--post-concurrent=2",
-                  "--duration=1000",
-                  "--chunk-size=1000",
-                ]
+              args: ["atcodersearch", "update", "problem", "--optimize"]
 ---
 apiVersion: batch/v1
 kind: CronJob
@@ -73,7 +60,7 @@ spec:
           restartPolicy: Never
           containers:
             - name: user-indexer
-              image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.8
+              image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.2.1
               env:
                 - name: DATABASE_URL
                   valueFrom:
@@ -82,8 +69,6 @@ spec:
                       key: database-url
                 - name: SOLR_HOST
                   value: http://solr:8983
-                - name: DOCUMENT_SAVE_DIRECTORY
-                  value: /var/tmp
                 - name: PGSSLMODE
                   value: disable
               resources:
@@ -94,18 +79,7 @@ spec:
                 runAsUser: 1000
                 runAsGroup: 1000
                 runAsNonRoot: true
-              args:
-                [
-                  "atcodersearch",
-                  "update",
-                  "user",
-                  "--migrate",
-                  "--optimize",
-                  "--generate-concurrent=2",
-                  "--post-concurrent=2",
-                  "--duration=1000",
-                  "--chunk-size=10000",
-                ]
+              args: ["atcodersearch", "update", "user", "--optimize"]
           imagePullSecrets:
             - name: regcred
 ---
@@ -129,7 +103,7 @@ spec:
           restartPolicy: Never
           containers:
             - name: submission-indexer
-              image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.8
+              image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.2.1
               env:
                 - name: DATABASE_URL
                   valueFrom:
@@ -138,8 +112,6 @@ spec:
                       key: database-url
                 - name: SOLR_HOST
                   value: http://solr:8983
-                - name: DOCUMENT_SAVE_DIRECTORY
-                  value: /var/tmp
                 - name: PGSSLMODE
                   value: disable
               resources:
@@ -150,17 +122,7 @@ spec:
                 runAsUser: 1000
                 runAsGroup: 1000
                 runAsNonRoot: true
-              args:
-                [
-                  "atcodersearch",
-                  "update",
-                  "submission",
-                  "--migrate",
-                  "--interval=90",
-                  "--generate-concurrent=2",
-                  "--post-concurrent=2",
-                  "--chunk-size=10000",
-                ]
+              args: ["atcodersearch", "update", "submission", "--optimize"]
           imagePullSecrets:
             - name: regcred
 ---
@@ -184,7 +146,7 @@ spec:
           restartPolicy: Never
           containers:
             - name: submission-indexer
-              image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.8
+              image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.2.1
               env:
                 - name: DATABASE_URL
                   valueFrom:
@@ -193,8 +155,6 @@ spec:
                       key: database-url
                 - name: SOLR_HOST
                   value: http://solr:8983
-                - name: DOCUMENT_SAVE_DIRECTORY
-                  value: /var/tmp
                 - name: PGSSLMODE
                   value: disable
               resources:
@@ -206,18 +166,7 @@ spec:
                 runAsGroup: 1000
                 runAsNonRoot: true
               args:
-                [
-                  "atcodersearch",
-                  "update",
-                  "submission",
-                  "--all",
-                  "--optimize",
-                  "--migrate",
-                  "--interval=90",
-                  "--generate-concurrent=2",
-                  "--post-concurrent=2",
-                  "--chunk-size=10000",
-                ]
+                ["atcodersearch", "update", "submission", "--all", "--optimize"]
           imagePullSecrets:
             - name: regcred
 ---
@@ -241,7 +190,7 @@ spec:
           restartPolicy: Never
           containers:
             - name: language-updater
-              image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.8
+              image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.2.1
               env:
                 - name: DATABASE_URL
                   valueFrom:
@@ -258,6 +207,6 @@ spec:
                 runAsUser: 1000
                 runAsGroup: 1000
                 runAsNonRoot: true
-              args: ["atcodersearch", "update", "language", "--migrate"]
+              args: ["atcodersearch", "update", "language"]
           imagePullSecrets:
             - name: regcred

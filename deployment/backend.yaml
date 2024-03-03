@@ -32,7 +32,7 @@ spec:
       terminationGracePeriodSeconds: 10
       containers:
         - name: backend
-          image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.1.8
+          image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.2.1
           env:
             - name: DATABASE_URL
               valueFrom:
@@ -41,6 +41,8 @@ spec:
                   key: database-url
             - name: SOLR_HOST
               value: http://solr:8983
+            - name: GIN_MODE
+              value: release
           ports:
             - name: backend
               containerPort: 8000
