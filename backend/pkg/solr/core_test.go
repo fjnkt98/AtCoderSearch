@@ -9,6 +9,7 @@
 package solr
 
 import (
+	"context"
 	"net/url"
 	"reflect"
 	"strings"
@@ -25,7 +26,8 @@ func TestStatus(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create solr core: %s", err.Error())
 	}
-	status, err := Status(core)
+	ctx := context.Background()
+	status, err := core.Status(ctx)
 	if err != nil {
 		t.Errorf("failed to get core status: %s", err.Error())
 	}
@@ -42,9 +44,18 @@ func TestReload(t *testing.T) {
 	}
 
 	before := time.Now()
-	Reload(core)
-	status, _ := Status(core)
-	after, _ := time.Parse(time.RFC3339, status.StartTime)
+	ctx := context.Background()
+	if _, err := core.Reload(ctx); err != nil {
+		t.Fatalf("failed to reload core: %s", err.Error())
+	}
+	status, err := core.Status(ctx)
+	if err != nil {
+		t.Fatalf("failed to get status of the core: %s", err.Error())
+	}
+	after, err := time.Parse(time.RFC3339, status.StartTime)
+	if err != nil {
+		t.Fatalf("failed to parse the start time of the core: %s", err.Error())
+	}
 
 	if before.After(after) {
 		t.Errorf("invalid reloaded time: expected before(%s) < after(%s)", before, after)
@@ -63,7 +74,8 @@ func TestPing(t *testing.T) {
 		return
 	}
 
-	res, _ := Ping(core)
+	ctx := context.Background()
+	res, err := core.Ping(ctx)
 	if res.Status != "OK" {
 		t.Errorf("ping returns non-ok message: expected `OK` but got `%s`", res.Status)
 	}
@@ -75,58 +87,63 @@ func TestScenario(t *testing.T) {
 		t.Fatalf("failed to create solr core: %s", err.Error())
 	}
 
-	if _, err := Truncate(core); err != nil {
-		t.Fatalf("failed to truncate core: %s", err.Error())
+	ctx := context.Background()
+	if _, err := core.Delete(ctx); err != nil {
+		t.Fatalf("failed to delete the documents of the core: %s", err.Error())
 	}
-	if _, err := Commit(core); err != nil {
+	if _, err := core.Commit(ctx); err != nil {
 		t.Fatalf("failed to commit core: %s", err.Error())
 	}
 
 	params := url.Values{}
 	params.Set("q", "*:*")
 
-	res, err := Select[SampleDocument, any](core, params)
+	res, err := core.NewSelect().Q("*:*").Exec(ctx)
 	if err != nil {
 		t.Fatalf("failed to select document")
 	}
-	if res.Response.NumFound != 0 {
-		t.Fatalf("unmatched number of document: expected 0, but got %d", res.Response.NumFound)
+	if res.Raw.Response.NumFound != 0 {
+		t.Fatalf("unmatched number of document: expected 0, but got %d", res.Raw.Response.NumFound)
 	}
 
 	document := strings.NewReader(`[{"id":"001"}]`)
-	if _, err := Post(core, document, "application/json"); err != nil {
+	if _, err := core.Post(ctx, document, "application/json"); err != nil {
 		t.Fatalf("failed to post document: %s", err.Error())
 	}
 
-	if _, err := Commit(core); err != nil {
+	if _, err := core.Commit(ctx); err != nil {
 		t.Fatalf("failed to commit document")
 	}
 
-	res, err = Select[SampleDocument, any](core, params)
+	res, err = core.NewSelect().Q("*:*").Exec(ctx)
 	if err != nil {
 		t.Fatalf("failed to select document")
 	}
-	if res.Response.NumFound != 1 {
+	if res.Raw.Response.NumFound != 1 {
 		t.Fatalf("unmatched number of document")
 	}
 
 	want := []SampleDocument{{ID: "001"}}
-	if !reflect.DeepEqual(res.Response.Docs, want) {
+	var actual []SampleDocument
+	if err := res.Scan(&actual); err != nil {
+		t.Fatalf("failed to scan the documents: %s", err.Error())
+	}
+	if !reflect.DeepEqual(actual, want) {
 		t.Fatalf("collection doesn't match the expected: %s", err.Error())
 	}
 
-	if _, err := Truncate(core); err != nil {
+	if _, err := core.Delete(ctx); err != nil {
 		t.Fatalf("failed to truncate core: %s", err.Error())
 	}
-	if _, err := Commit(core); err != nil {
+	if _, err := core.Commit(ctx); err != nil {
 		t.Fatalf("failed to commit document")
 	}
 
-	res, err = Select[SampleDocument, any](core, params)
+	res, err = core.NewSelect().Q("*:*").Exec(ctx)
 	if err != nil {
 		t.Fatalf("failed to select document")
 	}
-	if res.Response.NumFound != 0 {
-		t.Fatalf("unmatched number of document: expected 0, but got %d", res.Response.NumFound)
+	if res.Raw.Response.NumFound != 0 {
+		t.Fatalf("unmatched number of document: expected 0, but got %d", res.Raw.Response.NumFound)
 	}
 }

@@ -8,7 +8,7 @@ import (
 type ResponseHeader struct {
 	ZkConnected map[string]any `json:"zkConnected"`
 	Status      int            `json:"status"`
-	QTime       int
+	QTime       int            `json:"QTime"`
 	Params      map[string]any `json:"params"`
 }
 
@@ -81,46 +81,86 @@ type SimpleResponse struct {
 	Error  ErrorInfo      `json:"error"`
 }
 
-type SelectResponse[D any, F any] struct {
-	Header      ResponseHeader `json:"responseHeader"`
-	Response    SelectBody[D]  `json:"response"`
-	FacetCounts F              `json:"facets"`
-	Error       ErrorInfo      `json:"error"`
+type SelectResponse struct {
+	Header   ResponseHeader `json:"responseHeader"`
+	Response SelectBody     `json:"response"`
+	Facets   Facets         `json:"facets"`
+	Error    ErrorInfo      `json:"error"`
 }
 
-type SelectBody[D any] struct {
-	NumFound      int  `json:"numFound"`
-	Start         int  `json:"start"`
-	NumFoundExact bool `json:"numFoundExact"`
-	Docs          []D  `json:"docs"`
-}
-
-type BucketElement interface {
-	int | uint | float64 | time.Time | string
-}
-
-type Bucket[T BucketElement] struct {
-	Val   T   `json:"val"`
-	Count int `json:"count"`
+type SelectBody struct {
+	NumFound      int             `json:"numFound"`
+	Start         int             `json:"start"`
+	NumFoundExact bool            `json:"numFoundExact"`
+	Docs          json.RawMessage `json:"docs"`
 }
 
 type TermFacetCount struct {
-	Buckets []Bucket[string] `json:"buckets"`
+	Buckets []Bucket `json:"buckets"`
 }
 
-type RangeFacetCount[T BucketElement] struct {
-	Buckets []Bucket[T]         `json:"buckets"`
-	Before  RangeFacetCountInfo `json:"before"`
-	After   RangeFacetCountInfo `json:"after"`
-	Between RangeFacetCountInfo `json:"between"`
+type Bucket struct {
+	Val    string                    `json:"val"`
+	Count  int                       `json:"count"`
+	Nested map[string]TermFacetCount `json:"nested"`
 }
 
-type RangeFacetCountInfo struct {
-	Count int `json:"count"`
+func (b *Bucket) UnmarshalJSON(data []byte) error {
+	raw := make(map[string]json.RawMessage)
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return err
+	}
+
+	var bucket Bucket
+	nested := make(map[string]TermFacetCount)
+	for k, v := range raw {
+		if k == "val" {
+			var val string
+			if err := json.Unmarshal(v, &val); err != nil {
+				return err
+			}
+			bucket.Val = val
+		} else if k == "count" {
+			var count int
+			if err := json.Unmarshal(v, &count); err != nil {
+				return err
+			}
+			bucket.Count = count
+		} else {
+			var c TermFacetCount
+			if err := json.Unmarshal(v, &c); err != nil {
+				return err
+			}
+			nested[k] = c
+		}
+	}
+	bucket.Nested = nested
+	*b = bucket
+	return nil
 }
 
-type QueryFacetCount struct {
-	Buckets []Bucket[string] `json:"buckets"`
+type Facets map[string]TermFacetCount
+
+func (f *Facets) UnmarshalJSON(data []byte) error {
+	raw := make(map[string]json.RawMessage)
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return err
+	}
+
+	res := make(map[string]TermFacetCount)
+	for k, v := range raw {
+		if k == "count" {
+			continue
+		}
+		var c TermFacetCount
+		if err := json.Unmarshal(v, &c); err != nil {
+			continue
+		}
+		res[k] = c
+	}
+
+	*f = Facets(res)
+	return nil
 }
 
 type FromSolrDateTime time.Time
