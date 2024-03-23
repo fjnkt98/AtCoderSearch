@@ -256,7 +256,7 @@ func (c *SolrCore) Rollback(ctx context.Context) (*SimpleResponse, error) {
 }
 
 func (c *SolrCore) Delete(ctx context.Context) (*SimpleResponse, error) {
-	src := strings.NewReader(`{"delete":{"query": "*:*"}}`)
+	src := strings.NewReader(`{"delete":{"query":"*:*"}}`)
 	if res, err := c.Post(ctx, src, "application/json"); err != nil {
 		return res, errs.New(
 			"failed to delete",
