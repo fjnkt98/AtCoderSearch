@@ -114,7 +114,7 @@ func (c *SolrCore) Status(ctx context.Context) (*CoreStatus, error) {
 		)
 	}
 	defer res.Body.Close()
-	var body CoreStatus
+	var body CoreStatuses
 	if err := json.NewDecoder(res.Body).Decode(&body); err != nil {
 		return nil, errs.New(
 			"failed to decode status response",
@@ -123,13 +123,20 @@ func (c *SolrCore) Status(ctx context.Context) (*CoreStatus, error) {
 		)
 	}
 	if res.StatusCode != http.StatusOK {
-		return &body, errs.Wrap(
+		return nil, errs.Wrap(
 			ErrNonOKResponse,
 			errs.WithCause(err),
 			errs.WithContext("url", u.String()),
 		)
 	}
-	return &body, nil
+	status, ok := body.Status[c.name]
+	if !ok {
+		return nil, errs.New(
+			"core not found",
+			errs.WithContext("statues", body),
+		)
+	}
+	return &status, nil
 }
 
 func (c *SolrCore) Reload(ctx context.Context) (*SimpleResponse, error) {
