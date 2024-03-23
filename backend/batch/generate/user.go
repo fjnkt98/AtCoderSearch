@@ -2,51 +2,11 @@ package generate
 
 import (
 	"context"
-	"fjnkt98/atcodersearch/batch"
 	"fmt"
-
-	"log/slog"
 
 	"github.com/goark/errs"
 	"github.com/uptrace/bun"
 )
-
-type UserGenerator interface {
-	batch.Batch
-	GenerateUser(ctx context.Context) error
-}
-
-type userGenerator struct {
-	defaultGenerator
-}
-
-func NewUserGenerator(reader RowReader, saveDir string, chunkSize int, concurrent int) UserGenerator {
-	return &userGenerator{
-		defaultGenerator{
-			config: defaultGeneratorConfig{
-				SaveDir:    saveDir,
-				ChunkSize:  chunkSize,
-				Concurrent: concurrent,
-			},
-			reader: reader,
-		},
-	}
-}
-
-func (g *userGenerator) Name() string {
-	return "UserGenerator"
-}
-
-func (g *userGenerator) Run(ctx context.Context) error {
-	return g.GenerateUser(ctx)
-}
-
-func (g *userGenerator) GenerateUser(ctx context.Context) error {
-	if err := g.Generate(ctx); err != nil {
-		return errs.Wrap(err)
-	}
-	return nil
-}
 
 type UserRow struct {
 	UserName      string  `bun:"user_name"`
@@ -62,25 +22,25 @@ type UserRow struct {
 	Wins          int     `bun:"wins"`
 }
 
-type UserDocument struct {
-	UserName      string  `solr:"user_name,text_unigram"`
-	Rating        int     `solr:"rating"`
-	HighestRating int     `solr:"highest_rating"`
-	Affiliation   *string `solr:"affiliation,text_unigram"`
-	BirthYear     *int    `solr:"birth_year"`
-	Country       *string `solr:"country"`
-	Crown         *string `solr:"crown"`
-	JoinCount     int     `solr:"join_count"`
-	Rank          int     `solr:"rank"`
-	ActiveRank    *int    `solr:"active_rank"`
-	Wins          int     `solr:"wins" `
-	Color         string  `solr:"color"`
-	HighestColor  string  `solr:"highest_color"`
-	UserURL       string  `solr:"user_url"`
+type UserDoc struct {
+	UserName      string  `json:"user_name"`
+	Rating        int     `json:"rating"`
+	HighestRating int     `json:"highest_rating"`
+	Affiliation   *string `json:"affiliation"`
+	BirthYear     *int    `json:"birth_year"`
+	Country       *string `json:"country"`
+	Crown         *string `json:"crown"`
+	JoinCount     int     `json:"join_count"`
+	Rank          int     `json:"rank"`
+	ActiveRank    *int    `json:"active_rank"`
+	Wins          int     `json:"wins" `
+	Color         string  `json:"color"`
+	HighestColor  string  `json:"highest_color"`
+	UserURL       string  `json:"user_url"`
 }
 
-func (r *UserRow) Document(ctx context.Context) (map[string]any, error) {
-	return StructToMap(UserDocument{
+func (r *UserRow) Document(ctx context.Context) (*UserDoc, error) {
+	return &UserDoc{
 		UserName:      r.UserName,
 		Rating:        r.Rating,
 		HighestRating: r.HighestRating,
@@ -95,20 +55,20 @@ func (r *UserRow) Document(ctx context.Context) (map[string]any, error) {
 		Color:         RateToColor(r.Rating),
 		HighestColor:  RateToColor(r.HighestRating),
 		UserURL:       fmt.Sprintf("https://atcoder.jp/users/%s", r.UserName),
-	}), nil
+	}, nil
 }
 
 type userRowReader struct {
 	db *bun.DB
 }
 
-func NewUserRowReader(db *bun.DB) RowReader {
+func NewUserRowReader(db *bun.DB) RowReader[*UserRow] {
 	return &userRowReader{
 		db: db,
 	}
 }
 
-func (r *userRowReader) ReadRows(ctx context.Context, tx chan<- Documenter) error {
+func (r *userRowReader) ReadRows(ctx context.Context, tx chan<- *UserRow) error {
 	rows, err := r.db.NewSelect().
 		Column(
 			"user_name",
@@ -137,8 +97,7 @@ func (r *userRowReader) ReadRows(ctx context.Context, tx chan<- Documenter) erro
 	for rows.Next() {
 		select {
 		case <-ctx.Done():
-			slog.Info("read rows canceled.")
-			return batch.ErrInterrupt
+			return nil
 		default:
 			var row UserRow
 			err := r.db.ScanRow(ctx, rows, &row)
@@ -153,5 +112,8 @@ func (r *userRowReader) ReadRows(ctx context.Context, tx chan<- Documenter) erro
 	}
 
 	return nil
+}
 
+func NewUserGenerator(reader RowReader[*UserRow], saveDir string, chunkSize, concurrent int) DocumentGenerator {
+	return NewDocumentGenerator(reader, saveDir, chunkSize, concurrent)
 }

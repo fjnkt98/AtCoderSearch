@@ -2,54 +2,14 @@ package generate
 
 import (
 	"context"
-	"fjnkt98/atcodersearch/batch"
 	"fjnkt98/atcodersearch/pkg/solr"
 	"fjnkt98/atcodersearch/repository"
 	"fmt"
 	"time"
 
-	"log/slog"
-
 	"github.com/goark/errs"
 	"github.com/uptrace/bun"
 )
-
-type SubmissionGenerator interface {
-	batch.Batch
-	GenerateSubmission(ctx context.Context) error
-}
-
-type submissionGenerator struct {
-	defaultGenerator
-}
-
-func NewSubmissionGenerator(reader RowReader, saveDir string, chunkSize int, concurrent int) SubmissionGenerator {
-	return &submissionGenerator{
-		defaultGenerator{
-			config: defaultGeneratorConfig{
-				SaveDir:    saveDir,
-				ChunkSize:  chunkSize,
-				Concurrent: concurrent,
-			},
-			reader: reader,
-		},
-	}
-}
-
-func (g *submissionGenerator) Name() string {
-	return "SubmissionGenerator"
-}
-
-func (g *submissionGenerator) Run(ctx context.Context) error {
-	return g.GenerateSubmission(ctx)
-}
-
-func (g *submissionGenerator) GenerateSubmission(ctx context.Context) error {
-	if err := g.Generate(ctx); err != nil {
-		return errs.Wrap(err)
-	}
-	return nil
-}
 
 type SubmissionRow struct {
 	ID            int     `bun:"id"`
@@ -69,32 +29,32 @@ type SubmissionRow struct {
 	Difficulty    int     `bun:"difficulty"`
 }
 
-type SubmissionDocument struct {
-	SubmissionID  int                   `solr:"submission_id"`
-	EpochSecond   int64                 `solr:"epoch_second"`
-	SubmittedAt   solr.IntoSolrDateTime `solr:"submitted_at"`
-	SubmissionURL string                `solr:"submission_url"`
-	ProblemID     string                `solr:"problem_id"`
-	ProblemTitle  string                `solr:"problem_title"`
-	Color         string                `solr:"color"`
-	Difficulty    int                   `solr:"difficulty"`
-	ContestID     string                `solr:"contest_id"`
-	ContestTitle  string                `solr:"contest_title"`
-	Category      string                `solr:"category"`
-	UserID        string                `solr:"user_id"`
-	Language      string                `solr:"language"`
-	LanguageGroup string                `solr:"language_group"`
-	Point         float64               `solr:"point"`
-	Length        int                   `solr:"length"`
-	Result        string                `solr:"result"`
-	ExecutionTime *int                  `solr:"execution_time"`
+type SubmissionDoc struct {
+	SubmissionID  int                   `json:"submission_id"`
+	EpochSecond   int64                 `json:"epoch_second"`
+	SubmittedAt   solr.IntoSolrDateTime `json:"submitted_at"`
+	SubmissionURL string                `json:"submission_url"`
+	ProblemID     string                `json:"problem_id"`
+	ProblemTitle  string                `json:"problem_title"`
+	Color         string                `json:"color"`
+	Difficulty    int                   `json:"difficulty"`
+	ContestID     string                `json:"contest_id"`
+	ContestTitle  string                `json:"contest_title"`
+	Category      string                `json:"category"`
+	UserID        string                `json:"user_id"`
+	Language      string                `json:"language"`
+	LanguageGroup string                `json:"language_group"`
+	Point         float64               `json:"point"`
+	Length        int                   `json:"length"`
+	Result        string                `json:"result"`
+	ExecutionTime *int                  `json:"execution_time"`
 }
 
-func (r *SubmissionRow) Document(ctx context.Context) (map[string]any, error) {
+func (r *SubmissionRow) Document(ctx context.Context) (*SubmissionDoc, error) {
 	submissionURL := fmt.Sprintf("https://atcoder.jp/contests/%s/submissions/%d", r.ContestID, r.ID)
 	color := RateToColor(r.Difficulty)
 
-	return StructToMap(SubmissionDocument{
+	return &SubmissionDoc{
 		SubmissionID:  r.ID,
 		EpochSecond:   r.EpochSecond,
 		SubmittedAt:   solr.IntoSolrDateTime(time.Unix(r.EpochSecond, 0)),
@@ -113,7 +73,7 @@ func (r *SubmissionRow) Document(ctx context.Context) (map[string]any, error) {
 		Length:        r.Length,
 		Result:        r.Result,
 		ExecutionTime: r.ExecutionTime,
-	}), nil
+	}, nil
 }
 
 type submissionRowReader struct {
@@ -127,7 +87,7 @@ func NewSubmissionRowReader(
 	db *bun.DB,
 	interval int,
 	all bool,
-) RowReader {
+) RowReader[*SubmissionRow] {
 	return &submissionRowReader{
 		db:       db,
 		repo:     repository.NewUpdateHistoryRepository(db),
@@ -136,7 +96,7 @@ func NewSubmissionRowReader(
 	}
 }
 
-func (r *submissionRowReader) ReadRows(ctx context.Context, tx chan<- Documenter) error {
+func (r *submissionRowReader) ReadRows(ctx context.Context, tx chan<- *SubmissionRow) error {
 	query := r.db.NewSelect().
 		ColumnExpr("?.? AS ?", bun.Ident("s"), bun.Ident("id"), bun.Ident("id")).
 		ColumnExpr("?.? AS ?", bun.Ident("s"), bun.Ident("epoch_second"), bun.Ident("epoch_second")).
@@ -185,8 +145,7 @@ func (r *submissionRowReader) ReadRows(ctx context.Context, tx chan<- Documenter
 	for rows.Next() {
 		select {
 		case <-ctx.Done():
-			slog.Info("read rows canceled.")
-			return batch.ErrInterrupt
+			return nil
 		default:
 			var row SubmissionRow
 			err := r.db.ScanRow(ctx, rows, &row)
@@ -201,4 +160,8 @@ func (r *submissionRowReader) ReadRows(ctx context.Context, tx chan<- Documenter
 	}
 
 	return nil
+}
+
+func NewSubmissionGenerator(reader RowReader[*SubmissionRow], saveDir string, chunkSize, concurrent int) DocumentGenerator {
+	return NewDocumentGenerator(reader, saveDir, chunkSize, concurrent)
 }

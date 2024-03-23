@@ -2,7 +2,6 @@ package crawl
 
 import (
 	"context"
-	"fjnkt98/atcodersearch/batch"
 	"fjnkt98/atcodersearch/pkg/atcoder"
 	"fjnkt98/atcodersearch/repository"
 	"time"
@@ -13,40 +12,25 @@ import (
 )
 
 type UserCrawler interface {
-	batch.Batch
 	CrawlUser(ctx context.Context) error
 }
 
 type userCrawler struct {
-	client atcoder.AtCoderClient
-	repo   repository.UserRepository
-	config userCrawlerConfig
-}
-
-type userCrawlerConfig struct {
-	Duration int `json:"duration"`
+	client   atcoder.AtCoderClient
+	repo     repository.UserRepository
+	duration time.Duration
 }
 
 func NewUserCrawler(
 	client atcoder.AtCoderClient,
 	repo repository.UserRepository,
-	duration int,
+	duration time.Duration,
 ) *userCrawler {
 	return &userCrawler{
-		client: client,
-		repo:   repo,
-		config: userCrawlerConfig{
-			Duration: duration,
-		},
+		client:   client,
+		repo:     repo,
+		duration: duration,
 	}
-}
-
-func (c *userCrawler) Name() string {
-	return "UserCrawler"
-}
-
-func (c *userCrawler) Config() any {
-	return c.config
 }
 
 func (c *userCrawler) CrawlUser(ctx context.Context) error {
@@ -69,7 +53,7 @@ loop:
 
 		allUsers = append(allUsers, convertUsers(users)...)
 
-		time.Sleep(time.Duration(c.config.Duration) * time.Millisecond)
+		time.Sleep(c.duration)
 	}
 
 	if err := c.repo.Save(ctx, allUsers); err != nil {
@@ -78,10 +62,6 @@ loop:
 
 	slog.Info("Finish crawling users successfully.")
 	return nil
-}
-
-func (c *userCrawler) Run(ctx context.Context) error {
-	return c.CrawlUser(ctx)
 }
 
 func convertUser(user atcoder.User) repository.User {

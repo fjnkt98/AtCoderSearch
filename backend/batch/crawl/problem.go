@@ -3,7 +3,6 @@ package crawl
 import (
 	"bytes"
 	"context"
-	"fjnkt98/atcodersearch/batch"
 	"fjnkt98/atcodersearch/pkg/atcoder"
 	"fjnkt98/atcodersearch/repository"
 	"fmt"
@@ -19,7 +18,6 @@ import (
 )
 
 type ProblemCrawler interface {
-	batch.Batch
 	CrawlProblem(ctx context.Context) error
 }
 
@@ -28,19 +26,15 @@ type problemCrawler struct {
 	atcoderClient  atcoder.AtCoderClient
 	repo           repository.ProblemRepository
 	minifier       *minify.M
-	config         problemCrawlerConfig
-}
-
-type problemCrawlerConfig struct {
-	Duration int  `json:"duration"`
-	All      bool `json:"all"`
+	duration       time.Duration
+	all            bool
 }
 
 func NewProblemCrawler(
 	problemsClient atcoder.AtCoderProblemsClient,
 	atcoderClient atcoder.AtCoderClient,
 	repo repository.ProblemRepository,
-	duration int,
+	duration time.Duration,
 	all bool,
 ) ProblemCrawler {
 	m := minify.New()
@@ -51,19 +45,9 @@ func NewProblemCrawler(
 		atcoderClient:  atcoderClient,
 		repo:           repo,
 		minifier:       m,
-		config: problemCrawlerConfig{
-			Duration: duration,
-			All:      all,
-		},
+		duration:       duration,
+		all:            all,
 	}
-}
-
-func (c *problemCrawler) Name() string {
-	return "ProblemCrawler"
-}
-
-func (c *problemCrawler) Config() any {
-	return c.config
 }
 
 func (c *problemCrawler) DetectDiff(ctx context.Context) ([]atcoder.Problem, error) {
@@ -74,7 +58,7 @@ func (c *problemCrawler) DetectDiff(ctx context.Context) ([]atcoder.Problem, err
 			errs.WithCause(err),
 		)
 	}
-	exists := mapset.NewSet[string](ids...)
+	exists := mapset.NewSet(ids...)
 
 	problems, err := c.problemsClient.FetchProblems(ctx)
 	if err != nil {
@@ -94,18 +78,20 @@ func (c *problemCrawler) DetectDiff(ctx context.Context) ([]atcoder.Problem, err
 func (c *problemCrawler) CrawlProblem(ctx context.Context) error {
 	var targets []atcoder.Problem
 	var err error
-	if c.config.All {
+	if c.all {
 		slog.Info("Start to fetch all problems.")
 		targets, err = c.problemsClient.FetchProblems(ctx)
+		if err != nil {
+			return errs.Wrap(err)
+		}
 		slog.Info("Finish fetching all problems.")
 	} else {
 		slog.Info("Start to fetch new problems.")
 		targets, err = c.DetectDiff(ctx)
+		if err != nil {
+			return errs.Wrap(err)
+		}
 		slog.Info("Finish fetching new problems.")
-	}
-
-	if err != nil {
-		return errs.Wrap(err)
 	}
 
 	problems := make([]repository.Problem, 0, len(targets))
@@ -133,7 +119,7 @@ func (c *problemCrawler) CrawlProblem(ctx context.Context) error {
 			HTML:         buf.String(),
 		})
 		slog.Info("Finish crawling the problem successfully", slog.String("target", target.ID))
-		time.Sleep(time.Duration(c.config.Duration) * time.Millisecond)
+		time.Sleep(c.duration)
 	}
 
 	if err := c.repo.Save(ctx, problems); err != nil {
@@ -142,8 +128,4 @@ func (c *problemCrawler) CrawlProblem(ctx context.Context) error {
 	slog.Info("Save problems successfully.")
 
 	return nil
-}
-
-func (c *problemCrawler) Run(ctx context.Context) error {
-	return c.CrawlProblem(ctx)
 }

@@ -2,7 +2,6 @@ package crawl
 
 import (
 	"context"
-	"fjnkt98/atcodersearch/batch"
 	"fjnkt98/atcodersearch/pkg/atcoder"
 	"fjnkt98/atcodersearch/repository"
 	"fmt"
@@ -15,7 +14,6 @@ import (
 )
 
 type SubmissionCrawler interface {
-	batch.Batch
 	CrawlSubmission(ctx context.Context) error
 }
 
@@ -24,15 +22,11 @@ type submissionCrawler struct {
 	submissionRepo repository.SubmissionRepository
 	contestRepo    repository.ContestRepository
 	historyRepo    repository.SubmissionCrawlHistoryRepository
-	config         submissionCrawlerConfig
-}
-
-type submissionCrawlerConfig struct {
-	Duration int      `json:"duration"`
-	Retry    int      `json:"retry"`
-	Targets  []string `json:"targets"`
-	username string
-	password string
+	duration       time.Duration
+	retry          int
+	targets        []string
+	username       string
+	password       string
 }
 
 func NewSubmissionCrawler(
@@ -40,7 +34,7 @@ func NewSubmissionCrawler(
 	submissionRepo repository.SubmissionRepository,
 	contestRepo repository.ContestRepository,
 	historyRepo repository.SubmissionCrawlHistoryRepository,
-	duration int,
+	duration time.Duration,
 	retry int,
 	targets []string,
 	username string,
@@ -51,22 +45,12 @@ func NewSubmissionCrawler(
 		submissionRepo: submissionRepo,
 		contestRepo:    contestRepo,
 		historyRepo:    historyRepo,
-		config: submissionCrawlerConfig{
-			Duration: duration,
-			Retry:    retry,
-			Targets:  targets,
-			username: username,
-			password: password,
-		},
+		duration:       duration,
+		retry:          retry,
+		targets:        targets,
+		username:       username,
+		password:       password,
 	}
-}
-
-func (c *submissionCrawler) Name() string {
-	return "SubmissionCrawler"
-}
-
-func (c *submissionCrawler) Config() any {
-	return c.config
 }
 
 func (c *submissionCrawler) crawl(ctx context.Context, contestID string, latest repository.SubmissionCrawlHistory) error {
@@ -77,10 +61,10 @@ loop:
 		submissions, err := c.client.FetchSubmissions(ctx, contestID, i)
 		if err != nil {
 		retryLoop:
-			for j := 0; err != nil && j < c.config.Retry; j++ {
+			for j := 0; err != nil && j < c.retry; j++ {
 				select {
 				case <-ctx.Done():
-					return batch.ErrInterrupt
+					return nil
 				default:
 					slog.Error("failed to crawl submission", slog.String("contestID", contestID), slog.String("error", fmt.Sprintf("%+v", err)))
 					slog.Info("retry to crawl submission after 1 minutes...")
@@ -110,11 +94,11 @@ loop:
 
 		if submissions[0].EpochSecond < int64(latest.StartedAt) {
 			slog.Info(fmt.Sprintf("All submissions after page `%d` have been crawled. Break crawling the contest `%s`", i, contestID))
-			time.Sleep(time.Duration(c.config.Duration) * time.Millisecond)
+			time.Sleep(c.duration)
 			break loop
 		}
 
-		time.Sleep(time.Duration(c.config.Duration) * time.Millisecond)
+		time.Sleep(c.duration)
 	}
 
 	if len(allSubmissions) == 0 {
@@ -144,11 +128,11 @@ loop:
 }
 
 func (c *submissionCrawler) CrawlSubmission(ctx context.Context) error {
-	if err := c.client.Login(ctx, c.config.username, c.config.password); err != nil {
+	if err := c.client.Login(ctx, c.username, c.password); err != nil {
 		return errs.Wrap(err)
 	}
 
-	ids, err := c.contestRepo.FetchContestIDs(ctx, c.config.Targets)
+	ids, err := c.contestRepo.FetchContestIDs(ctx, c.targets)
 	if err != nil {
 		return errs.Wrap(err)
 	}
@@ -167,7 +151,7 @@ func (c *submissionCrawler) CrawlSubmission(ctx context.Context) error {
 		if err := c.historyRepo.Save(ctx, history); err != nil {
 			return errs.Wrap(err)
 		}
-		time.Sleep(time.Duration(c.config.Duration) * time.Millisecond)
+		time.Sleep(c.duration)
 	}
 	return nil
 }

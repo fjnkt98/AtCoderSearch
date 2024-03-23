@@ -2,7 +2,6 @@ package crawl
 
 import (
 	"context"
-	"fjnkt98/atcodersearch/batch"
 	"fjnkt98/atcodersearch/pkg/atcoder"
 	"fjnkt98/atcodersearch/repository"
 
@@ -12,7 +11,6 @@ import (
 )
 
 type ContestCrawler interface {
-	batch.Batch
 	CrawlContest(ctx context.Context) error
 }
 
@@ -26,14 +24,6 @@ func NewContestCrawler(client atcoder.AtCoderProblemsClient, repo repository.Con
 		client: client,
 		repo:   repo,
 	}
-}
-
-func (c *contestCrawler) Name() string {
-	return "ContestCrawler"
-}
-
-func (c *contestCrawler) Config() any {
-	return nil
 }
 
 func (c *contestCrawler) CrawlContest(ctx context.Context) error {
@@ -51,10 +41,6 @@ func (c *contestCrawler) CrawlContest(ctx context.Context) error {
 	slog.Info("Finish saving contest list.")
 
 	return nil
-}
-
-func (c *contestCrawler) Run(ctx context.Context) error {
-	return c.CrawlContest(ctx)
 }
 
 func convertContest(contest atcoder.Contest) repository.Contest {

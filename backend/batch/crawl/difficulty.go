@@ -2,7 +2,6 @@ package crawl
 
 import (
 	"context"
-	"fjnkt98/atcodersearch/batch"
 	"fjnkt98/atcodersearch/pkg/atcoder"
 	"fjnkt98/atcodersearch/repository"
 
@@ -12,7 +11,6 @@ import (
 )
 
 type DifficultyCrawler interface {
-	batch.Batch
 	CrawlDifficulty(ctx context.Context) error
 }
 
@@ -26,14 +24,6 @@ func NewDifficultyCrawler(client atcoder.AtCoderProblemsClient, repo repository.
 		client: client,
 		repo:   repo,
 	}
-}
-
-func (c *difficultyCrawler) Name() string {
-	return "DifficultyCrawler"
-}
-
-func (c *difficultyCrawler) Config() any {
-	return nil
 }
 
 func (c *difficultyCrawler) CrawlDifficulty(ctx context.Context) error {
@@ -51,10 +41,6 @@ func (c *difficultyCrawler) CrawlDifficulty(ctx context.Context) error {
 	slog.Info("Finish saving difficulties.")
 
 	return nil
-}
-
-func (c *difficultyCrawler) Run(ctx context.Context) error {
-	return c.CrawlDifficulty(ctx)
 }
 
 func convertDifficulties(difficulties map[string]atcoder.Difficulty) []repository.Difficulty {

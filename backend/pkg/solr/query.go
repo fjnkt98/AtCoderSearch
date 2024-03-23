@@ -17,6 +17,7 @@ type SelectQuery struct {
 	client *http.Client
 	uri    *url.URL
 	params url.Values
+	facet  *JSONFacetQuery
 }
 
 func NewSelectQuery(client *http.Client, uri *url.URL) *SelectQuery {
@@ -59,7 +60,8 @@ func (q *SelectQuery) Exec(ctx context.Context) (*SelectResult, error) {
 	}
 
 	result := &SelectResult{
-		Raw: body,
+		query: q,
+		Raw:   body,
 	}
 
 	if res.StatusCode != http.StatusOK {
@@ -106,9 +108,10 @@ func (q *SelectQuery) Wt(wt string) *SelectQuery {
 	return q
 }
 
-func (q *SelectQuery) JsonFacet(facet string) *SelectQuery {
-	if facet != "" {
-		q.params.Set("json.facet", facet)
+func (q *SelectQuery) JsonFacet(facet *JSONFacetQuery) *SelectQuery {
+	f, err := json.Marshal(facet)
+	if err == nil {
+		q.params.Set("json.facet", string(f))
 	}
 	return q
 }
@@ -259,7 +262,8 @@ func (q *SelectQuery) Some(key, value string) *SelectQuery {
 }
 
 type SelectResult struct {
-	Raw SelectResponse
+	query *SelectQuery
+	Raw   SelectResponse
 }
 
 func (r *SelectResult) Scan(v any) error {
@@ -267,4 +271,12 @@ func (r *SelectResult) Scan(v any) error {
 		return errs.New("failed to scan docs", errs.WithCause(err))
 	}
 	return nil
+}
+
+func (r *SelectResult) Facet() (*JSONFacetResponse, error) {
+	res, err := r.Raw.Facets.Parse(r.query.facet)
+	if err != nil {
+		return nil, errs.Wrap(err)
+	}
+	return res, nil
 }
