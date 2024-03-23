@@ -38,3 +38,27 @@ func TestParse(t *testing.T) {
 		})
 	}
 }
+
+func TestSearchWordStringer(t *testing.T) {
+	cases := []struct {
+		name  string
+		input SearchWord
+		want  string
+	}{
+		{name: "normal", input: SearchWord{Word: "foo"}, want: "foo"},
+		{name: "special character included", input: SearchWord{Word: "C++"}, want: "C\\+\\+"},
+		{name: "negative search", input: SearchWord{Word: "foo", Negative: true}, want: "-foo"},
+		{name: "negative search with special character", input: SearchWord{Word: "AND", Negative: true}, want: "-\\AND"},
+		{name: "phrase search", input: SearchWord{Word: "foo bar", Phrase: true}, want: `"foo bar"`},
+		{name: "negative phrase search", input: SearchWord{Word: "foo bar", Negative: true, Phrase: true}, want: `-"foo bar"`},
+	}
+
+	for _, tt := range cases {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			if actual := tt.input.String(); tt.want != actual {
+				t.Errorf("expected %+v, but got %+v", tt.want, actual)
+			}
+		})
+	}
+}

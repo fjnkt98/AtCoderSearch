@@ -5,13 +5,10 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/url"
-	"regexp"
 	"strconv"
 
 	"github.com/goark/errs"
 )
-
-var SOLR_SPECIAL_CHARACTERS = regexp.MustCompile(`(\+|\-|&&|\|\||!|\(|\)|\{|\}|\[|\]|\^|"|\~|\*|\?|:|/|AND|OR)`)
 
 type SelectQuery struct {
 	client *http.Client

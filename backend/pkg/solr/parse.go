@@ -1,13 +1,38 @@
 package solr
 
 import (
+	"fmt"
+	"regexp"
+
 	"golang.org/x/text/unicode/norm"
 )
+
+var SOLR_SPECIAL_CHARACTERS = regexp.MustCompile(`(\+|\-|&&|\|\||!|\(|\)|\{|\}|\[|\]|\^|"|\~|\*|\?|:|/|AND|OR)`)
+
+func Sanitize(s string) string {
+	return SOLR_SPECIAL_CHARACTERS.ReplaceAllString(s, `\${0}`)
+}
 
 type SearchWord struct {
 	Word     string
 	Negative bool
 	Phrase   bool
+}
+
+func (w SearchWord) String() string {
+	if w.Negative {
+		if w.Phrase {
+			return fmt.Sprintf(`-"%s"`, Sanitize(w.Word))
+		} else {
+			return fmt.Sprintf("-%s", Sanitize(w.Word))
+		}
+	} else {
+		if w.Phrase {
+			return fmt.Sprintf(`"%s"`, Sanitize(w.Word))
+		} else {
+			return Sanitize(w.Word)
+		}
+	}
 }
 
 const (
