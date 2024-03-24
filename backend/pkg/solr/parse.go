@@ -21,14 +21,6 @@ func Sanitizes(s []string) []string {
 	return res
 }
 
-func Quotes(s []string) []string {
-	res := make([]string, len(s))
-	for i, s := range s {
-		res[i] = fmt.Sprintf(`"%s"`, s)
-	}
-	return res
-}
-
 type SearchWord struct {
 	Word     string
 	Negative bool

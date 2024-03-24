@@ -40,6 +40,16 @@ func NewJSONFacetQuery(facets ...FacetQueryer) *JSONFacetQuery {
 	}
 }
 
+func (q *JSONFacetQuery) Terms(f *termsFacetQuery) *JSONFacetQuery {
+	q.termsFacets[f.name] = f
+	return q
+}
+
+func (q *JSONFacetQuery) Range(f *rangeFacetQuery) *JSONFacetQuery {
+	q.rangeFacets[f.name] = f
+	return q
+}
+
 func (q JSONFacetQuery) MarshalJSON() ([]byte, error) {
 	body := make(map[string]any)
 

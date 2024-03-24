@@ -86,7 +86,9 @@ func (q *SelectQuery) Rows(rows int) *SelectQuery {
 
 func (q *SelectQuery) Fq(fq ...string) *SelectQuery {
 	for _, fq := range fq {
-		q.params.Add("fq", fq)
+		if fq != "" {
+			q.params.Add("fq", fq)
+		}
 	}
 	return q
 }

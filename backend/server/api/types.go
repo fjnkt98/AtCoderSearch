@@ -47,14 +47,14 @@ func ParseQ(q string) string {
 	return strings.Join(s, " ")
 }
 
-type ResultResponse struct {
+type ResultResponse[T any] struct {
 	Stats   ResultStats `json:"stats"`
-	Items   any         `json:"items"`
-	Message string      `json:"message"`
+	Items   []T         `json:"items"`
+	Message string      `json:"message,omitempty"`
 }
 
-func NewErrorResponse(message string, params any) ResultResponse {
-	return ResultResponse{
+func NewErrorResponse(message string, params any) ResultResponse[any] {
+	return ResultResponse[any]{
 		Stats: ResultStats{
 			Params: params,
 		},
@@ -78,7 +78,18 @@ type FacetCount struct {
 	Count int    `json:"count"`
 }
 
-func NewFacetCountsFromStringBucket(buckets []solr.StringBucket) []FacetCount {
+func NewFacetCount(f *solr.JSONFacetResponse) map[string][]FacetCount {
+	counts := make(map[string][]FacetCount)
+	for k, v := range f.Terms {
+		counts[k] = FacetCountsFromStringBucket(v.Buckets)
+	}
+	for k, v := range f.Range {
+		counts[k] = FacetCountsFromRangeBucket(v.Buckets)
+	}
+	return counts
+}
+
+func FacetCountsFromStringBucket(buckets []solr.StringBucket) []FacetCount {
 	res := make([]FacetCount, len(buckets))
 	for i, b := range buckets {
 		res[i] = FacetCount{
@@ -89,7 +100,7 @@ func NewFacetCountsFromStringBucket(buckets []solr.StringBucket) []FacetCount {
 	return res
 }
 
-func NewFacetCountsFromRangeBucket(buckets []solr.RangeBucket) []FacetCount {
+func FacetCountsFromRangeBucket(buckets []solr.RangeBucket) []FacetCount {
 	res := make([]FacetCount, len(buckets))
 	for i, b := range buckets {
 		if b.Begin == nil {

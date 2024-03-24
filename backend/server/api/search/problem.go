@@ -3,10 +3,8 @@ package search
 import (
 	"fjnkt98/atcodersearch/pkg/solr"
 	"fjnkt98/atcodersearch/server/api"
-	"fmt"
 	"log/slog"
 	"net/http"
-	"strconv"
 	"strings"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -78,38 +76,20 @@ func (h *SearchProblemHandler) SearchProblem(c echo.Context) error {
 		Op("AND").
 		Qf("text_ja text_en text_reading")
 
-	facets := make([]solr.FacetQueryer, 0)
+	jsonFacet := solr.NewJSONFacetQuery()
 	for _, f := range p.Facet {
 		if f == "difficulty" {
-			facets = append(facets, solr.NewRangeFacetQuery("difficulty", 0, 4000, 400).Other("all").ExcludeTags("difficulty"))
+			jsonFacet.Range(solr.NewRangeFacetQuery("difficulty", 0, 4000, 400).Other("all").ExcludeTags("difficulty"))
 		}
-		facets = append(facets, solr.NewTermsFacetQuery(f).Limit(-1).MinCount(0).Sort("index").ExcludeTags(f))
+		jsonFacet.Terms(solr.NewTermsFacetQuery(f).Limit(-1).MinCount(0).Sort("index").ExcludeTags(f))
 	}
-	if len(facets) > 0 {
-		q = q.JsonFacet(solr.NewJSONFacetQuery(facets...))
-	}
+	q = q.JsonFacet(jsonFacet)
 
-	if c := solr.Quotes(solr.Sanitizes(p.Category)); len(c) > 0 {
-		q = q.Fq(fmt.Sprintf("{!tag=category}category:(%s)", strings.Join(c, " OR ")))
-	}
-	if c := solr.Sanitizes(p.Category); len(c) > 0 {
-		q = q.Fq(fmt.Sprintf("{!tag=color}color:(%s)", strings.Join(c, " OR ")))
-	}
-	if p.DifficultyFrom != nil || p.DifficultyTo != nil {
-		var f string
-		if p.DifficultyFrom == nil {
-			f = "*"
-		} else {
-			f = strconv.Itoa(*p.DifficultyFrom)
-		}
-		var t string
-		if p.DifficultyTo == nil {
-			t = "*"
-		} else {
-			t = strconv.Itoa(*p.DifficultyTo)
-		}
-		q = q.Fq(fmt.Sprintf("{!tag=difficulty}difficulty:[%s TO %s]", f, t))
-	}
+	q = q.Fq(
+		api.TermsFilter(p.Category, "category", api.LocalParam("tag", "category")),
+		api.TermsFilter(p.Color, "color", api.LocalParam("tag", "color")),
+		api.RangeFilter(p.DifficultyFrom, p.DifficultyTo, "difficulty", api.LocalParam("tag", "color")),
+	)
 
 	res, err := q.Exec(c.Request().Context())
 	if err != nil {
@@ -123,28 +103,20 @@ func (h *SearchProblemHandler) SearchProblem(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, api.NewErrorResponse("request failed", p))
 	}
 
-	counts := make(map[string][]api.FacetCount)
-	for k, v := range facet.Terms {
-		counts[k] = api.NewFacetCountsFromStringBucket(v.Buckets)
-	}
-	for k, v := range facet.Range {
-		counts[k] = api.NewFacetCountsFromRangeBucket(v.Buckets)
-	}
-
 	var items []ProblemResponse
 	if err := res.Scan(&items); err != nil {
 		slog.Error("request failed", slog.Any("error", err))
 		return c.JSON(http.StatusInternalServerError, api.NewErrorResponse("request failed", p))
 	}
 
-	result := api.ResultResponse{
+	result := api.ResultResponse[ProblemResponse]{
 		Stats: api.ResultStats{
 			Total:  res.Raw.Response.NumFound,
 			Index:  (res.Raw.Response.Start / p.Rows()) + 1,
 			Count:  int(len(items)),
 			Pages:  (res.Raw.Response.NumFound + p.Rows() - 1) / p.Rows(),
 			Params: p,
-			Facet:  counts,
+			Facet:  api.NewFacetCount(facet),
 		},
 		Items: items,
 	}
