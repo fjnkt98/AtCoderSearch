@@ -73,8 +73,15 @@ func (h *SearchProblemHandler) SearchProblem(c echo.Context) error {
 		Start(p.Start()).
 		Sort(api.ParseSort(p.Sort)).
 		Fl(strings.Join(solr.FieldList(new(ProblemResponse)), ",")).
+		Q(api.ParseQ(p.Q)).
 		Op("AND").
-		Qf("text_ja text_en text_reading")
+		Qf("text_ja text_en text_reading").
+		QAlt("*:*").
+		Fq(
+			api.TermsFilter(p.Category, "category", api.LocalParam("tag", "category")),
+			api.TermsFilter(p.Color, "color", api.LocalParam("tag", "color")),
+			api.RangeFilter(p.DifficultyFrom, p.DifficultyTo, "difficulty", api.LocalParam("tag", "color")),
+		)
 
 	jsonFacet := solr.NewJSONFacetQuery()
 	for _, f := range p.Facet {
@@ -84,12 +91,6 @@ func (h *SearchProblemHandler) SearchProblem(c echo.Context) error {
 		jsonFacet.Terms(solr.NewTermsFacetQuery(f).Limit(-1).MinCount(0).Sort("index").ExcludeTags(f))
 	}
 	q = q.JsonFacet(jsonFacet)
-
-	q = q.Fq(
-		api.TermsFilter(p.Category, "category", api.LocalParam("tag", "category")),
-		api.TermsFilter(p.Color, "color", api.LocalParam("tag", "color")),
-		api.RangeFilter(p.DifficultyFrom, p.DifficultyTo, "difficulty", api.LocalParam("tag", "color")),
-	)
 
 	res, err := q.Exec(c.Request().Context())
 	if err != nil {
