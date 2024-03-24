@@ -90,6 +90,10 @@ func (q *termsFacetQuery) MinCount(v int) *termsFacetQuery {
 	q.params["mincount"] = v
 	return q
 }
+func (q *termsFacetQuery) Sort(v string) *termsFacetQuery {
+	q.params["sort"] = v
+	return q
+}
 
 func (q *termsFacetQuery) ExcludeTags(tags ...string) *termsFacetQuery {
 	q.params["domain"] = map[string]any{
@@ -189,12 +193,15 @@ type JSONFacetResponse struct {
 var ErrNoFacetCounts = errs.New("no facet counts")
 
 func (f *RawJSONFacetResponse) Parse(query *JSONFacetQuery) (*JSONFacetResponse, error) {
-	if query == nil {
-		return nil, ErrNoFacetCounts
-	}
-
 	termsFacets := make(map[string]TermsFacetCount)
 	rangeFacets := make(map[string]RangeFacetCount)
+
+	if query == nil {
+		return &JSONFacetResponse{
+			Terms: termsFacets,
+			Range: rangeFacets,
+		}, ErrNoFacetCounts
+	}
 
 	for k := range query.termsFacets {
 		raw, ok := (*f)[k]

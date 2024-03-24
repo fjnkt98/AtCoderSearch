@@ -13,6 +13,22 @@ func Sanitize(s string) string {
 	return SOLR_SPECIAL_CHARACTERS.ReplaceAllString(s, `\${0}`)
 }
 
+func Sanitizes(s []string) []string {
+	res := make([]string, len(s))
+	for i, s := range s {
+		res[i] = Sanitize(s)
+	}
+	return res
+}
+
+func Quotes(s []string) []string {
+	res := make([]string, len(s))
+	for i, s := range s {
+		res[i] = fmt.Sprintf(`"%s"`, s)
+	}
+	return res
+}
+
 type SearchWord struct {
 	Word     string
 	Negative bool

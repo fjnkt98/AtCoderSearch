@@ -84,7 +84,7 @@ func (q *SelectQuery) Rows(rows int) *SelectQuery {
 	return q
 }
 
-func (q *SelectQuery) Fq(fq []string) *SelectQuery {
+func (q *SelectQuery) Fq(fq ...string) *SelectQuery {
 	for _, fq := range fq {
 		q.params.Add("fq", fq)
 	}
@@ -271,9 +271,5 @@ func (r *SelectResult) Scan(v any) error {
 }
 
 func (r *SelectResult) Facet() (*JSONFacetResponse, error) {
-	res, err := r.Raw.Facets.Parse(r.query.facet)
-	if err != nil {
-		return nil, errs.Wrap(err)
-	}
-	return res, nil
+	return r.Raw.Facets.Parse(r.query.facet)
 }

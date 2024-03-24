@@ -7,6 +7,7 @@ require (
 	github.com/deckarep/golang-set/v2 v2.6.0
 	github.com/go-ozzo/ozzo-validation/v4 v4.3.0
 	github.com/goark/errs v1.3.2
+	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo/v4 v4.11.4
 	github.com/lib/pq v1.10.9
 	github.com/tdewolff/minify v2.3.6+incompatible

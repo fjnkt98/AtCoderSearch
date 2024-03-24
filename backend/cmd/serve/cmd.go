@@ -1,49 +1,42 @@
 package serve
 
 import (
-	"fjnkt98/atcodersearch/pkg/solr"
-	"fjnkt98/atcodersearch/server/api/search/problem"
+	"fjnkt98/atcodersearch/server"
+	"fmt"
+	"log/slog"
 	"net/http"
 
-	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/goark/errs"
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 	"github.com/urfave/cli/v2"
 )
-
-type Validator struct{}
-
-func (v *Validator) Validate(i any) error {
-	if c, ok := i.(validation.Validatable); ok {
-		return c.Validate()
-	}
-	return nil
-}
 
 func NewServeCmd() *cli.Command {
 	return &cli.Command{
 		Name: "serve",
-		Action: func(c *cli.Context) error {
-			e := echo.New()
-			e.Use(middleware.Recover())
-			e.Validator = new(Validator)
-
-			core, err := solr.NewSolrCore("http://localhost:8983", "example")
+		Flags: []cli.Flag{
+			&cli.IntFlag{
+				Name:    "port",
+				Value:   8000,
+				EnvVars: []string{"PORT"},
+			},
+		},
+		Action: func(ctx *cli.Context) error {
+			e, err := server.NewServer(server.ServerConfig{DatabaseURL: ctx.String("database-url"), SolrHost: ctx.String("solr-host")})
 			if err != nil {
 				return errs.Wrap(err)
 			}
-			controller := problem.NewSearchProblemController(core)
-			e.GET("/api/search/problem", controller.SearchProblem)
 
+			port := ctx.Int("port")
 			go func() {
-				if err := e.Start(":8000"); err != nil && err != http.ErrServerClosed {
+				slog.Info("start server")
+				if err := e.Start(fmt.Sprintf(":%d", port)); err != nil && err != http.ErrServerClosed {
 					return
 				}
 			}()
 
-			<-c.Done()
-			if err := e.Shutdown(c.Context); err != nil {
+			<-ctx.Done()
+			slog.Info("shutdown server")
+			if err := e.Shutdown(ctx.Context); err != nil {
 				return errs.Wrap(err)
 			}
 			return nil
