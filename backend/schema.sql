@@ -1,68 +1,68 @@
 CREATE TABLE "contests" (
-    "contest_id" text NOT NULL PRIMARY KEY,
-    "start_epoch_second" bigint NOT NULL,
-    "duration_second" bigint NOT NULL,
-    "title" text NOT NULL,
-    "rate_change" text NOT NULL,
-    "category" text NOT NULL,
-    "created_at" timestamp WITH time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    "updated_at" timestamp WITH time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+    "contest_id" TEXT NOT NULL PRIMARY KEY,
+    "start_epoch_second" BIGINT NOT NULL,
+    "duration_second" BIGINT NOT NULL,
+    "title" TEXT NOT NULL,
+    "rate_change" TEXT NOT NULL,
+    "category" TEXT NOT NULL,
+    "created_at" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "updated_at" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 CREATE TABLE "problems" (
-    "problem_id" text NOT NULL PRIMARY KEY,
-    "contest_id" text NOT NULL,
-    "problem_index" text NOT NULL,
-    "name" text NOT NULL,
-    "title" text NOT NULL,
-    "url" text NOT NULL,
-    "html" text NOT NULL,
-    "created_at" timestamp WITH time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    "updated_at" timestamp WITH time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+    "problem_id" TEXT NOT NULL PRIMARY KEY,
+    "contest_id" TEXT NOT NULL,
+    "problem_index" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "url" TEXT NOT NULL,
+    "html" TEXT NOT NULL,
+    "created_at" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "updated_at" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 CREATE TABLE "difficulties" (
-    "problem_id" text NOT NULL PRIMARY KEY,
-    "slope" double precision,
-    "intercept" double precision,
-    "variance" double precision,
-    "difficulty" integer,
-    "discrimination" double precision,
-    "irt_loglikelihood" double precision,
-    "irt_users" double precision,
-    "is_experimental" boolean,
-    "created_at" timestamp WITH time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    "updated_at" timestamp WITH time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+    "problem_id" TEXT NOT NULL PRIMARY KEY,
+    "slope" DOUBLE PRECISION,
+    "intercept" DOUBLE PRECISION,
+    "variance" DOUBLE PRECISION,
+    "difficulty" INTEGER,
+    "discrimination" DOUBLE PRECISION,
+    "irt_loglikelihood" DOUBLE PRECISION,
+    "irt_users" DOUBLE PRECISION,
+    "is_experimental" BOOLEAN,
+    "created_at" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "updated_at" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 CREATE TABLE "users" (
-    "user_name" text NOT NULL PRIMARY KEY,
-    "rating" integer NOT NULL,
-    "highest_rating" integer NOT NULL,
-    "affiliation" text,
-    "birth_year" integer,
-    "country" text,
-    "crown" text,
-    "join_count" integer NOT NULL,
-    "rank" integer NOT NULL,
-    "active_rank" integer,
-    "wins" integer NOT NULL,
-    "created_at" timestamp WITH time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    "updated_at" timestamp WITH time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+    "user_name" TEXT NOT NULL PRIMARY KEY,
+    "rating" INTEGER NOT NULL,
+    "highest_rating" INTEGER NOT NULL,
+    "affiliation" TEXT,
+    "birth_year" INTEGER,
+    "country" TEXT,
+    "crown" TEXT,
+    "join_count" INTEGER NOT NULL,
+    "rank" INTEGER NOT NULL,
+    "active_rank" INTEGER,
+    "wins" INTEGER NOT NULL,
+    "created_at" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "updated_at" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 CREATE TABLE "submissions" (
-    "id" bigint NOT NULL,
-    "epoch_second" bigint NOT NULL,
-    "problem_id" text NOT NULL,
-    "contest_id" text,
-    "user_id" text,
-    "language" text,
-    "point" double precision,
-    "length" integer,
-    "result" text,
-    "execution_time" integer,
-    "crawled_at" timestamp WITH time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "id" BIGINT NOT NULL,
+    "epoch_second" BIGINT NOT NULL,
+    "problem_id" TEXT NOT NULL,
+    "contest_id" TEXT,
+    "user_id" TEXT,
+    "language" TEXT,
+    "point" DOUBLE PRECISION,
+    "length" INTEGER,
+    "result" TEXT,
+    "execution_time" INTEGER,
+    "crawled_at" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
     PRIMARY KEY ("id")
 );
 
@@ -80,24 +80,13 @@ CREATE INDEX "submissions_result_index" ON "submissions" ("result");
 
 CREATE INDEX "submissions_crawled_at_index" ON "submissions" ("crawled_at");
 
-CREATE TABLE "category_relationships" (
-    "from" TEXT NOT NULL,
-    "to" TEXT NOT NULL,
-    "weight" DOUBLE PRECISION NOT NULL,
-    PRIMARY KEY ("from", "to")
-);
-
-CREATE INDEX "category_relationships_from_index" ON "category_relationships" ("from");
-
-CREATE INDEX "category_relationships_to_index" ON "category_relationships" ("to");
-
 CREATE TABLE "update_history" (
-    "id" bigserial NOT NULL,
-    "domain" text NOT NULL,
-    "started_at" timestamp WITH time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    "finished_at" timestamp WITH time zone NOT NULL,
-    "status" text NOT NULL,
-    "options" json NOT NULL,
+    "id" BIGSERIAL NOT NULL,
+    "domain" TEXT NOT NULL,
+    "started_at" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "finished_at" TIMESTAMP WITH TIME ZONE,
+    "status" TEXT,
+    "options" JSON NOT NULL,
     PRIMARY KEY ("id")
 );
 
@@ -106,17 +95,17 @@ CREATE INDEX "update_history_started_at_index" ON "update_history" ("started_at"
 CREATE INDEX "update_history_domain_index" ON "update_history" ("domain");
 
 CREATE TABLE "submission_crawl_history" (
-    "id" bigserial NOT NULL,
-    "contest_id" text NOT NULL,
-    "started_at" bigint NOT NULL,
+    "id" BIGSERIAL NOT NULL,
+    "contest_id" TEXT NOT NULL,
+    "started_at" BIGINT NOT NULL,
     PRIMARY KEY ("id")
 );
 
 CREATE INDEX "submission_crawl_history_contest_id_start_at_index" ON "submission_crawl_history" ("contest_id", "started_at");
 
 CREATE TABLE "languages" (
-    "language" text NOT NULL,
-    "group" text,
+    "language" TEXT NOT NULL,
+    "group" TEXT,
     PRIMARY KEY ("language")
 );
 
