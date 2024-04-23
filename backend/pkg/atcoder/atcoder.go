@@ -19,30 +19,30 @@ import (
 )
 
 type Submission struct {
-	ID            int
+	ID            int64
 	EpochSecond   int64
 	ProblemID     string
 	ContestID     string
 	UserID        string
 	Language      string
 	Point         float64
-	Length        int
+	Length        int32
 	Result        string
-	ExecutionTime *int
+	ExecutionTime *int32
 }
 
 type User struct {
 	UserName      string
-	Rating        int
-	HighestRating int
+	Rating        int32
+	HighestRating int32
 	Affiliation   *string
-	BirthYear     *int
+	BirthYear     *int32
 	Country       *string
 	Crown         *string
-	JoinCount     int
-	Rank          int
-	ActiveRank    *int
-	Wins          int
+	JoinCount     int32
+	Rank          int32
+	ActiveRank    *int32
+	Wins          int32
 }
 
 type AtCoderClient interface {
@@ -202,13 +202,17 @@ func scrapeSubmissions(html io.Reader) ([]Submission, error) {
 				if err != nil {
 					errors = append(errors, err)
 				}
-				s.Length = length
+				s.Length = int32(length)
 			case 6:
 				s.Result = td.Text()
 			case 7, 9:
 				a := td.Find("td > a")
 				if href, ok := a.Attr("href"); ok {
-					s.ID, _ = strconv.Atoi(path.Base(href))
+					id, err := strconv.Atoi(path.Base(href))
+					if err != nil {
+						errors = append(errors, err)
+					}
+					s.ID = int64(id)
 				} else {
 					t := td.Text()
 					t = strings.TrimSuffix(t, "ms")
@@ -217,7 +221,8 @@ func scrapeSubmissions(html io.Reader) ([]Submission, error) {
 					if err != nil {
 						errors = append(errors, err)
 					}
-					s.ExecutionTime = &et
+					executionTime := int32(et)
+					s.ExecutionTime = &executionTime
 				}
 			}
 		})
@@ -418,14 +423,14 @@ func scrapeUsers(html io.Reader) ([]User, error) {
 				if rank, err := strconv.Atoi(m[1]); err != nil {
 					errors = append(errors, err)
 				} else {
-					user.Rank = int(rank)
+					user.Rank = int32(rank)
 				}
 
 				activeRankStr := strings.TrimSpace(td.Contents().Not("span").Text())
 				if r, err := strconv.Atoi(activeRankStr); err != nil {
 					user.ActiveRank = nil
 				} else {
-					rank := int(r)
+					rank := int32(r)
 					user.ActiveRank = &rank
 				}
 			case 1:
@@ -456,32 +461,32 @@ func scrapeUsers(html io.Reader) ([]User, error) {
 				if year, err := strconv.Atoi(td.Text()); err != nil {
 					user.BirthYear = nil
 				} else {
-					year := int(year)
+					year := int32(year)
 					user.BirthYear = &year
 				}
 			case 3:
 				if rating, err := strconv.Atoi(td.Text()); err != nil {
 					errors = append(errors, errs.New("failed to convert the rating", errs.WithCause(err), errs.WithContext("row number", i), errs.WithContext("col number", j)))
 				} else {
-					user.Rating = rating
+					user.Rating = int32(rating)
 				}
 			case 4:
 				if highestRating, err := strconv.Atoi(td.Text()); err != nil {
 					errors = append(errors, errs.New("failed to convert the highest rating", errs.WithCause(err), errs.WithContext("row number", i), errs.WithContext("col number", j)))
 				} else {
-					user.HighestRating = highestRating
+					user.HighestRating = int32(highestRating)
 				}
 			case 5:
 				if joinCount, err := strconv.Atoi(td.Text()); err != nil {
 					errors = append(errors, errs.New("failed to convert the join count", errs.WithCause(err), errs.WithContext("row number", i), errs.WithContext("col number", j)))
 				} else {
-					user.JoinCount = int(joinCount)
+					user.JoinCount = int32(joinCount)
 				}
 			case 6:
 				if wins, err := strconv.Atoi(td.Text()); err != nil {
 					errors = append(errors, errs.New("failed to convert the win count", errs.WithCause(err), errs.WithContext("row number", i), errs.WithContext("col number", j)))
 				} else {
-					user.Wins = int(wins)
+					user.Wins = int32(wins)
 				}
 			}
 		})

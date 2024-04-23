@@ -8,6 +8,7 @@ import (
 	"log/slog"
 
 	"github.com/goark/errs"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type DifficultyCrawler interface {
@@ -16,13 +17,13 @@ type DifficultyCrawler interface {
 
 type difficultyCrawler struct {
 	client atcoder.AtCoderProblemsClient
-	repo   repository.DifficultyRepository
+	pool   *pgxpool.Pool
 }
 
-func NewDifficultyCrawler(client atcoder.AtCoderProblemsClient, repo repository.DifficultyRepository) DifficultyCrawler {
+func NewDifficultyCrawler(client atcoder.AtCoderProblemsClient, pool *pgxpool.Pool) DifficultyCrawler {
 	return &difficultyCrawler{
 		client: client,
-		repo:   repo,
+		pool:   pool,
 	}
 }
 
@@ -35,28 +36,32 @@ func (c *difficultyCrawler) CrawlDifficulty(ctx context.Context) error {
 	slog.Info("Finish crawling difficulties.")
 
 	slog.Info("Start to save difficulties.")
-	if err := c.repo.Save(ctx, convertDifficulties(difficulties)); err != nil {
-		return errs.Wrap(err)
+	tx, err := c.pool.Begin(ctx)
+	if err != nil {
+		return errs.New("failed to start transaction", errs.WithCause(err))
+	}
+
+	q := repository.New(c.pool).WithTx(tx)
+	for problemID, d := range difficulties {
+		if _, err := q.InsertDifficulty(ctx, repository.InsertDifficultyParams{
+			ProblemID:        problemID,
+			Slope:            d.Slope,
+			Intercept:        d.Intercept,
+			Variance:         d.Variance,
+			Difficulty:       d.Difficulty,
+			Discrimination:   d.Discrimination,
+			IrtLoglikelihood: d.IrtLogLikelihood,
+			IrtUsers:         d.IrtUsers,
+			IsExperimental:   d.IsExperimental,
+		}); err != nil {
+			return errs.Wrap(err)
+		}
+	}
+
+	if err := tx.Commit(ctx); err != nil {
+		return errs.New("failed to commit transaction", errs.WithCause(err))
 	}
 	slog.Info("Finish saving difficulties.")
 
 	return nil
-}
-
-func convertDifficulties(difficulties map[string]atcoder.Difficulty) []repository.Difficulty {
-	result := make([]repository.Difficulty, 0, len(difficulties))
-	for problemID, difficulty := range difficulties {
-		result = append(result, repository.Difficulty{
-			ProblemID:        problemID,
-			Slope:            difficulty.Slope,
-			Intercept:        difficulty.Intercept,
-			Variance:         difficulty.Variance,
-			Difficulty:       difficulty.Difficulty,
-			Discrimination:   difficulty.Discrimination,
-			IrtLogLikelihood: difficulty.IrtLogLikelihood,
-			IrtUsers:         difficulty.IrtUsers,
-			IsExperimental:   difficulty.IsExperimental,
-		})
-	}
-	return result
 }

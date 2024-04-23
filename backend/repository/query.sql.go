@@ -7,11 +7,9 @@ package repository
 
 import (
 	"context"
-	"database/sql"
-	"encoding/json"
-	"time"
 
-	"github.com/lib/pq"
+	"github.com/jackc/pgx/v5/pgconn"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createCrawlHistory = `-- name: CreateCrawlHistory :one
@@ -25,12 +23,12 @@ RETURNING
 `
 
 type CreateCrawlHistoryRow struct {
-	StartedAt int64
-	ContestID string
+	StartedAt int64  `db:"started_at" json:"started_at"`
+	ContestID string `db:"contest_id" json:"contest_id"`
 }
 
 func (q *Queries) CreateCrawlHistory(ctx context.Context, contestID string) (CreateCrawlHistoryRow, error) {
-	row := q.db.QueryRowContext(ctx, createCrawlHistory, contestID)
+	row := q.db.QueryRow(ctx, createCrawlHistory, contestID)
 	var i CreateCrawlHistoryRow
 	err := row.Scan(&i.StartedAt, &i.ContestID)
 	return i, err
@@ -48,18 +46,18 @@ RETURNING
 `
 
 type CreateUpdateHistoryParams struct {
-	Domain  string
-	Options json.RawMessage
+	Domain  string `db:"domain" json:"domain"`
+	Options []byte `db:"options" json:"options"`
 }
 
 type CreateUpdateHistoryRow struct {
-	ID        int64
-	Domain    string
-	StartedAt time.Time
+	ID        int64              `db:"id" json:"id"`
+	Domain    string             `db:"domain" json:"domain"`
+	StartedAt pgtype.Timestamptz `db:"started_at" json:"started_at"`
 }
 
 func (q *Queries) CreateUpdateHistory(ctx context.Context, arg CreateUpdateHistoryParams) (CreateUpdateHistoryRow, error) {
-	row := q.db.QueryRowContext(ctx, createUpdateHistory, arg.Domain, arg.Options)
+	row := q.db.QueryRow(ctx, createUpdateHistory, arg.Domain, arg.Options)
 	var i CreateUpdateHistoryRow
 	err := row.Scan(&i.ID, &i.Domain, &i.StartedAt)
 	return i, err
@@ -75,7 +73,7 @@ ORDER BY
 `
 
 func (q *Queries) FetchCategories(ctx context.Context) ([]string, error) {
-	rows, err := q.db.QueryContext(ctx, fetchCategories)
+	rows, err := q.db.Query(ctx, fetchCategories)
 	if err != nil {
 		return nil, err
 	}
@@ -87,9 +85,6 @@ func (q *Queries) FetchCategories(ctx context.Context) ([]string, error) {
 			return nil, err
 		}
 		items = append(items, category)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
@@ -107,7 +102,7 @@ ORDER BY
 `
 
 func (q *Queries) FetchContestIDs(ctx context.Context) ([]string, error) {
-	rows, err := q.db.QueryContext(ctx, fetchContestIDs)
+	rows, err := q.db.Query(ctx, fetchContestIDs)
 	if err != nil {
 		return nil, err
 	}
@@ -119,9 +114,6 @@ func (q *Queries) FetchContestIDs(ctx context.Context) ([]string, error) {
 			return nil, err
 		}
 		items = append(items, contest_id)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
@@ -141,7 +133,7 @@ ORDER BY
 `
 
 func (q *Queries) FetchContestIDsByCategory(ctx context.Context, category []string) ([]string, error) {
-	rows, err := q.db.QueryContext(ctx, fetchContestIDsByCategory, pq.Array(category))
+	rows, err := q.db.Query(ctx, fetchContestIDsByCategory, category)
 	if err != nil {
 		return nil, err
 	}
@@ -153,9 +145,6 @@ func (q *Queries) FetchContestIDsByCategory(ctx context.Context, category []stri
 			return nil, err
 		}
 		items = append(items, contest_id)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
@@ -172,22 +161,19 @@ ORDER BY
     "group" DESC
 `
 
-func (q *Queries) FetchLanguageGroups(ctx context.Context) ([]sql.NullString, error) {
-	rows, err := q.db.QueryContext(ctx, fetchLanguageGroups)
+func (q *Queries) FetchLanguageGroups(ctx context.Context) ([]*string, error) {
+	rows, err := q.db.Query(ctx, fetchLanguageGroups)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []sql.NullString
+	var items []*string
 	for rows.Next() {
-		var group sql.NullString
+		var group *string
 		if err := rows.Scan(&group); err != nil {
 			return nil, err
 		}
 		items = append(items, group)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
@@ -205,7 +191,7 @@ ORDER BY
 `
 
 func (q *Queries) FetchLanguages(ctx context.Context) ([]string, error) {
-	rows, err := q.db.QueryContext(ctx, fetchLanguages)
+	rows, err := q.db.Query(ctx, fetchLanguages)
 	if err != nil {
 		return nil, err
 	}
@@ -217,9 +203,6 @@ func (q *Queries) FetchLanguages(ctx context.Context) ([]string, error) {
 			return nil, err
 		}
 		items = append(items, language)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
@@ -239,7 +222,7 @@ ORDER BY
 `
 
 func (q *Queries) FetchLanguagesByGroup(ctx context.Context, groups []string) ([]string, error) {
-	rows, err := q.db.QueryContext(ctx, fetchLanguagesByGroup, pq.Array(groups))
+	rows, err := q.db.Query(ctx, fetchLanguagesByGroup, groups)
 	if err != nil {
 		return nil, err
 	}
@@ -251,9 +234,6 @@ func (q *Queries) FetchLanguagesByGroup(ctx context.Context, groups []string) ([
 			return nil, err
 		}
 		items = append(items, language)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
@@ -273,7 +253,7 @@ LIMIT
 `
 
 func (q *Queries) FetchLatestCrawlHistory(ctx context.Context, contestID string) (int64, error) {
-	row := q.db.QueryRowContext(ctx, fetchLatestCrawlHistory, contestID)
+	row := q.db.QueryRow(ctx, fetchLatestCrawlHistory, contestID)
 	var started_at int64
 	err := row.Scan(&started_at)
 	return started_at, err
@@ -296,13 +276,13 @@ LIMIT
 `
 
 type FetchLatestUpdateHistoryRow struct {
-	ID         int64
-	StartedAt  time.Time
-	FinishedAt sql.NullTime
+	ID         int64              `db:"id" json:"id"`
+	StartedAt  pgtype.Timestamptz `db:"started_at" json:"started_at"`
+	FinishedAt pgtype.Timestamptz `db:"finished_at" json:"finished_at"`
 }
 
 func (q *Queries) FetchLatestUpdateHistory(ctx context.Context, domain string) (FetchLatestUpdateHistoryRow, error) {
-	row := q.db.QueryRowContext(ctx, fetchLatestUpdateHistory, domain)
+	row := q.db.QueryRow(ctx, fetchLatestUpdateHistory, domain)
 	var i FetchLatestUpdateHistoryRow
 	err := row.Scan(&i.ID, &i.StartedAt, &i.FinishedAt)
 	return i, err
@@ -316,7 +296,7 @@ FROM
 `
 
 func (q *Queries) FetchProblemIDs(ctx context.Context) ([]string, error) {
-	rows, err := q.db.QueryContext(ctx, fetchProblemIDs)
+	rows, err := q.db.Query(ctx, fetchProblemIDs)
 	if err != nil {
 		return nil, err
 	}
@@ -328,9 +308,6 @@ func (q *Queries) FetchProblemIDs(ctx context.Context) ([]string, error) {
 			return nil, err
 		}
 		items = append(items, problem_id)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
@@ -350,7 +327,7 @@ ORDER BY
 `
 
 func (q *Queries) FetchProblemIDsByContestID(ctx context.Context, contestID []string) ([]string, error) {
-	rows, err := q.db.QueryContext(ctx, fetchProblemIDsByContestID, pq.Array(contestID))
+	rows, err := q.db.Query(ctx, fetchProblemIDsByContestID, contestID)
 	if err != nil {
 		return nil, err
 	}
@@ -362,9 +339,6 @@ func (q *Queries) FetchProblemIDsByContestID(ctx context.Context, contestID []st
 			return nil, err
 		}
 		items = append(items, problem_id)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
@@ -384,7 +358,7 @@ LIMIT
 `
 
 func (q *Queries) FetchRatingByUserName(ctx context.Context, userName string) (int32, error) {
-	row := q.db.QueryRowContext(ctx, fetchRatingByUserName, userName)
+	row := q.db.QueryRow(ctx, fetchRatingByUserName, userName)
 	var rating int32
 	err := row.Scan(&rating)
 	return rating, err
@@ -415,16 +389,16 @@ SET
 `
 
 type InsertContestParams struct {
-	ContestID        string
-	StartEpochSecond int64
-	DurationSecond   int64
-	Title            string
-	RateChange       string
-	Category         string
+	ContestID        string `db:"contest_id" json:"contest_id"`
+	StartEpochSecond int64  `db:"start_epoch_second" json:"start_epoch_second"`
+	DurationSecond   int64  `db:"duration_second" json:"duration_second"`
+	Title            string `db:"title" json:"title"`
+	RateChange       string `db:"rate_change" json:"rate_change"`
+	Category         string `db:"category" json:"category"`
 }
 
-func (q *Queries) InsertContest(ctx context.Context, arg InsertContestParams) (sql.Result, error) {
-	return q.db.ExecContext(ctx, insertContest,
+func (q *Queries) InsertContest(ctx context.Context, arg InsertContestParams) (pgconn.CommandTag, error) {
+	return q.db.Exec(ctx, insertContest,
 		arg.ContestID,
 		arg.StartEpochSecond,
 		arg.DurationSecond,
@@ -465,19 +439,19 @@ SET
 `
 
 type InsertDifficultyParams struct {
-	ProblemID        string
-	Slope            sql.NullFloat64
-	Intercept        sql.NullFloat64
-	Variance         sql.NullFloat64
-	Difficulty       sql.NullInt32
-	Discrimination   sql.NullFloat64
-	IrtLoglikelihood sql.NullFloat64
-	IrtUsers         sql.NullFloat64
-	IsExperimental   sql.NullBool
+	ProblemID        string   `db:"problem_id" json:"problem_id"`
+	Slope            *float64 `db:"slope" json:"slope"`
+	Intercept        *float64 `db:"intercept" json:"intercept"`
+	Variance         *float64 `db:"variance" json:"variance"`
+	Difficulty       *int64   `db:"difficulty" json:"difficulty"`
+	Discrimination   *float64 `db:"discrimination" json:"discrimination"`
+	IrtLoglikelihood *float64 `db:"irt_loglikelihood" json:"irt_loglikelihood"`
+	IrtUsers         *float64 `db:"irt_users" json:"irt_users"`
+	IsExperimental   *bool    `db:"is_experimental" json:"is_experimental"`
 }
 
-func (q *Queries) InsertDifficulty(ctx context.Context, arg InsertDifficultyParams) (sql.Result, error) {
-	return q.db.ExecContext(ctx, insertDifficulty,
+func (q *Queries) InsertDifficulty(ctx context.Context, arg InsertDifficultyParams) (pgconn.CommandTag, error) {
+	return q.db.Exec(ctx, insertDifficulty,
 		arg.ProblemID,
 		arg.Slope,
 		arg.Intercept,
@@ -518,17 +492,17 @@ SET
 `
 
 type InsertProblemParams struct {
-	ProblemID    string
-	ContestID    string
-	ProblemIndex string
-	Name         string
-	Title        string
-	Url          string
-	Html         string
+	ProblemID    string `db:"problem_id" json:"problem_id"`
+	ContestID    string `db:"contest_id" json:"contest_id"`
+	ProblemIndex string `db:"problem_index" json:"problem_index"`
+	Name         string `db:"name" json:"name"`
+	Title        string `db:"title" json:"title"`
+	Url          string `db:"url" json:"url"`
+	Html         string `db:"html" json:"html"`
 }
 
-func (q *Queries) InsertProblem(ctx context.Context, arg InsertProblemParams) (sql.Result, error) {
-	return q.db.ExecContext(ctx, insertProblem,
+func (q *Queries) InsertProblem(ctx context.Context, arg InsertProblemParams) (pgconn.CommandTag, error) {
+	return q.db.Exec(ctx, insertProblem,
 		arg.ProblemID,
 		arg.ContestID,
 		arg.ProblemIndex,
@@ -555,7 +529,7 @@ INSERT INTO
         "crawled_at"
     )
 VALUES
-    ($1, $2, $3, $4, $5, $6, $7, $8, $7, $8, NOW())
+    ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW())
 ON CONFLICT ("id") DO
 UPDATE
 SET
@@ -572,18 +546,20 @@ SET
 `
 
 type InsertSubmissionParams struct {
-	ID          int64
-	EpochSecond int64
-	ProblemID   string
-	ContestID   sql.NullString
-	UserID      sql.NullString
-	Language    sql.NullString
-	Point       sql.NullFloat64
-	Length      sql.NullInt32
+	ID            int64    `db:"id" json:"id"`
+	EpochSecond   int64    `db:"epoch_second" json:"epoch_second"`
+	ProblemID     string   `db:"problem_id" json:"problem_id"`
+	ContestID     *string  `db:"contest_id" json:"contest_id"`
+	UserID        *string  `db:"user_id" json:"user_id"`
+	Language      *string  `db:"language" json:"language"`
+	Point         *float64 `db:"point" json:"point"`
+	Length        *int32   `db:"length" json:"length"`
+	Result        *string  `db:"result" json:"result"`
+	ExecutionTime *int32   `db:"execution_time" json:"execution_time"`
 }
 
-func (q *Queries) InsertSubmission(ctx context.Context, arg InsertSubmissionParams) (sql.Result, error) {
-	return q.db.ExecContext(ctx, insertSubmission,
+func (q *Queries) InsertSubmission(ctx context.Context, arg InsertSubmissionParams) (pgconn.CommandTag, error) {
+	return q.db.Exec(ctx, insertSubmission,
 		arg.ID,
 		arg.EpochSecond,
 		arg.ProblemID,
@@ -592,6 +568,8 @@ func (q *Queries) InsertSubmission(ctx context.Context, arg InsertSubmissionPara
 		arg.Language,
 		arg.Point,
 		arg.Length,
+		arg.Result,
+		arg.ExecutionTime,
 	)
 }
 
@@ -622,9 +600,9 @@ VALUES
         $6,
         $7,
         $8,
-        $7,
-        $8,
         $9,
+        $10,
+        $11,
         NOW(),
         NOW()
     )
@@ -646,19 +624,21 @@ SET
 `
 
 type InsertUserParams struct {
-	UserName      string
-	Rating        int32
-	HighestRating int32
-	Affiliation   sql.NullString
-	BirthYear     sql.NullInt32
-	Country       sql.NullString
-	Crown         sql.NullString
-	JoinCount     int32
-	Wins          int32
+	UserName      string  `db:"user_name" json:"user_name"`
+	Rating        int32   `db:"rating" json:"rating"`
+	HighestRating int32   `db:"highest_rating" json:"highest_rating"`
+	Affiliation   *string `db:"affiliation" json:"affiliation"`
+	BirthYear     *int32  `db:"birth_year" json:"birth_year"`
+	Country       *string `db:"country" json:"country"`
+	Crown         *string `db:"crown" json:"crown"`
+	JoinCount     int32   `db:"join_count" json:"join_count"`
+	Rank          int32   `db:"rank" json:"rank"`
+	ActiveRank    *int32  `db:"active_rank" json:"active_rank"`
+	Wins          int32   `db:"wins" json:"wins"`
 }
 
-func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (sql.Result, error) {
-	return q.db.ExecContext(ctx, insertUser,
+func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (pgconn.CommandTag, error) {
+	return q.db.Exec(ctx, insertUser,
 		arg.UserName,
 		arg.Rating,
 		arg.HighestRating,
@@ -667,6 +647,8 @@ func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (sql.Res
 		arg.Country,
 		arg.Crown,
 		arg.JoinCount,
+		arg.Rank,
+		arg.ActiveRank,
 		arg.Wins,
 	)
 }
@@ -681,11 +663,11 @@ WHERE
 `
 
 type UpdateUpdateHistoryParams struct {
-	Status sql.NullString
-	ID     int64
+	Status *string `db:"status" json:"status"`
+	ID     int64   `db:"id" json:"id"`
 }
 
 func (q *Queries) UpdateUpdateHistory(ctx context.Context, arg UpdateUpdateHistoryParams) error {
-	_, err := q.db.ExecContext(ctx, updateUpdateHistory, arg.Status, arg.ID)
+	_, err := q.db.Exec(ctx, updateUpdateHistory, arg.Status, arg.ID)
 	return err
 }

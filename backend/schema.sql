@@ -26,7 +26,7 @@ CREATE TABLE "difficulties" (
     "slope" DOUBLE PRECISION,
     "intercept" DOUBLE PRECISION,
     "variance" DOUBLE PRECISION,
-    "difficulty" INTEGER,
+    "difficulty" BIGINT,
     "discrimination" DOUBLE PRECISION,
     "irt_loglikelihood" DOUBLE PRECISION,
     "irt_users" DOUBLE PRECISION,

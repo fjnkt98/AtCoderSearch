@@ -8,6 +8,7 @@ import (
 	"log/slog"
 
 	"github.com/goark/errs"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type ContestCrawler interface {
@@ -16,13 +17,13 @@ type ContestCrawler interface {
 
 type contestCrawler struct {
 	client atcoder.AtCoderProblemsClient
-	repo   repository.ContestRepository
+	pool   *pgxpool.Pool
 }
 
-func NewContestCrawler(client atcoder.AtCoderProblemsClient, repo repository.ContestRepository) ContestCrawler {
+func NewContestCrawler(client atcoder.AtCoderProblemsClient, pool *pgxpool.Pool) ContestCrawler {
 	return &contestCrawler{
 		client: client,
-		repo:   repo,
+		pool:   pool,
 	}
 }
 
@@ -35,30 +36,28 @@ func (c *contestCrawler) CrawlContest(ctx context.Context) error {
 	slog.Info("Finish fetching contests.")
 
 	slog.Info("Start to save contests.")
-	if err := c.repo.Save(ctx, convertContests(contests)); err != nil {
-		return errs.Wrap(err)
+	tx, err := c.pool.Begin(ctx)
+	if err != nil {
+		return errs.New("failed to start transaction", errs.WithCause(err))
 	}
+	q := repository.New(c.pool).WithTx(tx)
+	for _, contest := range contests {
+		if _, err := q.InsertContest(ctx, repository.InsertContestParams{
+			ContestID:        contest.ID,
+			StartEpochSecond: contest.StartEpochSecond,
+			DurationSecond:   contest.DurationSecond,
+			Title:            contest.Title,
+			RateChange:       contest.RateChange,
+			Category:         contest.Categorize(),
+		}); err != nil {
+			return errs.Wrap(err)
+		}
+	}
+	if err := tx.Commit(ctx); err != nil {
+		return errs.New("failed to commit transaction", errs.WithCause(err))
+	}
+
 	slog.Info("Finish saving contest list.")
 
 	return nil
-}
-
-func convertContest(contest atcoder.Contest) repository.Contest {
-	return repository.Contest{
-		ContestID:        contest.ID,
-		StartEpochSecond: contest.StartEpochSecond,
-		DurationSecond:   contest.DurationSecond,
-		Title:            contest.Title,
-		RateChange:       contest.RateChange,
-		Category:         contest.Categorize(),
-	}
-}
-
-func convertContests(contests []atcoder.Contest) []repository.Contest {
-	result := make([]repository.Contest, len(contests))
-	for i, c := range contests {
-		result[i] = convertContest(c)
-	}
-
-	return result
 }
