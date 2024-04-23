@@ -164,11 +164,6 @@ func (c *submissionCrawler) CrawlSubmission(ctx context.Context) error {
 	return nil
 }
 
-func (c *submissionCrawler) Run(ctx context.Context) error {
-	return c.CrawlSubmission(ctx)
-
-}
-
 func dedupSubmissions(submissions []atcoder.Submission) []atcoder.Submission {
 	result := make([]atcoder.Submission, 0, len(submissions))
 	ids := mapset.NewSet[int64]()
