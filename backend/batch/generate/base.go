@@ -121,7 +121,7 @@ func (g *documentGenerator[D, R]) clean() error {
 	return nil
 }
 
-func (g *documentGenerator[D, R]) save(ctx context.Context, rx <-chan D) error {
+func (g *documentGenerator[D, R]) save(ctx context.Context, rx <-chan D) (err error) {
 	write := func(docs []D, p string) error {
 		file, err := os.Create(p)
 		if err != nil {
@@ -132,6 +132,14 @@ func (g *documentGenerator[D, R]) save(ctx context.Context, rx <-chan D) error {
 			)
 		}
 		defer file.Close()
+		defer func() {
+			if closeErr := file.Close(); closeErr != nil {
+				err = errs.Join(
+					errs.New("failed to close doc file", errs.WithCause(closeErr)),
+					err,
+				)
+			}
+		}()
 
 		if err := json.NewEncoder(file).Encode(docs); err != nil {
 			return errs.New(
