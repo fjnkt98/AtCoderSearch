@@ -104,37 +104,50 @@
   <field name="null" type="Null" indexed="false" stored="false" />
 
   <uniqueKey>problem_id</uniqueKey>
-  <field name="problem_id" type="String" indexed="true" stored="true" required="true" multiValued="false" />
-  <field name="problem_title" type="String" indexed="true" stored="true" multiValued="false" />
-  <field name="problem_url" type="String" indexed="false" stored="true" multiValued="false" />
-  <field name="contest_id" type="String" indexed="true" stored="true" required="true" multiValued="false" />
-  <field name="contest_title" type="String" indexed="true" stored="true" multiValued="false" />
-  <field name="contest_url" type="String" indexed="false" stored="true" multiValued="false" />
+  <field name="problem_id" type="String" indexed="true" stored="true" />
+  <field name="problem_title" type="String" indexed="true" stored="true" />
+  <field name="problem_url" type="String" indexed="false" stored="true" />
+  <field name="contest_id" type="String" indexed="true" stored="true" />
+  <field name="contest_title" type="String" indexed="true" stored="true" />
+  <field name="contest_url" type="String" indexed="false" stored="true" />
+  <field name="color" type="String" indexed="true" stored="true" />
+  <field name="start_at" type="DateTime" indexed="true" stored="true" />
+  <field name="duration" type="i64" indexed="true" stored="true" />
+  <field name="rate_change" type="String" indexed="true" stored="true" />
+  <field name="category" type="String" indexed="true" stored="true" />
+  <field name="difficulty" type="i32" indexed="true" stored="true" sortMissingLast="true" />
+  <field name="is_experimental" type="bool" indexed="true" stored="true" sortMissingLast="true" />
+  <field name="statement_ja" type="TextJa" indexed="true" stored="true" multiValued="true" />
+  <field name="statement_en" type="TextEn" indexed="true" stored="true" multiValued="true" />
 
-  <field name="difficulty" type="i32" indexed="true" stored="true" multiValued="false" sortMissingLast="true" />
-  <field name="is_experimental" type="bool" indexed="true" stored="true" multiValued="false" sortMissingLast="true" />
-  <field name="start_at" type="DateTime" indexed="true" stored="true" required="true" multiValued="false" />
-  <field name="duration" type="i64" indexed="true" stored="true" required="true" multiValued="false" />
-  <field name="rate_change" type="String" indexed="true" stored="true" required="true" multiValued="false" />
-  <field name="category" type="String" indexed="true" stored="true" required="true" multiValued="false" />
-
-  <field name="statement_ja" type="TextJa" indexed="true" stored="false" multiValued="true" />
-  <field name="statement_en" type="TextEn" indexed="true" stored="false" multiValued="true" />
-
-  <!-- facet -->
-  <field name="color" type="String" indexed="true" stored="true" required="false" multiValued="false" />
-
-  <field name="text_ja" type="TextJa" indexed="true" stored="false" multiValued="true" />
-  <field name="text_reading" type="TextReading" indexed="true" stored="false" multiValued="true" />
-  <field name="text_en" type="TextEn" indexed="true" stored="false" multiValued="true" />
-  <field name="text_unigram" type="TextUniGram" indexed="true" stored="false" multiValued="true" />
+  <field name="text_ja" type="TextJa" indexed="true" stored="true" multiValued="true" />
+  <field name="text_reading" type="TextReading" indexed="true" stored="true" multiValued="true" />
+  <field name="text_en" type="TextEn" indexed="true" stored="true" multiValued="true" />
+  <field name="text_unigram" type="TextUniGram" indexed="true" stored="true" multiValued="true" />
 
   <dynamicField name="*__text_ja" type="TextJa" indexed="true" stored="false" multiValued="true" />
   <dynamicField name="*__text_reading" type="TextReading" indexed="true" stored="false" multiValued="true" />
   <dynamicField name="*__text_en" type="TextEn" indexed="true" stored="false" multiValued="true" />
   <dynamicField name="*__text_unigram" type="TextUniGram" indexed="true" stored="false" multiValued="true" />
 
-  <copyField source="*__text_ja" dest="text_ja" />
-  <copyField source="*__text_en" dest="text_en" />
-  <copyField source="*__text_unigram" dest="text_unigram" />
+  <copyField source="problem_title" dest="text_ja" />
+  <copyField source="problem_title" dest="problem_title__text_ja" />
+  <copyField source="problem_title" dest="text_en" />
+  <copyField source="problem_title" dest="problem_title__text_en" />
+  <copyField source="problem_title" dest="text_unigram" />
+  <copyField source="problem_title" dest="problem_title__text_unigram" />
+
+  <copyField source="contest_title" dest="text_ja" />
+  <copyField source="contest_title" dest="contest_title__text_ja" />
+  <copyField source="contest_title" dest="text_en" />
+  <copyField source="contest_title" dest="contest_title__text_en" />
+  <copyField source="contest_title" dest="text_unigram" />
+  <copyField source="contest_title" dest="contest_title__text_unigram" />
+
+  <copyField source="statement_ja" dest="text_ja" />
+  <copyField source="statement_ja" dest="text_reading" />
+  <copyField source="statement_ja" dest="text_unigram" />
+
+  <copyField source="statement_en" dest="text_en" />
+  <copyField source="statement_en" dest="text_unigram" />
 </schema>
