@@ -24,8 +24,6 @@ type submissionCrawler struct {
 	duration time.Duration
 	retry    int
 	targets  []string
-	username string
-	password string
 }
 
 func NewSubmissionCrawler(
@@ -43,8 +41,6 @@ func NewSubmissionCrawler(
 		duration: duration,
 		retry:    retry,
 		targets:  targets,
-		username: username,
-		password: password,
 	}
 }
 
@@ -101,37 +97,15 @@ loop:
 		return nil
 	}
 
-	tx, err := c.pool.Begin(ctx)
+	count, err := repository.BulkUpdate(ctx, c.pool, "submissions", convertSubmissions(dedupSubmissions(submissions)))
 	if err != nil {
-		return errs.New("failed to start transaction", errs.WithCause(err), errs.WithContext("contest id", contestID))
+		return errs.New("failed to bulk update submissions", errs.WithCause(err))
 	}
-	q := repository.New(tx)
-	for _, s := range dedupSubmissions(submissions) {
-		if _, err := q.InsertSubmission(ctx, repository.InsertSubmissionParams{
-			ID:          s.ID,
-			EpochSecond: s.EpochSecond,
-			ProblemID:   s.ProblemID,
-			ContestID:   &s.ContestID,
-			UserID:      &s.UserID,
-			Language:    &s.Language,
-			Point:       &s.Point,
-			Length:      &s.Length,
-		}); err != nil {
-			return errs.New("failed to insert submission", errs.WithCause(err), errs.WithContext("contest id", contestID), errs.WithContext("submission", s))
-		}
-	}
-	if err := tx.Commit(ctx); err != nil {
-		return errs.New("failed to commit the transaction", errs.WithCause(err), errs.WithContext("contest id", contestID))
-	}
-	slog.Info("Save submissions successfully", slog.String("contest id", contestID))
+	slog.Info("Save submissions successfully", slog.String("contest id", contestID), slog.Int64("count", count))
 	return nil
 }
 
 func (c *submissionCrawler) CrawlSubmission(ctx context.Context) error {
-	if err := c.client.Login(ctx, c.username, c.password); err != nil {
-		return errs.Wrap(err)
-	}
-
 	q := repository.New(c.pool)
 
 	var ids []string
@@ -173,6 +147,25 @@ func dedupSubmissions(submissions []atcoder.Submission) []atcoder.Submission {
 		}
 		ids.Add(s.ID)
 		result = append(result, s)
+	}
+	return result
+}
+
+func convertSubmissions(submissions []atcoder.Submission) []repository.Submission {
+	result := make([]repository.Submission, len(submissions))
+	for i, s := range submissions {
+		result[i] = repository.Submission{
+			ID:            s.ID,
+			EpochSecond:   s.EpochSecond,
+			ProblemID:     s.ProblemID,
+			ContestID:     &s.ContestID,
+			UserID:        &s.UserID,
+			Language:      &s.Language,
+			Point:         &s.Point,
+			Length:        &s.Length,
+			Result:        &s.Result,
+			ExecutionTime: s.ExecutionTime,
+		}
 	}
 	return result
 }

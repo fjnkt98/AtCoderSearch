@@ -36,28 +36,26 @@ func (c *contestCrawler) CrawlContest(ctx context.Context) error {
 	slog.Info("Finish fetching contests.")
 
 	slog.Info("Start to save contests.")
-	tx, err := c.pool.Begin(ctx)
+	count, err := repository.BulkUpdate(ctx, c.pool, "contests", convertContests(contests))
 	if err != nil {
-		return errs.New("failed to start transaction", errs.WithCause(err))
+		return errs.New("failed to bulk update contests", errs.WithCause(err))
 	}
-	q := repository.New(c.pool).WithTx(tx)
-	for _, contest := range contests {
-		if _, err := q.InsertContest(ctx, repository.InsertContestParams{
-			ContestID:        contest.ID,
-			StartEpochSecond: contest.StartEpochSecond,
-			DurationSecond:   contest.DurationSecond,
-			Title:            contest.Title,
-			RateChange:       contest.RateChange,
-			Category:         contest.Categorize(),
-		}); err != nil {
-			return errs.Wrap(err)
-		}
-	}
-	if err := tx.Commit(ctx); err != nil {
-		return errs.New("failed to commit transaction", errs.WithCause(err))
-	}
-
-	slog.Info("Finish saving contest list.")
+	slog.Info("Finish saving contest list.", slog.Int64("count", count))
 
 	return nil
+}
+
+func convertContests(contests []atcoder.Contest) []repository.Contest {
+	result := make([]repository.Contest, len(contests))
+	for i, c := range contests {
+		result[i] = repository.Contest{
+			ContestID:        c.ID,
+			StartEpochSecond: c.StartEpochSecond,
+			DurationSecond:   c.DurationSecond,
+			Title:            c.Title,
+			RateChange:       c.RateChange,
+			Category:         c.Categorize(),
+		}
+	}
+	return result
 }

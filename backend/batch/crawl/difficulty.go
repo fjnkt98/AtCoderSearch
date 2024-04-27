@@ -36,14 +36,19 @@ func (c *difficultyCrawler) CrawlDifficulty(ctx context.Context) error {
 	slog.Info("Finish crawling difficulties.")
 
 	slog.Info("Start to save difficulties.")
-	tx, err := c.pool.Begin(ctx)
+	count, err := repository.BulkUpdate(ctx, c.pool, "difficulties", convertDifficulties(difficulties))
 	if err != nil {
-		return errs.New("failed to start transaction", errs.WithCause(err))
+		return errs.New("failed to bulk update difficulties", errs.WithCause(err))
 	}
+	slog.Info("Finish saving difficulties.", slog.Int64("count", count))
 
-	q := repository.New(c.pool).WithTx(tx)
+	return nil
+}
+
+func convertDifficulties(difficulties map[string]atcoder.Difficulty) []repository.Difficulty {
+	result := make([]repository.Difficulty, 0, len(difficulties))
 	for problemID, d := range difficulties {
-		if _, err := q.InsertDifficulty(ctx, repository.InsertDifficultyParams{
+		result = append(result, repository.Difficulty{
 			ProblemID:        problemID,
 			Slope:            d.Slope,
 			Intercept:        d.Intercept,
@@ -53,15 +58,7 @@ func (c *difficultyCrawler) CrawlDifficulty(ctx context.Context) error {
 			IrtLoglikelihood: d.IrtLogLikelihood,
 			IrtUsers:         d.IrtUsers,
 			IsExperimental:   d.IsExperimental,
-		}); err != nil {
-			return errs.Wrap(err)
-		}
+		})
 	}
-
-	if err := tx.Commit(ctx); err != nil {
-		return errs.New("failed to commit transaction", errs.WithCause(err))
-	}
-	slog.Info("Finish saving difficulties.")
-
-	return nil
+	return result
 }

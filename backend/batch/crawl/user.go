@@ -38,7 +38,6 @@ func (c *userCrawler) CrawlUser(ctx context.Context) error {
 	slog.Info("Start to crawl users.")
 
 	users := make([]atcoder.User, 0)
-
 loop:
 	for i := 1; ; i++ {
 		slog.Info("Crawl users", slog.Int("page", i))
@@ -56,14 +55,19 @@ loop:
 
 		time.Sleep(c.duration)
 	}
-
-	tx, err := c.pool.Begin(ctx)
+	slog.Info("Start to save contests.")
+	count, err := repository.BulkUpdate(ctx, c.pool, "users", convertUsers(users))
 	if err != nil {
-		return errs.New("failed to start transaction", errs.WithCause(err))
+		return errs.New("failed to bulk update users", errs.WithCause(err))
 	}
-	q := repository.New(tx)
-	for _, u := range users {
-		if _, err := q.InsertUser(ctx, repository.InsertUserParams{
+	slog.Info("Finish crawling users successfully.", slog.Int64("count", count))
+	return nil
+}
+
+func convertUsers(users []atcoder.User) []repository.User {
+	result := make([]repository.User, len(users))
+	for i, u := range users {
+		result[i] = repository.User{
 			UserName:      u.UserName,
 			Rating:        u.Rating,
 			HighestRating: u.HighestRating,
@@ -75,11 +79,7 @@ loop:
 			Rank:          u.Rank,
 			ActiveRank:    u.ActiveRank,
 			Wins:          u.Wins,
-		}); err != nil {
-			return errs.New("failed to insert the user", errs.WithCause(err), errs.WithContext("user", u))
 		}
 	}
-
-	slog.Info("Finish crawling users successfully.")
-	return nil
+	return result
 }
