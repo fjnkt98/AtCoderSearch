@@ -103,6 +103,8 @@ func BulkUpdate[T any](ctx context.Context, pool *pgxpool.Pool, realTable string
 	if err != nil {
 		return 0, errs.New("failed to acquire connection from pool", errs.WithCause(err))
 	}
+	defer conn.Release()
+
 	tx, err := conn.Begin(ctx)
 	if err != nil {
 		return 0, errs.New("failed to start transaction", errs.WithCause(err))
