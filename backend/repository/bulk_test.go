@@ -22,7 +22,7 @@ func newTestPool() *pgxpool.Pool {
 }
 
 func TestColumns(t *testing.T) {
-	expected := []string{"id", "epoch_second", "problem_id", "contest_id", "user_id", "language", "point", "length", "result", "execution_time", "updated_at"}
+	expected := []string{"id", "epoch_second", "problem_id", "contest_id", "user_id", "language", "point", "length", "result", "execution_time"}
 	actual := Columns(new(Submission))
 
 	if !reflect.DeepEqual(expected, actual) {
@@ -46,8 +46,8 @@ func TestRows(t *testing.T) {
 	}
 
 	expected := [][]any{
-		{int64(0), int64(100), "abc300_a", ptr("abc300"), ptr("fjnkt98"), ptr("Go"), ptr(100.0), ptr(int32(200)), ptr("AC"), ptr(int32(5)), time.Date(2024, 4, 26, 22, 43, 0, 0, time.Local)},
-		{int64(1), int64(101), "abc300_b", nil, nil, nil, nil, nil, nil, nil, time.Date(2024, 4, 27, 22, 43, 0, 0, time.Local)},
+		{int64(0), int64(100), "abc300_a", ptr("abc300"), ptr("fjnkt98"), ptr("Go"), ptr(100.0), ptr(int32(200)), ptr("AC"), ptr(int32(5))},
+		{int64(1), int64(101), "abc300_b", nil, nil, nil, nil, nil, nil, nil},
 	}
 
 	actual := Rows(data)

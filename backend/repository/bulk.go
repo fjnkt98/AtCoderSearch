@@ -27,6 +27,11 @@ func Columns(model any) []string {
 	columns := make([]string, 0, ty.NumField())
 	for i := 0; i < ty.NumField(); i++ {
 		f := ty.Field(i)
+
+		if f.Name == "UpdatedAt" {
+			continue
+		}
+
 		var column string
 		if tag, ok := f.Tag.Lookup("db"); ok {
 			column = tag
@@ -74,16 +79,20 @@ func Rows(data any) [][]any {
 	rows := make([][]any, 0, v.Len())
 	for i := 0; i < v.Len(); i++ {
 		d := v.Index(i)
-		data := make([]any, 0, d.NumField())
+		ty := d.Type()
+		row := make([]any, 0, d.NumField())
 		for j := 0; j < d.NumField(); j++ {
-			field := d.Field(j)
-			if field.Kind() == reflect.Ptr && field.IsNil() {
-				data = append(data, nil)
+			value := d.Field(j)
+			if ty.Field(j).Name == "UpdatedAt" {
+				continue
+			}
+			if value.Kind() == reflect.Ptr && value.IsNil() {
+				row = append(row, nil)
 			} else {
-				data = append(data, field.Interface())
+				row = append(row, value.Interface())
 			}
 		}
-		rows = append(rows, data)
+		rows = append(rows, row)
 	}
 	return rows
 }
