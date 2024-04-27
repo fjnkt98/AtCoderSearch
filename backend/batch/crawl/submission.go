@@ -11,6 +11,7 @@ import (
 
 	mapset "github.com/deckarep/golang-set/v2"
 	"github.com/goark/errs"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -121,7 +122,7 @@ func (c *submissionCrawler) CrawlSubmission(ctx context.Context) error {
 
 	for _, id := range ids {
 		lastCrawled, err := q.FetchLatestCrawlHistory(ctx, id)
-		if err != nil {
+		if err != nil && !errs.Is(err, pgx.ErrNoRows) {
 			return errs.New("failed to fetch latest crawl history", errs.WithCause(err), errs.WithContext("contest id", id))
 		}
 
