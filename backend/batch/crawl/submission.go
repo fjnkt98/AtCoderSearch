@@ -33,8 +33,6 @@ func NewSubmissionCrawler(
 	duration time.Duration,
 	retry int,
 	targets []string,
-	username string,
-	password string,
 ) SubmissionCrawler {
 	return &submissionCrawler{
 		client:   client,

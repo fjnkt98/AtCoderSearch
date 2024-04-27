@@ -1,3 +1,5 @@
 .env
+.envrc
 dump.atcoder.sql
 *.gz
+atcodersearch

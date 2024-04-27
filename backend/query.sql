@@ -105,7 +105,14 @@ LIMIT
 INSERT INTO
     "submission_crawl_history" ("started_at", "contest_id")
 VALUES
-    (NOW(), $1)
+    (
+        EXTRACT(
+            epoch
+            FROM
+                NOW()
+        ),
+        $1
+    )
 RETURNING
     "started_at",
     "contest_id";
