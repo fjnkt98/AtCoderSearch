@@ -253,33 +253,31 @@ WHERE
 LIMIT
     1;
 
--- name: CreateUpdateHistory :one
+-- name: CreateBatchHistory :one
 INSERT INTO
-    "update_history" ("domain", "started_at", "options")
+    "batch_history" ("name", "started_at", "options")
 VALUES
     ($1, NOW(), $2)
 RETURNING
-    "id",
-    "domain",
-    "started_at";
+    "id";
 
--- name: UpdateUpdateHistory :exec
-UPDATE "update_history"
+-- name: UpdateBatchHistory :exec
+UPDATE "batch_history"
 SET
     "finished_at" = NOW(),
     "status" = $1
 WHERE
     "id" = $2;
 
--- name: FetchLatestUpdateHistory :one
+-- name: FetchLatestBatchHistory :one
 SELECT
     "id",
     "started_at",
     "finished_at"
 FROM
-    "update_history"
+    "batch_history"
 WHERE
-    "domain" = $1
+    "name" = $1
     AND "status" = 'finished'
 ORDER BY
     "started_at" DESC

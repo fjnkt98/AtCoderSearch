@@ -5,7 +5,6 @@ CREATE TABLE "contests" (
     "title" TEXT NOT NULL,
     "rate_change" TEXT NOT NULL,
     "category" TEXT NOT NULL,
-    "created_at" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
     "updated_at" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
@@ -17,7 +16,6 @@ CREATE TABLE "problems" (
     "title" TEXT NOT NULL,
     "url" TEXT NOT NULL,
     "html" TEXT NOT NULL,
-    "created_at" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
     "updated_at" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
@@ -31,7 +29,6 @@ CREATE TABLE "difficulties" (
     "irt_loglikelihood" DOUBLE PRECISION,
     "irt_users" DOUBLE PRECISION,
     "is_experimental" BOOLEAN,
-    "created_at" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
     "updated_at" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
@@ -47,12 +44,11 @@ CREATE TABLE "users" (
     "rank" INTEGER NOT NULL,
     "active_rank" INTEGER,
     "wins" INTEGER NOT NULL,
-    "created_at" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
     "updated_at" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 CREATE TABLE "submissions" (
-    "id" BIGINT NOT NULL,
+    "id" BIGINT NOT NULL PRIMARY KEY,
     "epoch_second" BIGINT NOT NULL,
     "problem_id" TEXT NOT NULL,
     "contest_id" TEXT,
@@ -62,8 +58,7 @@ CREATE TABLE "submissions" (
     "length" INTEGER,
     "result" TEXT,
     "execution_time" INTEGER,
-    "crawled_at" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    PRIMARY KEY ("id")
+    "updated_at" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 CREATE INDEX "submissions_contest_id_index" ON "submissions" ("contest_id");
@@ -78,35 +73,28 @@ CREATE INDEX "submissions_language_index" ON "submissions" ("language");
 
 CREATE INDEX "submissions_result_index" ON "submissions" ("result");
 
-CREATE INDEX "submissions_crawled_at_index" ON "submissions" ("crawled_at");
+CREATE INDEX "submissions_updated_at_index" ON "submissions" ("updated_at");
 
-CREATE TABLE "update_history" (
-    "id" BIGSERIAL NOT NULL,
-    "domain" TEXT NOT NULL,
+CREATE TABLE "batch_history" (
+    "id" BIGSERIAL NOT NULL PRIMARY KEY,
+    "name" TEXT NOT NULL,
     "started_at" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
     "finished_at" TIMESTAMP WITH TIME ZONE,
     "status" TEXT,
-    "options" JSON NOT NULL,
-    PRIMARY KEY ("id")
+    "options" JSON NOT NULL
 );
 
-CREATE INDEX "update_history_started_at_index" ON "update_history" ("started_at");
-
-CREATE INDEX "update_history_domain_index" ON "update_history" ("domain");
-
 CREATE TABLE "submission_crawl_history" (
-    "id" BIGSERIAL NOT NULL,
+    "id" BIGSERIAL NOT NULL PRIMARY KEY,
     "contest_id" TEXT NOT NULL,
-    "started_at" BIGINT NOT NULL,
-    PRIMARY KEY ("id")
+    "started_at" BIGINT NOT NULL
 );
 
 CREATE INDEX "submission_crawl_history_contest_id_start_at_index" ON "submission_crawl_history" ("contest_id", "started_at");
 
 CREATE TABLE "languages" (
-    "language" TEXT NOT NULL,
-    "group" TEXT,
-    PRIMARY KEY ("language")
+    "language" TEXT NOT NULL PRIMARY KEY,
+    "group" TEXT
 );
 
 CREATE INDEX "languages_group_index" ON "languages" ("group");

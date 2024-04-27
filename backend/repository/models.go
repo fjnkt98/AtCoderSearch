@@ -5,92 +5,88 @@
 package repository
 
 import (
-	"github.com/jackc/pgx/v5/pgtype"
+	"time"
 )
 
+type BatchHistory struct {
+	ID         int64      `db:"id"`
+	Name       string     `db:"name"`
+	StartedAt  time.Time  `db:"started_at"`
+	FinishedAt *time.Time `db:"finished_at"`
+	Status     *string    `db:"status"`
+	Options    []byte     `db:"options"`
+}
+
 type Contest struct {
-	ContestID        string             `db:"contest_id" json:"contest_id"`
-	StartEpochSecond int64              `db:"start_epoch_second" json:"start_epoch_second"`
-	DurationSecond   int64              `db:"duration_second" json:"duration_second"`
-	Title            string             `db:"title" json:"title"`
-	RateChange       string             `db:"rate_change" json:"rate_change"`
-	Category         string             `db:"category" json:"category"`
-	CreatedAt        pgtype.Timestamptz `db:"created_at" json:"created_at"`
-	UpdatedAt        pgtype.Timestamptz `db:"updated_at" json:"updated_at"`
+	ContestID        string    `bulk:"unique" db:"contest_id"`
+	StartEpochSecond int64     `db:"start_epoch_second"`
+	DurationSecond   int64     `db:"duration_second"`
+	Title            string    `db:"title"`
+	RateChange       string    `db:"rate_change"`
+	Category         string    `db:"category"`
+	UpdatedAt        time.Time `db:"updated_at"`
 }
 
 type Difficulty struct {
-	ProblemID        string             `db:"problem_id" json:"problem_id"`
-	Slope            *float64           `db:"slope" json:"slope"`
-	Intercept        *float64           `db:"intercept" json:"intercept"`
-	Variance         *float64           `db:"variance" json:"variance"`
-	Difficulty       *int64             `db:"difficulty" json:"difficulty"`
-	Discrimination   *float64           `db:"discrimination" json:"discrimination"`
-	IrtLoglikelihood *float64           `db:"irt_loglikelihood" json:"irt_loglikelihood"`
-	IrtUsers         *float64           `db:"irt_users" json:"irt_users"`
-	IsExperimental   *bool              `db:"is_experimental" json:"is_experimental"`
-	CreatedAt        pgtype.Timestamptz `db:"created_at" json:"created_at"`
-	UpdatedAt        pgtype.Timestamptz `db:"updated_at" json:"updated_at"`
+	ProblemID        string    `bulk:"unique" db:"problem_id"`
+	Slope            *float64  `db:"slope"`
+	Intercept        *float64  `db:"intercept"`
+	Variance         *float64  `db:"variance"`
+	Difficulty       *int64    `db:"difficulty"`
+	Discrimination   *float64  `db:"discrimination"`
+	IrtLoglikelihood *float64  `db:"irt_loglikelihood"`
+	IrtUsers         *float64  `db:"irt_users"`
+	IsExperimental   *bool     `db:"is_experimental"`
+	UpdatedAt        time.Time `db:"updated_at"`
 }
 
 type Language struct {
-	Language string  `db:"language" json:"language"`
-	Group    *string `db:"group" json:"group"`
+	Language string  `db:"language"`
+	Group    *string `db:"group"`
 }
 
 type Problem struct {
-	ProblemID    string             `db:"problem_id" json:"problem_id"`
-	ContestID    string             `db:"contest_id" json:"contest_id"`
-	ProblemIndex string             `db:"problem_index" json:"problem_index"`
-	Name         string             `db:"name" json:"name"`
-	Title        string             `db:"title" json:"title"`
-	Url          string             `db:"url" json:"url"`
-	Html         string             `db:"html" json:"html"`
-	CreatedAt    pgtype.Timestamptz `db:"created_at" json:"created_at"`
-	UpdatedAt    pgtype.Timestamptz `db:"updated_at" json:"updated_at"`
+	ProblemID    string    `bulk:"unique" db:"problem_id"`
+	ContestID    string    `db:"contest_id"`
+	ProblemIndex string    `db:"problem_index"`
+	Name         string    `db:"name"`
+	Title        string    `db:"title"`
+	Url          string    `db:"url"`
+	Html         string    `db:"html"`
+	UpdatedAt    time.Time `db:"updated_at"`
 }
 
 type Submission struct {
-	ID            int64              `db:"id" json:"id"`
-	EpochSecond   int64              `db:"epoch_second" json:"epoch_second"`
-	ProblemID     string             `db:"problem_id" json:"problem_id"`
-	ContestID     *string            `db:"contest_id" json:"contest_id"`
-	UserID        *string            `db:"user_id" json:"user_id"`
-	Language      *string            `db:"language" json:"language"`
-	Point         *float64           `db:"point" json:"point"`
-	Length        *int32             `db:"length" json:"length"`
-	Result        *string            `db:"result" json:"result"`
-	ExecutionTime *int32             `db:"execution_time" json:"execution_time"`
-	CrawledAt     pgtype.Timestamptz `db:"crawled_at" json:"crawled_at"`
+	ID            int64     `bulk:"unique" db:"id"`
+	EpochSecond   int64     `db:"epoch_second"`
+	ProblemID     string    `db:"problem_id"`
+	ContestID     *string   `db:"contest_id"`
+	UserID        *string   `db:"user_id"`
+	Language      *string   `db:"language"`
+	Point         *float64  `db:"point"`
+	Length        *int32    `db:"length"`
+	Result        *string   `db:"result"`
+	ExecutionTime *int32    `db:"execution_time"`
+	UpdatedAt     time.Time `db:"updated_at"`
 }
 
 type SubmissionCrawlHistory struct {
-	ID        int64  `db:"id" json:"id"`
-	ContestID string `db:"contest_id" json:"contest_id"`
-	StartedAt int64  `db:"started_at" json:"started_at"`
-}
-
-type UpdateHistory struct {
-	ID         int64              `db:"id" json:"id"`
-	Domain     string             `db:"domain" json:"domain"`
-	StartedAt  pgtype.Timestamptz `db:"started_at" json:"started_at"`
-	FinishedAt pgtype.Timestamptz `db:"finished_at" json:"finished_at"`
-	Status     *string            `db:"status" json:"status"`
-	Options    []byte             `db:"options" json:"options"`
+	ID        int64  `db:"id"`
+	ContestID string `db:"contest_id"`
+	StartedAt int64  `db:"started_at"`
 }
 
 type User struct {
-	UserName      string             `db:"user_name" json:"user_name"`
-	Rating        int32              `db:"rating" json:"rating"`
-	HighestRating int32              `db:"highest_rating" json:"highest_rating"`
-	Affiliation   *string            `db:"affiliation" json:"affiliation"`
-	BirthYear     *int32             `db:"birth_year" json:"birth_year"`
-	Country       *string            `db:"country" json:"country"`
-	Crown         *string            `db:"crown" json:"crown"`
-	JoinCount     int32              `db:"join_count" json:"join_count"`
-	Rank          int32              `db:"rank" json:"rank"`
-	ActiveRank    *int32             `db:"active_rank" json:"active_rank"`
-	Wins          int32              `db:"wins" json:"wins"`
-	CreatedAt     pgtype.Timestamptz `db:"created_at" json:"created_at"`
-	UpdatedAt     pgtype.Timestamptz `db:"updated_at" json:"updated_at"`
+	UserName      string    `bulk:"unique" db:"user_name"`
+	Rating        int32     `db:"rating"`
+	HighestRating int32     `db:"highest_rating"`
+	Affiliation   *string   `db:"affiliation"`
+	BirthYear     *int32    `db:"birth_year"`
+	Country       *string   `db:"country"`
+	Crown         *string   `db:"crown"`
+	JoinCount     int32     `db:"join_count"`
+	Rank          int32     `db:"rank"`
+	ActiveRank    *int32    `db:"active_rank"`
+	Wins          int32     `db:"wins"`
+	UpdatedAt     time.Time `db:"updated_at"`
 }
