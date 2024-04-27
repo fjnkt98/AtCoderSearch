@@ -7,12 +7,30 @@ services:
       POSTGRES_USER: atcodersearch
       POSTGRES_DB: atcodersearch
       POSTGRES_HOST_AUTH_METHOD: password
+      TZ: "Asia/Tokyo"
     volumes:
       - type: volume
         source: atcodersearch-postgres
         target: /var/lib/postgresql/data
     ports:
       - 5432:5432
+    networks:
+      atcodersearch-net:
+  test_db:
+    image: postgres:15-bullseye
+    container_name: atcodersearch-test-postgres
+    environment:
+      POSTGRES_PASSWORD: atcodersearch
+      POSTGRES_USER: atcodersearch
+      POSTGRES_DB: atcodersearch
+      POSTGRES_HOST_AUTH_METHOD: password
+      TZ: "Asia/Tokyo"
+    volumes:
+      - type: bind
+        source: ./backend/schema.sql
+        target: /docker-entrypoint-initdb.d/schema.sql
+    ports:
+      - 5433:5432
     networks:
       atcodersearch-net:
   solr:
