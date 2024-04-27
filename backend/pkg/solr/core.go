@@ -250,9 +250,9 @@ func (c *SolrCore) Optimize(ctx context.Context) (*SimpleResponse, error) {
 	}
 }
 
-func (c *SolrCore) Rollback(ctx context.Context) (*SimpleResponse, error) {
+func (c *SolrCore) Rollback() (*SimpleResponse, error) {
 	src := strings.NewReader(`{"rollback": {}}`)
-	if res, err := c.Post(ctx, src, "application/json"); err != nil {
+	if res, err := c.Post(context.Background(), src, "application/json"); err != nil {
 		return res, errs.New(
 			"failed to rollback",
 			errs.WithCause(err),
