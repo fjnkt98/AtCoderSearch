@@ -116,7 +116,7 @@ func (c *problemCrawler) CrawlProblem(ctx context.Context) error {
 			return errs.New("failed to start transaction", errs.WithCause(err))
 		}
 		q := repository.New(tx)
-		if _, err := q.InsertProblem(
+		_, err = q.InsertProblem(
 			ctx,
 			repository.InsertProblemParams{
 				ProblemID:    target.ID,
@@ -126,8 +126,12 @@ func (c *problemCrawler) CrawlProblem(ctx context.Context) error {
 				Title:        target.Title,
 				Url:          fmt.Sprintf("https://atcoder.jp/contests/%s/tasks/%s", target.ContestID, target.ID),
 				Html:         buf.String(),
-			}); err != nil {
+			})
+		if err != nil {
 			return errs.New("failed to insert problem", errs.WithCause(err), errs.WithContext("problem", target))
+		}
+		if err := tx.Commit(ctx); err != nil {
+			return errs.New("failed to commit transaction", errs.WithCause(err))
 		}
 		slog.Info("Finish crawling the problem successfully", slog.String("target", target.ID))
 		time.Sleep(c.duration)
