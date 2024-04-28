@@ -16,7 +16,7 @@ services:
       - 5432:5432
     networks:
       atcodersearch-net:
-  test_db:
+  test-db:
     image: postgres:15-bullseye
     container_name: atcodersearch-test-postgres
     environment:
@@ -30,7 +30,7 @@ services:
         source: ./backend/schema.sql
         target: /docker-entrypoint-initdb.d/schema.sql
     ports:
-      - 5433:5432
+      - 15432:5432
     networks:
       atcodersearch-net:
   solr:
@@ -45,6 +45,20 @@ services:
         target: /var/solr/data/problem/conf
     ports:
       - 8983:8983
+    networks:
+      atcodersearch-net:
+  test-solr:
+    image: atcodersearch-solr
+    container_name: atcodersearch-test-solr
+    build:
+      context: middlewares/solr
+      dockerfile: Dockerfile
+    volumes:
+      - type: bind
+        source: middlewares/solr/problem/conf
+        target: /var/solr/data/problem/conf
+    ports:
+      - 18983:8983
     networks:
       atcodersearch-net:
 

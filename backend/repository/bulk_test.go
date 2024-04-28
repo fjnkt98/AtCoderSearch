@@ -14,7 +14,7 @@ func ptr[T any](v T) *T {
 }
 
 func newTestPool() *pgxpool.Pool {
-	pool, err := NewPool(context.Background(), "postgres://atcodersearch:atcodersearch@localhost:5433/atcodersearch?sslmode=disable")
+	pool, err := NewPool(context.Background(), "postgres://atcodersearch:atcodersearch@localhost:15432/atcodersearch?sslmode=disable")
 	if err != nil {
 		panic(err)
 	}
