@@ -46,7 +46,7 @@ func newUpdateProblemCmd() *cli.Command {
 			},
 			&cli.IntFlag{
 				Name:     "post-concurrent",
-				Value:    4,
+				Value:    2,
 				Category: "post",
 			},
 			&cli.BoolFlag{
