@@ -49,6 +49,9 @@ services:
       - type: bind
         source: middlewares/solr/user/conf
         target: /var/solr/data/user/conf
+      - type: bind
+        source: middlewares/solr/solution/conf
+        target: /var/solr/data/solution/conf
     ports:
       - 8983:8983
     networks:
@@ -69,6 +72,9 @@ services:
       - type: bind
         source: middlewares/solr/user/conf
         target: /var/solr/data/user/conf
+      - type: bind
+        source: middlewares/solr/solution/conf
+        target: /var/solr/data/solution/conf
     ports:
       - 18983:8983
     networks:
