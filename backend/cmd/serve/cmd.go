@@ -19,6 +19,10 @@ func NewServeCmd() *cli.Command {
 				Value:   8000,
 				EnvVars: []string{"PORT"},
 			},
+			&cli.StringSliceFlag{
+				Name:    "allow-origin",
+				EnvVars: []string{"ALLOW_ORIGIN"},
+			},
 		},
 		Action: func(ctx *cli.Context) error {
 			e, err := server.NewServer(server.ServerConfig{DatabaseURL: ctx.String("database-url"), SolrHost: ctx.String("solr-host")})

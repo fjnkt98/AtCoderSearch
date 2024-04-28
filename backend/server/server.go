@@ -3,7 +3,6 @@ package server
 import (
 	"fjnkt98/atcodersearch/pkg/solr"
 	"fjnkt98/atcodersearch/server/api/search"
-	"log/slog"
 	"net/http"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -13,8 +12,9 @@ import (
 )
 
 type ServerConfig struct {
-	DatabaseURL string
-	SolrHost    string
+	DatabaseURL  string
+	SolrHost     string
+	AllowOrigins []string
 }
 
 type Validator struct{}
@@ -38,15 +38,11 @@ func NewServer(c ServerConfig) (*echo.Echo, error) {
 		AllowHeaders: []string{
 			echo.HeaderOrigin,
 		},
-		AllowOrigins: []string{
-			"https://atcoder-search.fjnkt98.com",
-		},
+		AllowOrigins: c.AllowOrigins,
 	}))
 	e.HideBanner = true
 	e.HidePort = true
 	e.Validator = new(Validator)
-
-	slog.Info("config", slog.String("solr host", c.SolrHost), slog.String("database url", c.DatabaseURL))
 
 	{
 		core, err := solr.NewSolrCore(c.SolrHost, "problem")
