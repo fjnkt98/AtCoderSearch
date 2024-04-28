@@ -79,6 +79,9 @@ type FacetCount struct {
 }
 
 func NewFacetCount(f *solr.JSONFacetResponse) map[string][]FacetCount {
+	if f == nil {
+		return nil
+	}
 	counts := make(map[string][]FacetCount)
 	for k, v := range f.Terms {
 		counts[k] = FacetCountsFromStringBucket(v.Buckets)
@@ -105,17 +108,17 @@ func FacetCountsFromRangeBucket(buckets []solr.RangeBucket) []FacetCount {
 	for i, b := range buckets {
 		if b.Begin == nil {
 			res[i] = FacetCount{
-				Label: fmt.Sprintf("~ %d", b.End),
+				Label: fmt.Sprintf("~ %d", *b.End),
 				Count: b.Count,
 			}
 		} else if b.End == nil {
 			res[i] = FacetCount{
-				Label: fmt.Sprintf("%d ~", b.Begin),
+				Label: fmt.Sprintf("%d ~", *b.Begin),
 				Count: b.Count,
 			}
 		} else {
 			res[i] = FacetCount{
-				Label: fmt.Sprintf("%d ~ %d", b.Begin, b.End),
+				Label: fmt.Sprintf("%d ~ %d", *b.Begin, *b.End),
 				Count: b.Count,
 			}
 		}

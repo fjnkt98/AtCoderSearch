@@ -168,17 +168,12 @@ type JSONFacetResponse struct {
 	Range map[string]RangeFacetCount
 }
 
-var ErrNoFacetCounts = errs.New("no facet counts")
-
 func (f *RawJSONFacetResponse) Parse(query *JSONFacetQuery) (*JSONFacetResponse, error) {
 	termsFacets := make(map[string]TermsFacetCount)
 	rangeFacets := make(map[string]RangeFacetCount)
 
 	if query == nil {
-		return &JSONFacetResponse{
-			Terms: termsFacets,
-			Range: rangeFacets,
-		}, ErrNoFacetCounts
+		return nil, nil
 	}
 
 	for k := range query.termsFacets {

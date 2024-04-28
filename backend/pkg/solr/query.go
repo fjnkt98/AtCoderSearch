@@ -115,6 +115,7 @@ func (q *SelectQuery) JsonFacet(facet *JSONFacetQuery) *SelectQuery {
 	f, err := json.Marshal(facet)
 	if err == nil {
 		q.params.Set("json.facet", string(f))
+		q.facet = facet
 	}
 	return q
 }
