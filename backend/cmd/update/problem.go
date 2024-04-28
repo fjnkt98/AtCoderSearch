@@ -1,8 +1,12 @@
 package update
 
 import (
+	"fjnkt98/atcodersearch/batch/update"
+	"fjnkt98/atcodersearch/pkg/solr"
+	"fjnkt98/atcodersearch/repository"
 	"time"
 
+	"github.com/goark/errs"
 	"github.com/urfave/cli/v2"
 )
 
@@ -28,6 +32,7 @@ func newUpdateProblemCmd() *cli.Command {
 			&cli.PathFlag{
 				Name:     "save-dir",
 				Category: "generate, post",
+				EnvVars:  []string{"PROBLEM_SAVE_DIR"},
 			},
 			&cli.IntFlag{
 				Name:     "chunk-size",
@@ -55,8 +60,31 @@ func newUpdateProblemCmd() *cli.Command {
 				Category: "post",
 			},
 		},
-		Action: func(c *cli.Context) error {
-			panic(0)
+		Action: func(ctx *cli.Context) error {
+			pool, err := repository.NewPool(ctx.Context, ctx.String("database-url"))
+			if err != nil {
+				return errs.Wrap(err)
+			}
+			core, err := solr.NewSolrCore(ctx.String("solr-host"), "problem")
+			if err != nil {
+				return errs.Wrap(err)
+			}
+
+			config := update.UpdateProblemConfig{
+				Duration:           ctx.Duration("duration"),
+				All:                ctx.Bool("all"),
+				SkipFetch:          ctx.Bool("skip-fetch"),
+				SaveDir:            ctx.String("save-dir"),
+				ChunkSize:          ctx.Int("chunk-size"),
+				GenerateConcurrent: ctx.Int("generate-concurrent"),
+				PostConcurrent:     ctx.Int("post-concurrent"),
+				Optimize:           ctx.Bool("optimize"),
+			}
+
+			if err := update.UpdateProblem(ctx.Context, pool, core, config); err != nil {
+				return errs.Wrap(err)
+			}
+			return nil
 		},
 	}
 }

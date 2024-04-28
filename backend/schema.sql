@@ -80,7 +80,7 @@ CREATE TABLE "batch_history" (
     "name" TEXT NOT NULL,
     "started_at" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
     "finished_at" TIMESTAMP WITH TIME ZONE,
-    "status" TEXT,
+    "status" TEXT DEFAULT 'working' NOT NULL,
     "options" JSON NOT NULL
 );
 

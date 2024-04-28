@@ -421,8 +421,8 @@ WHERE
 `
 
 type UpdateBatchHistoryParams struct {
-	Status *string `db:"status"`
-	ID     int64   `db:"id"`
+	Status string `db:"status"`
+	ID     int64  `db:"id"`
 }
 
 func (q *Queries) UpdateBatchHistory(ctx context.Context, arg UpdateBatchHistoryParams) error {

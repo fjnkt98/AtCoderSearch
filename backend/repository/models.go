@@ -13,7 +13,7 @@ type BatchHistory struct {
 	Name       string     `db:"name"`
 	StartedAt  time.Time  `db:"started_at"`
 	FinishedAt *time.Time `db:"finished_at"`
-	Status     *string    `db:"status"`
+	Status     string     `db:"status"`
 	Options    []byte     `db:"options"`
 }
 
