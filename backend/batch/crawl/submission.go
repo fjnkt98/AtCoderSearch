@@ -43,7 +43,7 @@ func (c *SubmissionCrawler) crawlContest(ctx context.Context, contestID string, 
 	submissions := make([]atcoder.Submission, 0)
 loop:
 	for i := 1; i <= 1_000_000_000; i++ {
-		slog.Info(fmt.Sprintf("fetch submissions at page %d of the contest `%s`", i, contestID))
+		slog.Info("fetch submissions", slog.String("contest id", contestID), slog.Int("page", i))
 		subs, err := c.client.FetchSubmissions(ctx, contestID, i)
 		if err != nil {
 		retryLoop:
@@ -72,14 +72,14 @@ loop:
 		}
 
 		if len(subs) == 0 {
-			slog.Info(fmt.Sprintf("There is no more submissions in contest `%s`.", contestID))
+			slog.Info("There is no more submissions", slog.String("contest id", contestID))
 			break loop
 		}
 
 		submissions = append(submissions, subs...)
 
 		if subs[0].EpochSecond < lastCrawled {
-			slog.Info(fmt.Sprintf("All submissions after page `%d` have been crawled. Break crawling the contest `%s`", i, contestID))
+			slog.Info("Break crawling since all submissions after have been crawled.", slog.String("contest id", contestID), slog.Int("page", i))
 			time.Sleep(c.duration)
 			break loop
 		}
@@ -88,7 +88,7 @@ loop:
 	}
 
 	if len(submissions) == 0 {
-		slog.Info(fmt.Sprintf("No submissions to save for contest `%s`.", contestID))
+		slog.Info("There is no submissions to save", slog.String("contest id", contestID))
 		return nil
 	}
 
@@ -120,7 +120,7 @@ func (c *SubmissionCrawler) Crawl(ctx context.Context) error {
 			return errs.New("failed to fetch latest crawl history", errs.WithCause(err), errs.WithContext("contest id", id))
 		}
 
-		slog.Info(fmt.Sprintf("Start to crawl contest `%s` since period `%s`", id, time.Unix(lastCrawled, 0)))
+		slog.Info("Start to crawl", slog.String("contest id", id), slog.Time("last crawled", time.Unix(lastCrawled, 0)))
 		if err := c.crawlContest(ctx, id, lastCrawled); err != nil {
 			return errs.Wrap(err)
 		}

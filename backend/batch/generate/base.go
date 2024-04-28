@@ -114,9 +114,8 @@ func clean(saveDir string) error {
 		return nil
 	}
 
-	slog.Info(fmt.Sprintf("Start to delete existing document files in `%s`", saveDir))
 	for _, file := range files {
-		slog.Info(fmt.Sprintf("Delete file `%s`", file))
+		slog.Info("Delete file", slog.String("file", file))
 		if err := os.Remove(file); err != nil {
 			return errs.New(
 				"failed to delete the file",

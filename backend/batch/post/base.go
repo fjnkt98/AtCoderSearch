@@ -108,11 +108,10 @@ func PostDocument(ctx context.Context, core *solr.SolrCore, saveDir string, opti
 		defer core.Rollback()
 
 		if option.Truncate {
-			slog.Info("Start to truncate core.")
 			if _, err := core.Delete(ctx); err != nil {
 				return errs.New("failed to truncate documents", errs.WithCause(err), errs.WithContext("core", core.Name()))
 			}
-			slog.Info("Finished truncating core successfully.")
+			slog.Info("Finished truncating core successfully.", slog.String("core", core.Name()))
 		}
 
 		for _, path := range files {
@@ -129,6 +128,7 @@ func PostDocument(ctx context.Context, core *solr.SolrCore, saveDir string, opti
 				if _, err := core.Optimize(ctx); err != nil {
 					return errs.New("failed to optimize core", errs.WithCause(err), errs.WithContext("core", core.Name()))
 				}
+				slog.Info("Finished optimizing core successfully.", slog.String("core", core.Name()))
 			} else {
 				if _, err := core.Commit(ctx); err != nil {
 					return errs.New("failed to commit core", errs.WithCause(err), errs.WithContext("core", core.Name()))

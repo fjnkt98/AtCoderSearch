@@ -31,8 +31,6 @@ func NewUserCrawler(
 }
 
 func (c *UserCrawler) Crawl(ctx context.Context) error {
-	slog.Info("Start to crawl users.")
-
 	users := make([]atcoder.User, 0)
 loop:
 	for i := 1; ; i++ {
@@ -51,7 +49,6 @@ loop:
 
 		time.Sleep(c.duration)
 	}
-	slog.Info("Start to save contests.")
 	count, err := repository.BulkUpdate(ctx, c.pool, "users", convertUsers(users))
 	if err != nil {
 		return errs.New("failed to bulk update users", errs.WithCause(err))

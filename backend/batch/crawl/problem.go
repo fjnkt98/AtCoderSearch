@@ -93,7 +93,6 @@ func (c *ProblemCrawler) Crawl(ctx context.Context) error {
 	}
 
 	for _, target := range targets {
-		slog.Info("Start to crawl the problem", slog.String("target", target.ID))
 		html, err := c.atcoderClient.FetchProblem(ctx, target.ContestID, target.ID)
 		if err != nil {
 			return errs.Wrap(err)
