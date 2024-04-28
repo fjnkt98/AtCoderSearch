@@ -5,7 +5,10 @@ import (
 	"fmt"
 
 	"github.com/goark/errs"
+	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jackc/pgx/v5/stdlib"
 	"github.com/uptrace/bun"
+	"github.com/uptrace/bun/dialect/pgdialect"
 )
 
 type UserRow struct {
@@ -23,20 +26,20 @@ type UserRow struct {
 }
 
 type UserDoc struct {
-	UserName      string  `json:"user_name"`
+	UserName      string  `json:"userName"`
 	Rating        int     `json:"rating"`
-	HighestRating int     `json:"highest_rating"`
+	HighestRating int     `json:"highestRating"`
 	Affiliation   *string `json:"affiliation"`
-	BirthYear     *int    `json:"birth_year"`
+	BirthYear     *int    `json:"birthYear"`
 	Country       *string `json:"country"`
 	Crown         *string `json:"crown"`
-	JoinCount     int     `json:"join_count"`
+	JoinCount     int     `json:"joinCount"`
 	Rank          int     `json:"rank"`
-	ActiveRank    *int    `json:"active_rank"`
+	ActiveRank    *int    `json:"activeRank"`
 	Wins          int     `json:"wins" `
 	Color         string  `json:"color"`
-	HighestColor  string  `json:"highest_color"`
-	UserURL       string  `json:"user_url"`
+	HighestColor  string  `json:"highestColor"`
+	UserURL       string  `json:"userUrl"`
 }
 
 func (r *UserRow) Document(ctx context.Context) (*UserDoc, error) {
@@ -59,17 +62,18 @@ func (r *UserRow) Document(ctx context.Context) (*UserDoc, error) {
 }
 
 type UserRowReader struct {
-	db *bun.DB
+	pool *pgxpool.Pool
 }
 
-func NewUserRowReader(db *bun.DB) *UserRowReader {
+func NewUserRowReader(pool *pgxpool.Pool) *UserRowReader {
 	return &UserRowReader{
-		db: db,
+		pool: pool,
 	}
 }
 
 func (r *UserRowReader) ReadRows(ctx context.Context, tx chan<- *UserRow) error {
-	rows, err := r.db.NewSelect().
+	db := bun.NewDB(stdlib.OpenDBFromPool(r.pool), pgdialect.New())
+	rows, err := db.NewSelect().
 		Column(
 			"user_name",
 			"rating",
@@ -100,7 +104,7 @@ func (r *UserRowReader) ReadRows(ctx context.Context, tx chan<- *UserRow) error 
 			return nil
 		default:
 			var row UserRow
-			err := r.db.ScanRow(ctx, rows, &row)
+			err := db.ScanRow(ctx, rows, &row)
 			if err != nil {
 				return errs.New(
 					"failed to scan row",

@@ -31,23 +31,28 @@
   <field name="_version_" type="i64" indexed="false" stored="false" />
   <field name="null" type="Null" indexed="false" stored="false" />
 
-  <uniqueKey>user_name</uniqueKey>
-  <field name="user_name" type="String" indexed="true" stored="true" required="true" multiValued="false" docValues="false" />
+  <uniqueKey>userName</uniqueKey>
+  <field name="userName" type="String" indexed="true" stored="true" required="true" multiValued="false" docValues="false" />
   <field name="rating" type="i32" indexed="true" stored="true" required="true" multiValued="false" docValues="true" />
-  <field name="highest_rating" type="i32" indexed="true" stored="true" required="false" multiValued="false" docValues="true" />
+  <field name="highestRating" type="i32" indexed="true" stored="true" required="false" multiValued="false" docValues="true" />
   <field name="affiliation" type="String" indexed="true" stored="true" required="false" multiValued="false" docValues="true" />
-  <field name="birth_year" type="i32" indexed="true" stored="true" required="false" multiValued="false" docValues="true" />
+  <field name="birthYear" type="i32" indexed="true" stored="true" required="false" multiValued="false" docValues="true" />
   <field name="country" type="String" indexed="true" stored="true" required="false" multiValued="false" docValues="true" />
   <field name="crown" type="String" indexed="true" stored="true" required="false" multiValued="false" docValues="true" />
-  <field name="join_count" type="i32" indexed="true" stored="true" required="false" multiValued="false" docValues="true" />
+  <field name="joinCount" type="i32" indexed="true" stored="true" required="false" multiValued="false" docValues="true" />
   <field name="rank" type="i32" indexed="true" stored="true" required="false" multiValued="false" docValues="true" />
-  <field name="active_rank" type="i32" indexed="true" stored="true" required="false" multiValued="false" docValues="true" />
+  <field name="activeRank" type="i32" indexed="true" stored="true" required="false" multiValued="false" docValues="true" />
   <field name="wins" type="i32" indexed="true" stored="true" required="false" multiValued="false" docValues="true" />
-  <field name="user_url" type="String" indexed="true" stored="true" required="true" multiValued="false" docValues="false" />
+  <field name="userUrl" type="String" indexed="true" stored="true" required="true" multiValued="false" docValues="false" />
 
   <!-- facet -->
   <field name="color" type="String" indexed="true" stored="true" required="true" multiValued="false" docValues="true" />
-  <field name="highest_color" type="String" indexed="true" stored="true" required="false" multiValued="false" docValues="true" />
+  <field name="highestColor" type="String" indexed="true" stored="true" required="false" multiValued="false" docValues="true" />
+
+  <copyField source="userName" dest="userName__text_unigram" />
+  <copyField source="userName" dest="text_unigram" />
+  <copyField source="affiliation" dest="affiliation__text_unigram" />
+  <copyField source="affiliation" dest="text_unigram" />
 
   <field name="text_unigram" type="TextUniGram" indexed="true" stored="false" multiValued="true" />
   <dynamicField name="*__text_unigram" type="TextUniGram" indexed="true" stored="false" multiValued="true" />
