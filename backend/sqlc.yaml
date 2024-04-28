@@ -27,7 +27,7 @@ sql:
             go_struct_tag: bulk:"unique"
           - column: difficulties.problem_id
             go_struct_tag: bulk:"unique"
-          - column: users.user_name
+          - column: users.user_id
             go_struct_tag: bulk:"unique"
           - column: submissions.id
             go_struct_tag: bulk:"unique"
