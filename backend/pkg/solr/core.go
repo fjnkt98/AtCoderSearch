@@ -227,7 +227,7 @@ func (c *SolrCore) Post(ctx context.Context, src io.Reader, contentType string) 
 }
 
 func (c *SolrCore) Commit(ctx context.Context) (*SimpleResponse, error) {
-	src := strings.NewReader(`{"commit": {}}`)
+	src := strings.NewReader(`{"commit":{}}`)
 	if res, err := c.Post(ctx, src, "application/json"); err != nil {
 		return res, errs.New(
 			"failed to commit",
@@ -239,7 +239,7 @@ func (c *SolrCore) Commit(ctx context.Context) (*SimpleResponse, error) {
 }
 
 func (c *SolrCore) Optimize(ctx context.Context) (*SimpleResponse, error) {
-	src := strings.NewReader(`{"optimize": {}}`)
+	src := strings.NewReader(`{"optimize":{}}`)
 	if res, err := c.Post(ctx, src, "application/json"); err != nil {
 		return res, errs.New(
 			"failed to optimize",
