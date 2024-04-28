@@ -37,14 +37,15 @@ func newPostProblemCmd() *cli.Command {
 				return errs.Wrap(err)
 			}
 
-			poster := post.NewDocumentPoster(
+			err = post.PostDocument(
+				ctx.Context,
 				core,
 				ctx.String("save-dir"),
-				ctx.Int("concurrent"),
-				ctx.Bool("optimize"),
-				ctx.Bool("truncate"),
+				post.WithConcurrent(ctx.Int("concurrent")),
+				post.WithOptimize(ctx.Bool("optimize")),
+				post.WithTruncate(ctx.Bool("truncate")),
 			)
-			if err := poster.Post(ctx.Context); err != nil {
+			if err != nil {
 				return errs.Wrap(err)
 			}
 			return nil

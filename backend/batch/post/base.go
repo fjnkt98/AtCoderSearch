@@ -12,35 +12,48 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-type DocumentPoster interface {
-	Post(ctx context.Context) error
+type PostDocumentOptions struct {
+	Concurrent int
+	Truncate   bool
+	Optimize   bool
 }
 
-type documentPoster struct {
-	core       *solr.SolrCore
-	saveDir    string
-	concurrent int
-	optimize   bool
-	truncate   bool
-}
+type option func(*PostDocumentOptions)
 
-func NewDocumentPoster(core *solr.SolrCore, saveDir string, concurrent int, optimize, truncate bool) DocumentPoster {
-	return &documentPoster{
-		core:       core,
-		saveDir:    saveDir,
-		concurrent: concurrent,
-		optimize:   optimize,
-		truncate:   truncate,
+func WithConcurrent(concurrent int) option {
+	return func(opt *PostDocumentOptions) {
+		opt.Concurrent = concurrent
 	}
 }
 
-func (p *documentPoster) Post(ctx context.Context) error {
-	files, err := filepath.Glob(filepath.Join(p.saveDir, "doc-*.json"))
+func WithTruncate(truncate bool) option {
+	return func(opt *PostDocumentOptions) {
+		opt.Truncate = truncate
+	}
+}
+
+func WithOptimize(optimize bool) option {
+	return func(opt *PostDocumentOptions) {
+		opt.Optimize = optimize
+	}
+}
+
+func PostDocument(ctx context.Context, core *solr.SolrCore, saveDir string, options ...option) error {
+	option := &PostDocumentOptions{
+		Concurrent: 4,
+		Truncate:   false,
+		Optimize:   false,
+	}
+	for _, opt := range options {
+		opt(option)
+	}
+
+	files, err := filepath.Glob(filepath.Join(saveDir, "doc-*.json"))
 	if err != nil {
 		return errs.New(
 			"failed to get files from the directory",
 			errs.WithCause(err),
-			errs.WithContext("directory", p.saveDir),
+			errs.WithContext("directory", saveDir),
 		)
 	}
 
@@ -51,8 +64,8 @@ func (p *documentPoster) Post(ctx context.Context) error {
 		}
 		defer file.Close()
 
-		if _, err := p.core.Post(ctx, file, "application/json"); err != nil {
-			return errs.New("failed to post the file", errs.WithCause(err), errs.WithContext("file", path), errs.WithContext("core", p.core.Name()))
+		if _, err := core.Post(ctx, file, "application/json"); err != nil {
+			return errs.New("failed to post the file", errs.WithCause(err), errs.WithContext("file", path), errs.WithContext("core", core.Name()))
 		}
 		return nil
 	}
@@ -61,7 +74,7 @@ func (p *documentPoster) Post(ctx context.Context) error {
 	eg, ctx := errgroup.WithContext(ctx)
 	var wg sync.WaitGroup
 
-	for i := 0; i < p.concurrent; i++ {
+	for i := 0; i < option.Concurrent; i++ {
 		wg.Add(1)
 		i := i
 		eg.Go(func() error {
@@ -85,19 +98,19 @@ func (p *documentPoster) Post(ctx context.Context) error {
 					if err := f(ctx, path); err != nil {
 						return errs.Wrap(err)
 					}
-					slog.Info("Post document", slog.String("file", path), slog.String("core", p.core.Name()), slog.Int("worker", i))
+					slog.Info("Post document", slog.String("file", path), slog.String("core", core.Name()), slog.Int("worker", i))
 				}
 			}
 			return nil
 		})
 	}
 	eg.Go(func() error {
-		defer p.core.Rollback()
+		defer core.Rollback()
 
-		if p.truncate {
+		if option.Truncate {
 			slog.Info("Start to truncate core.")
-			if _, err := p.core.Delete(ctx); err != nil {
-				return errs.New("failed to truncate documents", errs.WithCause(err), errs.WithContext("core", p.core.Name()))
+			if _, err := core.Delete(ctx); err != nil {
+				return errs.New("failed to truncate documents", errs.WithCause(err), errs.WithContext("core", core.Name()))
 			}
 			slog.Info("Finished truncating core successfully.")
 		}
@@ -112,13 +125,13 @@ func (p *documentPoster) Post(ctx context.Context) error {
 		case <-ctx.Done():
 			return nil
 		default:
-			if p.optimize {
-				if _, err := p.core.Optimize(ctx); err != nil {
-					return errs.New("failed to optimize core", errs.WithCause(err), errs.WithContext("core", p.core.Name()))
+			if option.Optimize {
+				if _, err := core.Optimize(ctx); err != nil {
+					return errs.New("failed to optimize core", errs.WithCause(err), errs.WithContext("core", core.Name()))
 				}
 			} else {
-				if _, err := p.core.Commit(ctx); err != nil {
-					return errs.New("failed to commit core", errs.WithCause(err), errs.WithContext("core", p.core.Name()))
+				if _, err := core.Commit(ctx); err != nil {
+					return errs.New("failed to commit core", errs.WithCause(err), errs.WithContext("core", core.Name()))
 				}
 			}
 		}

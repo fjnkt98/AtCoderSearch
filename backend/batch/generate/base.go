@@ -49,8 +49,8 @@ func GenerateDocument[D any, R Documenter[D]](ctx context.Context, reader RowRea
 		ChunkSize:  1000,
 		Concurrent: 4,
 	}
-	for _, o := range options {
-		o(option)
+	for _, opt := range options {
+		opt(option)
 	}
 
 	if err := clean(saveDir); err != nil {
