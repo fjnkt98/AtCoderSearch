@@ -9,6 +9,7 @@ import (
 	"fjnkt98/atcodersearch/pkg/atcoder"
 	"fjnkt98/atcodersearch/pkg/solr"
 	"fjnkt98/atcodersearch/repository"
+	"log/slog"
 	"time"
 
 	"github.com/goark/errs"
@@ -27,6 +28,7 @@ type UpdateProblemConfig struct {
 }
 
 func UpdateProblem(ctx context.Context, pool *pgxpool.Pool, core *solr.SolrCore, config UpdateProblemConfig) error {
+	slog.Info("Start UpdateProblem")
 	options, err := json.Marshal(config)
 	if err != nil {
 		return errs.New("failed to marshal update problem config", errs.WithCause(err))
@@ -81,5 +83,6 @@ func UpdateProblem(ctx context.Context, pool *pgxpool.Pool, core *solr.SolrCore,
 		return errs.New("failed to update batch history", errs.WithCause(err))
 	}
 
+	slog.Info("Finish UpdateProblem")
 	return nil
 }
