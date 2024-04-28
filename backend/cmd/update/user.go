@@ -49,11 +49,6 @@ func newUpdateUserCmd() *cli.Command {
 				Value:    false,
 				Category: "post",
 			},
-			&cli.BoolFlag{
-				Name:     "truncate",
-				Value:    false,
-				Category: "post",
-			},
 		},
 		Action: func(ctx *cli.Context) error {
 			pool, err := repository.NewPool(ctx.Context, ctx.String("database-url"))
