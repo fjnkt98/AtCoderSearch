@@ -1,92 +1,10 @@
 package atcoder
 
 import (
-	"context"
 	"os"
 	"reflect"
 	"testing"
-
-	"github.com/goark/errs"
 )
-
-type DummySuccessAtCoderClient struct{}
-
-func NewDummySuccessAtCoderClient() AtCoderClient {
-	return &DummySuccessAtCoderClient{}
-}
-
-func (c *DummySuccessAtCoderClient) FetchSubmissions(ctx context.Context, contestID string, page int) ([]Submission, error) {
-	var a int32 = 26
-	var b int32 = 1
-	return []Submission{
-		{
-			ID:            2054945,
-			EpochSecond:   1517670136,
-			ProblemID:     "apc001_b",
-			ContestID:     "apc001",
-			UserID:        "dko_n",
-			Language:      "Python3 (3.4.3)",
-			Point:         0,
-			Length:        326,
-			Result:        "WA",
-			ExecutionTime: &a,
-		},
-		{
-			ID:            3600716,
-			EpochSecond:   1542210655,
-			ProblemID:     "abc101_a",
-			ContestID:     "abc101",
-			UserID:        "kichi2004",
-			Language:      "C++14 (GCC 5.4.1)",
-			Point:         100,
-			Length:        1458,
-			Result:        "AC",
-			ExecutionTime: &b,
-		},
-	}, nil
-}
-
-func (c *DummySuccessAtCoderClient) FetchSubmissionResult(ctx context.Context, contestID string, submissionID int64) (string, error) {
-	return "AC", nil
-}
-
-func (c *DummySuccessAtCoderClient) FetchProblem(ctx context.Context, contestID string, problemID string) (string, error) {
-	return "", nil
-}
-
-func (c *DummySuccessAtCoderClient) FetchUsers(ctx context.Context, page int) ([]User, error) {
-	return nil, nil
-}
-
-func (c *DummySuccessAtCoderClient) Login(ctx context.Context, username, password string) error {
-	return nil
-}
-
-type DummyFailAtCoderClient struct{}
-
-func NewDummyFailAtCoderClient() AtCoderClient {
-	return &DummyFailAtCoderClient{}
-}
-
-func (c *DummyFailAtCoderClient) FetchSubmissions(ctx context.Context, contestID string, page int) ([]Submission, error) {
-	return nil, errs.New("request failed")
-}
-
-func (c *DummyFailAtCoderClient) FetchSubmissionResult(ctx context.Context, contestID string, submissionID int64) (string, error) {
-	return "", errs.New("request failed")
-}
-
-func (c *DummyFailAtCoderClient) FetchProblem(ctx context.Context, contestID string, problemID string) (string, error) {
-	return "", errs.New("request failed")
-}
-
-func (c *DummyFailAtCoderClient) FetchUsers(ctx context.Context, page int) ([]User, error) {
-	return nil, errs.New("request failed")
-}
-
-func (c *DummyFailAtCoderClient) Login(ctx context.Context, username, password string) error {
-	return errs.New("login failed")
-}
 
 type SubmissionPiece struct {
 	ID            int64

@@ -45,19 +45,11 @@ type User struct {
 	Wins          int32
 }
 
-type AtCoderClient interface {
-	FetchSubmissions(ctx context.Context, contestID string, page int) ([]Submission, error)
-	FetchSubmissionResult(ctx context.Context, contestID string, submissionID int64) (string, error)
-	FetchProblem(ctx context.Context, contestID string, problemID string) (string, error)
-	FetchUsers(ctx context.Context, page int) ([]User, error)
-	Login(ctx context.Context, username string, password string) error
-}
-
-type atcoderClient struct {
+type AtCoderClient struct {
 	client *http.Client
 }
 
-func NewAtCoderClient() (AtCoderClient, error) {
+func NewAtCoderClient() (*AtCoderClient, error) {
 	jar, err := cookiejar.New(&cookiejar.Options{})
 	if err != nil {
 		return nil, errs.New(
@@ -71,7 +63,7 @@ func NewAtCoderClient() (AtCoderClient, error) {
 		Timeout: time.Duration(30) * time.Second,
 	}
 
-	return &atcoderClient{client: &client}, nil
+	return &AtCoderClient{client: &client}, nil
 }
 
 func extractCSRFToken(body string) string {
@@ -86,7 +78,7 @@ func extractCSRFToken(body string) string {
 	return token
 }
 
-func (c *atcoderClient) FetchSubmissions(ctx context.Context, contestID string, page int) ([]Submission, error) {
+func (c *AtCoderClient) FetchSubmissions(ctx context.Context, contestID string, page int) ([]Submission, error) {
 	p, err := url.JoinPath("https://atcoder.jp", "contests", contestID, "submissions")
 	if err != nil {
 		return nil, errs.New(
@@ -236,7 +228,7 @@ func scrapeSubmissions(html io.Reader) ([]Submission, error) {
 	return submissions, nil
 }
 
-func (c *atcoderClient) FetchSubmissionResult(ctx context.Context, contestID string, submissionID int64) (string, error) {
+func (c *AtCoderClient) FetchSubmissionResult(ctx context.Context, contestID string, submissionID int64) (string, error) {
 	p, err := url.JoinPath("https://atcoder.jp/contests", contestID, "submissions", strconv.Itoa(int(submissionID)))
 	if err != nil {
 		return "", errs.New(
@@ -309,7 +301,7 @@ func scrapeSubmissionResult(html io.Reader) (string, error) {
 	return result, nil
 }
 
-func (c *atcoderClient) FetchProblem(ctx context.Context, contestID string, problemID string) (string, error) {
+func (c *AtCoderClient) FetchProblem(ctx context.Context, contestID string, problemID string) (string, error) {
 	p, err := url.JoinPath("https://atcoder.jp/contests", contestID, "tasks", problemID)
 	if err != nil {
 		return "", errs.New(
@@ -359,7 +351,7 @@ func (c *atcoderClient) FetchProblem(ctx context.Context, contestID string, prob
 	return buf.String(), nil
 }
 
-func (c *atcoderClient) FetchUsers(ctx context.Context, page int) ([]User, error) {
+func (c *AtCoderClient) FetchUsers(ctx context.Context, page int) ([]User, error) {
 	u, _ := url.Parse("https://atcoder.jp/ranking/all")
 	v := url.Values{}
 	v.Set("contestType", "algo")
@@ -500,7 +492,7 @@ func scrapeUsers(html io.Reader) ([]User, error) {
 	return users, nil
 }
 
-func (c *atcoderClient) Login(ctx context.Context, username, password string) error {
+func (c *AtCoderClient) Login(ctx context.Context, username, password string) error {
 	uri := "https://atcoder.jp/login"
 	req, err := http.NewRequest(http.MethodGet, uri, nil)
 	if err != nil {

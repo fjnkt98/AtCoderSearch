@@ -7,45 +7,29 @@ import (
 )
 
 const (
-	TERMS_FACET_TYPE = "terms"
-	RANGE_FACET_TYPE = "range"
-	QUERY_FACET_TYPE = "query"
+	FACET_TYPE_TERMS = "terms"
+	FACET_TYPE_RANGE = "range"
+	FACET_TYPE_QUERY = "query"
 )
 
-type FacetQueryer interface {
-	FacetQuery() (string, map[string]any)
-}
-
 type JSONFacetQuery struct {
-	termsFacets map[string]*termsFacetQuery
-	rangeFacets map[string]*rangeFacetQuery
+	termsFacets map[string]*TermsFacetQuery
+	rangeFacets map[string]*RangeFacetQuery
 }
 
-func NewJSONFacetQuery(facets ...FacetQueryer) *JSONFacetQuery {
-	termsFacets := make(map[string]*termsFacetQuery)
-	rangeFacets := make(map[string]*rangeFacetQuery)
-
-	for _, f := range facets {
-		switch f := f.(type) {
-		case *termsFacetQuery:
-			termsFacets[f.name] = f
-		case *rangeFacetQuery:
-			rangeFacets[f.name] = f
-		}
-	}
-
+func NewJSONFacetQuery() *JSONFacetQuery {
 	return &JSONFacetQuery{
-		termsFacets: termsFacets,
-		rangeFacets: rangeFacets,
+		termsFacets: make(map[string]*TermsFacetQuery),
+		rangeFacets: make(map[string]*RangeFacetQuery),
 	}
 }
 
-func (q *JSONFacetQuery) Terms(f *termsFacetQuery) *JSONFacetQuery {
+func (q *JSONFacetQuery) Terms(f *TermsFacetQuery) *JSONFacetQuery {
 	q.termsFacets[f.name] = f
 	return q
 }
 
-func (q *JSONFacetQuery) Range(f *rangeFacetQuery) *JSONFacetQuery {
+func (q *JSONFacetQuery) Range(f *RangeFacetQuery) *JSONFacetQuery {
 	q.rangeFacets[f.name] = f
 	return q
 }
@@ -63,56 +47,48 @@ func (q JSONFacetQuery) MarshalJSON() ([]byte, error) {
 	return json.Marshal(body)
 }
 
-type termsFacetQuery struct {
+type TermsFacetQuery struct {
 	name   string
 	params map[string]any
 }
 
-func NewTermsFacetQuery(field string) *termsFacetQuery {
-	return &termsFacetQuery{
+func NewTermsFacetQuery(field string) *TermsFacetQuery {
+	return &TermsFacetQuery{
 		name: field,
 		params: map[string]any{
-			"type":  TERMS_FACET_TYPE,
+			"type":  FACET_TYPE_TERMS,
 			"field": field,
 		},
 	}
 }
 
-func (q *termsFacetQuery) FacetQuery() (string, map[string]any) {
-	return q.name, q.params
-}
-
-func (q *termsFacetQuery) Type() string {
-	return TERMS_FACET_TYPE
-}
-
-func (q *termsFacetQuery) Name(v string) *termsFacetQuery {
+func (q *TermsFacetQuery) Name(v string) *TermsFacetQuery {
 	q.name = v
 	return q
 }
 
-func (q *termsFacetQuery) Limit(v int) *termsFacetQuery {
+func (q *TermsFacetQuery) Limit(v int) *TermsFacetQuery {
 	q.params["limit"] = v
 	return q
 }
 
-func (q *termsFacetQuery) MinCount(v int) *termsFacetQuery {
+func (q *TermsFacetQuery) MinCount(v int) *TermsFacetQuery {
 	q.params["mincount"] = v
 	return q
 }
-func (q *termsFacetQuery) Sort(v string) *termsFacetQuery {
+func (q *TermsFacetQuery) Sort(v string) *TermsFacetQuery {
 	q.params["sort"] = v
 	return q
 }
 
-func (q *termsFacetQuery) ExcludeTags(tags ...string) *termsFacetQuery {
+func (q *TermsFacetQuery) ExcludeTags(tags ...string) *TermsFacetQuery {
 	q.params["domain"] = map[string]any{
 		"excludeTags": tags,
 	}
 	return q
 }
 
-type rangeFacetQuery struct {
+type RangeFacetQuery struct {
 	name   string
 	start  int
 	end    int
@@ -120,14 +96,14 @@ type rangeFacetQuery struct {
 	params map[string]any
 }
 
-func NewRangeFacetQuery(field string, start, end, gap int) *rangeFacetQuery {
-	return &rangeFacetQuery{
+func NewRangeFacetQuery(field string, start, end, gap int) *RangeFacetQuery {
+	return &RangeFacetQuery{
 		name:  field,
 		start: start,
 		end:   end,
 		gap:   gap,
 		params: map[string]any{
-			"type":  RANGE_FACET_TYPE,
+			"type":  FACET_TYPE_RANGE,
 			"field": field,
 			"start": start,
 			"end":   end,
@@ -136,40 +112,32 @@ func NewRangeFacetQuery(field string, start, end, gap int) *rangeFacetQuery {
 	}
 }
 
-func (q *rangeFacetQuery) FacetQuery() (string, map[string]any) {
-	return q.name, q.params
-}
-
-func (q *rangeFacetQuery) Type() string {
-	return RANGE_FACET_TYPE
-}
-
-func (q *rangeFacetQuery) Name(v string) *rangeFacetQuery {
+func (q *RangeFacetQuery) Name(v string) *RangeFacetQuery {
 	q.name = v
 	return q
 }
 
-func (q *rangeFacetQuery) MinCount(v int) *rangeFacetQuery {
+func (q *RangeFacetQuery) MinCount(v int) *RangeFacetQuery {
 	q.params["mincount"] = v
 	return q
 }
 
-func (q *rangeFacetQuery) HardEnd(v bool) *rangeFacetQuery {
+func (q *RangeFacetQuery) HardEnd(v bool) *RangeFacetQuery {
 	q.params["hardend"] = v
 	return q
 }
 
-func (q *rangeFacetQuery) Other(v string) *rangeFacetQuery {
+func (q *RangeFacetQuery) Other(v string) *RangeFacetQuery {
 	q.params["other"] = v
 	return q
 }
 
-func (q *rangeFacetQuery) Include(v string) *rangeFacetQuery {
+func (q *RangeFacetQuery) Include(v string) *RangeFacetQuery {
 	q.params["include"] = v
 	return q
 }
 
-func (q *rangeFacetQuery) ExcludeTags(tags ...string) *rangeFacetQuery {
+func (q *RangeFacetQuery) ExcludeTags(tags ...string) *RangeFacetQuery {
 	q.params["domain"] = map[string]any{
 		"excludeTags": tags,
 	}

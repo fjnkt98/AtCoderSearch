@@ -31,14 +31,15 @@ func newGenerateProblemCmd() *cli.Command {
 				return errs.Wrap(err)
 			}
 			reader := generate.NewProblemRowReader(pool)
-			generator := generate.NewProblemGenerator(
+
+			err = generate.GenerateProblemDocument(
+				ctx.Context,
 				reader,
 				ctx.String("save-dir"),
-				ctx.Int("chunk-size"),
-				ctx.Int("concurrent"),
+				generate.WithChunkSize(ctx.Int("chunk-size")),
+				generate.WithConcurrent(ctx.Int("concurrent")),
 			)
-
-			if err := generator.Generate(ctx.Context); err != nil {
+			if err != nil {
 				return errs.Wrap(err)
 			}
 			return nil

@@ -58,17 +58,17 @@ func (r *UserRow) Document(ctx context.Context) (*UserDoc, error) {
 	}, nil
 }
 
-type userRowReader struct {
+type UserRowReader struct {
 	db *bun.DB
 }
 
-func NewUserRowReader(db *bun.DB) RowReader[*UserRow] {
-	return &userRowReader{
+func NewUserRowReader(db *bun.DB) *UserRowReader {
+	return &UserRowReader{
 		db: db,
 	}
 }
 
-func (r *userRowReader) ReadRows(ctx context.Context, tx chan<- *UserRow) error {
+func (r *UserRowReader) ReadRows(ctx context.Context, tx chan<- *UserRow) error {
 	rows, err := r.db.NewSelect().
 		Column(
 			"user_name",
@@ -114,6 +114,6 @@ func (r *userRowReader) ReadRows(ctx context.Context, tx chan<- *UserRow) error 
 	return nil
 }
 
-func NewUserGenerator(reader RowReader[*UserRow], saveDir string, chunkSize, concurrent int) DocumentGenerator {
-	return NewDocumentGenerator(reader, saveDir, chunkSize, concurrent)
+func GenerateUserDocument(ctx context.Context, reader RowReader[*UserRow], saveDir string, options ...option) error {
+	return GenerateDocument(ctx, reader, saveDir, options...)
 }

@@ -64,7 +64,7 @@ func newCrawlSubmissionCmd() *cli.Command {
 				strings.Split(ctx.String("target"), ","),
 			)
 
-			if err := crawler.CrawlSubmission(ctx.Context); err != nil {
+			if err := crawler.Crawl(ctx.Context); err != nil {
 				return errs.Wrap(err)
 			}
 			return nil

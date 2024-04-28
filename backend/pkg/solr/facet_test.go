@@ -7,8 +7,9 @@ import (
 )
 
 func TestMarshalJSONFacetQuery(t *testing.T) {
-	q := NewJSONFacetQuery(
+	q := NewJSONFacetQuery().Terms(
 		NewTermsFacetQuery("category").Name("cate").Limit(-1).ExcludeTags("category"),
+	).Range(
 		NewRangeFacetQuery("difficulty", 0, 2000, 400).Name("diff").Other("all").ExcludeTags("difficulty"),
 	)
 
@@ -30,7 +31,7 @@ func TestTermsFacetQuery(t *testing.T) {
 		MinCount(0).
 		ExcludeTags("category")
 
-	expected := &termsFacetQuery{
+	expected := &TermsFacetQuery{
 		name: "category",
 		params: map[string]any{
 			"type":     "terms",
@@ -84,8 +85,9 @@ func TestParseJSONFacetResponse(t *testing.T) {
 	}
 	`)
 
-	q := NewJSONFacetQuery(
+	q := NewJSONFacetQuery().Terms(
 		NewTermsFacetQuery("category").MinCount(0),
+	).Range(
 		NewRangeFacetQuery("difficulty", 0, 1200, 400).MinCount(0),
 	)
 

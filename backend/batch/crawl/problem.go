@@ -18,13 +18,9 @@ import (
 	"github.com/tdewolff/minify/html"
 )
 
-type ProblemCrawler interface {
-	CrawlProblem(ctx context.Context) error
-}
-
-type problemCrawler struct {
-	problemsClient atcoder.AtCoderProblemsClient
-	atcoderClient  atcoder.AtCoderClient
+type ProblemCrawler struct {
+	problemsClient *atcoder.AtCoderProblemsClient
+	atcoderClient  *atcoder.AtCoderClient
 	pool           *pgxpool.Pool
 	minifier       *minify.M
 	duration       time.Duration
@@ -32,16 +28,16 @@ type problemCrawler struct {
 }
 
 func NewProblemCrawler(
-	problemsClient atcoder.AtCoderProblemsClient,
-	atcoderClient atcoder.AtCoderClient,
+	problemsClient *atcoder.AtCoderProblemsClient,
+	atcoderClient *atcoder.AtCoderClient,
 	pool *pgxpool.Pool,
 	duration time.Duration,
 	all bool,
-) ProblemCrawler {
+) *ProblemCrawler {
 	m := minify.New()
 	m.AddFunc("text/html", html.Minify)
 
-	return &problemCrawler{
+	return &ProblemCrawler{
 		problemsClient: problemsClient,
 		atcoderClient:  atcoderClient,
 		pool:           pool,
@@ -51,7 +47,7 @@ func NewProblemCrawler(
 	}
 }
 
-func (c *problemCrawler) DetectDiff(ctx context.Context) ([]atcoder.Problem, error) {
+func (c *ProblemCrawler) DetectDiff(ctx context.Context) ([]atcoder.Problem, error) {
 	q := repository.New(c.pool)
 	ids, err := q.FetchProblemIDs(ctx)
 	if err != nil {
@@ -77,7 +73,7 @@ func (c *problemCrawler) DetectDiff(ctx context.Context) ([]atcoder.Problem, err
 	return targets, nil
 }
 
-func (c *problemCrawler) CrawlProblem(ctx context.Context) error {
+func (c *ProblemCrawler) Crawl(ctx context.Context) error {
 	var targets []atcoder.Problem
 	var err error
 	if c.all {

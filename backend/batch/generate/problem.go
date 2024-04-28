@@ -148,17 +148,17 @@ func RateToColor(rate int) string {
 	}
 }
 
-type problemRowReader struct {
+type ProblemRowReader struct {
 	pool *pgxpool.Pool
 }
 
-func NewProblemRowReader(pool *pgxpool.Pool) RowReader[*ProblemRow] {
-	return &problemRowReader{
+func NewProblemRowReader(pool *pgxpool.Pool) *ProblemRowReader {
+	return &ProblemRowReader{
 		pool: pool,
 	}
 }
 
-func (r *problemRowReader) ReadRows(ctx context.Context, tx chan<- *ProblemRow) error {
+func (r *ProblemRowReader) ReadRows(ctx context.Context, tx chan<- *ProblemRow) error {
 	db := bun.NewDB(stdlib.OpenDBFromPool(r.pool), pgdialect.New())
 	rows, err := db.NewSelect().
 		ColumnExpr("p.problem_id AS problem_id").
@@ -206,6 +206,6 @@ func (r *problemRowReader) ReadRows(ctx context.Context, tx chan<- *ProblemRow) 
 	return nil
 }
 
-func NewProblemGenerator(reader RowReader[*ProblemRow], saveDir string, chunkSize, concurrent int) DocumentGenerator {
-	return NewDocumentGenerator(reader, saveDir, chunkSize, concurrent)
+func GenerateProblemDocument(ctx context.Context, reader RowReader[*ProblemRow], saveDir string, options ...option) error {
+	return GenerateDocument(ctx, reader, saveDir, options...)
 }

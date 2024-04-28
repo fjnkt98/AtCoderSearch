@@ -30,7 +30,7 @@ func newCrawlUserCmd() *cli.Command {
 				return errs.Wrap(err)
 			}
 			crawler := crawl.NewUserCrawler(client, pool, ctx.Duration("duration"))
-			if err := crawler.CrawlUser(ctx.Context); err != nil {
+			if err := crawler.Crawl(ctx.Context); err != nil {
 				return errs.Wrap(err)
 			}
 

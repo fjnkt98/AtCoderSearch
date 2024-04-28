@@ -15,12 +15,8 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type SubmissionCrawler interface {
-	CrawlSubmission(ctx context.Context) error
-}
-
-type submissionCrawler struct {
-	client   atcoder.AtCoderClient
+type SubmissionCrawler struct {
+	client   *atcoder.AtCoderClient
 	pool     *pgxpool.Pool
 	duration time.Duration
 	retry    int
@@ -28,13 +24,13 @@ type submissionCrawler struct {
 }
 
 func NewSubmissionCrawler(
-	client atcoder.AtCoderClient,
+	client *atcoder.AtCoderClient,
 	pool *pgxpool.Pool,
 	duration time.Duration,
 	retry int,
 	targets []string,
-) SubmissionCrawler {
-	return &submissionCrawler{
+) *SubmissionCrawler {
+	return &SubmissionCrawler{
 		client:   client,
 		pool:     pool,
 		duration: duration,
@@ -43,7 +39,7 @@ func NewSubmissionCrawler(
 	}
 }
 
-func (c *submissionCrawler) crawlContest(ctx context.Context, contestID string, lastCrawled int64) error {
+func (c *SubmissionCrawler) crawlContest(ctx context.Context, contestID string, lastCrawled int64) error {
 	submissions := make([]atcoder.Submission, 0)
 loop:
 	for i := 1; i <= 1_000_000_000; i++ {
@@ -104,7 +100,7 @@ loop:
 	return nil
 }
 
-func (c *submissionCrawler) CrawlSubmission(ctx context.Context) error {
+func (c *SubmissionCrawler) Crawl(ctx context.Context) error {
 	q := repository.New(c.pool)
 
 	var ids []string

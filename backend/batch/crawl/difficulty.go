@@ -11,23 +11,19 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type DifficultyCrawler interface {
-	CrawlDifficulty(ctx context.Context) error
-}
-
-type difficultyCrawler struct {
-	client atcoder.AtCoderProblemsClient
+type DifficultyCrawler struct {
+	client *atcoder.AtCoderProblemsClient
 	pool   *pgxpool.Pool
 }
 
-func NewDifficultyCrawler(client atcoder.AtCoderProblemsClient, pool *pgxpool.Pool) DifficultyCrawler {
-	return &difficultyCrawler{
+func NewDifficultyCrawler(client *atcoder.AtCoderProblemsClient, pool *pgxpool.Pool) *DifficultyCrawler {
+	return &DifficultyCrawler{
 		client: client,
 		pool:   pool,
 	}
 }
 
-func (c *difficultyCrawler) CrawlDifficulty(ctx context.Context) error {
+func (c *DifficultyCrawler) Crawl(ctx context.Context) error {
 	slog.Info("Start to crawl difficulties.")
 	difficulties, err := c.client.FetchDifficulties(ctx)
 	if err != nil {

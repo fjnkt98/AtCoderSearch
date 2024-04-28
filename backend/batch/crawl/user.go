@@ -12,29 +12,25 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type UserCrawler interface {
-	CrawlUser(ctx context.Context) error
-}
-
-type userCrawler struct {
-	client   atcoder.AtCoderClient
+type UserCrawler struct {
+	client   *atcoder.AtCoderClient
 	pool     *pgxpool.Pool
 	duration time.Duration
 }
 
 func NewUserCrawler(
-	client atcoder.AtCoderClient,
+	client *atcoder.AtCoderClient,
 	pool *pgxpool.Pool,
 	duration time.Duration,
-) *userCrawler {
-	return &userCrawler{
+) *UserCrawler {
+	return &UserCrawler{
 		client:   client,
 		pool:     pool,
 		duration: duration,
 	}
 }
 
-func (c *userCrawler) CrawlUser(ctx context.Context) error {
+func (c *UserCrawler) Crawl(ctx context.Context) error {
 	slog.Info("Start to crawl users.")
 
 	users := make([]atcoder.User, 0)

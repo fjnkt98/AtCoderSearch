@@ -38,13 +38,13 @@ func newCrawlProblemCmd() *cli.Command {
 
 			{
 				crawler := crawl.NewContestCrawler(problemsClient, pool)
-				if err := crawler.CrawlContest(ctx.Context); err != nil {
+				if err := crawler.Crawl(ctx.Context); err != nil {
 					return errs.Wrap(err)
 				}
 			}
 			{
 				crawler := crawl.NewDifficultyCrawler(problemsClient, pool)
-				if err := crawler.CrawlDifficulty(ctx.Context); err != nil {
+				if err := crawler.Crawl(ctx.Context); err != nil {
 					return errs.Wrap(err)
 				}
 			}
@@ -56,7 +56,7 @@ func newCrawlProblemCmd() *cli.Command {
 					ctx.Duration("duration"),
 					ctx.Bool("all"),
 				)
-				if err := crawler.CrawlProblem(ctx.Context); err != nil {
+				if err := crawler.Crawl(ctx.Context); err != nil {
 					return errs.Wrap(err)
 				}
 			}

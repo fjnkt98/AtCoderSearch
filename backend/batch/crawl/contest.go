@@ -11,23 +11,19 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type ContestCrawler interface {
-	CrawlContest(ctx context.Context) error
-}
-
-type contestCrawler struct {
-	client atcoder.AtCoderProblemsClient
+type ContestCrawler struct {
+	client *atcoder.AtCoderProblemsClient
 	pool   *pgxpool.Pool
 }
 
-func NewContestCrawler(client atcoder.AtCoderProblemsClient, pool *pgxpool.Pool) ContestCrawler {
-	return &contestCrawler{
+func NewContestCrawler(client *atcoder.AtCoderProblemsClient, pool *pgxpool.Pool) *ContestCrawler {
+	return &ContestCrawler{
 		client: client,
 		pool:   pool,
 	}
 }
 
-func (c *contestCrawler) CrawlContest(ctx context.Context) error {
+func (c *ContestCrawler) Crawl(ctx context.Context) error {
 	slog.Info("Start to fetch contests.")
 	contests, err := c.client.FetchContests(ctx)
 	if err != nil {
