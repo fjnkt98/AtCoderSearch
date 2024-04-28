@@ -125,3 +125,8 @@ func (h *SearchProblemHandler) SearchProblem(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, result)
 }
+
+func (h *SearchProblemHandler) Register(e *echo.Echo) {
+	e.GET("/api/search/problem", h.SearchProblem)
+	e.POST("/api/search/problem", h.SearchProblem)
+}

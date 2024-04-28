@@ -1,7 +1,9 @@
 package serve
 
 import (
+	"fjnkt98/atcodersearch/pkg/solr"
 	"fjnkt98/atcodersearch/server"
+	"fjnkt98/atcodersearch/server/api/search"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -25,9 +27,14 @@ func NewServeCmd() *cli.Command {
 			},
 		},
 		Action: func(ctx *cli.Context) error {
-			e, err := server.NewServer(server.ServerConfig{DatabaseURL: ctx.String("database-url"), SolrHost: ctx.String("solr-host")})
-			if err != nil {
-				return errs.Wrap(err)
+			e := server.NewServer()
+			host := ctx.String("solr-host")
+			{
+				core, err := solr.NewSolrCore(host, "problem")
+				if err != nil {
+					return errs.Wrap(err)
+				}
+				search.NewSearchProblemHandler(core).Register(e)
 			}
 
 			port := ctx.Int("port")

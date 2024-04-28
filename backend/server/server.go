@@ -1,20 +1,23 @@
 package server
 
 import (
-	"fjnkt98/atcodersearch/pkg/solr"
-	"fjnkt98/atcodersearch/server/api/search"
 	"net/http"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/goark/errs"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
 
 type ServerConfig struct {
-	DatabaseURL  string
-	SolrHost     string
 	AllowOrigins []string
+}
+
+type option func(*ServerConfig)
+
+func WithAllowOrigins(origins []string) option {
+	return func(opt *ServerConfig) {
+		opt.AllowOrigins = origins
+	}
 }
 
 type Validator struct{}
@@ -26,7 +29,14 @@ func (v *Validator) Validate(i any) error {
 	return nil
 }
 
-func NewServer(c ServerConfig) (*echo.Echo, error) {
+func NewServer(options ...option) *echo.Echo {
+	config := &ServerConfig{
+		AllowOrigins: nil,
+	}
+	for _, opt := range options {
+		opt(config)
+	}
+
 	e := echo.New()
 	e.Use(middleware.Recover())
 	e.Use(middleware.Gzip())
@@ -38,21 +48,11 @@ func NewServer(c ServerConfig) (*echo.Echo, error) {
 		AllowHeaders: []string{
 			echo.HeaderOrigin,
 		},
-		AllowOrigins: c.AllowOrigins,
+		AllowOrigins: config.AllowOrigins,
 	}))
 	e.HideBanner = true
 	e.HidePort = true
 	e.Validator = new(Validator)
 
-	{
-		core, err := solr.NewSolrCore(c.SolrHost, "problem")
-		if err != nil {
-			return nil, errs.Wrap(err)
-		}
-		handler := search.NewSearchProblemHandler(core)
-		e.GET("/api/search/problem", handler.SearchProblem)
-		e.POST("/api/search/problem", handler.SearchProblem)
-	}
-
-	return e, nil
+	return e
 }
