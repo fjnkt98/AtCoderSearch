@@ -21,7 +21,7 @@ func FieldList(doc any) []string {
 		f := ty.Field(i)
 
 		var name string
-		if tag, ok := f.Tag.Lookup("solr"); ok {
+		if tag, ok := f.Tag.Lookup("json"); ok {
 			if tag == "-" {
 				continue
 			}

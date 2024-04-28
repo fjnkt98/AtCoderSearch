@@ -103,22 +103,22 @@
   <field name="_version_" type="i64" indexed="false" stored="false" />
   <field name="null" type="Null" indexed="false" stored="false" />
 
-  <uniqueKey>problem_id</uniqueKey>
-  <field name="problem_id" type="String" indexed="true" stored="true" />
-  <field name="problem_title" type="String" indexed="true" stored="true" />
-  <field name="problem_url" type="String" indexed="false" stored="true" />
-  <field name="contest_id" type="String" indexed="true" stored="true" />
-  <field name="contest_title" type="String" indexed="true" stored="true" />
-  <field name="contest_url" type="String" indexed="false" stored="true" />
+  <uniqueKey>problemId</uniqueKey>
+  <field name="problemId" type="String" indexed="true" stored="true" />
+  <field name="problemTitle" type="String" indexed="true" stored="true" />
+  <field name="problemUrl" type="String" indexed="false" stored="true" />
+  <field name="contestId" type="String" indexed="true" stored="true" />
+  <field name="contestTitle" type="String" indexed="true" stored="true" />
+  <field name="contestUrl" type="String" indexed="false" stored="true" />
   <field name="color" type="String" indexed="true" stored="true" />
-  <field name="start_at" type="DateTime" indexed="true" stored="true" />
+  <field name="startAt" type="DateTime" indexed="true" stored="true" />
   <field name="duration" type="i64" indexed="true" stored="true" />
-  <field name="rate_change" type="String" indexed="true" stored="true" />
+  <field name="rateChange" type="String" indexed="true" stored="true" />
   <field name="category" type="String" indexed="true" stored="true" />
   <field name="difficulty" type="i32" indexed="true" stored="true" sortMissingLast="true" />
-  <field name="is_experimental" type="bool" indexed="true" stored="true" sortMissingLast="true" />
-  <field name="statement_ja" type="TextJa" indexed="true" stored="true" multiValued="true" />
-  <field name="statement_en" type="TextEn" indexed="true" stored="true" multiValued="true" />
+  <field name="isExperimental" type="bool" indexed="true" stored="true" sortMissingLast="true" />
+  <field name="statementJa" type="TextJa" indexed="true" stored="true" multiValued="true" />
+  <field name="statementEn" type="TextEn" indexed="true" stored="true" multiValued="true" />
 
   <field name="text_ja" type="TextJa" indexed="true" stored="true" multiValued="true" />
   <field name="text_reading" type="TextReading" indexed="true" stored="true" multiValued="true" />
@@ -130,24 +130,24 @@
   <dynamicField name="*__text_en" type="TextEn" indexed="true" stored="false" multiValued="true" />
   <dynamicField name="*__text_unigram" type="TextUniGram" indexed="true" stored="false" multiValued="true" />
 
-  <copyField source="problem_title" dest="text_ja" />
-  <copyField source="problem_title" dest="problem_title__text_ja" />
-  <copyField source="problem_title" dest="text_en" />
-  <copyField source="problem_title" dest="problem_title__text_en" />
-  <copyField source="problem_title" dest="text_unigram" />
-  <copyField source="problem_title" dest="problem_title__text_unigram" />
+  <copyField source="problemTitle" dest="text_ja" />
+  <copyField source="problemTitle" dest="problemTitle__text_ja" />
+  <copyField source="problemTitle" dest="text_en" />
+  <copyField source="problemTitle" dest="problemTitle__text_en" />
+  <copyField source="problemTitle" dest="text_unigram" />
+  <copyField source="problemTitle" dest="problemTitle__text_unigram" />
 
-  <copyField source="contest_title" dest="text_ja" />
-  <copyField source="contest_title" dest="contest_title__text_ja" />
-  <copyField source="contest_title" dest="text_en" />
-  <copyField source="contest_title" dest="contest_title__text_en" />
-  <copyField source="contest_title" dest="text_unigram" />
-  <copyField source="contest_title" dest="contest_title__text_unigram" />
+  <copyField source="contestTitle" dest="text_ja" />
+  <copyField source="contestTitle" dest="contestTitle__text_ja" />
+  <copyField source="contestTitle" dest="text_en" />
+  <copyField source="contestTitle" dest="contestTitle__text_en" />
+  <copyField source="contestTitle" dest="text_unigram" />
+  <copyField source="contestTitle" dest="contestTitle__text_unigram" />
 
-  <copyField source="statement_ja" dest="text_ja" />
-  <copyField source="statement_ja" dest="text_reading" />
-  <copyField source="statement_ja" dest="text_unigram" />
+  <copyField source="statementJa" dest="text_ja" />
+  <copyField source="statementJa" dest="text_reading" />
+  <copyField source="statementJa" dest="text_unigram" />
 
-  <copyField source="statement_en" dest="text_en" />
-  <copyField source="statement_en" dest="text_unigram" />
+  <copyField source="statementEn" dest="text_en" />
+  <copyField source="statementEn" dest="text_unigram" />
 </schema>

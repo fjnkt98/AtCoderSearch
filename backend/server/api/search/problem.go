@@ -34,18 +34,18 @@ func (p ProblemParameter) Validate() error {
 }
 
 type ProblemResponse struct {
-	ProblemID    string                `json:"problem_id" solr:"problem_id"`
-	ProblemTitle string                `json:"problem_title" solr:"problem_title"`
-	ProblemURL   string                `json:"problem_url" solr:"problem_url"`
-	ContestID    string                `json:"contest_id" solr:"contest_id"`
-	ContestTitle string                `json:"contest_title" solr:"contest_title"`
-	ContestURL   string                `json:"contest_url" solr:"contest_url"`
-	Difficulty   *int                  `json:"difficulty" solr:"difficulty"`
-	Color        *string               `json:"color" solr:"color"`
-	StartAt      solr.FromSolrDateTime `json:"start_at" solr:"start_at"`
-	Duration     int                   `json:"duration" solr:"duration"`
-	RateChange   string                `json:"rate_change" solr:"rate_change"`
-	Category     string                `json:"category" solr:"category"`
+	ProblemID    string                `json:"problemId"`
+	ProblemTitle string                `json:"problemTitle"`
+	ProblemURL   string                `json:"problemUrl"`
+	ContestID    string                `json:"contestId"`
+	ContestTitle string                `json:"contestTitle"`
+	ContestURL   string                `json:"contestUrl"`
+	Difficulty   *int                  `json:"difficulty"`
+	Color        *string               `json:"color"`
+	StartAt      solr.FromSolrDateTime `json:"startAt"`
+	Duration     int                   `json:"duration"`
+	RateChange   string                `json:"rateChange"`
+	Category     string                `json:"category"`
 }
 
 type SearchProblemHandler struct {

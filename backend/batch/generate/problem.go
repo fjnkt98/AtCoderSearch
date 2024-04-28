@@ -32,21 +32,21 @@ type ProblemRow struct {
 }
 
 type ProblemDoc struct {
-	ProblemID      string                `json:"problem_id"`
-	ProblemTitle   string                `json:"problem_title"`
-	ProblemURL     string                `json:"problem_url"`
-	ContestID      string                `json:"contest_id"`
-	ContestTitle   string                `json:"contest_title"`
-	ContestURL     string                `json:"contest_url"`
+	ProblemID      string                `json:"problemId"`
+	ProblemTitle   string                `json:"problemTitle"`
+	ProblemURL     string                `json:"problemUrl"`
+	ContestID      string                `json:"contestId"`
+	ContestTitle   string                `json:"contestTitle"`
+	ContestURL     string                `json:"contestUrl"`
 	Color          string                `json:"color"`
-	StartAt        solr.IntoSolrDateTime `json:"start_at"`
+	StartAt        solr.IntoSolrDateTime `json:"startAt"`
 	Duration       int64                 `json:"duration"`
-	RateChange     string                `json:"rate_change"`
+	RateChange     string                `json:"rateChange"`
 	Category       string                `json:"category"`
 	Difficulty     *int                  `json:"difficulty"`
-	IsExperimental bool                  `json:"is_experimental"`
-	StatementJa    []string              `json:"statement_ja"`
-	StatementEn    []string              `json:"statement_en"`
+	IsExperimental bool                  `json:"isExperimental"`
+	StatementJa    []string              `json:"statementJa"`
+	StatementEn    []string              `json:"statementEn"`
 }
 
 func (r *ProblemRow) Document(ctx context.Context) (*ProblemDoc, error) {
