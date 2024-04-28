@@ -179,14 +179,14 @@ func (q *SelectQuery) Tie(tie float64) *SelectQuery {
 	return q
 }
 
-func (q *SelectQuery) Bq(bq []string) *SelectQuery {
+func (q *SelectQuery) Bq(bq ...string) *SelectQuery {
 	for _, bq := range bq {
 		q.params.Add("bq", bq)
 	}
 	return q
 }
 
-func (q *SelectQuery) Bf(bf []string) *SelectQuery {
+func (q *SelectQuery) Bf(bf ...string) *SelectQuery {
 	for _, bf := range bf {
 		q.params.Add("bf", bf)
 	}
@@ -202,7 +202,7 @@ func (q *SelectQuery) Sow(sow bool) *SelectQuery {
 	return q
 }
 
-func (q *SelectQuery) Boost(boost []string) *SelectQuery {
+func (q *SelectQuery) Boost(boost ...string) *SelectQuery {
 	for _, boost := range boost {
 		q.params.Add("boost", boost)
 	}

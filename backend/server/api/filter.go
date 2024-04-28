@@ -19,6 +19,20 @@ func (p localParam) String() string {
 	return fmt.Sprintf("%s=%s", p.Key, p.Value)
 }
 
+func formatLocalParams(params []localParam) string {
+	lp := make([]string, 0, len(params))
+	for _, p := range params {
+		if s := p.String(); s != "" {
+			lp = append(lp, p.String())
+		}
+	}
+	var p string = ""
+	if len(lp) > 0 {
+		p = fmt.Sprintf(`{!%s}`, strings.Join(lp, " "))
+	}
+	return p
+}
+
 func LocalParam(key, value string) localParam {
 	return localParam{
 		Key:   key,
@@ -37,16 +51,7 @@ func Quotes(s []string) []string {
 }
 
 func TermsFilter(values []string, field string, params ...localParam) string {
-	lp := make([]string, 0, len(params))
-	for _, p := range params {
-		if s := p.String(); s != "" {
-			lp = append(lp, p.String())
-		}
-	}
-	var p string
-	if len(lp) > 0 {
-		p = fmt.Sprintf(`{!%s}`, strings.Join(lp, " "))
-	}
+	p := formatLocalParams(params)
 
 	v := Quotes(solr.Sanitizes(values))
 	if len(v) == 0 {
@@ -60,16 +65,7 @@ func RangeFilter(from *int, to *int, field string, params ...localParam) string 
 		return ""
 	}
 
-	lp := make([]string, 0, len(params))
-	for _, p := range params {
-		if s := p.String(); s != "" {
-			lp = append(lp, p.String())
-		}
-	}
-	var p string
-	if len(lp) > 0 {
-		p = fmt.Sprintf(`{!%s}`, strings.Join(lp, " "))
-	}
+	p := formatLocalParams(params)
 
 	var f string
 	if from == nil {
@@ -86,4 +82,20 @@ func RangeFilter(from *int, to *int, field string, params ...localParam) string 
 	}
 
 	return fmt.Sprintf(`%s%s:[%s TO %s]`, p, field, f, t)
+}
+
+func BoolFilter(v bool, field string, params ...localParam) string {
+	if v {
+		p := formatLocalParams(params)
+		return fmt.Sprintf(`%s%s:%t`, p, field, v)
+	}
+	return ""
+}
+
+func PointerBoolFilter(v *bool, field string, params ...localParam) string {
+	if v == nil {
+		return ""
+	}
+	p := formatLocalParams(params)
+	return fmt.Sprintf(`%s%s:%t`, p, field, *v)
 }

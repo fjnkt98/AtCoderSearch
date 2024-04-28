@@ -2,6 +2,7 @@ package serve
 
 import (
 	"fjnkt98/atcodersearch/pkg/solr"
+	"fjnkt98/atcodersearch/repository"
 	"fjnkt98/atcodersearch/server"
 	"fjnkt98/atcodersearch/server/api/search"
 	"fmt"
@@ -31,13 +32,19 @@ func NewServeCmd() *cli.Command {
 				server.WithAllowOrigins(ctx.StringSlice("allow-origin")),
 			)
 
+			pool, err := repository.NewPool(ctx.Context, ctx.String("database-url"))
+			if err != nil {
+				return errs.Wrap(err)
+			}
+
 			host := ctx.String("solr-host")
+
 			{
 				core, err := solr.NewSolrCore(host, "problem")
 				if err != nil {
 					return errs.Wrap(err)
 				}
-				search.NewSearchProblemHandler(core).Register(e)
+				search.NewSearchProblemHandler(core, pool).Register(e)
 			}
 
 			port := ctx.Int("port")
