@@ -67,6 +67,10 @@ func (q *SelectQuery) Exec(ctx context.Context) (*SelectResult, error) {
 	return result, nil
 }
 
+func (q *SelectQuery) Raw() url.Values {
+	return q.params
+}
+
 func (q *SelectQuery) Sort(sort string) *SelectQuery {
 	if sort != "" {
 		q.params.Set("sort", sort)
@@ -253,9 +257,16 @@ func (q *SelectQuery) Uf(uf string) *SelectQuery {
 	return q
 }
 
-func (q *SelectQuery) Some(key, value string) *SelectQuery {
-	if key != "" && value != "" {
-		q.params.Add(key, value)
+type KeyValue struct {
+	Key   string
+	Value string
+}
+
+func (q *SelectQuery) Some(v ...KeyValue) *SelectQuery {
+	for _, v := range v {
+		if v.Key != "" && v.Value != "" {
+			q.params.Add(v.Key, v.Value)
+		}
 	}
 	return q
 }
