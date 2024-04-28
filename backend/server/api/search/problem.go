@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/goark/errs"
 	"github.com/labstack/echo/v4"
 )
 
@@ -35,17 +34,17 @@ func (p ProblemParameter) Validate() error {
 }
 
 type ProblemResponse struct {
-	ProblemID    string                `json:"problemId" solr:"problem_id"`
-	ProblemTitle string                `json:"problemTitle" solr:"problem_title"`
-	ProblemURL   string                `json:"problemUrl" solr:"problem_url"`
-	ContestID    string                `json:"contestId" solr:"contest_id"`
-	ContestTitle string                `json:"contestTitle" solr:"contest_title"`
-	ContestURL   string                `json:"contestUrl" solr:"contest_url"`
+	ProblemID    string                `json:"problem_id" solr:"problem_id"`
+	ProblemTitle string                `json:"problem_title" solr:"problem_title"`
+	ProblemURL   string                `json:"problem_url" solr:"problem_url"`
+	ContestID    string                `json:"contest_id" solr:"contest_id"`
+	ContestTitle string                `json:"contest_title" solr:"contest_title"`
+	ContestURL   string                `json:"contest_url" solr:"contest_url"`
 	Difficulty   *int                  `json:"difficulty" solr:"difficulty"`
 	Color        *string               `json:"color" solr:"color"`
-	StartAt      solr.FromSolrDateTime `json:"startAt" solr:"start_at"`
+	StartAt      solr.FromSolrDateTime `json:"start_at" solr:"start_at"`
 	Duration     int                   `json:"duration" solr:"duration"`
-	RateChange   string                `json:"rateChange" solr:"rate_change"`
+	RateChange   string                `json:"rate_change" solr:"rate_change"`
 	Category     string                `json:"category" solr:"category"`
 }
 
@@ -85,10 +84,12 @@ func (h *SearchProblemHandler) SearchProblem(c echo.Context) error {
 
 	jsonFacet := solr.NewJSONFacetQuery()
 	for _, f := range p.Facet {
-		if f == "difficulty" {
+		switch f {
+		case "category":
+			jsonFacet.Terms(solr.NewTermsFacetQuery(f).Limit(-1).MinCount(0).Sort("index").ExcludeTags(f))
+		case "difficulty":
 			jsonFacet.Range(solr.NewRangeFacetQuery("difficulty", 0, 4000, 400).Other("all").ExcludeTags("difficulty"))
 		}
-		jsonFacet.Terms(solr.NewTermsFacetQuery(f).Limit(-1).MinCount(0).Sort("index").ExcludeTags(f))
 	}
 	q = q.JsonFacet(jsonFacet)
 
@@ -99,7 +100,7 @@ func (h *SearchProblemHandler) SearchProblem(c echo.Context) error {
 	}
 
 	facet, err := res.Facet()
-	if err != nil && !errs.Is(err, solr.ErrNoFacetCounts) {
+	if err != nil {
 		slog.Error("request failed", slog.Any("error", err))
 		return c.JSON(http.StatusInternalServerError, api.NewErrorResponse("request failed", p))
 	}
@@ -114,7 +115,7 @@ func (h *SearchProblemHandler) SearchProblem(c echo.Context) error {
 		Stats: api.ResultStats{
 			Total:  res.Raw.Response.NumFound,
 			Index:  (res.Raw.Response.Start / p.Rows()) + 1,
-			Count:  int(len(items)),
+			Count:  len(items),
 			Pages:  (res.Raw.Response.NumFound + p.Rows() - 1) / p.Rows(),
 			Params: p,
 			Facet:  api.NewFacetCount(facet),
