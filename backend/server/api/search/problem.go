@@ -164,7 +164,7 @@ func (h *SearchProblemHandler) Query(ctx context.Context, p ProblemParameter) (*
 
 		if p.ExcludeSolved {
 			q = q.Fq(
-				fmt.Sprintf(`-{!join fromIndex=solution from=problemId to=problemId v="+userId:"%s" +result:AC"}`, solr.Sanitize(p.UserID)),
+				fmt.Sprintf(`-{!join fromIndex=solution from=problemId to=problemId v='userId:"%s"'}`, solr.Sanitize(p.UserID)),
 			)
 		}
 

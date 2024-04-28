@@ -19,6 +19,6 @@
 
   <uniqueKey>uniqueKey</uniqueKey>
   <field name="uniqueKey" type="String" indexed="true" stored="true" required="true" docValues="true" />
-  <field name="submissionId" type="i64" indexed="true" stored="true" required="true" docValues="true" />
+  <field name="problemId" type="String" indexed="true" stored="true" required="true" docValues="true" />
   <field name="userId" type="String" indexed="true" stored="true" required="true" docValues="true" />
 </schema>

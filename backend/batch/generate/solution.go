@@ -12,21 +12,21 @@ import (
 )
 
 type SolutionRow struct {
-	SubmissionID string `bun:"submission_id"`
-	UserID       string `bun:"user_id"`
+	ProblemID string `bun:"problem_id"`
+	UserID    string `bun:"user_id"`
 }
 
 type SolutionDoc struct {
-	UniqueKey    string `json:"uniqueKey"`
-	SubmissionID string `json:"submissionId"`
-	UserID       string `json:"userId"`
+	UniqueKey string `json:"uniqueKey"`
+	ProblemID string `json:"problemId"`
+	UserID    string `json:"userId"`
 }
 
 func (r *SolutionRow) Document(ctx context.Context) (*SolutionDoc, error) {
 	return &SolutionDoc{
-		UniqueKey:    fmt.Sprintf("%s-%s", r.UserID, r.SubmissionID),
-		SubmissionID: r.SubmissionID,
-		UserID:       r.UserID,
+		UniqueKey: fmt.Sprintf("%s-%s", r.UserID, r.ProblemID),
+		ProblemID: r.ProblemID,
+		UserID:    r.UserID,
 	}, nil
 }
 
@@ -43,7 +43,7 @@ func NewSolutionRowReader(pool *pgxpool.Pool) *SolutionRowReader {
 func (r *SolutionRowReader) ReadRows(ctx context.Context, tx chan<- *SolutionRow) error {
 	db := bun.NewDB(stdlib.OpenDBFromPool(r.pool), pgdialect.New())
 	rows, err := db.NewSelect().
-		ColumnExpr("s.id AS submission_id").
+		ColumnExpr("s.problem_id").
 		ColumnExpr("s.user_id").
 		TableExpr("submissions AS s").
 		Where("s.result = ?", "AC").
