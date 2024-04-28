@@ -27,7 +27,10 @@ func NewServeCmd() *cli.Command {
 			},
 		},
 		Action: func(ctx *cli.Context) error {
-			e := server.NewServer()
+			e := server.NewServer(
+				server.WithAllowOrigins(ctx.StringSlice("allow-origin")),
+			)
+
 			host := ctx.String("solr-host")
 			{
 				core, err := solr.NewSolrCore(host, "problem")
