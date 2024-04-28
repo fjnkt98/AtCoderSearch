@@ -12,7 +12,7 @@ import (
 )
 
 type UserRow struct {
-	UserName      string  `bun:"user_name"`
+	UserID        string  `bun:"user_id"`
 	Rating        int     `bun:"rating"`
 	HighestRating int     `bun:"highest_rating"`
 	Affiliation   *string `bun:"affiliation"`
@@ -26,7 +26,7 @@ type UserRow struct {
 }
 
 type UserDoc struct {
-	UserName      string  `json:"userName"`
+	UserID        string  `json:"userId"`
 	Rating        int     `json:"rating"`
 	HighestRating int     `json:"highestRating"`
 	Affiliation   *string `json:"affiliation"`
@@ -44,7 +44,7 @@ type UserDoc struct {
 
 func (r *UserRow) Document(ctx context.Context) (*UserDoc, error) {
 	return &UserDoc{
-		UserName:      r.UserName,
+		UserID:        r.UserID,
 		Rating:        r.Rating,
 		HighestRating: r.HighestRating,
 		Affiliation:   r.Affiliation,
@@ -57,7 +57,7 @@ func (r *UserRow) Document(ctx context.Context) (*UserDoc, error) {
 		Wins:          r.Wins,
 		Color:         RateToColor(r.Rating),
 		HighestColor:  RateToColor(r.HighestRating),
-		UserURL:       fmt.Sprintf("https://atcoder.jp/users/%s", r.UserName),
+		UserURL:       fmt.Sprintf("https://atcoder.jp/users/%s", r.UserID),
 	}, nil
 }
 
@@ -75,7 +75,7 @@ func (r *UserRowReader) ReadRows(ctx context.Context, tx chan<- *UserRow) error 
 	db := bun.NewDB(stdlib.OpenDBFromPool(r.pool), pgdialect.New())
 	rows, err := db.NewSelect().
 		Column(
-			"user_name",
+			"user_id",
 			"rating",
 			"highest_rating",
 			"affiliation",

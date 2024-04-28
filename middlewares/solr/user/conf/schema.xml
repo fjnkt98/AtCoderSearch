@@ -31,8 +31,8 @@
   <field name="_version_" type="i64" indexed="false" stored="false" />
   <field name="null" type="Null" indexed="false" stored="false" />
 
-  <uniqueKey>userName</uniqueKey>
-  <field name="userName" type="String" indexed="true" stored="true" required="true" multiValued="false" docValues="false" />
+  <uniqueKey>userId</uniqueKey>
+  <field name="userId" type="String" indexed="true" stored="true" required="true" multiValued="false" docValues="false" />
   <field name="rating" type="i32" indexed="true" stored="true" required="true" multiValued="false" docValues="true" />
   <field name="highestRating" type="i32" indexed="true" stored="true" required="false" multiValued="false" docValues="true" />
   <field name="affiliation" type="String" indexed="true" stored="true" required="false" multiValued="false" docValues="true" />
@@ -49,8 +49,8 @@
   <field name="color" type="String" indexed="true" stored="true" required="true" multiValued="false" docValues="true" />
   <field name="highestColor" type="String" indexed="true" stored="true" required="false" multiValued="false" docValues="true" />
 
-  <copyField source="userName" dest="userName__text_unigram" />
-  <copyField source="userName" dest="text_unigram" />
+  <copyField source="userId" dest="userId__text_unigram" />
+  <copyField source="userId" dest="text_unigram" />
   <copyField source="affiliation" dest="affiliation__text_unigram" />
   <copyField source="affiliation" dest="text_unigram" />
 

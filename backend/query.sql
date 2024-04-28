@@ -91,13 +91,13 @@ WHERE
 ORDER BY
     "problem_id" ASC;
 
--- name: FetchRatingByUserName :one
+-- name: FetchRatingByUserID :one
 SELECT
     "rating"
 FROM
     "users"
 WHERE
-    "user_name" = $1
+    "user_id" = $1
 LIMIT
     1;
 

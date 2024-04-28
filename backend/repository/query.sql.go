@@ -345,19 +345,19 @@ func (q *Queries) FetchProblemIDsByContestID(ctx context.Context, contestID []st
 	return items, nil
 }
 
-const fetchRatingByUserName = `-- name: FetchRatingByUserName :one
+const fetchRatingByUserID = `-- name: FetchRatingByUserID :one
 SELECT
     "rating"
 FROM
     "users"
 WHERE
-    "user_name" = $1
+    "user_id" = $1
 LIMIT
     1
 `
 
-func (q *Queries) FetchRatingByUserName(ctx context.Context, userName string) (int32, error) {
-	row := q.db.QueryRow(ctx, fetchRatingByUserName, userName)
+func (q *Queries) FetchRatingByUserID(ctx context.Context, userID string) (int32, error) {
+	row := q.db.QueryRow(ctx, fetchRatingByUserID, userID)
 	var rating int32
 	err := row.Scan(&rating)
 	return rating, err

@@ -32,7 +32,7 @@ type Submission struct {
 }
 
 type User struct {
-	UserName      string
+	UserID        string
 	Rating        int32
 	HighestRating int32
 	Affiliation   *string
@@ -435,7 +435,7 @@ func scrapeUsers(html io.Reader) ([]User, error) {
 							user.Country = &country
 						}
 					case 1:
-						user.UserName = a.Find("a > span").Text()
+						user.UserID = a.Find("a > span").Text()
 					case 2:
 						affiliation := a.Find("a > span").Text()
 						if affiliation != "" {

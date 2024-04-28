@@ -33,7 +33,7 @@ CREATE TABLE "difficulties" (
 );
 
 CREATE TABLE "users" (
-    "user_name" TEXT NOT NULL PRIMARY KEY,
+    "user_id" TEXT NOT NULL PRIMARY KEY,
     "rating" INTEGER NOT NULL,
     "highest_rating" INTEGER NOT NULL,
     "affiliation" TEXT,

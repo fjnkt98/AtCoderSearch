@@ -77,7 +77,7 @@ type SubmissionCrawlHistory struct {
 }
 
 type User struct {
-	UserName      string    `bulk:"unique" db:"user_name"`
+	UserID        string    `db:"user_id"`
 	Rating        int32     `db:"rating"`
 	HighestRating int32     `db:"highest_rating"`
 	Affiliation   *string   `db:"affiliation"`

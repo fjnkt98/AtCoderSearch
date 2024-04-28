@@ -153,7 +153,7 @@ func (h *SearchProblemHandler) Query(ctx context.Context, p ProblemParameter) (*
 
 	var err error
 	if p.UserID != "" {
-		rating, fetchErr := repository.New(h.pool).FetchRatingByUserName(ctx, p.UserID)
+		rating, fetchErr := repository.New(h.pool).FetchRatingByUserID(ctx, p.UserID)
 		if fetchErr != nil {
 			if errs.Is(fetchErr, pgx.ErrNoRows) {
 				err = ErrUserNotFound

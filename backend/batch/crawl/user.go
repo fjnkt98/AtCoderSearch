@@ -61,7 +61,7 @@ func convertUsers(users []atcoder.User) []repository.User {
 	result := make([]repository.User, len(users))
 	for i, u := range users {
 		result[i] = repository.User{
-			UserName:      u.UserName,
+			UserID:        u.UserID,
 			Rating:        u.Rating,
 			HighestRating: u.HighestRating,
 			Affiliation:   u.Affiliation,
