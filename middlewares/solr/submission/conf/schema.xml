@@ -17,24 +17,24 @@
   <field name="_version_" type="i64" indexed="false" stored="false" />
   <field name="null" type="Null" indexed="false" stored="false" />
 
-  <uniqueKey>submission_url</uniqueKey>
-  <field name="submission_id" type="i64" indexed="true" stored="true" required="true" multiValued="false" docValues="true" />
-  <field name="epoch_second" type="i64" indexed="true" stored="true" required="true" multiValued="false" docValues="true" />
-  <field name="submitted_at" type="DateTime" indexed="true" stored="true" required="true" multiValued="false" docValues="true" sortMissingLast="true" />
-  <field name="problem_id" type="String" indexed="true" stored="true" required="true" multiValued="false" docValues="true" />
-  <field name="contest_id" type="String" indexed="true" stored="true" required="true" multiValued="false" docValues="true" />
+  <uniqueKey>submissionUrl</uniqueKey>
+  <field name="submissionId" type="i64" indexed="true" stored="true" required="true" multiValued="false" docValues="true" />
+  <field name="epochSecond" type="i64" indexed="true" stored="true" required="true" multiValued="false" docValues="true" />
+  <field name="submittedAt" type="DateTime" indexed="true" stored="true" required="true" multiValued="false" docValues="true" sortMissingLast="true" />
+  <field name="problemId" type="String" indexed="true" stored="true" required="true" multiValued="false" docValues="true" />
+  <field name="contestId" type="String" indexed="true" stored="true" required="true" multiValued="false" docValues="true" />
   <field name="category" type="String" indexed="true" stored="true" required="true" multiValued="false" docValues="true" />
-  <field name="user_id" type="String" indexed="true" stored="true" required="true" multiValued="false" docValues="true" />
+  <field name="userId" type="String" indexed="true" stored="true" required="true" multiValued="false" docValues="true" />
   <field name="language" type="String" indexed="true" stored="true" required="true" multiValued="false" docValues="false" />
-  <field name="language_group" type="String" indexed="true" stored="true" required="true" multiValued="false" docValues="false" />
+  <field name="languageGroup" type="String" indexed="true" stored="true" required="true" multiValued="false" docValues="false" />
   <field name="point" type="f64" indexed="true" stored="true" required="true" multiValued="false" docValues="false" />
   <field name="length" type="i64" indexed="true" stored="true" required="true" multiValued="false" docValues="false" sortMissingLast="true" />
   <field name="result" type="String" indexed="true" stored="true" required="true" multiValued="false" docValues="true" />
-  <field name="execution_time" type="i64" indexed="true" stored="true" required="false" multiValued="false" docValues="false" sortMissingLast="true" />
+  <field name="executionTime" type="i64" indexed="true" stored="true" required="false" multiValued="false" docValues="false" sortMissingLast="true" />
 
-  <field name="submission_url" type="String" indexed="true" stored="true" required="true" multiValued="false" docValues="false" />
-  <field name="problem_title" type="String" indexed="false" stored="true" required="true" multiValued="false" docValues="false" />
-  <field name="contest_title" type="String" indexed="false" stored="true" required="true" multiValued="false" docValues="false" />
+  <field name="submissionUrl" type="String" indexed="true" stored="true" required="true" multiValued="false" docValues="false" />
+  <field name="problemTitle" type="String" indexed="false" stored="true" required="true" multiValued="false" docValues="false" />
+  <field name="contestTitle" type="String" indexed="false" stored="true" required="true" multiValued="false" docValues="false" />
   <field name="difficulty" type="i32" indexed="false" stored="true" required="true" multiValued="false" docValues="false" />
   <field name="color" type="String" indexed="false" stored="true" required="true" multiValued="false" docValues="false" />
 </schema>

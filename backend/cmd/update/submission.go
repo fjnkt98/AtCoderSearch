@@ -1,8 +1,12 @@
 package update
 
 import (
+	"fjnkt98/atcodersearch/batch/update"
+	"fjnkt98/atcodersearch/pkg/solr"
+	"fjnkt98/atcodersearch/repository"
 	"time"
 
+	"github.com/goark/errs"
 	"github.com/urfave/cli/v2"
 )
 
@@ -29,13 +33,19 @@ func newUpdateSubmissionCmd() *cli.Command {
 				Value:    false,
 				Category: "generate",
 			},
+			&cli.IntFlag{
+				Name:     "interval",
+				Value:    90,
+				Category: "generate",
+			},
 			&cli.PathFlag{
 				Name:     "save-dir",
 				Category: "generate, post",
+				EnvVars:  []string{"SUBMISSION_SAVE_DIR"},
 			},
 			&cli.IntFlag{
 				Name:     "chunk-size",
-				Value:    1000,
+				Value:    10000,
 				Category: "generate",
 			},
 			&cli.IntFlag{
@@ -58,14 +68,33 @@ func newUpdateSubmissionCmd() *cli.Command {
 				Value:    false,
 				Category: "post",
 			},
-			&cli.BoolFlag{
-				Name:     "skip-fetch",
-				Value:    false,
-				Category: "post",
-			},
 		},
-		Action: func(c *cli.Context) error {
-			panic(0)
+		Action: func(ctx *cli.Context) error {
+			pool, err := repository.NewPool(ctx.Context, ctx.String("database-url"))
+			if err != nil {
+				return errs.Wrap(err)
+			}
+			core, err := solr.NewSolrCore(ctx.String("solr-host"), "submission")
+			if err != nil {
+				return errs.Wrap(err)
+			}
+
+			config := update.UpdateSubmissionConfig{
+				Duration:           ctx.Duration("duration"),
+				Retry:              ctx.Int("retry"),
+				All:                ctx.Bool("all"),
+				Interval:           ctx.Int("interval"),
+				SaveDir:            ctx.String("save-dir"),
+				ChunkSize:          ctx.Int("chunk-size"),
+				GenerateConcurrent: ctx.Int("generate-concurrent"),
+				PostConcurrent:     ctx.Int("post-concurrent"),
+				Optimize:           ctx.Bool("optimize"),
+			}
+
+			if err := update.UpdateSubmission(ctx.Context, pool, core, config); err != nil {
+				return errs.Wrap(err)
+			}
+			return nil
 		},
 	}
 }
