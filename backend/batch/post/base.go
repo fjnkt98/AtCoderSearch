@@ -133,6 +133,7 @@ func PostDocument(ctx context.Context, core *solr.SolrCore, saveDir string, opti
 				if _, err := core.Commit(ctx); err != nil {
 					return errs.New("failed to commit core", errs.WithCause(err), errs.WithContext("core", core.Name()))
 				}
+				slog.Info("Finished committing core successfully.", slog.String("core", core.Name()))
 			}
 		}
 		return nil
