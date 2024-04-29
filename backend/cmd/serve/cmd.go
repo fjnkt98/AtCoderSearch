@@ -46,6 +46,13 @@ func NewServeCmd() *cli.Command {
 				}
 				search.NewSearchProblemHandler(core, pool).Register(e)
 			}
+			{
+				core, err := solr.NewSolrCore(host, "user")
+				if err != nil {
+					return errs.Wrap(err)
+				}
+				search.NewSearchUserHandler(core, pool).Register(e)
+			}
 
 			port := ctx.Int("port")
 			go func() {
