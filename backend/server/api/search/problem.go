@@ -78,7 +78,7 @@ func NewSearchProblemHandler(core *solr.SolrCore, pool *pgxpool.Pool) *SearchPro
 func (h *SearchProblemHandler) SearchProblem(ctx echo.Context) error {
 	var p ProblemParameter
 	if err := ctx.Bind(&p); err != nil {
-		return ctx.String(http.StatusBadRequest, "bad request")
+		return ctx.JSON(http.StatusBadRequest, api.NewErrorResponse("bad request", nil))
 	}
 	if err := ctx.Validate(p); err != nil {
 		return ctx.JSON(http.StatusBadRequest, api.NewErrorResponse(err.Error(), p))
