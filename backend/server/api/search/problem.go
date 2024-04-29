@@ -143,6 +143,7 @@ func (h *SearchProblemHandler) Query(ctx context.Context, p ProblemParameter) (*
 		Q(api.ParseQ(p.Q)).
 		Op("AND").
 		Qf("text_ja text_en text_reading").
+		Sow(true).
 		QAlt("*:*").
 		Fq(
 			api.TermsFilter(p.Category, "category", api.LocalParam("tag", "category")),
