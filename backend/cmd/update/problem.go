@@ -4,6 +4,7 @@ import (
 	"fjnkt98/atcodersearch/batch/update"
 	"fjnkt98/atcodersearch/pkg/solr"
 	"fjnkt98/atcodersearch/repository"
+	"fjnkt98/atcodersearch/settings"
 	"time"
 
 	"github.com/goark/errs"
@@ -60,7 +61,7 @@ func newUpdateProblemCmd() *cli.Command {
 			if err != nil {
 				return errs.Wrap(err)
 			}
-			core, err := solr.NewSolrCore(ctx.String("solr-host"), "problem")
+			core, err := solr.NewSolrCore(ctx.String("solr-host"), settings.PROBLEM_CORE_NAME)
 			if err != nil {
 				return errs.Wrap(err)
 			}

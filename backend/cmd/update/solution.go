@@ -4,6 +4,7 @@ import (
 	"fjnkt98/atcodersearch/batch/update"
 	"fjnkt98/atcodersearch/pkg/solr"
 	"fjnkt98/atcodersearch/repository"
+	"fjnkt98/atcodersearch/settings"
 
 	"github.com/goark/errs"
 	"github.com/urfave/cli/v2"
@@ -44,7 +45,7 @@ func newUpdateSolutionCmd() *cli.Command {
 			if err != nil {
 				return errs.Wrap(err)
 			}
-			core, err := solr.NewSolrCore(ctx.String("solr-host"), "solution")
+			core, err := solr.NewSolrCore(ctx.String("solr-host"), settings.SOLUTION_CORE_NAME)
 			if err != nil {
 				return errs.Wrap(err)
 			}

@@ -5,6 +5,7 @@ import (
 	"fjnkt98/atcodersearch/repository"
 	"fjnkt98/atcodersearch/server"
 	"fjnkt98/atcodersearch/server/api/search"
+	"fjnkt98/atcodersearch/settings"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -40,14 +41,14 @@ func NewServeCmd() *cli.Command {
 			host := ctx.String("solr-host")
 
 			{
-				core, err := solr.NewSolrCore(host, "problem")
+				core, err := solr.NewSolrCore(host, settings.PROBLEM_CORE_NAME)
 				if err != nil {
 					return errs.Wrap(err)
 				}
 				search.NewSearchProblemHandler(core, pool).Register(e)
 			}
 			{
-				core, err := solr.NewSolrCore(host, "user")
+				core, err := solr.NewSolrCore(host, settings.USER_CORE_NAME)
 				if err != nil {
 					return errs.Wrap(err)
 				}

@@ -3,6 +3,7 @@ package post
 import (
 	"fjnkt98/atcodersearch/batch/post"
 	"fjnkt98/atcodersearch/pkg/solr"
+	"fjnkt98/atcodersearch/settings"
 
 	"github.com/goark/errs"
 	"github.com/urfave/cli/v2"
@@ -32,7 +33,7 @@ func newPostProblemCmd() *cli.Command {
 			},
 		},
 		Action: func(ctx *cli.Context) error {
-			core, err := solr.NewSolrCore(ctx.String("solr-host"), "problem")
+			core, err := solr.NewSolrCore(ctx.String("solr-host"), settings.PROBLEM_CORE_NAME)
 			if err != nil {
 				return errs.Wrap(err)
 			}
