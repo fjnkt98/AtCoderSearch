@@ -4,6 +4,7 @@ import (
 	"fjnkt98/atcodersearch/pkg/solr"
 	"fjnkt98/atcodersearch/repository"
 	"fjnkt98/atcodersearch/server"
+	"fjnkt98/atcodersearch/server/api/recommend"
 	"fjnkt98/atcodersearch/server/api/search"
 	"fjnkt98/atcodersearch/settings"
 	"fmt"
@@ -53,6 +54,13 @@ func NewServeCmd() *cli.Command {
 					return errs.Wrap(err)
 				}
 				search.NewSearchUserHandler(core, pool).Register(e)
+			}
+			{
+				core, err := solr.NewSolrCore(host, settings.PROBLEM_CORE_NAME)
+				if err != nil {
+					return errs.Wrap(err)
+				}
+				recommend.NewRecommendProblemHandler(core).Register(e)
 			}
 
 			port := ctx.Int("port")

@@ -1,13 +1,14 @@
 package solr
 
 import (
+	"fjnkt98/atcodersearch/settings"
 	"net/url"
 	"reflect"
 	"testing"
 )
 
 func TestSelectQuery(t *testing.T) {
-	core, err := NewSolrCore("http://localhost:18983", "problem")
+	core, err := NewSolrCore("http://localhost:18983", settings.PROBLEM_CORE_NAME)
 	if err != nil {
 		t.Fatalf("failed to create core: %s", err.Error())
 	}

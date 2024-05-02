@@ -17,7 +17,7 @@ type SelectQuery struct {
 	facet  *JSONFacetQuery
 }
 
-func NewSelectQuery(client *http.Client, uri *url.URL) *SelectQuery {
+func newSelectQuery(client *http.Client, uri *url.URL) *SelectQuery {
 	params := url.Values{}
 	params.Set("defType", "edismax")
 	return &SelectQuery{

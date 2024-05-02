@@ -183,7 +183,11 @@ func (c *SolrCore) Reload(ctx context.Context) (*SimpleResponse, error) {
 }
 
 func (c *SolrCore) NewSelect() *SelectQuery {
-	return NewSelectQuery(c.client, c.host.JoinPath("solr", c.name, "select"))
+	return newSelectQuery(c.client, c.host.JoinPath("solr", c.name, "select"))
+}
+
+func (c *SolrCore) NewMoreLikeThis() *MoreLikeThisQuery {
+	return newMoreLikeThisQuery(c.client, c.host.JoinPath("solr", c.name, "select"))
 }
 
 func (c *SolrCore) Post(ctx context.Context, src io.Reader, contentType string) (*SimpleResponse, error) {
