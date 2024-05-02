@@ -58,7 +58,7 @@ func (p *ProblemParameter) Query(core *solr.SolrCore) *solr.SelectQuery {
 		Fq(
 			api.TermsFilter(p.Category, "category", api.LocalParam("tag", "category")),
 			api.TermsFilter(p.Color, "color", api.LocalParam("tag", "color")),
-			api.IntegerRangeFilter(p.DifficultyFrom, p.DifficultyTo, "difficulty", api.LocalParam("tag", "color")),
+			api.IntegerRangeFilter(p.DifficultyFrom, p.DifficultyTo, "difficulty", api.LocalParam("tag", "difficulty")),
 			api.PointerBoolFilter(p.Experimental, "isExperimental"),
 		)
 
