@@ -6,6 +6,8 @@ import (
 	"log/slog"
 	"net/http"
 
+	"github.com/coocood/freecache"
+	cache "github.com/gitsight/go-echo-cache"
 	"github.com/goark/errs"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -174,8 +176,12 @@ func (h *ListHandler) ListLanguage(ctx echo.Context) error {
 }
 
 func (h *ListHandler) Register(e *echo.Echo) {
-	e.GET("/api/list/problem", h.ListProblem)
-	e.GET("/api/list/contest", h.ListContest)
-	e.GET("/api/list/category", h.ListCategory)
-	e.GET("/api/list/language", h.ListLanguage)
+	g := e.Group("/api/list")
+
+	c := freecache.NewCache(256 * 1024 * 1024)
+	g.Use(cache.New(&cache.Config{}, c))
+	g.GET("/problem", h.ListProblem)
+	g.GET("/contest", h.ListContest)
+	g.GET("/category", h.ListCategory)
+	g.GET("/language", h.ListLanguage)
 }
