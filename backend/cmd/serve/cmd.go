@@ -62,6 +62,13 @@ func NewServeCmd() *cli.Command {
 				}
 				recommend.NewRecommendProblemHandler(core).Register(e)
 			}
+			{
+				core, err := solr.NewSolrCore(host, settings.SUBMISSION_CORE_NAME)
+				if err != nil {
+					return errs.Wrap(err)
+				}
+				search.NewSearchSubmissionHandler(core).Register(e)
+			}
 
 			port := ctx.Int("port")
 			go func() {

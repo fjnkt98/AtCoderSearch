@@ -60,7 +60,7 @@ func TermsFilter(values []string, field string, params ...localParam) string {
 	return fmt.Sprintf(`%s%s:(%s)`, p, field, strings.Join(v, " OR "))
 }
 
-func RangeFilter(from *int, to *int, field string, params ...localParam) string {
+func IntegerRangeFilter(from *int, to *int, field string, params ...localParam) string {
 	if from == nil && to == nil {
 		return ""
 	}
@@ -79,6 +79,30 @@ func RangeFilter(from *int, to *int, field string, params ...localParam) string 
 		t = "*"
 	} else {
 		t = strconv.Itoa(*to)
+	}
+
+	return fmt.Sprintf(`%s%s:[%s TO %s]`, p, field, f, t)
+}
+
+func FloatRangeFilter(from *float64, to *float64, field string, params ...localParam) string {
+	if from == nil && to == nil {
+		return ""
+	}
+
+	p := formatLocalParams(params)
+
+	var f string
+	if from == nil {
+		f = "*"
+	} else {
+		f = strconv.FormatFloat(*from, 'f', 2, 64)
+	}
+
+	var t string
+	if to == nil {
+		t = "*"
+	} else {
+		t = strconv.FormatFloat(*to, 'f', 2, 64)
 	}
 
 	return fmt.Sprintf(`%s%s:[%s TO %s]`, p, field, f, t)

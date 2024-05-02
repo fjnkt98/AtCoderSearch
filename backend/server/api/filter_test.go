@@ -43,7 +43,7 @@ func TestTermsFilter(t *testing.T) {
 	}
 }
 
-func TestRangeFilter(t *testing.T) {
+func TestIntegerRangeFilter(t *testing.T) {
 	cases := []struct {
 		name   string
 		from   *int
@@ -62,7 +62,35 @@ func TestRangeFilter(t *testing.T) {
 	for _, tt := range cases {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			actual := RangeFilter(tt.from, tt.to, tt.field, tt.params...)
+			actual := IntegerRangeFilter(tt.from, tt.to, tt.field, tt.params...)
+
+			if tt.want != actual {
+				t.Errorf("expected \n%s\n, but got \n%s\n", tt.want, actual)
+			}
+		})
+	}
+}
+
+func TestFloatRangeFilter(t *testing.T) {
+	cases := []struct {
+		name   string
+		from   *float64
+		to     *float64
+		field  string
+		params []localParam
+		want   string
+	}{
+		{name: "empty", from: nil, to: nil, field: "difficulty", want: ""},
+		{name: "from only", from: ptr(0.0), to: nil, field: "difficulty", want: "difficulty:[0.00 TO *]"},
+		{name: "to only", from: nil, to: ptr(100.0), field: "difficulty", want: "difficulty:[* TO 100.00]"},
+		{name: "from and to", from: ptr(-100.0), to: ptr(100.0), field: "difficulty", want: "difficulty:[-100.00 TO 100.00]"},
+		{name: "with local param", from: ptr(-100.0), to: ptr(100.0), field: "difficulty", params: []localParam{LocalParam("tag", "difficulty")}, want: "{!tag=difficulty}difficulty:[-100.00 TO 100.00]"},
+	}
+
+	for _, tt := range cases {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			actual := FloatRangeFilter(tt.from, tt.to, tt.field, tt.params...)
 
 			if tt.want != actual {
 				t.Errorf("expected \n%s\n, but got \n%s\n", tt.want, actual)

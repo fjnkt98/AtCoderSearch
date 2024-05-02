@@ -127,9 +127,9 @@ func (h *SearchUserHandler) Query(p UserParameter) *solr.SelectQuery {
 		QAlt("*:*").
 		Fq(
 			api.TermsFilter(p.UserID, "userId"),
-			api.RangeFilter(p.RatingFrom, p.RatingTo, "rating", api.LocalParam("tag", "rating")),
-			api.RangeFilter(p.BirthYearFrom, p.BirthYearTo, "birthYear", api.LocalParam("tag", "birthYear")),
-			api.RangeFilter(p.JoinCountFrom, p.JoinCountTo, "joinCount", api.LocalParam("tag", "joinCount")),
+			api.IntegerRangeFilter(p.RatingFrom, p.RatingTo, "rating", api.LocalParam("tag", "rating")),
+			api.IntegerRangeFilter(p.BirthYearFrom, p.BirthYearTo, "birthYear", api.LocalParam("tag", "birthYear")),
+			api.IntegerRangeFilter(p.JoinCountFrom, p.JoinCountTo, "joinCount", api.LocalParam("tag", "joinCount")),
 			api.TermsFilter(p.Country, "country", api.LocalParam("tag", "country")),
 			api.TermsFilter(p.Color, "color", api.LocalParam("tag", "color")),
 		)
