@@ -62,7 +62,7 @@ func (p *ProblemParameter) Query(core *solr.SolrCore) *solr.SelectQuery {
 			api.PointerBoolFilter(p.Experimental, "isExperimental"),
 		)
 
-	if p.ExcludeSolved {
+	if p.ExcludeSolved && p.UserID != "" {
 		q = q.Fq(
 			fmt.Sprintf(`-{!join fromIndex=solution from=problemId to=problemId v='userId:"%s"'}`, solr.Sanitize(p.UserID)),
 		)
