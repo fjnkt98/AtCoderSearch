@@ -11,6 +11,7 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo/v4 v4.11.4
 	github.com/lib/pq v1.10.9
+	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/tdewolff/minify v2.3.6+incompatible
 	github.com/thanhpk/randstr v1.0.6
 	github.com/uptrace/bun v1.2.1

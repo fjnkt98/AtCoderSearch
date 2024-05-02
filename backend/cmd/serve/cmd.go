@@ -4,6 +4,7 @@ import (
 	"fjnkt98/atcodersearch/pkg/solr"
 	"fjnkt98/atcodersearch/repository"
 	"fjnkt98/atcodersearch/server"
+	"fjnkt98/atcodersearch/server/api/list"
 	"fjnkt98/atcodersearch/server/api/recommend"
 	"fjnkt98/atcodersearch/server/api/search"
 	"fjnkt98/atcodersearch/settings"
@@ -69,6 +70,7 @@ func NewServeCmd() *cli.Command {
 				}
 				search.NewSearchSubmissionHandler(core).Register(e)
 			}
+			list.NewListHandler(pool).Register(e)
 
 			port := ctx.Int("port")
 			go func() {
