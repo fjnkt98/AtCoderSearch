@@ -39,6 +39,43 @@ func (p UserParameter) Validate() error {
 	)
 }
 
+func (p *UserParameter) Query(core *solr.SolrCore) *solr.SelectQuery {
+	q := core.NewSelect().
+		Rows(p.Rows()).
+		Start(p.Start()).
+		Sort(api.ParseSort(p.Sort)).
+		Fl(strings.Join(solr.FieldList(new(UserResponse)), ",")).
+		Q(api.ParseQ(p.Q)).
+		Op("AND").
+		Qf("text_unigram").
+		QAlt("*:*").
+		Fq(
+			api.TermsFilter(p.UserID, "userId"),
+			api.IntegerRangeFilter(p.RatingFrom, p.RatingTo, "rating", api.LocalParam("tag", "rating")),
+			api.IntegerRangeFilter(p.BirthYearFrom, p.BirthYearTo, "birthYear", api.LocalParam("tag", "birthYear")),
+			api.IntegerRangeFilter(p.JoinCountFrom, p.JoinCountTo, "joinCount", api.LocalParam("tag", "joinCount")),
+			api.TermsFilter(p.Country, "country", api.LocalParam("tag", "country")),
+			api.TermsFilter(p.Color, "color", api.LocalParam("tag", "color")),
+		)
+
+	jsonFacet := solr.NewJSONFacetQuery()
+	for _, f := range p.Facet {
+		switch f {
+		case "country":
+			jsonFacet.Terms(solr.NewTermsFacetQuery(f).Limit(-1).MinCount(0).Sort("index").ExcludeTags(f))
+		case "rating":
+			jsonFacet.Range(solr.NewRangeFacetQuery("rating", 0, 4000, 400).Other("all").ExcludeTags("rating"))
+		case "birthYear":
+			jsonFacet.Range(solr.NewRangeFacetQuery("birthYear", 1970, 2020, 10).Other("all").ExcludeTags("birthYear"))
+		case "joinCount":
+			jsonFacet.Range(solr.NewRangeFacetQuery("joinCount", 0, 100, 20).Other("all").ExcludeTags("joinCount"))
+		}
+	}
+	q = q.JsonFacet(jsonFacet)
+
+	return q
+}
+
 type UserResponse struct {
 	UserID        string  `json:"userId"`
 	Rating        int     `json:"rating"`
@@ -77,7 +114,8 @@ func (h *SearchUserHandler) SearchUser(ctx echo.Context) error {
 		return ctx.JSON(http.StatusBadRequest, api.NewErrorResponse(err.Error(), p))
 	}
 
-	res, err := h.Query(p).Exec(ctx.Request().Context())
+	q := p.Query(h.core)
+	res, err := q.Exec(ctx.Request().Context())
 	if err != nil {
 		slog.Error("request failed", slog.Any("error", err))
 		return ctx.JSON(http.StatusInternalServerError, api.NewErrorResponse("request failed", p))
@@ -113,41 +151,4 @@ func (h *SearchUserHandler) SearchUser(ctx echo.Context) error {
 func (h *SearchUserHandler) Register(e *echo.Echo) {
 	e.GET("/api/search/user", h.SearchUser)
 	e.POST("/api/search/user", h.SearchUser)
-}
-
-func (h *SearchUserHandler) Query(p UserParameter) *solr.SelectQuery {
-	q := h.core.NewSelect().
-		Rows(p.Rows()).
-		Start(p.Start()).
-		Sort(api.ParseSort(p.Sort)).
-		Fl(strings.Join(solr.FieldList(new(UserResponse)), ",")).
-		Q(api.ParseQ(p.Q)).
-		Op("AND").
-		Qf("text_unigram").
-		QAlt("*:*").
-		Fq(
-			api.TermsFilter(p.UserID, "userId"),
-			api.IntegerRangeFilter(p.RatingFrom, p.RatingTo, "rating", api.LocalParam("tag", "rating")),
-			api.IntegerRangeFilter(p.BirthYearFrom, p.BirthYearTo, "birthYear", api.LocalParam("tag", "birthYear")),
-			api.IntegerRangeFilter(p.JoinCountFrom, p.JoinCountTo, "joinCount", api.LocalParam("tag", "joinCount")),
-			api.TermsFilter(p.Country, "country", api.LocalParam("tag", "country")),
-			api.TermsFilter(p.Color, "color", api.LocalParam("tag", "color")),
-		)
-
-	jsonFacet := solr.NewJSONFacetQuery()
-	for _, f := range p.Facet {
-		switch f {
-		case "country":
-			jsonFacet.Terms(solr.NewTermsFacetQuery(f).Limit(-1).MinCount(0).Sort("index").ExcludeTags(f))
-		case "rating":
-			jsonFacet.Range(solr.NewRangeFacetQuery("rating", 0, 4000, 400).Other("all").ExcludeTags("rating"))
-		case "birthYear":
-			jsonFacet.Range(solr.NewRangeFacetQuery("birthYear", 1970, 2020, 10).Other("all").ExcludeTags("birthYear"))
-		case "joinCount":
-			jsonFacet.Range(solr.NewRangeFacetQuery("joinCount", 0, 100, 20).Other("all").ExcludeTags("joinCount"))
-		}
-	}
-	q = q.JsonFacet(jsonFacet)
-
-	return q
 }

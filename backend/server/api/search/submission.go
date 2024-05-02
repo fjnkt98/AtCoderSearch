@@ -49,6 +49,31 @@ func (p SubmissionParameter) Validate() error {
 	)
 }
 
+func (p *SubmissionParameter) Query(core *solr.SolrCore) *solr.SelectQuery {
+	q := core.NewSelect().
+		Rows(p.Rows()).
+		Start(p.Start()).
+		Sort(api.ParseSort(p.Sort)).
+		Fl(strings.Join(solr.FieldList(new(SubmissionResponse)), ",")).
+		Q("*:*").
+		Df("null").
+		Fq(
+			api.IntegerRangeFilter(p.EpochSecondFrom, p.EpochSecondTo, "epochSecond", api.LocalParam("tag", "epochSecond")),
+			api.TermsFilter(p.ProblemID, "problemId", api.LocalParam("tag", "problemId")),
+			api.TermsFilter(p.ContestID, "contestId", api.LocalParam("tag", "contestId")),
+			api.TermsFilter(p.Category, "category", api.LocalParam("tag", "category")),
+			api.TermsFilter(p.UserID, "userId", api.LocalParam("tag", "userId")),
+			api.TermsFilter(p.Language, "language", api.LocalParam("tag", "language")),
+			api.TermsFilter(p.LanguageGroup, "languageGroup", api.LocalParam("tag", "languageGroup")),
+			api.FloatRangeFilter(p.PointFrom, p.PointTo, "point", api.LocalParam("tag", "point")),
+			api.IntegerRangeFilter(p.LengthFrom, p.LengthTo, "length", api.LocalParam("tag", "length")),
+			api.TermsFilter(p.Result, "result", api.LocalParam("tag", "result")),
+			api.IntegerRangeFilter(p.ExecutionTimeFrom, p.ExecutionTimeTo, "executionTime", api.LocalParam("tag", "executionTime")),
+		)
+
+	return q
+}
+
 type SubmissionResponse struct {
 	SubmissionID  int64                 `json:"submissionId"`
 	SubmittedAt   solr.FromSolrDateTime `json:"submittedAt"`
@@ -87,27 +112,7 @@ func (h *SearchSubmissionHandler) SearchSubmission(ctx echo.Context) error {
 		return ctx.JSON(http.StatusBadRequest, api.NewErrorResponse(err.Error(), p))
 	}
 
-	q := h.core.NewSelect().
-		Rows(p.Rows()).
-		Start(p.Start()).
-		Sort(api.ParseSort(p.Sort)).
-		Fl(strings.Join(solr.FieldList(new(SubmissionResponse)), ",")).
-		Q("*:*").
-		Df("null").
-		Fq(
-			api.IntegerRangeFilter(p.EpochSecondFrom, p.EpochSecondTo, "epochSecond", api.LocalParam("tag", "epochSecond")),
-			api.TermsFilter(p.ProblemID, "problemId", api.LocalParam("tag", "problemId")),
-			api.TermsFilter(p.ContestID, "contestId", api.LocalParam("tag", "contestId")),
-			api.TermsFilter(p.Category, "category", api.LocalParam("tag", "category")),
-			api.TermsFilter(p.UserID, "userId", api.LocalParam("tag", "userId")),
-			api.TermsFilter(p.Language, "language", api.LocalParam("tag", "language")),
-			api.TermsFilter(p.LanguageGroup, "languageGroup", api.LocalParam("tag", "languageGroup")),
-			api.FloatRangeFilter(p.PointFrom, p.PointTo, "point", api.LocalParam("tag", "point")),
-			api.IntegerRangeFilter(p.LengthFrom, p.LengthTo, "length", api.LocalParam("tag", "length")),
-			api.TermsFilter(p.Result, "result", api.LocalParam("tag", "result")),
-			api.IntegerRangeFilter(p.ExecutionTimeFrom, p.ExecutionTimeTo, "executionTime", api.LocalParam("tag", "executionTime")),
-		)
-
+	q := p.Query(h.core)
 	res, err := q.Exec(ctx.Request().Context())
 	if err != nil {
 		slog.Error("request failed", slog.Any("error", err))

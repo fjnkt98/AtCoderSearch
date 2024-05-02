@@ -31,6 +31,19 @@ func (p ProblemParameter) Validate() error {
 	)
 }
 
+func (p *ProblemParameter) Query(core *solr.SolrCore) *solr.MoreLikeThisQuery {
+	q := core.NewMoreLikeThis().
+		Rows(p.Rows()).
+		Start(p.Start()).
+		Fl(strings.Join(solr.FieldList(new(ProblemResponse)), ",")).
+		Q(p.ProblemID).
+		Qf("text_ja").
+		MinTF(2).
+		MinDF(5)
+
+	return q
+}
+
 type ProblemResponse struct {
 	ProblemID    string                `json:"problemId"`
 	ProblemTitle string                `json:"problemTitle"`
@@ -66,15 +79,7 @@ func (h *RecommendProblemHandler) RecommendProblem(ctx echo.Context) error {
 		return ctx.JSON(http.StatusBadRequest, api.NewErrorResponse(err.Error(), p))
 	}
 
-	q := h.core.NewMoreLikeThis().
-		Rows(p.Rows()).
-		Start(p.Start()).
-		Fl(strings.Join(solr.FieldList(new(ProblemResponse)), ",")).
-		Q(p.ProblemID).
-		Qf("text_ja").
-		MinTF(2).
-		MinDF(5)
-
+	q := p.Query(h.core)
 	res, err := q.Exec(ctx.Request().Context())
 	if err != nil {
 		slog.Error("request failed", slog.Any("error", err))
