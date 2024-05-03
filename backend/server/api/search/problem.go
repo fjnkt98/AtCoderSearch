@@ -26,7 +26,7 @@ type ProblemParameter struct {
 	DifficultyTo     *int     `json:"difficultyTo" query:"difficultyTo"`
 	Color            []string `json:"color" query:"color"`
 	UserID           string   `json:"userId" query:"userId"`
-	Rating           *int     `json:"rating" query:"rating"`
+	Difficulty       *int     `json:"difficulty" query:"difficulty"`
 	ExcludeSolved    bool     `json:"excludeSolved" query:"excludeSolved"`
 	Experimental     *bool    `json:"experimental" query:"experimental"`
 	PrioritizeRecent bool     `json:"prioritizeRecent" query:"prioritizeRecent"`
@@ -73,9 +73,9 @@ func (p *ProblemParameter) Query(core *solr.SolrCore) *solr.SelectQuery {
 			fmt.Sprintf("{!boost b=%d}{!func}pow(2,mul(-1,div(ms(NOW,startAt),2592000000)))", 7),
 		)
 	}
-	if p.Rating != nil {
+	if p.Difficulty != nil {
 		q = q.Bq(
-			fmt.Sprintf("{!boost b=%d}{!func}pow(2.71828182846,mul(-1,div(pow(sub(%d,difficulty),2),20000)))", 10, *p.Rating),
+			fmt.Sprintf("{!boost b=%d}{!func}pow(2.71828182846,mul(-1,div(pow(sub(%d,difficulty),2),20000)))", 10, *p.Difficulty),
 		)
 	}
 
@@ -142,7 +142,7 @@ func (h *SearchProblemHandler) SearchProblem(ctx echo.Context) error {
 			}
 		} else {
 			rating := int(rating)
-			p.Rating = &rating
+			p.Difficulty = &rating
 		}
 	}
 

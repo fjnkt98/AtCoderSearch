@@ -54,7 +54,7 @@ func TestSearchProblemBoosting(t *testing.T) {
 	}{
 		{name: "default", param: ProblemParameter{}, expected: ([]string)(nil)},
 		{name: "prioritize recent", param: ProblemParameter{PrioritizeRecent: true}, expected: []string{`{!boost b=7}{!func}pow(2,mul(-1,div(ms(NOW,startAt),2592000000)))`}},
-		{name: "rating", param: ProblemParameter{Rating: ptr(1000)}, expected: []string{`{!boost b=10}{!func}pow(2.71828182846,mul(-1,div(pow(sub(1000,difficulty),2),20000)))`}},
+		{name: "rating", param: ProblemParameter{Difficulty: ptr(1000)}, expected: []string{`{!boost b=10}{!func}pow(2.71828182846,mul(-1,div(pow(sub(1000,difficulty),2),20000)))`}},
 	}
 
 	for _, tt := range cases {
