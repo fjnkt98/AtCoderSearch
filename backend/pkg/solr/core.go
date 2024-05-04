@@ -11,14 +11,19 @@ import (
 	"github.com/goark/errs"
 )
 
+// ErrNonOKResponse is the error returned when Solr returns a status code other than 200.
 var ErrNonOKResponse = errs.New("non-ok status code returned")
 
+// SolrCore is a struct that abstracts the core of Solr.
 type SolrCore struct {
 	host   url.URL
 	name   string
 	client *http.Client
 }
 
+// NewSolrCore creates a new SolrCore instance.
+// It returns an error when the given host url is invalid.
+// It doesn't return an error to specify the name of a core that does not exist.
 func NewSolrCore(host string, name string) (*SolrCore, error) {
 	parsedHost, err := url.Parse(host)
 	if err != nil {
@@ -37,6 +42,8 @@ func NewSolrCore(host string, name string) (*SolrCore, error) {
 	}, nil
 }
 
+// MustNewSolrCore creates a new SolrCore instance.
+// Panic if an error occurs internally.
 func MustNewSolrCore(host string, name string) *SolrCore {
 	core, err := NewSolrCore(host, name)
 	if err != nil {
@@ -46,10 +53,12 @@ func MustNewSolrCore(host string, name string) *SolrCore {
 	return core
 }
 
+// Name returns the name of the Solr core.
 func (c *SolrCore) Name() string {
 	return c.name
 }
 
+// Ping pings to the Solr core.
 func (c *SolrCore) Ping(ctx context.Context) (*PingResponse, error) {
 	u := c.host.JoinPath("solr", c.name, "admin", "ping")
 	req, err := http.NewRequestWithContext(ctx, "GET", u.String(), nil)
@@ -89,6 +98,7 @@ func (c *SolrCore) Ping(ctx context.Context) (*PingResponse, error) {
 	return &body, nil
 }
 
+// Status gets the status of the Solr core.
 func (c *SolrCore) Status(ctx context.Context) (*CoreStatus, error) {
 	v := url.Values{}
 	v.Set("action", "STATUS")
@@ -139,6 +149,7 @@ func (c *SolrCore) Status(ctx context.Context) (*CoreStatus, error) {
 	return &status, nil
 }
 
+// Reload reloads the Solr core.
 func (c *SolrCore) Reload(ctx context.Context) (*SimpleResponse, error) {
 	v := url.Values{}
 	v.Set("action", "RELOAD")
@@ -182,14 +193,17 @@ func (c *SolrCore) Reload(ctx context.Context) (*SimpleResponse, error) {
 	return &body, err
 }
 
+// NewSelect creates a new *SelectQuery instance.
 func (c *SolrCore) NewSelect() *SelectQuery {
 	return newSelectQuery(c.client, c.host.JoinPath("solr", c.name, "select"))
 }
 
+// NewMoreLikeThis creates a new *MoreLikeThisQuery instance.
 func (c *SolrCore) NewMoreLikeThis() *MoreLikeThisQuery {
 	return newMoreLikeThisQuery(c.client, c.host.JoinPath("solr", c.name, "select"))
 }
 
+// Post posts the data into Solr core.
 func (c *SolrCore) Post(ctx context.Context, src io.Reader, contentType string) (*SimpleResponse, error) {
 	u := c.host.JoinPath("solr", c.name, "update")
 
@@ -230,6 +244,7 @@ func (c *SolrCore) Post(ctx context.Context, src io.Reader, contentType string) 
 	return &body, nil
 }
 
+// Commit commits the Solr core.
 func (c *SolrCore) Commit(ctx context.Context) (*SimpleResponse, error) {
 	src := strings.NewReader(`{"commit":{}}`)
 	if res, err := c.Post(ctx, src, "application/json"); err != nil {
@@ -242,6 +257,7 @@ func (c *SolrCore) Commit(ctx context.Context) (*SimpleResponse, error) {
 	}
 }
 
+// Optimize commits the Solr core with optimize.
 func (c *SolrCore) Optimize(ctx context.Context) (*SimpleResponse, error) {
 	src := strings.NewReader(`{"optimize":{}}`)
 	if res, err := c.Post(ctx, src, "application/json"); err != nil {
@@ -254,6 +270,7 @@ func (c *SolrCore) Optimize(ctx context.Context) (*SimpleResponse, error) {
 	}
 }
 
+// Rollback rollbacks the Solr core.
 func (c *SolrCore) Rollback() (*SimpleResponse, error) {
 	src := strings.NewReader(`{"rollback": {}}`)
 	if res, err := c.Post(context.Background(), src, "application/json"); err != nil {
@@ -266,6 +283,7 @@ func (c *SolrCore) Rollback() (*SimpleResponse, error) {
 	}
 }
 
+// Delete deletes all documents in the Solr core.
 func (c *SolrCore) Delete(ctx context.Context) (*SimpleResponse, error) {
 	src := strings.NewReader(`{"delete":{"query":"*:*"}}`)
 	if res, err := c.Post(ctx, src, "application/json"); err != nil {
