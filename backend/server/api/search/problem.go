@@ -2,7 +2,6 @@ package search
 
 import (
 	"fjnkt98/atcodersearch/pkg/solr"
-	"fjnkt98/atcodersearch/repository"
 	"fjnkt98/atcodersearch/server/api"
 	"fmt"
 	"log/slog"
@@ -10,8 +9,6 @@ import (
 	"strings"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/goark/errs"
-	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/labstack/echo/v4"
 )
@@ -30,7 +27,6 @@ type ProblemParameter struct {
 	ExcludeSolved    bool     `json:"excludeSolved" query:"excludeSolved"`
 	Experimental     *bool    `json:"experimental" query:"experimental"`
 	PrioritizeRecent bool     `json:"prioritizeRecent" query:"prioritizeRecent"`
-	UseUserRating    bool     `json:"useUserRating" query:"useUserRating"`
 }
 
 func (p ProblemParameter) Validate() error {
@@ -130,22 +126,6 @@ func (h *SearchProblemHandler) SearchProblem(ctx echo.Context) error {
 		return ctx.JSON(http.StatusBadRequest, api.NewErrorResponse(err.Error(), p))
 	}
 
-	var message string
-	if p.UseUserRating && p.UserID != "" {
-		rating, err := repository.New(h.pool).FetchRatingByUserID(ctx.Request().Context(), p.UserID)
-		if err != nil {
-			if errs.Is(err, pgx.ErrNoRows) {
-				message = "specified user not found"
-			} else {
-				slog.Error("request failed", slog.Any("error", err))
-				return ctx.JSON(http.StatusInternalServerError, api.NewErrorResponse("request failed", p))
-			}
-		} else {
-			rating := int(rating)
-			p.Difficulty = &rating
-		}
-	}
-
 	q := p.Query(h.core)
 	res, err := q.Exec(ctx.Request().Context())
 	if err != nil {
@@ -174,8 +154,7 @@ func (h *SearchProblemHandler) SearchProblem(ctx echo.Context) error {
 			Params: p,
 			Facet:  api.NewFacetCount(facet),
 		},
-		Items:   items,
-		Message: message,
+		Items: items,
 	}
 
 	return ctx.JSON(http.StatusOK, result)
