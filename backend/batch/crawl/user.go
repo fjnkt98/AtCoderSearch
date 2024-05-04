@@ -2,7 +2,6 @@ package crawl
 
 import (
 	"context"
-	"fjnkt98/atcodersearch/batch"
 	"fjnkt98/atcodersearch/pkg/atcoder"
 	"fjnkt98/atcodersearch/repository"
 	"time"
@@ -10,101 +9,70 @@ import (
 	"log/slog"
 
 	"github.com/goark/errs"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type UserCrawler interface {
-	batch.Batch
-	CrawlUser(ctx context.Context) error
-}
-
-type userCrawler struct {
-	client atcoder.AtCoderClient
-	repo   repository.UserRepository
-	config userCrawlerConfig
-}
-
-type userCrawlerConfig struct {
-	Duration int `json:"duration"`
+type UserCrawler struct {
+	client   *atcoder.AtCoderClient
+	pool     *pgxpool.Pool
+	duration time.Duration
 }
 
 func NewUserCrawler(
-	client atcoder.AtCoderClient,
-	repo repository.UserRepository,
-	duration int,
-) *userCrawler {
-	return &userCrawler{
-		client: client,
-		repo:   repo,
-		config: userCrawlerConfig{
-			Duration: duration,
-		},
+	client *atcoder.AtCoderClient,
+	pool *pgxpool.Pool,
+	duration time.Duration,
+) *UserCrawler {
+	return &UserCrawler{
+		client:   client,
+		pool:     pool,
+		duration: duration,
 	}
 }
 
-func (c *userCrawler) Name() string {
-	return "UserCrawler"
-}
-
-func (c *userCrawler) Config() any {
-	return c.config
-}
-
-func (c *userCrawler) CrawlUser(ctx context.Context) error {
-	slog.Info("Start to crawl users.")
-
-	allUsers := make([]repository.User, 0)
-
+func (c *UserCrawler) Crawl(ctx context.Context) error {
+	users := make([]atcoder.User, 0)
 loop:
 	for i := 1; ; i++ {
 		slog.Info("Crawl users", slog.Int("page", i))
-		users, err := c.client.FetchUsers(ctx, i)
+		us, err := c.client.FetchUsers(ctx, i)
 		if err != nil {
 			return errs.Wrap(err)
 		}
 
-		if len(users) == 0 {
+		if len(us) == 0 {
 			slog.Info("There is no more crawl target.")
 			break loop
 		}
 
-		allUsers = append(allUsers, convertUsers(users)...)
+		users = append(users, us...)
 
-		time.Sleep(time.Duration(c.config.Duration) * time.Millisecond)
+		time.Sleep(c.duration)
 	}
-
-	if err := c.repo.Save(ctx, allUsers); err != nil {
-		return errs.Wrap(err)
+	count, err := repository.BulkUpdate(ctx, c.pool, "users", convertUsers(users))
+	if err != nil {
+		return errs.New("failed to bulk update users", errs.WithCause(err))
 	}
-
-	slog.Info("Finish crawling users successfully.")
+	slog.Info("Finish crawling users successfully.", slog.Int64("count", count))
 	return nil
-}
-
-func (c *userCrawler) Run(ctx context.Context) error {
-	return c.CrawlUser(ctx)
-}
-
-func convertUser(user atcoder.User) repository.User {
-	return repository.User{
-		UserName:      user.UserName,
-		Rating:        user.Rating,
-		HighestRating: user.HighestRating,
-		Affiliation:   user.Affiliation,
-		BirthYear:     user.BirthYear,
-		Country:       user.Country,
-		Crown:         user.Crown,
-		JoinCount:     user.JoinCount,
-		Rank:          user.Rank,
-		ActiveRank:    user.ActiveRank,
-		Wins:          user.Wins,
-	}
 }
 
 func convertUsers(users []atcoder.User) []repository.User {
 	result := make([]repository.User, len(users))
-	for i, user := range users {
-		result[i] = convertUser(user)
+	for i, u := range users {
+		result[i] = repository.User{
+			UserID:        u.UserID,
+			Rating:        u.Rating,
+			HighestRating: u.HighestRating,
+			Affiliation:   u.Affiliation,
+			BirthYear:     u.BirthYear,
+			Country:       u.Country,
+			Crown:         u.Crown,
+			JoinCount:     u.JoinCount,
+			Rank:          u.Rank,
+			ActiveRank:    u.ActiveRank,
+			Wins:          u.Wins,
+		}
 	}
-
 	return result
 }

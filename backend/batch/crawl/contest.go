@@ -2,41 +2,28 @@ package crawl
 
 import (
 	"context"
-	"fjnkt98/atcodersearch/batch"
 	"fjnkt98/atcodersearch/pkg/atcoder"
 	"fjnkt98/atcodersearch/repository"
 
 	"log/slog"
 
 	"github.com/goark/errs"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type ContestCrawler interface {
-	batch.Batch
-	CrawlContest(ctx context.Context) error
+type ContestCrawler struct {
+	client *atcoder.AtCoderProblemsClient
+	pool   *pgxpool.Pool
 }
 
-type contestCrawler struct {
-	client atcoder.AtCoderProblemsClient
-	repo   repository.ContestRepository
-}
-
-func NewContestCrawler(client atcoder.AtCoderProblemsClient, repo repository.ContestRepository) ContestCrawler {
-	return &contestCrawler{
+func NewContestCrawler(client *atcoder.AtCoderProblemsClient, pool *pgxpool.Pool) *ContestCrawler {
+	return &ContestCrawler{
 		client: client,
-		repo:   repo,
+		pool:   pool,
 	}
 }
 
-func (c *contestCrawler) Name() string {
-	return "ContestCrawler"
-}
-
-func (c *contestCrawler) Config() any {
-	return nil
-}
-
-func (c *contestCrawler) CrawlContest(ctx context.Context) error {
+func (c *ContestCrawler) Crawl(ctx context.Context) error {
 	slog.Info("Start to fetch contests.")
 	contests, err := c.client.FetchContests(ctx)
 	if err != nil {
@@ -45,34 +32,26 @@ func (c *contestCrawler) CrawlContest(ctx context.Context) error {
 	slog.Info("Finish fetching contests.")
 
 	slog.Info("Start to save contests.")
-	if err := c.repo.Save(ctx, convertContests(contests)); err != nil {
-		return errs.Wrap(err)
+	count, err := repository.BulkUpdate(ctx, c.pool, "contests", convertContests(contests))
+	if err != nil {
+		return errs.New("failed to bulk update contests", errs.WithCause(err))
 	}
-	slog.Info("Finish saving contest list.")
+	slog.Info("Finish saving contest list.", slog.Int64("count", count))
 
 	return nil
-}
-
-func (c *contestCrawler) Run(ctx context.Context) error {
-	return c.CrawlContest(ctx)
-}
-
-func convertContest(contest atcoder.Contest) repository.Contest {
-	return repository.Contest{
-		ContestID:        contest.ID,
-		StartEpochSecond: contest.StartEpochSecond,
-		DurationSecond:   contest.DurationSecond,
-		Title:            contest.Title,
-		RateChange:       contest.RateChange,
-		Category:         contest.Categorize(),
-	}
 }
 
 func convertContests(contests []atcoder.Contest) []repository.Contest {
 	result := make([]repository.Contest, len(contests))
 	for i, c := range contests {
-		result[i] = convertContest(c)
+		result[i] = repository.Contest{
+			ContestID:        c.ID,
+			StartEpochSecond: c.StartEpochSecond,
+			DurationSecond:   c.DurationSecond,
+			Title:            c.Title,
+			RateChange:       c.RateChange,
+			Category:         c.Categorize(),
+		}
 	}
-
 	return result
 }

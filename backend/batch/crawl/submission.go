@@ -2,7 +2,6 @@ package crawl
 
 import (
 	"context"
-	"fjnkt98/atcodersearch/batch"
 	"fjnkt98/atcodersearch/pkg/atcoder"
 	"fjnkt98/atcodersearch/repository"
 	"fmt"
@@ -12,80 +11,51 @@ import (
 
 	mapset "github.com/deckarep/golang-set/v2"
 	"github.com/goark/errs"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type SubmissionCrawler interface {
-	batch.Batch
-	CrawlSubmission(ctx context.Context) error
-}
-
-type submissionCrawler struct {
-	client         atcoder.AtCoderClient
-	submissionRepo repository.SubmissionRepository
-	contestRepo    repository.ContestRepository
-	historyRepo    repository.SubmissionCrawlHistoryRepository
-	config         submissionCrawlerConfig
-}
-
-type submissionCrawlerConfig struct {
-	Duration int      `json:"duration"`
-	Retry    int      `json:"retry"`
-	Targets  []string `json:"targets"`
-	username string
-	password string
+type SubmissionCrawler struct {
+	client   *atcoder.AtCoderClient
+	pool     *pgxpool.Pool
+	duration time.Duration
+	retry    int
+	targets  []string
 }
 
 func NewSubmissionCrawler(
-	client atcoder.AtCoderClient,
-	submissionRepo repository.SubmissionRepository,
-	contestRepo repository.ContestRepository,
-	historyRepo repository.SubmissionCrawlHistoryRepository,
-	duration int,
+	client *atcoder.AtCoderClient,
+	pool *pgxpool.Pool,
+	duration time.Duration,
 	retry int,
 	targets []string,
-	username string,
-	password string,
-) SubmissionCrawler {
-	return &submissionCrawler{
-		client:         client,
-		submissionRepo: submissionRepo,
-		contestRepo:    contestRepo,
-		historyRepo:    historyRepo,
-		config: submissionCrawlerConfig{
-			Duration: duration,
-			Retry:    retry,
-			Targets:  targets,
-			username: username,
-			password: password,
-		},
+) *SubmissionCrawler {
+	return &SubmissionCrawler{
+		client:   client,
+		pool:     pool,
+		duration: duration,
+		retry:    retry,
+		targets:  targets,
 	}
 }
 
-func (c *submissionCrawler) Name() string {
-	return "SubmissionCrawler"
-}
-
-func (c *submissionCrawler) Config() any {
-	return c.config
-}
-
-func (c *submissionCrawler) crawl(ctx context.Context, contestID string, latest repository.SubmissionCrawlHistory) error {
-	allSubmissions := make([]atcoder.Submission, 0)
+func (c *SubmissionCrawler) crawlContest(ctx context.Context, contestID string, lastCrawled int64) error {
+	submissions := make([]atcoder.Submission, 0)
 loop:
 	for i := 1; i <= 1_000_000_000; i++ {
-		slog.Info(fmt.Sprintf("fetch submissions at page %d of the contest `%s`", i, contestID))
-		submissions, err := c.client.FetchSubmissions(ctx, contestID, i)
+		slog.Info("fetch submissions", slog.String("contest id", contestID), slog.Int("page", i))
+		subs, err := c.client.FetchSubmissions(ctx, contestID, i)
 		if err != nil {
 		retryLoop:
-			for j := 0; err != nil && j < c.config.Retry; j++ {
+			for j := 0; err != nil && j < c.retry; j++ {
 				select {
 				case <-ctx.Done():
-					return batch.ErrInterrupt
+					return nil
 				default:
 					slog.Error("failed to crawl submission", slog.String("contestID", contestID), slog.String("error", fmt.Sprintf("%+v", err)))
 					slog.Info("retry to crawl submission after 1 minutes...")
 					time.Sleep(time.Duration(60) * time.Second)
-					submissions, err = c.client.FetchSubmissions(ctx, contestID, i)
+					subs, err = c.client.FetchSubmissions(ctx, contestID, i)
 					if err == nil {
 						break retryLoop
 					}
@@ -101,102 +71,96 @@ loop:
 			}
 		}
 
-		if len(submissions) == 0 {
-			slog.Info(fmt.Sprintf("There is no submissions in contest `%s`.", contestID))
+		if len(subs) == 0 {
+			slog.Info("There is no more submissions", slog.String("contest id", contestID))
 			break loop
 		}
 
-		allSubmissions = append(allSubmissions, submissions...)
+		submissions = append(submissions, subs...)
 
-		if submissions[0].EpochSecond < int64(latest.StartedAt) {
-			slog.Info(fmt.Sprintf("All submissions after page `%d` have been crawled. Break crawling the contest `%s`", i, contestID))
-			time.Sleep(time.Duration(c.config.Duration) * time.Millisecond)
+		if subs[0].EpochSecond < lastCrawled {
+			slog.Info("Break crawling since all submissions after have been crawled.", slog.String("contest id", contestID), slog.Int("page", i))
+			time.Sleep(c.duration)
 			break loop
 		}
 
-		time.Sleep(time.Duration(c.config.Duration) * time.Millisecond)
+		time.Sleep(c.duration)
 	}
 
-	if len(allSubmissions) == 0 {
-		slog.Info(fmt.Sprintf("No submissions to save for contest `%s`.", contestID))
+	if len(submissions) == 0 {
+		slog.Info("There is no submissions to save", slog.String("contest id", contestID))
 		return nil
 	}
 
-	noDupSubmissions := make([]atcoder.Submission, 0, len(allSubmissions))
-	ids := mapset.NewSet[int]()
-	for _, s := range allSubmissions {
+	count, err := repository.BulkUpdate(ctx, c.pool, "submissions", convertSubmissions(dedupSubmissions(submissions)))
+	if err != nil {
+		return errs.New("failed to bulk update submissions", errs.WithCause(err))
+	}
+	slog.Info("Save submissions successfully", slog.String("contest id", contestID), slog.Int64("count", count))
+	return nil
+}
+
+func (c *SubmissionCrawler) Crawl(ctx context.Context) error {
+	q := repository.New(c.pool)
+
+	var ids []string
+	var err error
+	if len(c.targets) == 0 {
+		ids, err = q.FetchContestIDs(ctx)
+	} else {
+		ids, err = q.FetchContestIDsByCategory(ctx, c.targets)
+	}
+	if err != nil {
+		return errs.New("failed to fetch contest categories", errs.WithCause(err), errs.WithContext("targets", c.targets))
+	}
+
+	for _, id := range ids {
+		lastCrawled, err := q.FetchLatestCrawlHistory(ctx, id)
+		if err != nil && !errs.Is(err, pgx.ErrNoRows) {
+			return errs.New("failed to fetch latest crawl history", errs.WithCause(err), errs.WithContext("contest id", id))
+		}
+
+		slog.Info("Start to crawl", slog.String("contest id", id), slog.Time("last crawled", time.Unix(lastCrawled, 0)))
+		if err := c.crawlContest(ctx, id, lastCrawled); err != nil {
+			return errs.Wrap(err)
+		}
+
+		if _, err := q.CreateCrawlHistory(ctx, id); err != nil {
+			return errs.New("failed to create crawl history", errs.WithCause(err), errs.WithContext("contest id", id))
+		}
+		time.Sleep(c.duration)
+	}
+	return nil
+}
+
+func dedupSubmissions(submissions []atcoder.Submission) []atcoder.Submission {
+	result := make([]atcoder.Submission, 0, len(submissions))
+	ids := mapset.NewSet[int64]()
+	for _, s := range submissions {
 		if ids.Contains(s.ID) {
 			continue
 		}
 		ids.Add(s.ID)
-		noDupSubmissions = append(noDupSubmissions, s)
+		result = append(result, s)
 	}
-
-	if err := c.submissionRepo.Save(ctx, convertSubmissions(noDupSubmissions)); err != nil {
-		return errs.New(
-			"failed to save submissions",
-			errs.WithCause(err),
-			errs.WithContext("contest id", contestID),
-		)
-	}
-	slog.Info("Save submissions successfully", slog.String("contest id", contestID))
-	return nil
-}
-
-func (c *submissionCrawler) CrawlSubmission(ctx context.Context) error {
-	if err := c.client.Login(ctx, c.config.username, c.config.password); err != nil {
-		return errs.Wrap(err)
-	}
-
-	ids, err := c.contestRepo.FetchContestIDs(ctx, c.config.Targets)
-	if err != nil {
-		return errs.Wrap(err)
-	}
-
-	for _, id := range ids {
-		history := repository.NewSubmissionCrawlHistory(id)
-		latest, err := c.historyRepo.GetLatestHistory(ctx, id)
-		if err != nil {
-			return errs.Wrap(err)
-		}
-
-		slog.Info(fmt.Sprintf("Start to crawl contest `%s` since period `%s`", id, time.Unix(int64(latest.StartedAt), 0)))
-		if err := c.crawl(ctx, id, latest); err != nil {
-			return errs.Wrap(err)
-		}
-		if err := c.historyRepo.Save(ctx, history); err != nil {
-			return errs.Wrap(err)
-		}
-		time.Sleep(time.Duration(c.config.Duration) * time.Millisecond)
-	}
-	return nil
-}
-
-func (c *submissionCrawler) Run(ctx context.Context) error {
-	return c.CrawlSubmission(ctx)
-
-}
-
-func convertSubmission(submission atcoder.Submission) repository.Submission {
-	return repository.Submission{
-		ID:            submission.ID,
-		EpochSecond:   submission.EpochSecond,
-		ProblemID:     submission.ProblemID,
-		ContestID:     submission.ContestID,
-		UserID:        submission.UserID,
-		Language:      submission.Language,
-		Point:         submission.Point,
-		Length:        submission.Length,
-		Result:        submission.Result,
-		ExecutionTime: submission.ExecutionTime,
-	}
+	return result
 }
 
 func convertSubmissions(submissions []atcoder.Submission) []repository.Submission {
 	result := make([]repository.Submission, len(submissions))
-	for i, submission := range submissions {
-		result[i] = convertSubmission(submission)
+	for i, s := range submissions {
+		result[i] = repository.Submission{
+			ID:            s.ID,
+			EpochSecond:   s.EpochSecond,
+			ProblemID:     s.ProblemID,
+			ContestID:     &s.ContestID,
+			UserID:        &s.UserID,
+			Language:      &s.Language,
+			Point:         &s.Point,
+			Length:        &s.Length,
+			Result:        &s.Result,
+			ExecutionTime: s.ExecutionTime,
+		}
 	}
-
 	return result
 }

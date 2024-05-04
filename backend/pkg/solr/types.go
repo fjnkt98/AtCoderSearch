@@ -2,13 +2,12 @@ package solr
 
 import (
 	"encoding/json"
-	"time"
 )
 
 type ResponseHeader struct {
 	ZkConnected map[string]any `json:"zkConnected"`
 	Status      int            `json:"status"`
-	QTime       int
+	QTime       int            `json:"QTime"`
 	Params      map[string]any `json:"params"`
 }
 
@@ -81,86 +80,16 @@ type SimpleResponse struct {
 	Error  ErrorInfo      `json:"error"`
 }
 
-type SelectResponse[D any, F any] struct {
-	Header      ResponseHeader `json:"responseHeader"`
-	Response    SelectBody[D]  `json:"response"`
-	FacetCounts F              `json:"facets"`
-	Error       ErrorInfo      `json:"error"`
+type SelectResponse struct {
+	Header   ResponseHeader       `json:"responseHeader"`
+	Response SelectBody           `json:"response"`
+	Facets   RawJSONFacetResponse `json:"facets"`
+	Error    ErrorInfo            `json:"error"`
 }
 
-type SelectBody[D any] struct {
-	NumFound      int  `json:"numFound"`
-	Start         int  `json:"start"`
-	NumFoundExact bool `json:"numFoundExact"`
-	Docs          []D  `json:"docs"`
-}
-
-type BucketElement interface {
-	int | uint | float64 | time.Time | string
-}
-
-type Bucket[T BucketElement] struct {
-	Val   T   `json:"val"`
-	Count int `json:"count"`
-}
-
-type TermFacetCount struct {
-	Buckets []Bucket[string] `json:"buckets"`
-}
-
-type RangeFacetCount[T BucketElement] struct {
-	Buckets []Bucket[T]         `json:"buckets"`
-	Before  RangeFacetCountInfo `json:"before"`
-	After   RangeFacetCountInfo `json:"after"`
-	Between RangeFacetCountInfo `json:"between"`
-}
-
-type RangeFacetCountInfo struct {
-	Count int `json:"count"`
-}
-
-type QueryFacetCount struct {
-	Buckets []Bucket[string] `json:"buckets"`
-}
-
-type FromSolrDateTime time.Time
-
-func (t FromSolrDateTime) MarshalJSON() ([]byte, error) {
-	return json.Marshal(time.Time(t))
-}
-
-func (t *FromSolrDateTime) UnmarshalJSON(data []byte) error {
-	dataString := string(data)
-
-	if dataString == "null" {
-		return nil
-	}
-
-	parsed, err := time.ParseInLocation(`"2006-01-02T15:04:05Z"`, dataString, time.UTC)
-	if err != nil {
-		return err
-	}
-
-	*t = FromSolrDateTime(parsed.Local())
-	return nil
-}
-
-type IntoSolrDateTime time.Time
-
-func (t IntoSolrDateTime) String() string {
-	return time.Time(t).UTC().Format(`2006-01-02T15:04:05Z`)
-}
-
-func (t IntoSolrDateTime) MarshalJSON() ([]byte, error) {
-	return []byte(time.Time(t).UTC().Format(`"2006-01-02T15:04:05Z"`)), nil
-}
-
-func (t *IntoSolrDateTime) UnmarshalJSON(data []byte) error {
-	var d time.Time
-	if err := json.Unmarshal(data, &d); err != nil {
-		return err
-	}
-
-	*t = IntoSolrDateTime(d.Local())
-	return nil
+type SelectBody struct {
+	NumFound      int             `json:"numFound"`
+	Start         int             `json:"start"`
+	NumFoundExact bool            `json:"numFoundExact"`
+	Docs          json.RawMessage `json:"docs"`
 }

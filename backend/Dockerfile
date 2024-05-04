@@ -25,15 +25,12 @@ RUN groupadd --gid 1000 atcodersearch \
     && useradd --uid 1000 --gid atcodersearch --shell /bin/bash --create-home atcodersearch
 
 COPY --from=stage --chown=atcodersearch:atcodersearch /app/atcodersearch /usr/local/bin/atcodersearch
-COPY --chown=atcodersearch:atcodersearch ./schema.sql /etc/schema.sql
-COPY --chown=atcodersearch:atcodersearch ./cmd/config.yaml /etc/config.yaml
-ENV TABLE_SCHEMA='/etc/schema.sql'
-ENV ATCODERSEARCH_CONFIG_FILE='/etc/config.yaml'
 
 USER atcodersearch
 
 RUN mkdir -p /var/tmp/atcoder/problem
 RUN mkdir -p /var/tmp/atcoder/user
 RUN mkdir -p /var/tmp/atcoder/submission
+RUN mkdir -p /var/tmp/atcoder/solution
 
 CMD ["atcodersearch"]

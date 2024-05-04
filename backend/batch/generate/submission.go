@@ -2,54 +2,18 @@ package generate
 
 import (
 	"context"
-	"fjnkt98/atcodersearch/batch"
 	"fjnkt98/atcodersearch/pkg/solr"
 	"fjnkt98/atcodersearch/repository"
 	"fmt"
 	"time"
 
-	"log/slog"
-
 	"github.com/goark/errs"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jackc/pgx/v5/stdlib"
 	"github.com/uptrace/bun"
+	"github.com/uptrace/bun/dialect/pgdialect"
 )
-
-type SubmissionGenerator interface {
-	batch.Batch
-	GenerateSubmission(ctx context.Context) error
-}
-
-type submissionGenerator struct {
-	defaultGenerator
-}
-
-func NewSubmissionGenerator(reader RowReader, saveDir string, chunkSize int, concurrent int) SubmissionGenerator {
-	return &submissionGenerator{
-		defaultGenerator{
-			config: defaultGeneratorConfig{
-				SaveDir:    saveDir,
-				ChunkSize:  chunkSize,
-				Concurrent: concurrent,
-			},
-			reader: reader,
-		},
-	}
-}
-
-func (g *submissionGenerator) Name() string {
-	return "SubmissionGenerator"
-}
-
-func (g *submissionGenerator) Run(ctx context.Context) error {
-	return g.GenerateSubmission(ctx)
-}
-
-func (g *submissionGenerator) GenerateSubmission(ctx context.Context) error {
-	if err := g.Generate(ctx); err != nil {
-		return errs.Wrap(err)
-	}
-	return nil
-}
 
 type SubmissionRow struct {
 	ID            int     `bun:"id"`
@@ -69,32 +33,32 @@ type SubmissionRow struct {
 	Difficulty    int     `bun:"difficulty"`
 }
 
-type SubmissionDocument struct {
-	SubmissionID  int                   `solr:"submission_id"`
-	EpochSecond   int64                 `solr:"epoch_second"`
-	SubmittedAt   solr.IntoSolrDateTime `solr:"submitted_at"`
-	SubmissionURL string                `solr:"submission_url"`
-	ProblemID     string                `solr:"problem_id"`
-	ProblemTitle  string                `solr:"problem_title"`
-	Color         string                `solr:"color"`
-	Difficulty    int                   `solr:"difficulty"`
-	ContestID     string                `solr:"contest_id"`
-	ContestTitle  string                `solr:"contest_title"`
-	Category      string                `solr:"category"`
-	UserID        string                `solr:"user_id"`
-	Language      string                `solr:"language"`
-	LanguageGroup string                `solr:"language_group"`
-	Point         float64               `solr:"point"`
-	Length        int                   `solr:"length"`
-	Result        string                `solr:"result"`
-	ExecutionTime *int                  `solr:"execution_time"`
+type SubmissionDoc struct {
+	SubmissionID  int                   `json:"submissionId"`
+	EpochSecond   int64                 `json:"epochSecond"`
+	SubmittedAt   solr.IntoSolrDateTime `json:"submittedAt"`
+	SubmissionURL string                `json:"submissionUrl"`
+	ProblemID     string                `json:"problemId"`
+	ProblemTitle  string                `json:"problemTitle"`
+	Color         string                `json:"color"`
+	Difficulty    int                   `json:"difficulty"`
+	ContestID     string                `json:"contestId"`
+	ContestTitle  string                `json:"contestTitle"`
+	Category      string                `json:"category"`
+	UserID        string                `json:"userId"`
+	Language      string                `json:"language"`
+	LanguageGroup string                `json:"languageGroup"`
+	Point         float64               `json:"point"`
+	Length        int                   `json:"length"`
+	Result        string                `json:"result"`
+	ExecutionTime *int                  `json:"executionTime"`
 }
 
-func (r *SubmissionRow) Document(ctx context.Context) (map[string]any, error) {
+func (r *SubmissionRow) Document(ctx context.Context) (*SubmissionDoc, error) {
 	submissionURL := fmt.Sprintf("https://atcoder.jp/contests/%s/submissions/%d", r.ContestID, r.ID)
 	color := RateToColor(r.Difficulty)
 
-	return StructToMap(SubmissionDocument{
+	return &SubmissionDoc{
 		SubmissionID:  r.ID,
 		EpochSecond:   r.EpochSecond,
 		SubmittedAt:   solr.IntoSolrDateTime(time.Unix(r.EpochSecond, 0)),
@@ -113,63 +77,61 @@ func (r *SubmissionRow) Document(ctx context.Context) (map[string]any, error) {
 		Length:        r.Length,
 		Result:        r.Result,
 		ExecutionTime: r.ExecutionTime,
-	}), nil
+	}, nil
 }
 
-type submissionRowReader struct {
-	db       *bun.DB
-	repo     repository.UpdateHistoryRepository
+type SubmissionRowReader struct {
+	pool     *pgxpool.Pool
 	interval int
 	all      bool
 }
 
 func NewSubmissionRowReader(
-	db *bun.DB,
+	pool *pgxpool.Pool,
 	interval int,
 	all bool,
-) RowReader {
-	return &submissionRowReader{
-		db:       db,
-		repo:     repository.NewUpdateHistoryRepository(db),
+) *SubmissionRowReader {
+	return &SubmissionRowReader{
+		pool:     pool,
 		interval: interval,
 		all:      all,
 	}
 }
 
-func (r *submissionRowReader) ReadRows(ctx context.Context, tx chan<- Documenter) error {
-	query := r.db.NewSelect().
-		ColumnExpr("?.? AS ?", bun.Ident("s"), bun.Ident("id"), bun.Ident("id")).
-		ColumnExpr("?.? AS ?", bun.Ident("s"), bun.Ident("epoch_second"), bun.Ident("epoch_second")).
-		ColumnExpr("?.? AS ?", bun.Ident("s"), bun.Ident("problem_id"), bun.Ident("problem_id")).
-		ColumnExpr("COALESCE(?.?, '') AS ?", bun.Ident("p"), bun.Ident("title"), bun.Ident("problem_title")).
-		ColumnExpr("COALESCE(?.?, 0) AS ?", bun.Ident("d"), bun.Ident("difficulty"), bun.Ident("difficulty")).
-		ColumnExpr("?.? AS ?", bun.Ident("s"), bun.Ident("contest_id"), bun.Ident("contest_id")).
-		ColumnExpr("?.? AS ?", bun.Ident("c"), bun.Ident("title"), bun.Ident("contest_title")).
-		ColumnExpr("?.? AS ?", bun.Ident("c"), bun.Ident("category"), bun.Ident("category")).
-		ColumnExpr("?.? AS ?", bun.Ident("s"), bun.Ident("user_id"), bun.Ident("user_id")).
-		ColumnExpr("?.? AS ?", bun.Ident("s"), bun.Ident("language"), bun.Ident("language")).
-		ColumnExpr("COALESCE(?.?, '') AS ?", bun.Ident("l"), bun.Ident("group"), bun.Ident("language_group")).
-		ColumnExpr("?.? AS ?", bun.Ident("s"), bun.Ident("point"), bun.Ident("point")).
-		ColumnExpr("?.? AS ?", bun.Ident("s"), bun.Ident("length"), bun.Ident("length")).
-		ColumnExpr("?.? AS ?", bun.Ident("s"), bun.Ident("result"), bun.Ident("result")).
-		ColumnExpr("?.? AS ?", bun.Ident("s"), bun.Ident("execution_time"), bun.Ident("execution_time")).
-		TableExpr("? AS ?", bun.Ident("submissions"), bun.Ident("s")).
-		Join("LEFT JOIN ? AS ? ON ?.? = ?.?", bun.Ident("contests"), bun.Ident("c"), bun.Ident("s"), bun.Ident("contest_id"), bun.Ident("c"), bun.Ident("contest_id")).
-		Join("LEFT JOIN ? AS ? ON ?.? = ?.?", bun.Ident("problems"), bun.Ident("p"), bun.Ident("s"), bun.Ident("problem_id"), bun.Ident("p"), bun.Ident("problem_id")).
-		Join("LEFT JOIN ? AS ? ON ?.? = ?.?", bun.Ident("difficulties"), bun.Ident("d"), bun.Ident("s"), bun.Ident("problem_id"), bun.Ident("d"), bun.Ident("problem_id")).
-		Join("LEFT JOIN ? AS ? ON ?.? = ?.?", bun.Ident("languages"), bun.Ident("l"), bun.Ident("s"), bun.Ident("language"), bun.Ident("l"), bun.Ident("language")).
-		Where("?.? > EXTRACT(EPOCH FROM CURRENT_DATE - CAST(? || ' day' AS INTERVAL))", bun.Ident("s"), bun.Ident("epoch_second"), r.interval)
+func (r *SubmissionRowReader) ReadRows(ctx context.Context, tx chan<- *SubmissionRow) error {
+	db := bun.NewDB(stdlib.OpenDBFromPool(r.pool), pgdialect.New())
+	query := db.NewSelect().
+		ColumnExpr("s.id").
+		ColumnExpr("s.epoch_second").
+		ColumnExpr("s.problem_id").
+		ColumnExpr("COALESCE(p.title, '') AS problem_title").
+		ColumnExpr("COALESCE(d.difficulty, 0) AS difficulty").
+		ColumnExpr("s.contest_id").
+		ColumnExpr("c.title AS contest_title").
+		ColumnExpr("c.category").
+		ColumnExpr("s.user_id").
+		ColumnExpr("s.language").
+		ColumnExpr("COALESCE(l.?, '') AS language_group", bun.Ident("group")).
+		ColumnExpr("s.point").
+		ColumnExpr("s.length").
+		ColumnExpr("s.result").
+		ColumnExpr("s.execution_time").
+		TableExpr("submissions AS s").
+		Join("LEFT JOIN contests AS c ON s.contest_id = c.contest_id").
+		Join("LEFT JOIN problems AS p ON s.problem_id = p.problem_id").
+		Join("LEFT JOIN difficulties AS d ON s.problem_id = d.problem_id").
+		Join("LEFT JOIN languages AS l ON s.language = l.language").
+		Where("s.epoch_second > EXTRACT(EPOCH FROM CURRENT_DATE - CAST(? || ' day' AS INTERVAL))", r.interval)
 
 	if !r.all {
-		latest, err := r.repo.GetLatest(ctx, "submission")
-		if err != nil {
+		row, err := repository.New(r.pool).FetchLatestBatchHistory(ctx, "UpdateSubmission")
+		if err != nil && !errs.Is(err, pgx.ErrNoRows) {
 			return errs.New(
 				"failed to get latest update submission history",
 				errs.WithCause(err),
 			)
 		}
-
-		query = query.Where("?.? > ?", bun.Ident("s"), bun.Ident("crawled_at"), latest.StartedAt)
+		query = query.Where("s.updated_at > ?", row.StartedAt)
 	}
 
 	rows, err := query.Rows(ctx)
@@ -185,11 +147,10 @@ func (r *submissionRowReader) ReadRows(ctx context.Context, tx chan<- Documenter
 	for rows.Next() {
 		select {
 		case <-ctx.Done():
-			slog.Info("read rows canceled.")
-			return batch.ErrInterrupt
+			return nil
 		default:
 			var row SubmissionRow
-			err := r.db.ScanRow(ctx, rows, &row)
+			err := db.ScanRow(ctx, rows, &row)
 			if err != nil {
 				return errs.New(
 					"failed to scan row",
@@ -201,4 +162,8 @@ func (r *submissionRowReader) ReadRows(ctx context.Context, tx chan<- Documenter
 	}
 
 	return nil
+}
+
+func GenerateSubmissionDocument(ctx context.Context, reader RowReader[*SubmissionRow], saveDir string, options ...option) error {
+	return GenerateDocument(ctx, reader, saveDir, options...)
 }

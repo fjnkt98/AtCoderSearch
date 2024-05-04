@@ -3,7 +3,6 @@ package crawl
 import (
 	"bytes"
 	"context"
-	"fjnkt98/atcodersearch/batch"
 	"fjnkt98/atcodersearch/pkg/atcoder"
 	"fjnkt98/atcodersearch/repository"
 	"fmt"
@@ -14,67 +13,50 @@ import (
 
 	mapset "github.com/deckarep/golang-set/v2"
 	"github.com/goark/errs"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/tdewolff/minify"
 	"github.com/tdewolff/minify/html"
 )
 
-type ProblemCrawler interface {
-	batch.Batch
-	CrawlProblem(ctx context.Context) error
-}
-
-type problemCrawler struct {
-	problemsClient atcoder.AtCoderProblemsClient
-	atcoderClient  atcoder.AtCoderClient
-	repo           repository.ProblemRepository
+type ProblemCrawler struct {
+	problemsClient *atcoder.AtCoderProblemsClient
+	atcoderClient  *atcoder.AtCoderClient
+	pool           *pgxpool.Pool
 	minifier       *minify.M
-	config         problemCrawlerConfig
-}
-
-type problemCrawlerConfig struct {
-	Duration int  `json:"duration"`
-	All      bool `json:"all"`
+	duration       time.Duration
+	all            bool
 }
 
 func NewProblemCrawler(
-	problemsClient atcoder.AtCoderProblemsClient,
-	atcoderClient atcoder.AtCoderClient,
-	repo repository.ProblemRepository,
-	duration int,
+	problemsClient *atcoder.AtCoderProblemsClient,
+	atcoderClient *atcoder.AtCoderClient,
+	pool *pgxpool.Pool,
+	duration time.Duration,
 	all bool,
-) ProblemCrawler {
+) *ProblemCrawler {
 	m := minify.New()
 	m.AddFunc("text/html", html.Minify)
 
-	return &problemCrawler{
+	return &ProblemCrawler{
 		problemsClient: problemsClient,
 		atcoderClient:  atcoderClient,
-		repo:           repo,
+		pool:           pool,
 		minifier:       m,
-		config: problemCrawlerConfig{
-			Duration: duration,
-			All:      all,
-		},
+		duration:       duration,
+		all:            all,
 	}
 }
 
-func (c *problemCrawler) Name() string {
-	return "ProblemCrawler"
-}
-
-func (c *problemCrawler) Config() any {
-	return c.config
-}
-
-func (c *problemCrawler) DetectDiff(ctx context.Context) ([]atcoder.Problem, error) {
-	ids, err := c.repo.FetchIDs(ctx)
+func (c *ProblemCrawler) DetectDiff(ctx context.Context) ([]atcoder.Problem, error) {
+	q := repository.New(c.pool)
+	ids, err := q.FetchProblemIDs(ctx)
 	if err != nil {
 		return nil, errs.New(
 			"failed to fetch existing problem ids",
 			errs.WithCause(err),
 		)
 	}
-	exists := mapset.NewSet[string](ids...)
+	exists := mapset.NewSet(ids...)
 
 	problems, err := c.problemsClient.FetchProblems(ctx)
 	if err != nil {
@@ -91,26 +73,26 @@ func (c *problemCrawler) DetectDiff(ctx context.Context) ([]atcoder.Problem, err
 	return targets, nil
 }
 
-func (c *problemCrawler) CrawlProblem(ctx context.Context) error {
+func (c *ProblemCrawler) Crawl(ctx context.Context) error {
 	var targets []atcoder.Problem
 	var err error
-	if c.config.All {
+	if c.all {
 		slog.Info("Start to fetch all problems.")
 		targets, err = c.problemsClient.FetchProblems(ctx)
+		if err != nil {
+			return errs.Wrap(err)
+		}
 		slog.Info("Finish fetching all problems.")
 	} else {
 		slog.Info("Start to fetch new problems.")
 		targets, err = c.DetectDiff(ctx)
+		if err != nil {
+			return errs.Wrap(err)
+		}
 		slog.Info("Finish fetching new problems.")
 	}
 
-	if err != nil {
-		return errs.Wrap(err)
-	}
-
-	problems := make([]repository.Problem, 0, len(targets))
 	for _, target := range targets {
-		slog.Info("Start to crawl the problem", slog.String("target", target.ID))
 		html, err := c.atcoderClient.FetchProblem(ctx, target.ContestID, target.ID)
 		if err != nil {
 			return errs.Wrap(err)
@@ -123,27 +105,32 @@ func (c *problemCrawler) CrawlProblem(ctx context.Context) error {
 				errs.WithContext("problem id", target.ID),
 			)
 		}
-		problems = append(problems, repository.Problem{
-			ProblemID:    target.ID,
-			ContestID:    target.ContestID,
-			ProblemIndex: target.ProblemIndex,
-			Name:         target.Name,
-			Title:        target.Title,
-			URL:          fmt.Sprintf("https://atcoder.jp/contests/%s/tasks/%s", target.ContestID, target.ID),
-			HTML:         buf.String(),
-		})
-		slog.Info("Finish crawling the problem successfully", slog.String("target", target.ID))
-		time.Sleep(time.Duration(c.config.Duration) * time.Millisecond)
-	}
 
-	if err := c.repo.Save(ctx, problems); err != nil {
-		return errs.Wrap(err)
+		tx, err := c.pool.Begin(ctx)
+		if err != nil {
+			return errs.New("failed to start transaction", errs.WithCause(err))
+		}
+		q := repository.New(tx)
+		_, err = q.InsertProblem(
+			ctx,
+			repository.InsertProblemParams{
+				ProblemID:    target.ID,
+				ContestID:    target.ContestID,
+				ProblemIndex: target.ProblemIndex,
+				Name:         target.Name,
+				Title:        target.Title,
+				Url:          fmt.Sprintf("https://atcoder.jp/contests/%s/tasks/%s", target.ContestID, target.ID),
+				Html:         buf.String(),
+			})
+		if err != nil {
+			return errs.New("failed to insert problem", errs.WithCause(err), errs.WithContext("problem", target))
+		}
+		if err := tx.Commit(ctx); err != nil {
+			return errs.New("failed to commit transaction", errs.WithCause(err))
+		}
+		slog.Info("Finish crawling the problem successfully", slog.String("target", target.ID))
+		time.Sleep(c.duration)
 	}
-	slog.Info("Save problems successfully.")
 
 	return nil
-}
-
-func (c *problemCrawler) Run(ctx context.Context) error {
-	return c.CrawlProblem(ctx)
 }

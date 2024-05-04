@@ -14,23 +14,17 @@ import (
 
 const AGC001_STARTED_AT = 1468670400
 
-type AtCoderProblemsClient interface {
-	FetchContests(ctx context.Context) ([]Contest, error)
-	FetchProblems(ctx context.Context) ([]Problem, error)
-	FetchDifficulties(ctx context.Context) (map[string]Difficulty, error)
-}
-
-type atcoderProblemsClient struct {
+type AtCoderProblemsClient struct {
 	client *http.Client
 }
 
-func NewAtCoderProblemsClient() AtCoderProblemsClient {
-	return &atcoderProblemsClient{
+func NewAtCoderProblemsClient() *AtCoderProblemsClient {
+	return &AtCoderProblemsClient{
 		client: &http.Client{},
 	}
 }
 
-func (c *atcoderProblemsClient) FetchContests(ctx context.Context) ([]Contest, error) {
+func (c *AtCoderProblemsClient) FetchContests(ctx context.Context) ([]Contest, error) {
 	uri := "https://kenkoooo.com/atcoder/resources/contests.json"
 	req, err := http.NewRequestWithContext(ctx, "GET", uri, nil)
 	if err != nil {
@@ -64,7 +58,7 @@ func (c *atcoderProblemsClient) FetchContests(ctx context.Context) ([]Contest, e
 	return contests, nil
 }
 
-func (c *atcoderProblemsClient) FetchProblems(ctx context.Context) ([]Problem, error) {
+func (c *AtCoderProblemsClient) FetchProblems(ctx context.Context) ([]Problem, error) {
 	uri := "https://kenkoooo.com/atcoder/resources/problems.json"
 	req, err := http.NewRequestWithContext(ctx, "GET", uri, nil)
 	if err != nil {
@@ -98,7 +92,7 @@ func (c *atcoderProblemsClient) FetchProblems(ctx context.Context) ([]Problem, e
 	return problems, nil
 }
 
-func (c *atcoderProblemsClient) FetchDifficulties(ctx context.Context) (map[string]Difficulty, error) {
+func (c *AtCoderProblemsClient) FetchDifficulties(ctx context.Context) (map[string]Difficulty, error) {
 	uri := "https://kenkoooo.com/atcoder/resources/problem-models.json"
 	req, err := http.NewRequestWithContext(ctx, "GET", uri, nil)
 	if err != nil {

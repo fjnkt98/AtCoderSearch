@@ -3,109 +3,86 @@ package update
 import (
 	"context"
 	"encoding/json"
-	"fjnkt98/atcodersearch/batch"
 	"fjnkt98/atcodersearch/batch/crawl"
 	"fjnkt98/atcodersearch/batch/generate"
-	"fjnkt98/atcodersearch/batch/upload"
+	"fjnkt98/atcodersearch/batch/post"
+	"fjnkt98/atcodersearch/pkg/atcoder"
+	"fjnkt98/atcodersearch/pkg/solr"
 	"fjnkt98/atcodersearch/repository"
 	"log/slog"
+	"time"
 
 	"github.com/goark/errs"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type ProblemUpdater interface {
-	batch.Batch
+type UpdateProblemConfig struct {
+	Duration           time.Duration `json:"duration"`
+	All                bool          `json:"all"`
+	SkipFetch          bool          `json:"skip-fetch"`
+	SaveDir            string        `json:"save-dir"`
+	ChunkSize          int           `json:"chunk-size"`
+	GenerateConcurrent int           `json:"generate-concurrent"`
+	PostConcurrent     int           `json:"post-concurrent"`
+	Optimize           bool          `json:"optimize"`
 }
 
-type problemUpdater struct {
-	problemCrawler    crawl.ProblemCrawler
-	contestCrawler    crawl.ContestCrawler
-	difficultyCrawler crawl.DifficultyCrawler
-	generator         generate.ProblemGenerator
-	uploader          upload.DocumentUploader
-	repo              repository.UpdateHistoryRepository
-	skipFetch         bool
-}
-
-func NewProblemUpdater(
-	problemCrawler crawl.ProblemCrawler,
-	contestCrawler crawl.ContestCrawler,
-	difficultyCrawler crawl.DifficultyCrawler,
-	generator generate.ProblemGenerator,
-	uploader upload.DocumentUploader,
-	repo repository.UpdateHistoryRepository,
-	skipFetch bool,
-) ProblemUpdater {
-	return &problemUpdater{
-		problemCrawler:    problemCrawler,
-		contestCrawler:    contestCrawler,
-		difficultyCrawler: difficultyCrawler,
-		generator:         generator,
-		uploader:          uploader,
-		repo:              repo,
-		skipFetch:         skipFetch,
-	}
-}
-
-func (u *problemUpdater) Name() string {
-	return "ProblemUpdater"
-}
-
-func (u *problemUpdater) Config() any {
-	config := map[string]any{
-		"crawl": map[string]any{
-			"problem":    u.problemCrawler.Config(),
-			"contest":    u.contestCrawler.Config(),
-			"difficulty": u.difficultyCrawler.Config(),
-		},
-		"generate":   u.generator.Config(),
-		"upload":     u.uploader.Config(),
-		"skip_fetch": u.skipFetch,
-	}
-
-	return config
-}
-
-func (u *problemUpdater) Run(ctx context.Context) error {
-	config, err := json.Marshal(u.Config())
+func UpdateProblem(ctx context.Context, pool *pgxpool.Pool, core *solr.SolrCore, config UpdateProblemConfig) error {
+	slog.Info("Start UpdateProblem")
+	options, err := json.Marshal(config)
 	if err != nil {
-		return errs.New(
-			"failed to encode update config",
-			errs.WithCause(err),
-		)
+		return errs.New("failed to marshal update problem config", errs.WithCause(err))
 	}
 
-	history := repository.NewUpdateHistory("problem", string(config))
-	defer u.repo.Cancel(ctx, &history)
+	q := repository.New(pool)
 
-	slog.Info("Start to update problem index.")
-	if u.skipFetch {
-		slog.Info("Skip to crawl.")
-	} else {
-		if err := u.problemCrawler.CrawlProblem(ctx); err != nil {
+	id, err := q.CreateBatchHistory(ctx, repository.CreateBatchHistoryParams{Name: "UpdateProblem", Options: options})
+	if err != nil {
+		return errs.New("failed to create batch history", errs.WithCause(err))
+	}
+
+	if !config.SkipFetch {
+		problemsClient := atcoder.NewAtCoderProblemsClient()
+		atcoderClient, err := atcoder.NewAtCoderClient()
+		if err != nil {
 			return errs.Wrap(err)
 		}
-
-		if err := u.contestCrawler.CrawlContest(ctx); err != nil {
+		if err := crawl.NewContestCrawler(problemsClient, pool).Crawl(ctx); err != nil {
 			return errs.Wrap(err)
 		}
-
-		if err := u.difficultyCrawler.CrawlDifficulty(ctx); err != nil {
+		if err := crawl.NewDifficultyCrawler(problemsClient, pool).Crawl(ctx); err != nil {
+			return errs.Wrap(err)
+		}
+		if err := crawl.NewProblemCrawler(problemsClient, atcoderClient, pool, config.Duration, config.All).Crawl(ctx); err != nil {
 			return errs.Wrap(err)
 		}
 	}
 
-	if err := u.generator.GenerateProblem(ctx); err != nil {
+	if err := generate.GenerateProblemDocument(
+		ctx,
+		generate.NewProblemRowReader(pool),
+		config.SaveDir,
+		generate.WithChunkSize(config.ChunkSize),
+		generate.WithConcurrent(config.GenerateConcurrent),
+	); err != nil {
 		return errs.Wrap(err)
 	}
 
-	if err := u.uploader.Upload(ctx); err != nil {
+	if err := post.PostDocument(
+		ctx,
+		core,
+		config.SaveDir,
+		post.WithConcurrent(config.PostConcurrent),
+		post.WithOptimize(config.Optimize),
+		post.WithTruncate(true),
+	); err != nil {
 		return errs.Wrap(err)
 	}
 
-	if err := u.repo.Finish(ctx, &history); err != nil {
-		return errs.Wrap(err)
+	if err := q.UpdateBatchHistory(ctx, repository.UpdateBatchHistoryParams{ID: id, Status: "finished"}); err != nil {
+		return errs.New("failed to update batch history", errs.WithCause(err))
 	}
-	slog.Info("Finished updating problem index successfully.")
+
+	slog.Info("Finish UpdateProblem")
 	return nil
 }

@@ -2,41 +2,28 @@ package crawl
 
 import (
 	"context"
-	"fjnkt98/atcodersearch/batch"
 	"fjnkt98/atcodersearch/pkg/atcoder"
 	"fjnkt98/atcodersearch/repository"
 
 	"log/slog"
 
 	"github.com/goark/errs"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type DifficultyCrawler interface {
-	batch.Batch
-	CrawlDifficulty(ctx context.Context) error
+type DifficultyCrawler struct {
+	client *atcoder.AtCoderProblemsClient
+	pool   *pgxpool.Pool
 }
 
-type difficultyCrawler struct {
-	client atcoder.AtCoderProblemsClient
-	repo   repository.DifficultyRepository
-}
-
-func NewDifficultyCrawler(client atcoder.AtCoderProblemsClient, repo repository.DifficultyRepository) DifficultyCrawler {
-	return &difficultyCrawler{
+func NewDifficultyCrawler(client *atcoder.AtCoderProblemsClient, pool *pgxpool.Pool) *DifficultyCrawler {
+	return &DifficultyCrawler{
 		client: client,
-		repo:   repo,
+		pool:   pool,
 	}
 }
 
-func (c *difficultyCrawler) Name() string {
-	return "DifficultyCrawler"
-}
-
-func (c *difficultyCrawler) Config() any {
-	return nil
-}
-
-func (c *difficultyCrawler) CrawlDifficulty(ctx context.Context) error {
+func (c *DifficultyCrawler) Crawl(ctx context.Context) error {
 	slog.Info("Start to crawl difficulties.")
 	difficulties, err := c.client.FetchDifficulties(ctx)
 	if err != nil {
@@ -45,31 +32,28 @@ func (c *difficultyCrawler) CrawlDifficulty(ctx context.Context) error {
 	slog.Info("Finish crawling difficulties.")
 
 	slog.Info("Start to save difficulties.")
-	if err := c.repo.Save(ctx, convertDifficulties(difficulties)); err != nil {
-		return errs.Wrap(err)
+	count, err := repository.BulkUpdate(ctx, c.pool, "difficulties", convertDifficulties(difficulties))
+	if err != nil {
+		return errs.New("failed to bulk update difficulties", errs.WithCause(err))
 	}
-	slog.Info("Finish saving difficulties.")
+	slog.Info("Finish saving difficulties.", slog.Int64("count", count))
 
 	return nil
 }
 
-func (c *difficultyCrawler) Run(ctx context.Context) error {
-	return c.CrawlDifficulty(ctx)
-}
-
 func convertDifficulties(difficulties map[string]atcoder.Difficulty) []repository.Difficulty {
 	result := make([]repository.Difficulty, 0, len(difficulties))
-	for problemID, difficulty := range difficulties {
+	for problemID, d := range difficulties {
 		result = append(result, repository.Difficulty{
 			ProblemID:        problemID,
-			Slope:            difficulty.Slope,
-			Intercept:        difficulty.Intercept,
-			Variance:         difficulty.Variance,
-			Difficulty:       difficulty.Difficulty,
-			Discrimination:   difficulty.Discrimination,
-			IrtLogLikelihood: difficulty.IrtLogLikelihood,
-			IrtUsers:         difficulty.IrtUsers,
-			IsExperimental:   difficulty.IsExperimental,
+			Slope:            d.Slope,
+			Intercept:        d.Intercept,
+			Variance:         d.Variance,
+			Difficulty:       d.Difficulty,
+			Discrimination:   d.Discrimination,
+			IrtLoglikelihood: d.IrtLogLikelihood,
+			IrtUsers:         d.IrtUsers,
+			IsExperimental:   d.IsExperimental,
 		})
 	}
 	return result
