@@ -26,15 +26,16 @@ func (p *ParameterBase) Start() int {
 	return (p.Page - 1) * p.Rows()
 }
 
-func ParseSort(sort []string) string {
-	orders := make([]string, len(sort))
-	for i, s := range sort {
+func ParseSort(sort []string, defaults ...string) string {
+	orders := make([]string, 0, len(sort)+len(defaults))
+	for _, s := range sort {
 		if strings.HasPrefix(s, "-") {
-			orders[i] = fmt.Sprintf("%s desc", solr.Sanitize(s[1:]))
+			orders = append(orders, fmt.Sprintf("%s desc", solr.Sanitize(s[1:])))
 		} else {
-			orders[i] = fmt.Sprintf("%s asc", solr.Sanitize(s))
+			orders = append(orders, fmt.Sprintf("%s asc", solr.Sanitize(s)))
 		}
 	}
+	orders = append(orders, defaults...)
 
 	return strings.Join(orders, ",")
 }

@@ -91,3 +91,26 @@ func TestSearchProblemFacet(t *testing.T) {
 		})
 	}
 }
+
+func TestSearchProblemSort(t *testing.T) {
+	cases := []struct {
+		name     string
+		param    ProblemParameter
+		expected []string
+	}{
+		{name: "empty", param: ProblemParameter{}, expected: []string{"problemId asc"}},
+		{name: "single", param: ProblemParameter{Sort: []string{"-score"}}, expected: []string{"score desc,problemId asc"}},
+		{name: "multiple", param: ProblemParameter{Sort: []string{"startedAt", "-score"}}, expected: []string{"startedAt asc,score desc,problemId asc"}},
+	}
+
+	for _, tt := range cases {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			actual := map[string][]string(tt.param.Query(core).Raw())["sort"]
+
+			if !reflect.DeepEqual(tt.expected, actual) {
+				t.Errorf("expected \n%#v\n, but got \n%#v\n", tt.expected, actual)
+			}
+		})
+	}
+}
