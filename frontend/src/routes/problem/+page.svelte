@@ -14,7 +14,10 @@
   dayjs.extend(timezone);
   dayjs.extend(utc);
 
-  let opened: boolean = false;
+  $: width = 0;
+  const widthThreshold = 768;
+
+  let opened = false;
   let sort: string = "-startAt";
   let detail: string | null = null;
 
@@ -93,77 +96,92 @@
   }
 </script>
 
+<svelte:window bind:outerWidth={width} />
+
 <div class="flex h-dvh flex-col bg-gray-100">
   <Header />
   <Tab selected={"problem"} />
 
-  <div class="my-2 flex flex-row items-center justify-between gap-2 px-2 text-sm">
-    <div class={"w-1/5 flex-auto rounded-md border text-center align-middle shadow-sm " + (opened ? "border-gray-400 bg-green-600 font-semibold text-white" : "border-slate-500 bg-white")}>
-      <label class="block h-full w-full cursor-pointer select-none py-1">
+  <div class={`flex ${width > widthThreshold ? "flex-row justify-between" : "flex-col"}`}>
+    {#if width > widthThreshold}
+      <div class="text-center">絞り込み {width}</div>
+    {:else}
+      <label class={`block w-full py-2 text-center font-semibold shadow-sm shadow-gray-500 ` + (opened ? "bg-blue-400 text-gray-50" : "text-gray-800")}>
         絞り込み
-        <input type="checkbox" bind:checked={opened} class="h-0 w-0" />
+        <input
+          type="button"
+          class="hidden"
+          on:click={() => {
+            opened = !opened;
+          }}
+        />
       </label>
-    </div>
+      {#if opened}
+        <div class="">絞り込みメニュー</div>
+      {/if}
+    {/if}
+
     <div class="flex-grow">
-      <SearchBar href={"/problem"} />
+      <div class="my-1 flex flex-row items-center justify-between gap-2 px-2 text-sm">
+        <select
+          class="block rounded-md border border-gray-400 bg-white px-2 py-1"
+          bind:value={sort}
+          on:change={() => {
+            param = { ...param, sort: [sort] };
+          }}
+        >
+          {#each sorts as s}
+            <option value={s[0]}>
+              {s[1]}
+            </option>
+          {/each}
+        </select>
+
+        <div class="w-2/3">
+          <SearchBar href={"/problem"} />
+        </div>
+      </div>
+
+      <div class="mx-2 mb-2 flex flex-row justify-between text-sm">
+        <p class="w-full text-right text-gray-700">{data.stats.count}件/{data.stats.total}件 約{data.stats.time}ms</p>
+      </div>
+
+      {#each data.items as item}
+        <div class="mx-2 my-0.5 flex flex-col rounded-lg bg-white px-3 py-3 shadow-md shadow-gray-200">
+          <div class="flex flex-row items-center justify-between">
+            <a href={item.contestUrl} target="_blank" class="block font-medium text-blue-500">
+              {item.contestId.toUpperCase()}
+            </a>
+            <a href={item.problemUrl} target="_blank" class={`block text-pretty font-medium ${textColorStyles.get(item.color ?? "black")}`}>
+              {item.problemTitle}
+            </a>
+            <label class={`text-sm text-black ` + (detail == item.problemId ? "" : "underline")}>
+              {detail == item.problemId ? "閉じる" : "詳細"}
+              <input
+                type="button"
+                class="h-0 w-0"
+                on:click={() => {
+                  detail = detail == item.problemId ? null : item.problemId;
+                }}
+              />
+            </label>
+          </div>
+          {#if detail == item.problemId}
+            <div class="py-1">
+              <div class="my-0.5 flex flex-row items-end justify-between">
+                <span class="block text-sm text-slate-500">{item.contestTitle}</span>
+                <span class={`block rounded-full px-2 py-0.5 text-xs font-medium text-white  ${bgColorStyles.get(item.category)}`}>{item.category}</span>
+              </div>
+              <div class="flex flex-row items-center justify-between">
+                <span class="block text-sm text-slate-500">{convertDateTime(item.startAt)}</span>
+                {#if item.difficulty != null}
+                  <span class={`block rounded-full px-2 py-0.5 text-xs font-medium text-white ${bgColorStyles.get(item.color ?? "black")}`}>{item.difficulty}</span>
+                {/if}
+              </div>
+            </div>
+          {/if}
+        </div>
+      {/each}
     </div>
   </div>
-
-  {#if opened}
-    <div>ほげ</div>
-  {:else}
-    <div class="mx-2 mb-2 flex flex-row justify-between text-sm">
-      <select
-        class="block rounded-md border border-gray-400 bg-white px-2 py-1"
-        bind:value={sort}
-        on:change={() => {
-          param = { ...param, sort: [sort] };
-        }}
-      >
-        {#each sorts as s}
-          <option value={s[0]}>
-            {s[1]}
-          </option>
-        {/each}
-      </select>
-      <p class="w-full text-right text-gray-700">{data.stats.count}件/{data.stats.total}件 約{data.stats.time}ms</p>
-    </div>
-
-    {#each data.items as item}
-      <div class="mx-2 my-0.5 flex flex-col rounded-lg bg-white px-3 py-3 shadow-md shadow-gray-200">
-        <div class="flex flex-row items-center justify-between">
-          <a href={item.contestUrl} target="_blank" class="block font-medium text-blue-500">
-            {item.contestId.toUpperCase()}
-          </a>
-          <a href={item.problemUrl} target="_blank" class={`block text-pretty font-medium ${textColorStyles.get(item.color ?? "black")}`}>
-            {item.problemTitle}
-          </a>
-          <label class={`text-sm text-black ` + (detail == item.problemId ? "" : "underline")}>
-            {detail == item.problemId ? "閉じる" : "詳細"}
-            <input
-              type="button"
-              class="h-0 w-0"
-              on:click={() => {
-                detail = detail == item.problemId ? null : item.problemId;
-              }}
-            />
-          </label>
-        </div>
-        {#if detail == item.problemId}
-          <div class="py-1">
-            <div class="my-0.5 flex flex-row items-end justify-between">
-              <span class="block text-sm text-slate-500">{item.contestTitle}</span>
-              <span class={`block rounded-full px-2 py-0.5 text-xs font-medium text-white  ${bgColorStyles.get(item.category)}`}>{item.category}</span>
-            </div>
-            <div class="flex flex-row items-center justify-between">
-              <span class="block text-sm text-slate-500">{convertDateTime(item.startAt)}</span>
-              {#if item.difficulty != null}
-                <span class={`block rounded-full px-2 py-0.5 text-xs font-medium text-white ${bgColorStyles.get(item.color ?? "black")}`}>{item.difficulty}</span>
-              {/if}
-            </div>
-          </div>
-        {/if}
-      </div>
-    {/each}
-  {/if}
 </div>

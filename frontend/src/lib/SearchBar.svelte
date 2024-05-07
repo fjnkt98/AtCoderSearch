@@ -14,7 +14,7 @@
   }
 </script>
 
-<div class="flex flex-row items-center justify-center rounded-full border border-gray-400 bg-white p-1 text-gray-900">
+<div class="flex flex-row items-center justify-center rounded-full border border-gray-500 bg-white p-1 text-gray-900">
   <div class="px-2">
     <Icon src={AiOutlineSearch} />
   </div>
