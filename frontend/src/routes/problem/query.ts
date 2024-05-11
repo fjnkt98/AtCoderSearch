@@ -3,7 +3,7 @@ import { intoURLSearchParams, numberFromQueryString, type SearchProblemParameter
 import type { SearchProblemResult } from "$lib/response";
 import { selections } from "./sort";
 
-export async function fetchSearchProblemResult(params: URLSearchParams): Promise<SearchProblemResult> {
+export async function fetchSearchProblemResult(params: URLSearchParams, fetch: (input: URL | RequestInfo, init?: RequestInit | undefined) => Promise<Response>): Promise<SearchProblemResult> {
   const p: SearchProblemParameter = {
     limit: 20,
     page: 1,

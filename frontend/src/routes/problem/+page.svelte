@@ -27,7 +27,7 @@
   const searchQuery = createQuery({
     queryKey: ["search"],
     queryFn: async () => {
-      const res = await fetchSearchProblemResult($page.url.searchParams);
+      const res = await fetchSearchProblemResult($page.url.searchParams, fetch);
       return res;
     },
     initialData: data,
