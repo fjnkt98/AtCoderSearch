@@ -14,6 +14,22 @@ export const intoURLSearchParams = (object: object): URLSearchParams => {
   return result;
 };
 
+export const numberFromQueryString = (s: string | null): number | null => {
+  if (s == null) {
+    return null;
+  }
+  if (s === "") {
+    return null;
+  }
+
+  return Number(s);
+};
+
+export interface SortValue {
+  label: string;
+  values: string[];
+}
+
 export interface SearchProblemParameter {
   limit: number | null;
   page: number | null;
