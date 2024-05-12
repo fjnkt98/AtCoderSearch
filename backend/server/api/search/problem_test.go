@@ -30,8 +30,8 @@ func TestSearchProblemFiltering(t *testing.T) {
 		{name: "is experimental", param: ProblemParameter{Experimental: ptr(true)}, expected: []string{`isExperimental:true`}},
 		{name: "is not experimental", param: ProblemParameter{Experimental: ptr(false)}, expected: []string{`isExperimental:false`}},
 		{name: "excludeSolved without userId", param: ProblemParameter{ExcludeSolved: true}, expected: ([]string)(nil)},
-		{name: "excludeSolved with userId", param: ProblemParameter{ExcludeSolved: true, UserID: "fjnkt98"}, expected: []string{`-{!join fromIndex=solution from=problemId to=problemId v='userId:"fjnkt98"'}`}},
-		{name: "excludeSolved with userId contains special character", param: ProblemParameter{ExcludeSolved: true, UserID: "C++"}, expected: []string{`-{!join fromIndex=solution from=problemId to=problemId v='userId:"C\+\+"'}`}},
+		{name: "excludeSolved with userId", param: ProblemParameter{ExcludeSolved: true, UserID: "fjnkt98"}, expected: []string{`-{!join fromIndex=solutions from=problemId to=problemId v='userId:"fjnkt98"'}`}},
+		{name: "excludeSolved with userId contains special character", param: ProblemParameter{ExcludeSolved: true, UserID: "C++"}, expected: []string{`-{!join fromIndex=solutions from=problemId to=problemId v='userId:"C\+\+"'}`}},
 	}
 
 	for _, tt := range cases {

@@ -3,6 +3,7 @@ package search
 import (
 	"fjnkt98/atcodersearch/pkg/solr"
 	"fjnkt98/atcodersearch/server/api"
+	"fjnkt98/atcodersearch/settings"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -60,7 +61,7 @@ func (p *ProblemParameter) Query(core *solr.SolrCore) *solr.SelectQuery {
 
 	if p.ExcludeSolved && p.UserID != "" {
 		q = q.Fq(
-			fmt.Sprintf(`-{!join fromIndex=solution from=problemId to=problemId v='userId:"%s"'}`, solr.Sanitize(p.UserID)),
+			fmt.Sprintf(`-{!join fromIndex=%s from=problemId to=problemId v='userId:"%s"'}`, settings.SOLUTION_CORE_NAME, solr.Sanitize(p.UserID)),
 		)
 	}
 
