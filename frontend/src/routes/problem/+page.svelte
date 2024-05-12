@@ -1,17 +1,17 @@
 <script lang="ts">
-  import { goto, onNavigate } from "$app/navigation";
+  import { goto } from "$app/navigation";
   import { page } from "$app/stores";
   import Header from "$lib/Header.svelte";
-  import FilterMenu from "./FilterMenu.svelte";
   import SearchBar from "$lib/SearchBar.svelte";
-  import { createQuery } from "@tanstack/svelte-query";
   import Tab from "$lib/Tab.svelte";
   import { bgColorStyles, textColorStyles } from "$lib/colors";
   import type { SearchProblemResult } from "$lib/response";
-  import { fetchSearchProblemResult } from "./query";
+  import { createQuery } from "@tanstack/svelte-query";
   import dayjs from "dayjs";
   import timezone from "dayjs/plugin/timezone";
   import utc from "dayjs/plugin/utc";
+  import FilterMenu from "./FilterMenu.svelte";
+  import { fetchSearchProblemResult } from "./query";
   import { selections } from "./sort";
 
   dayjs.extend(timezone);
@@ -95,7 +95,11 @@
             q={$page.url.searchParams.get("q") ?? ""}
             on:search={(e) => {
               const p = new URLSearchParams();
-              p.set("q", e.detail);
+              if (e.detail == null) {
+                p.delete("q");
+              } else {
+                p.set("q", e.detail);
+              }
               const s = $page.url.searchParams.get("s");
               if (s != null) {
                 p.set("s", s);

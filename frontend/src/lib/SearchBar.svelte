@@ -4,9 +4,9 @@
   import HiOutlinePaperAirplane from "svelte-icons-pack/hi/HiOutlinePaperAirplane";
   import { createEventDispatcher } from "svelte";
 
-  const dispatch = createEventDispatcher<{ search: string }>();
+  const dispatch = createEventDispatcher<{ search: string | null }>();
 
-  export let q: string = "";
+  export let q: string | null;
 </script>
 
 <div class="flex flex-row items-center justify-center rounded-full border border-gray-500 bg-white p-1 text-gray-900">

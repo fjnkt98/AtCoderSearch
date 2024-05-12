@@ -1,8 +1,9 @@
 <script lang="ts">
-  import type { FacetCount, SearchProblemFacet } from "$lib/response";
-  import type { NumericRange } from "$lib/request";
-  import { page } from "$app/stores";
   import { goto } from "$app/navigation";
+  import { page } from "$app/stores";
+  import SearchBar from "$lib/SearchBar.svelte";
+  import type { NumericRange } from "$lib/request";
+  import type { SearchProblemFacet } from "$lib/response";
 
   export let facet: SearchProblemFacet | null;
 
@@ -146,10 +147,18 @@
 
   <div class="flex w-full flex-col rounded-md px-2 py-2 shadow-sm shadow-gray-500">
     <p class="font-semibold">その他</p>
-    <label class="">
-      ユーザID
-      <input type="search" class="border text-gray-900" bind:value={userId} />
-    </label>
+    <input
+      type="search"
+      class="w-1/2 rounded-md border border-gray-900 bg-transparent px-2 text-gray-700 focus:border-blue-700"
+      placeholder="ユーザID"
+      bind:value={userId}
+      on:keydown={(e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          filter();
+        }
+      }}
+    />
 
     <label class="">
       <input
