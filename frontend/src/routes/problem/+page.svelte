@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { goto } from "$app/navigation";
+  import { goto, onNavigate } from "$app/navigation";
   import { page } from "$app/stores";
   import Header from "$lib/Header.svelte";
   import FilterMenu from "./FilterMenu.svelte";
@@ -79,7 +79,7 @@
           bind:value={s}
           on:change={() => {
             const p = $page.url.searchParams;
-            p.set("s", s.toString());
+            p.set("s", s);
             goto(`/problem?${p.toString()}`, { replaceState: false, noScroll: true, invalidateAll: true });
           }}
         >
@@ -91,7 +91,18 @@
         </select>
 
         <div class="w-2/3">
-          <SearchBar href={"/problem"} s={"1"} />
+          <SearchBar
+            q={$page.url.searchParams.get("q") ?? ""}
+            on:search={(e) => {
+              const p = new URLSearchParams();
+              p.set("q", e.detail);
+              const s = $page.url.searchParams.get("s");
+              if (s != null) {
+                p.set("s", s);
+              }
+              goto(`/problem?${p.toString()}`, { replaceState: false, keepFocus: true, invalidateAll: true });
+            }}
+          />
         </div>
       </div>
 

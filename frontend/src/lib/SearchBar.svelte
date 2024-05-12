@@ -1,21 +1,12 @@
 <script lang="ts">
-  import { page } from "$app/stores";
   import Icon from "svelte-icons-pack/Icon.svelte";
   import AiOutlineSearch from "svelte-icons-pack/ai/AiOutlineSearch";
   import HiOutlinePaperAirplane from "svelte-icons-pack/hi/HiOutlinePaperAirplane";
-  import { goto } from "$app/navigation";
+  import { createEventDispatcher } from "svelte";
 
-  export let href: string;
-  export let s: string;
+  const dispatch = createEventDispatcher<{ search: string }>();
 
-  let q: string = $page.url.searchParams.get("q") ?? "";
-
-  function search() {
-    const p = new URLSearchParams();
-    p.set("q", q);
-    p.set("s", s);
-    goto(`${href}?${p.toString()}`, { replaceState: true, invalidateAll: true });
-  }
+  export let q: string = "";
 </script>
 
 <div class="flex flex-row items-center justify-center rounded-full border border-gray-500 bg-white p-1 text-gray-900">
@@ -29,7 +20,7 @@
     on:keydown={(e) => {
       if (e.key === "Enter") {
         e.preventDefault();
-        search();
+        dispatch("search", q);
       }
     }}
     bind:value={q}
@@ -38,7 +29,7 @@
     type="button"
     class=""
     on:click|preventDefault={() => {
-      search();
+      dispatch("search", q);
     }}
   >
     <Icon src={HiOutlinePaperAirplane} className="rotate-90" />
