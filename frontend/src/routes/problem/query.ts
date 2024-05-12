@@ -1,5 +1,5 @@
 import { env } from "$env/dynamic/public";
-import { intoURLSearchParams, numberFromQueryString, type SearchProblemParameter } from "$lib/request";
+import { intoURLSearchParams, numberFromQueryString, booleanFromQueryString, type SearchProblemParameter, nullableBooleanFromQueryString } from "$lib/request";
 import type { SearchProblemResult } from "$lib/response";
 import { selections } from "./sort";
 
@@ -16,9 +16,9 @@ export async function fetchSearchProblemResult(params: URLSearchParams, fetch: (
     color: params.getAll("color"),
     userId: params.get("userId"),
     difficulty: numberFromQueryString(params.get("difficulty")),
-    excludeSolved: Boolean(params.get("excludeSolved")),
-    experimental: Boolean(params.get("experimental")),
-    prioritizeRecent: Boolean(params.get("prioritizeRecent")),
+    excludeSolved: booleanFromQueryString(params.get("excludeSolved")),
+    experimental: nullableBooleanFromQueryString(params.get("experimental")),
+    prioritizeRecent: booleanFromQueryString(params.get("prioritizeRecent")),
   };
 
   const res = await fetch(`${String(env.PUBLIC_API_HOST)}/api/search/problem?${intoURLSearchParams(p).toString()}`);

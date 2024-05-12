@@ -25,9 +25,39 @@ export const numberFromQueryString = (s: string | null): number | null => {
   return Number(s);
 };
 
+export const nullableBooleanFromQueryString = (s: string | null): boolean | null => {
+  if (s == null) {
+    return null;
+  }
+
+  if (s === "true") {
+    return true;
+  } else if (s === "false") {
+    return false;
+  } else {
+    return null;
+  }
+};
+
+export const booleanFromQueryString = (s: string | null): boolean | null => {
+  if (s == null) {
+    return null;
+  }
+  if (s === "true") {
+    return true;
+  } else {
+    return null;
+  }
+};
+
 export interface SortValue {
   label: string;
   values: string[];
+}
+
+export interface NumericRange {
+  begin: number | null;
+  end: number | null;
 }
 
 export interface SearchProblemParameter {

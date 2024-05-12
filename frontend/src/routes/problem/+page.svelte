@@ -2,6 +2,7 @@
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
   import Header from "$lib/Header.svelte";
+  import FilterMenu from "./FilterMenu.svelte";
   import SearchBar from "$lib/SearchBar.svelte";
   import { createQuery } from "@tanstack/svelte-query";
   import Tab from "$lib/Tab.svelte";
@@ -45,23 +46,31 @@
   <Tab selected={"problem"} />
 
   <div class={`flex ${width > widthThreshold ? "flex-row justify-between" : "flex-col"}`}>
-    {#if width > widthThreshold}
-      <div class="text-center">絞り込み</div>
-    {:else}
-      <label class={`block w-full py-2 text-center font-semibold shadow-sm shadow-gray-500 ` + (opened ? "bg-blue-400 text-gray-50" : "text-gray-800")}>
+    <div class="mx-2 my-1">
+      <label class={`block select-none rounded-md py-2 text-center font-semibold shadow-sm shadow-gray-500 ` + (opened ? "bg-blue-500 text-gray-50" : "text-gray-800")}>
         絞り込み
         <input
           type="button"
           class="hidden"
           on:click={() => {
-            opened = !opened;
+            if (width > widthThreshold) {
+              opened = true;
+            } else {
+              opened = !opened;
+            }
           }}
         />
       </label>
-      {#if opened}
-        <div class="">絞り込みメニュー</div>
+      {#if $searchQuery.isLoading}
+        <p>Loading...</p>
+      {:else if $searchQuery.isError}
+        <p>ERROR</p>
+      {:else if $searchQuery.isSuccess}
+        <div class:hidden={!opened}>
+          <FilterMenu facet={data.stats.facet} />
+        </div>
       {/if}
-    {/if}
+    </div>
 
     <div class="flex-grow">
       <div class="my-1 flex flex-row items-center justify-between gap-2 px-2 text-sm">
@@ -70,8 +79,8 @@
           bind:value={s}
           on:change={() => {
             const p = $page.url.searchParams;
-            p.set("s", s);
-            goto(`/problem?${p.toString()}`);
+            p.set("s", s.toString());
+            goto(`/problem?${p.toString()}`, { replaceState: false, noScroll: true, invalidateAll: true });
           }}
         >
           {#each selections.entries() as [k, v]}

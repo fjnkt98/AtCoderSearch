@@ -1,11 +1,11 @@
-export type ResultStats = {
+export type ResultStats<F> = {
   time: number;
   total: number;
   index: number;
   pages: number;
   count: number;
   params: object | null;
-  facet: Map<string, FacetCount[]> | null;
+  facet: F | null;
 };
 
 export type FacetCount = {
@@ -13,13 +13,18 @@ export type FacetCount = {
   count: number;
 };
 
-export type ResultResponse<T> = {
-  stats: ResultStats;
+export type ResultResponse<T, F> = {
+  stats: ResultStats<F>;
   items: T[];
   message: string | null;
 };
 
-export type SearchProblemResult = ResultResponse<Problem>;
+export type SearchProblemFacet = {
+  category?: FacetCount[];
+  difficulty?: FacetCount[];
+};
+
+export type SearchProblemResult = ResultResponse<Problem, SearchProblemFacet>;
 
 export type Problem = {
   problemId: string;
