@@ -81,11 +81,11 @@
   }
 </script>
 
-<div class="flex flex-col items-center bg-white px-2 py-2">
+<div class="flex flex-col items-center bg-white px-2 py-2 text-sm">
   {#if facet != null}
     {#if facet.category != null}
       <div class="my-1 w-full rounded-md px-2 py-1 shadow-sm shadow-gray-500">
-        <p class="font-semibold">カテゴリ</p>
+        <p class="text-md font-semibold">カテゴリ</p>
         {#each facet.category as c (c.label)}
           <div class="flex-rows my-0.5 flex w-full items-center justify-between gap-2 px-3">
             <input
@@ -111,7 +111,7 @@
 
     <div class="my-1 w-full rounded-md px-2 py-2 shadow-sm shadow-gray-500">
       <div class="flex flex-row justify-between">
-        <p class="font-semibold">難易度</p>
+        <p class="text-md font-semibold">難易度</p>
         <button
           class="rounded-full bg-gray-500 px-2 py-1 text-sm text-white"
           on:click={() => {
@@ -146,7 +146,7 @@
   {/if}
 
   <div class="flex w-full flex-col rounded-md px-2 py-2 shadow-sm shadow-gray-500">
-    <p class="font-semibold">その他</p>
+    <p class="text-md font-semibold">その他</p>
     <input
       type="search"
       class="w-1/2 rounded-md border border-gray-900 bg-transparent px-2 text-gray-700 focus:border-blue-700"

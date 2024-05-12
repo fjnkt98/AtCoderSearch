@@ -21,6 +21,13 @@
   const widthThreshold = 768;
 
   let opened = false;
+  $: {
+    if (width > widthThreshold) {
+      opened = true;
+    } else {
+      opened = false;
+    }
+  }
   let detail: string | null = null;
   let s: string = $page.url.searchParams.get("s") ?? "2";
 
@@ -46,7 +53,7 @@
   <Tab selected={"problem"} />
 
   <div class={`flex ${width > widthThreshold ? "flex-row justify-between" : "flex-col"}`}>
-    <div class="mx-2 my-1">
+    <div class="flex-0 mx-2 my-1">
       <label class={`block select-none rounded-md py-2 text-center font-semibold shadow-sm shadow-gray-500 ` + (opened ? "bg-blue-500 text-gray-50" : "text-gray-800")}>
         絞り込み
         <input
