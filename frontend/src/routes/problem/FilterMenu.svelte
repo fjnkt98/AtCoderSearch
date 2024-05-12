@@ -76,7 +76,7 @@
       p.delete("prioritizeRecent");
     }
 
-    goto(`/problem?${p.toString()}`, { replaceState: false, noScroll: true });
+    goto(`/problem?${p.toString()}`, { replaceState: false, noScroll: true, invalidateAll: true });
   }
 </script>
 
@@ -144,7 +144,7 @@
     </div>
   {/if}
 
-  <div class="flex w-full flex-col rounded-md px-2 py-1 shadow-sm shadow-gray-500">
+  <div class="flex w-full flex-col rounded-md px-2 py-2 shadow-sm shadow-gray-500">
     <p class="font-semibold">その他</p>
     <label class="">
       ユーザID
