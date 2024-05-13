@@ -64,6 +64,13 @@ func NewErrorResponse(message string, params any) ResultResponse[any] {
 	}
 }
 
+func NewEmptyResponse() ResultResponse[any] {
+	return ResultResponse[any]{
+		Stats: ResultStats{},
+		Items: []any{},
+	}
+}
+
 type ResultStats struct {
 	Time   int                     `json:"time"`
 	Total  int                     `json:"total"`

@@ -76,3 +76,9 @@ export interface SearchProblemParameter {
   experimental: boolean | null;
   prioritizeRecent: boolean | null;
 }
+
+export interface RecommendProblemParameter {
+  limit: number | null;
+  page: number | null;
+  problemId: string | null;
+}

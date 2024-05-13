@@ -1,6 +1,7 @@
 import { env } from "$env/dynamic/public";
-import { intoURLSearchParams, numberFromQueryString, booleanFromQueryString, type SearchProblemParameter, nullableBooleanFromQueryString } from "$lib/request";
-import type { SearchProblemResult } from "$lib/response";
+import type { RecommendProblemParameter } from "$lib/request";
+import { booleanFromQueryString, intoURLSearchParams, nullableBooleanFromQueryString, numberFromQueryString, type SearchProblemParameter } from "$lib/request";
+import type { RecommendProblemResult, SearchProblemResult } from "$lib/response";
 import { selections } from "./sort";
 
 export async function fetchSearchProblemResult(params: URLSearchParams, fetch: (input: URL | RequestInfo, init?: RequestInit | undefined) => Promise<Response>): Promise<SearchProblemResult> {
@@ -22,5 +23,13 @@ export async function fetchSearchProblemResult(params: URLSearchParams, fetch: (
   };
 
   const res = await fetch(`${String(env.PUBLIC_API_HOST)}/api/search/problem?${intoURLSearchParams(p).toString()}`);
+  return await res.json();
+}
+
+export async function fetchRecommendProblemResult(
+  params: RecommendProblemParameter,
+  fetch: (input: URL | RequestInfo, init?: RequestInit | undefined) => Promise<Response>,
+): Promise<RecommendProblemResult> {
+  const res = await fetch(`${String(env.PUBLIC_API_HOST)}/api/recommend/problem?${intoURLSearchParams(params).toString()}`);
   return await res.json();
 }

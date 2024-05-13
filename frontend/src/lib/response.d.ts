@@ -25,6 +25,7 @@ export type SearchProblemFacet = {
 };
 
 export type SearchProblemResult = ResultResponse<Problem, SearchProblemFacet>;
+export type RecommendProblemResult = ResultResponse<Problem, SearchProblemFacet>;
 
 export type Problem = {
   problemId: string;
