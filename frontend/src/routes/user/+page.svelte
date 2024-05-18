@@ -31,7 +31,7 @@
 
 <svelte:window bind:outerWidth={width} />
 
-<div class="flex h-dvh flex-col">
+<div class="flex h-dvh flex-col bg-gray-100">
   <Header />
   <Tab selected={"user"} />
 
