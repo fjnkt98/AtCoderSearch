@@ -16,13 +16,6 @@
   const widthThreshold = 768;
 
   let opened = false;
-  // $: {
-  //   if (width > widthThreshold) {
-  //     opened = true;
-  //   } else {
-  //     opened = false;
-  //   }
-  // }
   let s: string = $page.url.searchParams.get("s") ?? "3";
 
   export let data: SearchUserResult;
