@@ -43,7 +43,7 @@ export const textColorStyles = new Map<string, string>([
   ["gray", "text-gray-500"],
   ["brown", "text-amber-800"],
   ["green", "text-green-500"],
-  ["cyan", "text-cyan-400"],
+  ["cyan", "text-cyan-500"],
   ["blue", "text-blue-600"],
   ["yellow", "text-yellow-300"],
   ["orange", "text-orange-400"],
