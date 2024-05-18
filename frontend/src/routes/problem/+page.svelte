@@ -16,13 +16,6 @@
   const widthThreshold = 768;
 
   let opened = false;
-  $: {
-    if (width > widthThreshold) {
-      opened = true;
-    } else {
-      opened = false;
-    }
-  }
   let s: string = $page.url.searchParams.get("s") ?? "2";
 
   export let data: SearchProblemResult;
@@ -43,18 +36,14 @@
   <Tab selected={"problem"} />
 
   <div class={`flex  ${width > widthThreshold ? "flex-row" : "flex-col"}`}>
-    <div class="flex-0 mx-2 my-1 min-w-64">
+    <div class="flex-0 mx-2 my-1 min-w-32">
       <label class={`block cursor-pointer select-none rounded-md py-2 text-center font-semibold text-gray-50 shadow-sm shadow-gray-500 ` + (opened ? "bg-blue-800" : "bg-blue-500")}>
         絞り込み
         <input
           type="button"
           class="hidden"
           on:click={() => {
-            if (width > widthThreshold) {
-              opened = true;
-            } else {
-              opened = !opened;
-            }
+            opened = !opened;
           }}
         />
       </label>
