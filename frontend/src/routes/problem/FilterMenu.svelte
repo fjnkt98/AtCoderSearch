@@ -121,6 +121,7 @@
           class="rounded-full bg-gray-500 px-2 py-1 text-sm text-white"
           on:click={() => {
             difficultyRange = null;
+            difficulty = null;
             filter();
           }}>選択解除</button
         >
