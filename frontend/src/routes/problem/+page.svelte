@@ -87,7 +87,7 @@
       {/if}
     </div>
 
-    <div class="flex-grow border border-red-500">
+    <div class="min-w-64 flex-grow border border-red-500">
       <div class="my-1 flex flex-row items-center justify-between gap-2 px-2 text-sm">
         <select
           class="block rounded-md border border-gray-400 bg-white px-2 py-1"
@@ -172,9 +172,9 @@
                 <p class="">似ているかも</p>
                 <div class="my-1 flex flex-row gap-4 overflow-x-scroll py-0.5">
                   {#each $recommendQuery.data.items as item}
-                    <div class="flex flex-none flex-col text-nowrap rounded-md px-3 py-2 shadow-md shadow-gray-500">
-                      <p class="block text-nowrap text-sm text-gray-700">{item.contestId.toUpperCase()}</p>
-                      <a href={item.problemUrl} class="text-md block flex-grow text-wrap text-gray-700" target="_blank">{item.problemTitle}</a>
+                    <div class="flex w-48 flex-none flex-col text-nowrap rounded-md px-3 py-2 shadow-md shadow-gray-500">
+                      <p class="block text-nowrap text-xs text-gray-700">{item.contestId.toUpperCase()}</p>
+                      <a href={item.problemUrl} class="block flex-grow text-wrap text-sm text-gray-700" target="_blank">{item.problemTitle}</a>
                       {#if item.difficulty != null}
                         <div class="flex flex-row">
                           <span class={`rounded-full ${bgColorStyles.get(item.color ?? "black")} px-2 py-0.5 text-xs text-white`}>{item.difficulty}</span>
