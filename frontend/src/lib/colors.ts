@@ -48,6 +48,6 @@ export const textColorStyles = new Map<string, string>([
   ["yellow", "text-yellow-300"],
   ["orange", "text-orange-400"],
   ["red", "text-red-600"],
-  ["silver", "text-zinc-500"],
+  ["silver", "text-zinc-600"],
   ["gold", "text-amber-500"],
 ]);
