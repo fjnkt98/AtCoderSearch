@@ -41,7 +41,7 @@
       {#if item.difficulty != null}
         <span class={`block rounded-full px-2 py-0.5 text-xs font-medium text-white ${bgColorStyles.get(item.color ?? "black")}`}>{item.difficulty}</span>
       {/if}
-      <span class={`block rounded-full px-2 py-0.5 text-xs font-medium text-white  ${bgColorStyles.get(item.category)}`}>{item.category}</span>
+      <span class={`block text-nowrap rounded-full px-2 py-0.5 text-xs font-medium text-white  ${bgColorStyles.get(item.category)}`}>{item.category}</span>
       <label class={`w-12 cursor-pointer text-sm text-black ` + (showDetail ? "" : "underline")}>
         {showDetail ? "閉じる" : "詳細"}
         <input
