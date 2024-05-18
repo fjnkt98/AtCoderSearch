@@ -1,7 +1,6 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
-  import SearchBar from "$lib/SearchBar.svelte";
   import type { NumericRange } from "$lib/request";
   import type { SearchProblemFacet } from "$lib/response";
 
@@ -38,6 +37,12 @@
       }
     } else {
       p.delete("category");
+    }
+
+    if (difficulty != null) {
+      p.set("difficulty", difficulty.toString());
+    } else {
+      p.delete("difficulty");
     }
 
     if (difficultyRange != null) {
@@ -119,6 +124,22 @@
             filter();
           }}>選択解除</button
         >
+      </div>
+      <div class="">
+        <input
+          type="number"
+          class="mx-2 mb-1 w-1/2 rounded-md border border-gray-600 bg-transparent px-2 text-gray-700 focus:border-blue-700"
+          placeholder="近い難易度の問題を探す"
+          bind:value={difficulty}
+          on:keydown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+
+              difficultyRange = null;
+              filter();
+            }
+          }}
+        />
       </div>
       {#if facet.difficulty != null}
         {#each facet.difficulty as c (c.label)}
