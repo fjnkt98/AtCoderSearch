@@ -43,7 +43,7 @@ export type Problem = {
   score: number;
 };
 
-export type SearchUserResult = ResultResponse<User>;
+export type SearchUserResult = ResultResponse<User, SearchUserFacet>;
 
 export type User = {
   userId: string;
@@ -59,6 +59,13 @@ export type User = {
   wins: number;
   color: string;
   userUrl: string;
+};
+
+export type SearchUserFacet = {
+  country?: FacetCount[];
+  rating?: FacetCount[];
+  birthYear?: FacetCount[];
+  joinCount?: FacetCount[];
 };
 
 export type SearchSubmissionResult = ResultResponse<Submission>;

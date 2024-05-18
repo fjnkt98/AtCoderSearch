@@ -82,3 +82,20 @@ export interface RecommendProblemParameter {
   page: number | null;
   problemId: string | null;
 }
+
+export interface SearchUserParameter {
+  limit: number | null;
+  page: number | null;
+  q: string | null;
+  sort: string[] | null;
+  facet: string[] | null;
+  userId: string[] | null;
+  ratingFrom: number | null;
+  ratingTo: number | null;
+  birthYearFrom: number | null;
+  birthYearTo: number | null;
+  joinCountFrom: number | null;
+  joinCountTo: number | null;
+  country: string[] | null;
+  color: string[] | null;
+}
