@@ -5,8 +5,8 @@
   export let item: Problem;
 </script>
 
-<div class="flex w-48 flex-none flex-col text-nowrap rounded-md px-3 py-2 shadow-md shadow-gray-400">
-  <div class="flex flex-row items-center justify-between">
+<div class="flex min-w-48 flex-none flex-col text-nowrap rounded-md px-3 py-2 shadow-md shadow-gray-400">
+  <div class="flex flex-row items-center justify-between gap-2">
     <a href={item.contestUrl} class="block text-nowrap text-xs text-gray-700" target="_blank">{item.contestId.toUpperCase()}</a>
     {#if item.difficulty != null}
       <div class="flex flex-row">

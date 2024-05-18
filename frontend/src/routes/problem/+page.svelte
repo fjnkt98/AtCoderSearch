@@ -42,7 +42,7 @@
   <Tab selected={"problem"} />
 
   <div class={`flex  ${width > widthThreshold ? "flex-row" : "flex-col"}`}>
-    <div class="flex-0 mx-2 my-1 min-w-96">
+    <div class="flex-0 mx-2 my-1 min-w-64">
       <label class={`block cursor-pointer select-none rounded-md py-2 text-center font-semibold shadow-sm shadow-gray-500 ` + (opened ? "bg-blue-500 text-gray-50" : "bg-gray-200 text-gray-800")}>
         絞り込み
         <input
