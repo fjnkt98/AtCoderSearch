@@ -2,6 +2,7 @@
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
   import Header from "$lib/Header.svelte";
+  import PageNavigation from "$lib/PageNavigation.svelte";
   import SearchBar from "$lib/SearchBar.svelte";
   import Tab from "$lib/Tab.svelte";
   import type { SearchProblemResult } from "$lib/response";
@@ -118,6 +119,7 @@
         {#each data.items as item}
           <Problem {item} />
         {/each}
+        <PageNavigation current={data.stats.index} end={data.stats.pages} />
       {/if}
     </div>
   </div>

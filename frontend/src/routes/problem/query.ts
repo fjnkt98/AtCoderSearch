@@ -6,8 +6,8 @@ import { selections } from "./sort";
 
 export async function fetchSearchProblemResult(params: URLSearchParams, fetch: (input: URL | RequestInfo, init?: RequestInit | undefined) => Promise<Response>): Promise<SearchProblemResult> {
   const p: SearchProblemParameter = {
-    limit: 20,
-    page: 1,
+    limit: 60,
+    page: numberFromQueryString(params.get("p")) ?? 1,
     q: params.get("q"),
     sort: selections.get(params.get("s") ?? "2")?.values ?? ["-startAt"],
     facet: ["category", "difficulty"],
