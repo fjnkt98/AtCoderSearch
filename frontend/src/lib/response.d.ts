@@ -68,7 +68,7 @@ export type SearchUserFacet = {
   joinCount?: FacetCount[];
 };
 
-export type SearchSubmissionResult = ResultResponse<Submission>;
+export type SearchSubmissionResult = ResultResponse<Submission, SearchSubmissionFacet>;
 
 export type Submission = {
   submissionId: number;
@@ -88,3 +88,5 @@ export type Submission = {
   result: string;
   executionTime: number | null;
 };
+
+export type SearchSubmissionFacet = object;

@@ -99,3 +99,24 @@ export interface SearchUserParameter {
   country: string[] | null;
   color: string[] | null;
 }
+
+export interface SearchSubmissionParameter {
+  limit: number | null;
+  page: number | null;
+  sort: string[] | null;
+  epochSecondFrom: number | null;
+  epochSecondTo: number | null;
+  problemId: string[] | null;
+  contestId: string[] | null;
+  category: string[] | null;
+  userId: string[] | null;
+  language: string[] | null;
+  languageGroup: string[] | null;
+  pointFrom: number | null;
+  pointTo: number | null;
+  lengthFrom: number | null;
+  lengthTo: number | null;
+  result: string[] | null;
+  executionTimeFrom: number | null;
+  executionTimeTo: number | null;
+}
