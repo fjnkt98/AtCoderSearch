@@ -21,7 +21,6 @@
     queryKey: ["searchSubmission"],
     queryFn: async () => {
       const res = await fetchSearchSubmissionResult($page.url.searchParams, fetch);
-      console.log(res);
       return res;
     },
     initialData: data,
