@@ -82,6 +82,9 @@ func (h *RecommendProblemHandler) RecommendProblem(ctx echo.Context) error {
 	q := p.Query(h.core)
 	res, err := q.Exec(ctx.Request().Context())
 	if err != nil {
+		if strings.HasPrefix(res.Raw.Error.Msg, "Error completing MLT request.") {
+			return ctx.JSON(http.StatusOK, api.NewEmptyResponse())
+		}
 		slog.Error("request failed", slog.Any("error", err))
 		return ctx.JSON(http.StatusInternalServerError, api.NewErrorResponse("request failed", p))
 	}

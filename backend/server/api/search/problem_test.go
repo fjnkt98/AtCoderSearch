@@ -30,8 +30,8 @@ func TestSearchProblemFiltering(t *testing.T) {
 		{name: "is experimental", param: ProblemParameter{Experimental: ptr(true)}, expected: []string{`isExperimental:true`}},
 		{name: "is not experimental", param: ProblemParameter{Experimental: ptr(false)}, expected: []string{`isExperimental:false`}},
 		{name: "excludeSolved without userId", param: ProblemParameter{ExcludeSolved: true}, expected: ([]string)(nil)},
-		{name: "excludeSolved with userId", param: ProblemParameter{ExcludeSolved: true, UserID: "fjnkt98"}, expected: []string{`-{!join fromIndex=solution from=problemId to=problemId v='userId:"fjnkt98"'}`}},
-		{name: "excludeSolved with userId contains special character", param: ProblemParameter{ExcludeSolved: true, UserID: "C++"}, expected: []string{`-{!join fromIndex=solution from=problemId to=problemId v='userId:"C\+\+"'}`}},
+		{name: "excludeSolved with userId", param: ProblemParameter{ExcludeSolved: true, UserID: "fjnkt98"}, expected: []string{`-{!join fromIndex=solutions from=problemId to=problemId v='userId:"fjnkt98"'}`}},
+		{name: "excludeSolved with userId contains special character", param: ProblemParameter{ExcludeSolved: true, UserID: "C++"}, expected: []string{`-{!join fromIndex=solutions from=problemId to=problemId v='userId:"C\+\+"'}`}},
 	}
 
 	for _, tt := range cases {
@@ -84,6 +84,29 @@ func TestSearchProblemFacet(t *testing.T) {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			actual := map[string][]string(tt.param.Query(core).Raw())["json.facet"]
+
+			if !reflect.DeepEqual(tt.expected, actual) {
+				t.Errorf("expected \n%#v\n, but got \n%#v\n", tt.expected, actual)
+			}
+		})
+	}
+}
+
+func TestSearchProblemSort(t *testing.T) {
+	cases := []struct {
+		name     string
+		param    ProblemParameter
+		expected []string
+	}{
+		{name: "empty", param: ProblemParameter{}, expected: []string{"problemId asc"}},
+		{name: "single", param: ProblemParameter{Sort: []string{"-score"}}, expected: []string{"score desc,problemId asc"}},
+		{name: "multiple", param: ProblemParameter{Sort: []string{"startedAt", "-score"}}, expected: []string{"startedAt asc,score desc,problemId asc"}},
+	}
+
+	for _, tt := range cases {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			actual := map[string][]string(tt.param.Query(core).Raw())["sort"]
 
 			if !reflect.DeepEqual(tt.expected, actual) {
 				t.Errorf("expected \n%#v\n, but got \n%#v\n", tt.expected, actual)
