@@ -7,7 +7,7 @@ export async function fetchSearchSubmissionResult(params: URLSearchParams, fetch
   const p: SearchSubmissionParameter = {
     limit: 100,
     page: numberFromQueryString(params.get("p")) ?? 1,
-    sort: selections.get(params.get("s") ?? "3")?.values ?? ["-submittedAt"],
+    sort: selections.get(params.get("s") ?? "1")?.values ?? ["-submittedAt"],
     epochSecondFrom: numberFromQueryString(params.get("epochSecondFrom")),
     epochSecondTo: numberFromQueryString(params.get("epochSecondTo")),
     problemId: params.getAll("problemId"),

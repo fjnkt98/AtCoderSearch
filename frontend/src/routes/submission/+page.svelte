@@ -6,6 +6,7 @@
   import Tab from "$lib/Tab.svelte";
   import type { SearchSubmissionResult } from "$lib/response";
   import { createQuery } from "@tanstack/svelte-query";
+  import FilterMenu from "./FilterMenu.svelte";
   import Submission from "./Submission.svelte";
   import { fetchSearchSubmissionResult } from "./query";
   import { selections } from "./sort";
@@ -51,7 +52,7 @@
         <p>ERROR</p>
       {:else if $searchQuery.isSuccess}
         <div class:hidden={!opened}>
-          <div>FILTER MENU</div>
+          <FilterMenu />
         </div>
       {/if}
     </div>
@@ -73,6 +74,10 @@
             </option>
           {/each}
         </select>
+
+        <div class="mx-2 mb-2 flex flex-row justify-between text-sm">
+          <p class="w-full text-right text-gray-700">{data.stats.count}件/{data.stats.total}件 約{data.stats.time}ms</p>
+        </div>
       </div>
 
       {#if $searchQuery.isLoading}
@@ -80,9 +85,6 @@
       {:else if $searchQuery.isError}
         <p>ERROR</p>
       {:else if $searchQuery.isSuccess}
-        <div class="mx-2 mb-2 flex flex-row justify-between text-sm">
-          <p class="w-full text-right text-gray-700">{data.stats.count}件/{data.stats.total}件 約{data.stats.time}ms</p>
-        </div>
         {#each data.items as item}
           <Submission {item} />
         {/each}

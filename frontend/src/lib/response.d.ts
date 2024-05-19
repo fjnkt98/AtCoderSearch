@@ -90,3 +90,18 @@ export type Submission = {
 };
 
 export type SearchSubmissionFacet = object;
+
+export type ListResponse = {
+  items: string[];
+  message?: string | null;
+};
+
+export type Language = {
+  group: string;
+  language: string[];
+};
+
+export type ListLanguageResponse = {
+  items: Language[];
+  message?: string | null;
+};
