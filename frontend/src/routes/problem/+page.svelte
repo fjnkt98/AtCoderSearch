@@ -36,8 +36,8 @@
   <Tab selected={"problem"} />
 
   <div class={`flex  ${width > widthThreshold ? "flex-row" : "flex-col"}`}>
-    <div class="flex-0 mx-2 my-1 min-w-32">
-      <label class={`block cursor-pointer select-none rounded-md py-2 text-center font-semibold text-gray-50 shadow-sm shadow-gray-500 ` + (opened ? "bg-blue-800" : "bg-blue-500")}>
+    <div class="flex-0 mx-2 my-1">
+      <label class={`block cursor-pointer select-none text-nowrap rounded-md px-4 py-2 text-center font-semibold text-gray-50 shadow-sm shadow-gray-500 ` + (opened ? "bg-blue-800" : "bg-blue-500")}>
         絞り込み
         <input
           type="button"
