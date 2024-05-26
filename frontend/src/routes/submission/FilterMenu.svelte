@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { browser } from "$app/environment";
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
   import { env } from "$env/dynamic/public";
@@ -88,7 +89,8 @@
   const categoryQuery = createQuery({
     queryKey: ["listCategory"],
     queryFn: async () => {
-      const response = await fetch(`${String(env.PUBLIC_API_HOST)}/api/list/category`);
+      const host = browser ? String(env.PUBLIC_EXTERNAL_API_HOST) : String(env.PUBLIC_INTERNAL_API_HOST);
+      const response = await fetch(`${host}/api/list/category`);
       const result: ListResponse = await response.json();
       return result;
     },
@@ -96,7 +98,8 @@
   const languageQuery = createQuery({
     queryKey: ["listLanguage"],
     queryFn: async () => {
-      const response = await fetch(`${String(env.PUBLIC_API_HOST)}/api/list/language`);
+      const host = browser ? String(env.PUBLIC_EXTERNAL_API_HOST) : String(env.PUBLIC_INTERNAL_API_HOST);
+      const response = await fetch(`${host}/api/list/language`);
       const result: ListLanguageResponse = await response.json();
       return result;
     },
@@ -108,7 +111,8 @@
       if (category != null) {
         p.set("category", category);
       }
-      const response = await fetch(`${String(env.PUBLIC_API_HOST)}/api/list/contest?${p.toString()}`);
+      const host = browser ? String(env.PUBLIC_EXTERNAL_API_HOST) : String(env.PUBLIC_INTERNAL_API_HOST);
+      const response = await fetch(`${host}/api/list/contest?${p.toString()}`);
       const result: ListResponse = await response.json();
       return result;
     },
@@ -120,7 +124,8 @@
       if (contestId != null) {
         p.set("contestId", contestId);
       }
-      const response = await fetch(`${String(env.PUBLIC_API_HOST)}/api/list/problem?${p.toString()}`);
+      const host = browser ? String(env.PUBLIC_EXTERNAL_API_HOST) : String(env.PUBLIC_INTERNAL_API_HOST);
+      const response = await fetch(`${host}/api/list/problem?${p.toString()}`);
       const result: ListResponse = await response.json();
       return result;
     },
