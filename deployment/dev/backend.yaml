@@ -1,0 +1,60 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  labels:
+    app: backend
+spec:
+  type: ClusterIP
+  selector:
+    app: backend
+  ports:
+    - port: 8000
+      targetPort: 8000
+      protocol: TCP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      terminationGracePeriodSeconds: 60
+      containers:
+        - name: backend
+          image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:develop
+          imagePullPolicy: Always
+          env:
+            - name: DATABASE_URL
+              value: postgres://atcodersearch:atcodersearch@postgresql:5432/atcodersearch?sslmode=disable
+            - name: SOLR_HOST
+              value: http://solr:8983
+            - name: ALLOW_ORIGIN
+              value: http://localhost
+            - name: PORT
+              value: "8000"
+          resources:
+            limits:
+              memory: 128Mi
+              cpu: 250m
+          ports:
+            - name: backend
+              containerPort: 8000
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            runAsNonRoot: true
+          args:
+            - atcodersearch
+            - serve
+      imagePullSecrets:
+        - name: regcred

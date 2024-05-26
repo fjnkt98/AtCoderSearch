@@ -1,0 +1,102 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: solr
+  labels:
+    app: solr
+spec:
+  clusterIP: None
+  selector:
+    app: solr
+  ports:
+    - port: 8983
+      name: solr
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: solr
+spec:
+  selector:
+    matchLabels:
+      app: solr
+  serviceName: solr
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: solr
+    spec:
+      securityContext:
+        runAsUser: 8983
+        runAsGroup: 8983
+        runAsNonRoot: true
+        fsGroup: 8983
+      terminationGracePeriodSeconds: 60
+      containers:
+        - name: solr
+          image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-solr:develop
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8983
+              name: solr
+          # resources:
+          #   limits:
+          #     memory: 1024Mi
+          #     cpu: 1000m
+          volumeMounts:
+            - name: problems-pvc
+              mountPath: /var/solr/data/problems/data
+            - name: users-pvc
+              mountPath: /var/solr/data/users/data
+            - name: submissions-pvc
+              mountPath: /var/solr/data/submissions/data
+            - name: solutions-pvc
+              mountPath: /var/solr/data/solutions/data
+          livenessProbe:
+            httpGet:
+              path: /solr/admin/cores
+              port: 8983
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /solr/admin/cores
+              port: 8983
+            initialDelaySeconds: 5
+            periodSeconds: 5
+      imagePullSecrets:
+        - name: regcred
+  volumeClaimTemplates:
+    - metadata:
+        name: problems-pvc
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 3Gi
+    - metadata:
+        name: users-pvc
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 3Gi
+    - metadata:
+        name: submissions-pvc
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 3Gi
+    - metadata:
+        name: solutions-pvc
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 3Gi

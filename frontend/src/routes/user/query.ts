@@ -1,3 +1,4 @@
+import { browser } from "$app/environment";
 import { env } from "$env/dynamic/public";
 import { intoURLSearchParams, numberFromQueryString, type SearchUserParameter } from "$lib/request";
 import type { SearchUserResult } from "$lib/response";
@@ -21,6 +22,7 @@ export async function fetchSearchUserResult(params: URLSearchParams, fetch: (inp
     color: params.getAll("color"),
   };
 
-  const res = await fetch(`${String(env.PUBLIC_API_HOST)}/api/search/user?${intoURLSearchParams(p).toString()}`);
+  const host = browser ? String(env.PUBLIC_EXTERNAL_API_HOST) : String(env.PUBLIC_INTERNAL_API_HOST);
+  const res = await fetch(`${host}/api/search/user?${intoURLSearchParams(p).toString()}`);
   return await res.json();
 }

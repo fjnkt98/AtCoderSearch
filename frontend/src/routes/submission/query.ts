@@ -1,3 +1,4 @@
+import { browser } from "$app/environment";
 import { env } from "$env/dynamic/public";
 import { intoURLSearchParams, numberFromQueryString, type SearchSubmissionParameter } from "$lib/request";
 import type { SearchSubmissionResult } from "$lib/response";
@@ -25,6 +26,7 @@ export async function fetchSearchSubmissionResult(params: URLSearchParams, fetch
     executionTimeTo: numberFromQueryString(params.get("executionTimeTo")),
   };
 
-  const res = await fetch(`${String(env.PUBLIC_API_HOST)}/api/search/submission?${intoURLSearchParams(p).toString()}`);
+  const host = browser ? String(env.PUBLIC_EXTERNAL_API_HOST) : String(env.PUBLIC_INTERNAL_API_HOST);
+  const res = await fetch(`${host}/api/search/submission?${intoURLSearchParams(p).toString()}`);
   return await res.json();
 }

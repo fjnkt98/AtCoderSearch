@@ -1,3 +1,4 @@
+import { browser } from "$app/environment";
 import { env } from "$env/dynamic/public";
 import type { RecommendProblemParameter } from "$lib/request";
 import { booleanFromQueryString, intoURLSearchParams, nullableBooleanFromQueryString, numberFromQueryString, type SearchProblemParameter } from "$lib/request";
@@ -22,7 +23,8 @@ export async function fetchSearchProblemResult(params: URLSearchParams, fetch: (
     prioritizeRecent: booleanFromQueryString(params.get("prioritizeRecent")),
   };
 
-  const res = await fetch(`${String(env.PUBLIC_API_HOST)}/api/search/problem?${intoURLSearchParams(p).toString()}`);
+  const host = browser ? String(env.PUBLIC_EXTERNAL_API_HOST) : String(env.PUBLIC_INTERNAL_API_HOST);
+  const res = await fetch(`${host}/api/search/problem?${intoURLSearchParams(p).toString()}`);
   return await res.json();
 }
 
@@ -30,6 +32,7 @@ export async function fetchRecommendProblemResult(
   params: RecommendProblemParameter,
   fetch: (input: URL | RequestInfo, init?: RequestInit | undefined) => Promise<Response>,
 ): Promise<RecommendProblemResult> {
-  const res = await fetch(`${String(env.PUBLIC_API_HOST)}/api/recommend/problem?${intoURLSearchParams(params).toString()}`);
+  const host = browser ? String(env.PUBLIC_EXTERNAL_API_HOST) : String(env.PUBLIC_INTERNAL_API_HOST);
+  const res = await fetch(`${host}/api/recommend/problem?${intoURLSearchParams(params).toString()}`);
   return await res.json();
 }
