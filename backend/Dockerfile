@@ -1,6 +1,6 @@
-# docker build -t atcodersearch-backend:latest .
-
 FROM golang:1.21-bullseye AS stage
+
+ARG TARGETARCH
 
 RUN apt-get update \
     && apt-get install -y \
@@ -12,7 +12,7 @@ WORKDIR /app
 COPY . .
 RUN go build -o /app/atcodersearch
 
-RUN curl -L 'https://github.com/sqldef/sqldef/releases/download/v0.17.10/psqldef_linux_amd64.tar.gz' -o 'psqldef.tar.gz' \
+RUN curl -L "https://github.com/sqldef/sqldef/releases/download/v0.17.10/psqldef_linux_${TARGETARCH}.tar.gz" -o 'psqldef.tar.gz' \
     && tar zxvf psqldef.tar.gz
 
 # ---------------------------------------------------------------------------------------------
