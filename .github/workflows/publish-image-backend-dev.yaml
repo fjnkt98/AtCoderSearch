@@ -45,6 +45,7 @@ jobs:
         with:
           context: "{{defaultContext}}:${{ env.BUILD_CONTEXT }}"
           push: true
+          platforms: linux/amd64
           tags: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:develop
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
