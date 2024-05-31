@@ -17,6 +17,16 @@ spec:
           env:
             - name: TZ
               value: Asia/Tokyo
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: aws-cloudwatch-logs-auth
+                  key: aws-cloudwatch-logs-access-key-id
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: aws-cloudwatch-logs-auth
+                  key: aws-cloudwatch-logs-secret-key
           resources:
             requests:
               cpu: 100m
