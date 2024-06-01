@@ -20,6 +20,8 @@ FROM debian:bullseye-slim
 
 RUN apt-get update \
     && apt-get install -y \
+    dnsutils \
+    curl \
     ca-certificates \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
@@ -40,6 +42,6 @@ RUN mkdir -p /var/tmp/atcoder/problem \
     && mkdir -p /var/tmp/atcoder/user \
     && mkdir -p /var/tmp/atcoder/submission \
     && mkdir -p /var/tmp/atcoder/solution
-ENV  PROBLEM_SAVE_DIR=/var/tmp/atcoder/problem USER_SAVE_DIR=/var/tmp/atcoder/user SUBMISSION_SAVE_DIR=/var/tmp/atcoder/submission SOLUTION_SAVE_DIR=/var/tmp/atcoder/solution
+ENV PROBLEM_SAVE_DIR=/var/tmp/atcoder/problem USER_SAVE_DIR=/var/tmp/atcoder/user SUBMISSION_SAVE_DIR=/var/tmp/atcoder/submission SOLUTION_SAVE_DIR=/var/tmp/atcoder/solution
 
 CMD ["atcodersearch"]
