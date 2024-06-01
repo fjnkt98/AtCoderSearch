@@ -61,19 +61,11 @@ CREATE TABLE "submissions" (
     "updated_at" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
-CREATE INDEX "submissions_contest_id_index" ON "submissions" ("contest_id");
+CREATE INDEX "submissions_epoch_second_updated_at_index" ON "submissions" ("epoch_second", "updated_at");
 
-CREATE INDEX "submissions_epoch_second_index" ON "submissions" ("epoch_second");
-
-CREATE INDEX "submissions_problem_id_index" ON "submissions" ("problem_id");
-
-CREATE INDEX "submissions_user_id_index" ON "submissions" ("user_id");
+CREATE INDEX "submissions_epoch_second_problem_id_user_id_result_index" ON "submissions" ("epoch_second", "problem_id", "user_id", "result");
 
 CREATE INDEX "submissions_language_index" ON "submissions" ("language");
-
-CREATE INDEX "submissions_result_index" ON "submissions" ("result");
-
-CREATE INDEX "submissions_updated_at_index" ON "submissions" ("updated_at");
 
 CREATE TABLE "batch_history" (
     "id" BIGSERIAL NOT NULL PRIMARY KEY,

@@ -21,7 +21,7 @@ func newUpdateSolutionCmd() *cli.Command {
 			},
 			&cli.IntFlag{
 				Name:     "chunk-size",
-				Value:    1000,
+				Value:    100000,
 				Category: "generate",
 			},
 			&cli.IntFlag{
@@ -38,6 +38,11 @@ func newUpdateSolutionCmd() *cli.Command {
 				Name:     "optimize",
 				Value:    false,
 				Category: "post",
+			},
+			&cli.IntFlag{
+				Name:     "interval",
+				Value:    180,
+				Category: "generate",
 			},
 		},
 		Action: func(ctx *cli.Context) error {
@@ -56,6 +61,7 @@ func newUpdateSolutionCmd() *cli.Command {
 				GenerateConcurrent: ctx.Int("generate-concurrent"),
 				PostConcurrent:     ctx.Int("post-concurrent"),
 				Optimize:           ctx.Bool("optimize"),
+				Interval:           ctx.Int("interval"),
 			}
 
 			if err := update.UpdateSolution(ctx.Context, pool, core, config); err != nil {

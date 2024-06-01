@@ -19,6 +19,7 @@ type UpdateSolutionConfig struct {
 	GenerateConcurrent int    `json:"generate-concurrent"`
 	PostConcurrent     int    `json:"post-concurrent"`
 	Optimize           bool   `json:"optimize"`
+	Interval           int    `json:"interval"`
 }
 
 func UpdateSolution(ctx context.Context, pool *pgxpool.Pool, core *solr.SolrCore, config UpdateSolutionConfig) error {
@@ -37,7 +38,7 @@ func UpdateSolution(ctx context.Context, pool *pgxpool.Pool, core *solr.SolrCore
 
 	if err := generate.GenerateSolutionDocument(
 		ctx,
-		generate.NewSolutionRowReader(pool),
+		generate.NewSolutionRowReader(pool, config.Interval),
 		config.SaveDir,
 		generate.WithChunkSize(config.ChunkSize),
 		generate.WithConcurrent(config.GenerateConcurrent),

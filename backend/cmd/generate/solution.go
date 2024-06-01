@@ -10,7 +10,7 @@ import (
 
 func newGenerateSolutionCmd() *cli.Command {
 	return &cli.Command{
-		Name: "problem",
+		Name: "solution",
 		Flags: []cli.Flag{
 			&cli.PathFlag{
 				Name:    "save-dir",
@@ -24,13 +24,17 @@ func newGenerateSolutionCmd() *cli.Command {
 				Name:  "concurrent",
 				Value: 4,
 			},
+			&cli.IntFlag{
+				Name:  "interval",
+				Value: 180,
+			},
 		},
 		Action: func(ctx *cli.Context) error {
 			pool, err := repository.NewPool(ctx.Context, ctx.String("database-url"))
 			if err != nil {
 				return errs.Wrap(err)
 			}
-			reader := generate.NewSolutionRowReader(pool)
+			reader := generate.NewSolutionRowReader(pool, ctx.Int("interval"))
 
 			err = generate.GenerateSolutionDocument(
 				ctx.Context,

@@ -46,7 +46,7 @@ func newUpdateSubmissionCmd() *cli.Command {
 			},
 			&cli.IntFlag{
 				Name:     "chunk-size",
-				Value:    10000,
+				Value:    100000,
 				Category: "generate",
 			},
 			&cli.IntFlag{
@@ -56,7 +56,7 @@ func newUpdateSubmissionCmd() *cli.Command {
 			},
 			&cli.IntFlag{
 				Name:     "post-concurrent",
-				Value:    4,
+				Value:    2,
 				Category: "post",
 			},
 			&cli.BoolFlag{
