@@ -1,0 +1,56 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: crawl-submission
+spec:
+  schedule: "0 0-20/1 * * *"
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 30
+  suspend: true
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      parallelism: 1
+      completions: 1
+      ttlSecondsAfterFinished: 30
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: crawl-submission-batch
+              image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:develop
+              imagePullPolicy: Always
+              env:
+                - name: DATABASE_URL
+                  value: postgres://atcodersearch:atcodersearch@postgresql-0.postgresql-headless:5432/atcodersearch?sslmode=disable
+                - name: SOLR_HOST
+                  value: http://solr-0.solr-headless:8983
+                - name: PGSSLMODE
+                  value: disable
+                - name: ATCODER_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: atcoder-auth
+                      key: atcoder-username
+                - name: ATCODER_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: atcoder-auth
+                      key: atcoder-password
+              resources:
+                requests:
+                  memory: 64Mi
+                  cpu: 50m
+              securityContext:
+                runAsUser: 1000
+                runAsGroup: 1000
+                runAsNonRoot: true
+              args:
+                - atcodersearch
+                - crawl
+                - submission
+                - --duration=3s
+                - --retry=10
+                - --target='ABC,ABC-Like,ARC,ARC-Like,AGC,AGC-Like,JOI,Other Sponsored,PAST,AHC,Marathon,Other Contests'
+          imagePullSecrets:
+            - name: regcred
