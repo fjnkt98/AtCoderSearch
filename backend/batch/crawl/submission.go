@@ -148,20 +148,27 @@ func dedupSubmissions(submissions []atcoder.Submission) []atcoder.Submission {
 }
 
 func convertSubmissions(submissions []atcoder.Submission) []repository.Submission {
-	result := make([]repository.Submission, len(submissions))
+	results := make([]repository.Submission, len(submissions))
 	for i, s := range submissions {
-		result[i] = repository.Submission{
+		contestId := s.ContestID
+		userId := s.UserID
+		language := s.Language
+		point := s.Point
+		length := s.Length
+		result := s.Result
+
+		results[i] = repository.Submission{
 			ID:            s.ID,
 			EpochSecond:   s.EpochSecond,
 			ProblemID:     s.ProblemID,
-			ContestID:     &s.ContestID,
-			UserID:        &s.UserID,
-			Language:      &s.Language,
-			Point:         &s.Point,
-			Length:        &s.Length,
-			Result:        &s.Result,
+			ContestID:     &contestId,
+			UserID:        &userId,
+			Language:      &language,
+			Point:         &point,
+			Length:        &length,
+			Result:        &result,
 			ExecutionTime: s.ExecutionTime,
 		}
 	}
-	return result
+	return results
 }
