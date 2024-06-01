@@ -1,0 +1,38 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: update-problem-one-shot
+spec:
+  backoffLimit: 0
+  parallelism: 1
+  completions: 1
+  ttlSecondsAfterFinished: 30
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: update-problem-batch
+          image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:develop
+          imagePullPolicy: Always
+          env:
+            - name: DATABASE_URL
+              value: postgres://atcodersearch:atcodersearch@postgresql-0.postgresql-headless:5432/atcodersearch?sslmode=disable
+            - name: SOLR_HOST
+              value: http://solr-0.solr-headless:8983
+            - name: PGSSLMODE
+              value: disable
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 50m
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            runAsNonRoot: true
+          args:
+            - atcodersearch
+            - update
+            - problem
+            - --optimize
+      imagePullSecrets:
+        - name: regcred

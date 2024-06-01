@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: update-user-one-shot
+  name: crawl-submission-one-shot
 spec:
   backoffLimit: 0
   parallelism: 1
@@ -11,7 +11,7 @@ spec:
     spec:
       restartPolicy: Never
       containers:
-        - name: update-user-batch
+        - name: crawl-submission-batch
           image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:develop
           imagePullPolicy: Always
           env:
@@ -21,18 +21,30 @@ spec:
               value: http://solr-0.solr-headless:8983
             - name: PGSSLMODE
               value: disable
+            - name: ATCODER_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: atcoder-auth
+                  key: atcoder-username
+            - name: ATCODER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: atcoder-auth
+                  key: atcoder-password
           resources:
             requests:
-              memory: 256Mi
-              cpu: 100m
+              memory: 64Mi
+              cpu: 50m
           securityContext:
             runAsUser: 1000
             runAsGroup: 1000
             runAsNonRoot: true
           args:
             - atcodersearch
-            - update
-            - user
-            - --optimize
+            - crawl
+            - submission
+            - --duration=5s
+            - --retry=5
+            - --target=ABC
       imagePullSecrets:
         - name: regcred
