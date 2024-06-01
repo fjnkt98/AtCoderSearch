@@ -127,14 +127,7 @@ LIMIT
 INSERT INTO
     "submission_crawl_history" ("started_at", "contest_id")
 VALUES
-    (
-        EXTRACT(
-            epoch
-            FROM
-                NOW()
-        ),
-        $1
-    )
+    ($1, $2)
 RETURNING
     "started_at",
     "contest_id";
@@ -146,6 +139,8 @@ FROM
     "submission_crawl_history"
 WHERE
     "contest_id" = $1
+ORDER BY
+    "started_at" DESC
 LIMIT
     1;
 

@@ -39,6 +39,9 @@ spec:
             - name: PUBLIC_INTERNAL_API_HOST
               value: http://backend:8000
           resources:
+            requests:
+              memory: 32Mi
+              cpu: 50m
             limits:
               memory: 128Mi
               cpu: 250m

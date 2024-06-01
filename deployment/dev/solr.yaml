@@ -33,7 +33,7 @@ spec:
   selector:
     matchLabels:
       app: solr
-  serviceName: solr
+  serviceName: solr-headless
   replicas: 1
   template:
     metadata:
