@@ -43,12 +43,6 @@ spec:
             - name: parsers-config
               mountPath: /fluent-bit/etc/parsers.conf
               subPath: parsers.conf
-            - name: backend-config
-              mountPath: /fluent-bit/etc/backend.conf
-              subPath: backend.conf
-            - name: batch-config
-              mountPath: /fluent-bit/etc/batch.conf
-              subPath: batch.conf
       volumes:
         - name: var-log
           hostPath:
@@ -64,11 +58,3 @@ spec:
           configMap:
             # microk8s kubectl create configmap parsers-config --from-file=fluentbit/parsers.conf --dry-run=client --output=yaml | microk8s kubectl apply -f -
             name: parsers-config
-        - name: backend-config
-          configMap:
-            # microk8s kubectl create configmap backend-config --from-file=fluentbit/backend.conf --dry-run=client --output=yaml | microk8s kubectl apply -f -
-            name: backend-config
-        - name: batch-config
-          configMap:
-            # microk8s kubectl create configmap batch-config --from-file=fluentbit/batch.conf --dry-run=client --output=yaml | microk8s kubectl apply -f -
-            name: batch-config

@@ -66,18 +66,6 @@ spec:
               mountPath: /var/solr/data/submissions/data
             - name: solutions-pvc
               mountPath: /var/solr/data/solutions/data
-          livenessProbe:
-            httpGet:
-              path: /solr/admin/cores
-              port: 8983
-            initialDelaySeconds: 5
-            periodSeconds: 5
-          readinessProbe:
-            httpGet:
-              path: /solr/admin/cores
-              port: 8983
-            initialDelaySeconds: 5
-            periodSeconds: 5
       imagePullSecrets:
         - name: regcred
   volumeClaimTemplates:
