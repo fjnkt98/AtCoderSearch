@@ -43,9 +43,12 @@ spec:
             - name: PORT
               value: "8000"
           resources:
+            requests:
+              memory: 32Mi
+              cpu: 50m
             limits:
-              memory: 128Mi
-              cpu: 250m
+              memory: 256Mi
+              cpu: 200m
           ports:
             - name: backend
               containerPort: 8000
