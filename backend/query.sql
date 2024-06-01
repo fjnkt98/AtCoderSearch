@@ -146,6 +146,8 @@ FROM
     "submission_crawl_history"
 WHERE
     "contest_id" = $1
+ORDER BY
+    "started_at" DESC
 LIMIT
     1;
 
