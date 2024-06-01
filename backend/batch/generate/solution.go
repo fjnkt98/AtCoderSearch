@@ -31,22 +31,26 @@ func (r *SolutionRow) Document(ctx context.Context) (*SolutionDoc, error) {
 }
 
 type SolutionRowReader struct {
-	pool *pgxpool.Pool
+	pool     *pgxpool.Pool
+	interval int
 }
 
-func NewSolutionRowReader(pool *pgxpool.Pool) *SolutionRowReader {
+func NewSolutionRowReader(pool *pgxpool.Pool, interval int) *SolutionRowReader {
 	return &SolutionRowReader{
-		pool: pool,
+		pool:     pool,
+		interval: interval,
 	}
 }
 
 func (r *SolutionRowReader) ReadRows(ctx context.Context, tx chan<- *SolutionRow) error {
 	db := bun.NewDB(stdlib.OpenDBFromPool(r.pool), pgdialect.New())
 	rows, err := db.NewSelect().
+		Distinct().
 		ColumnExpr("s.problem_id").
 		ColumnExpr("s.user_id").
 		TableExpr("submissions AS s").
 		Where("s.result = ?", "AC").
+		Where("s.epoch_second > EXTRACT(EPOCH FROM CURRENT_DATE - CAST(? || ' day' AS INTERVAL))", r.interval).
 		Rows(ctx)
 
 	if err != nil {
