@@ -29,6 +29,6 @@ func UpdateLanguage(ctx context.Context, pool *pgxpool.Pool) error {
 		return errs.New("failed to update batch history", errs.WithCause(err))
 	}
 
-	slog.Info("Finish UpdateProblem")
+	slog.Info("Finish UpdateLanguage")
 	return nil
 }
