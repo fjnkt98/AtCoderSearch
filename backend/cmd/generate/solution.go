@@ -10,7 +10,7 @@ import (
 
 func newGenerateSolutionCmd() *cli.Command {
 	return &cli.Command{
-		Name: "problem",
+		Name: "solution",
 		Flags: []cli.Flag{
 			&cli.PathFlag{
 				Name:    "save-dir",
