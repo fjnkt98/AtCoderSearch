@@ -36,9 +36,10 @@ COPY --from=stage --chown=atcodersearch:atcodersearch /app/schema.sql /etc/schem
 
 USER atcodersearch
 
-RUN mkdir -p /var/tmp/atcoder/problem
-RUN mkdir -p /var/tmp/atcoder/user
-RUN mkdir -p /var/tmp/atcoder/submission
-RUN mkdir -p /var/tmp/atcoder/solution
+RUN mkdir -p /var/tmp/atcoder/problem \
+    && mkdir -p /var/tmp/atcoder/user \
+    && mkdir -p /var/tmp/atcoder/submission \
+    && mkdir -p /var/tmp/atcoder/solution
+ENV  PROBLEM_SAVE_DIR=/var/tmp/atcoder/problem USER_SAVE_DIR=/var/tmp/atcoder/user SUBMISSION_SAVE_DIR=/var/tmp/atcoder/submission SOLUTION_SAVE_DIR=/var/tmp/atcoder/solution
 
 CMD ["atcodersearch"]

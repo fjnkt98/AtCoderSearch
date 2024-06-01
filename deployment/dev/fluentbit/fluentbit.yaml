@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: fluentbit
+spec:
+  selector:
+    matchLabels:
+      name: fluentbit
+  template:
+    metadata:
+      labels:
+        name: fluentbit
+    spec:
+      containers:
+        - name: fluentbit
+          image: fluent/fluent-bit:3.0-debug
+          env:
+            - name: TZ
+              value: Asia/Tokyo
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: aws-cloudwatch-logs-auth
+                  key: aws-cloudwatch-logs-access-key-id
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: aws-cloudwatch-logs-auth
+                  key: aws-cloudwatch-logs-secret-key
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+          volumeMounts:
+            - name: var-log
+              mountPath: /var/log
+            - name: var-lib-docker-containers
+              mountPath: /var/lib/docker/containers
+              readOnly: true
+            - name: fluent-bit-config
+              mountPath: /fluent-bit/etc/fluent-bit.conf
+              subPath: fluent-bit.conf
+            - name: parsers-config
+              mountPath: /fluent-bit/etc/parsers.conf
+              subPath: parsers.conf
+            - name: backend-config
+              mountPath: /fluent-bit/etc/backend.conf
+              subPath: backend.conf
+            - name: batch-config
+              mountPath: /fluent-bit/etc/batch.conf
+              subPath: batch.conf
+      volumes:
+        - name: var-log
+          hostPath:
+            path: /var/log
+        - name: var-lib-docker-containers
+          hostPath:
+            path: /var/lib/docker/containers
+        - name: fluent-bit-config
+          configMap:
+            # microk8s kubectl create configmap fluent-bit-config --from-file=fluentbit/fluent-bit.conf --dry-run=client --output=yaml | microk8s kubectl apply -f -
+            name: fluent-bit-config
+        - name: parsers-config
+          configMap:
+            # microk8s kubectl create configmap parsers-config --from-file=fluentbit/parsers.conf --dry-run=client --output=yaml | microk8s kubectl apply -f -
+            name: parsers-config
+        - name: backend-config
+          configMap:
+            # microk8s kubectl create configmap backend-config --from-file=fluentbit/backend.conf --dry-run=client --output=yaml | microk8s kubectl apply -f -
+            name: backend-config
+        - name: batch-config
+          configMap:
+            # microk8s kubectl create configmap batch-config --from-file=fluentbit/batch.conf --dry-run=client --output=yaml | microk8s kubectl apply -f -
+            name: batch-config

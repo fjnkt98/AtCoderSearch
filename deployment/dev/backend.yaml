@@ -39,7 +39,7 @@ spec:
             - name: SOLR_HOST
               value: http://solr:8983
             - name: ALLOW_ORIGIN
-              value: http://localhost
+              value: "*"
             - name: PORT
               value: "8000"
           resources:
