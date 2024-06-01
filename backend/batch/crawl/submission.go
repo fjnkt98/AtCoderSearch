@@ -120,12 +120,13 @@ func (c *SubmissionCrawler) Crawl(ctx context.Context) error {
 			return errs.New("failed to fetch latest crawl history", errs.WithCause(err), errs.WithContext("contest id", id))
 		}
 
+		startedAt := time.Now().Unix()
 		slog.Info("Start to crawl", slog.String("contest id", id), slog.Time("last crawled", time.Unix(lastCrawled, 0)))
 		if err := c.crawlContest(ctx, id, lastCrawled); err != nil {
 			return errs.Wrap(err)
 		}
 
-		if _, err := q.CreateCrawlHistory(ctx, id); err != nil {
+		if _, err := q.CreateCrawlHistory(ctx, repository.CreateCrawlHistoryParams{StartedAt: startedAt, ContestID: id}); err != nil {
 			return errs.New("failed to create crawl history", errs.WithCause(err), errs.WithContext("contest id", id))
 		}
 		time.Sleep(c.duration)

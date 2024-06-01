@@ -37,26 +37,24 @@ const createCrawlHistory = `-- name: CreateCrawlHistory :one
 INSERT INTO
     "submission_crawl_history" ("started_at", "contest_id")
 VALUES
-    (
-        EXTRACT(
-            epoch
-            FROM
-                NOW()
-        ),
-        $1
-    )
+    ($1, $2)
 RETURNING
     "started_at",
     "contest_id"
 `
+
+type CreateCrawlHistoryParams struct {
+	StartedAt int64  `db:"started_at"`
+	ContestID string `db:"contest_id"`
+}
 
 type CreateCrawlHistoryRow struct {
 	StartedAt int64  `db:"started_at"`
 	ContestID string `db:"contest_id"`
 }
 
-func (q *Queries) CreateCrawlHistory(ctx context.Context, contestID string) (CreateCrawlHistoryRow, error) {
-	row := q.db.QueryRow(ctx, createCrawlHistory, contestID)
+func (q *Queries) CreateCrawlHistory(ctx context.Context, arg CreateCrawlHistoryParams) (CreateCrawlHistoryRow, error) {
+	row := q.db.QueryRow(ctx, createCrawlHistory, arg.StartedAt, arg.ContestID)
 	var i CreateCrawlHistoryRow
 	err := row.Scan(&i.StartedAt, &i.ContestID)
 	return i, err
