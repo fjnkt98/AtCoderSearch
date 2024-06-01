@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: update-user-one-shot
+  name: one-shot-update-user
 spec:
   backoffLimit: 0
   parallelism: 1

@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: crawl-submission-one-shot
+  name: one-shot-crawl-submission
 spec:
   backoffLimit: 0
   parallelism: 1
