@@ -2,8 +2,8 @@
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
 
-  export let end: number;
-  export let current: number;
+  export let end: number = 999;
+  export let current: number = 1;
   export let enableEnd: boolean = true;
 
   const width = 4;

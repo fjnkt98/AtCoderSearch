@@ -76,7 +76,7 @@
         </select>
 
         <div class="mx-2 mb-2 flex flex-row justify-between text-sm">
-          <p class="w-full text-right text-gray-700">{data.stats.count}件/{data.stats.total}件 約{data.stats.time}ms</p>
+          <p class="w-full text-right text-gray-700">{data.stats.count}件 約{data.stats.time}ms</p>
         </div>
       </div>
 
@@ -88,7 +88,7 @@
         {#each data.items as item}
           <Submission {item} />
         {/each}
-        <PageNavigation current={data.stats.index} end={data.stats.pages} />
+        <PageNavigation current={data.stats.index} enableEnd={false} />
       {/if}
     </div>
   </div>
