@@ -29,6 +29,17 @@ func (v *Validator) Validate(i any) error {
 	return nil
 }
 
+// func HTTPErrorHandler(err error, c echo.Context) {
+// 	e, ok := err.(*echo.HTTPError)
+// 	if !ok {
+// 		c.JSON(http.StatusInternalServerError, "internal server error")
+// 		return
+// 	}
+
+// 	code := e.Code
+// 	switch err :=
+// }
+
 func NewServer(options ...option) *echo.Echo {
 	config := &ServerConfig{
 		AllowOrigins: nil,
