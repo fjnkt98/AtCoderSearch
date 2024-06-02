@@ -11,7 +11,6 @@ func NewGenerateCmd() *cli.Command {
 			newGenerateProblemCmd(),
 			newGenerateUserCmd(),
 			newGenerateSubmissionCmd(),
-			newGenerateSolutionCmd(),
 		},
 	}
 }

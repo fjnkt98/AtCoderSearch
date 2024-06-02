@@ -61,7 +61,7 @@ func (p *ProblemParameter) Query(core *solr.SolrCore) *solr.SelectQuery {
 
 	if p.ExcludeSolved && p.UserID != "" {
 		q = q.Fq(
-			fmt.Sprintf(`-{!join fromIndex=%s from=problemId to=problemId v='userId:"%s"'}`, settings.SOLUTION_CORE_NAME, solr.Sanitize(p.UserID)),
+			fmt.Sprintf(`-{!join fromIndex=%s from=problemId to=problemId v='+userId:"%s" +result:AC'}`, settings.SUBMISSION_CORE_NAME, solr.Sanitize(p.UserID)),
 		)
 	}
 
