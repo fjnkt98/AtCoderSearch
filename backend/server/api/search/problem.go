@@ -44,7 +44,7 @@ func (p *ProblemParameter) Query(core *solr.SolrCore) *solr.SelectQuery {
 	q := core.NewSelect().
 		Rows(p.Rows()).
 		Start(p.Start()).
-		Sort(api.ParseSort(p.Sort, "problemId asc")).
+		Sort(strings.Join(api.ParseSort(p.Sort, "problemId asc"), ",")).
 		Fl(strings.Join(solr.FieldList(new(ProblemResponse)), ",")).
 		Q(api.ParseQ(p.Q)).
 		Op("AND").

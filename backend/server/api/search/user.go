@@ -42,7 +42,7 @@ func (p *UserParameter) Query(core *solr.SolrCore) *solr.SelectQuery {
 	q := core.NewSelect().
 		Rows(p.Rows()).
 		Start(p.Start()).
-		Sort(api.ParseSort(p.Sort)).
+		Sort(strings.Join(api.ParseSort(p.Sort), ",")).
 		Fl(strings.Join(solr.FieldList(new(UserResponse)), ",")).
 		Q(api.ParseQ(p.Q)).
 		Op("AND").

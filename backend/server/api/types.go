@@ -26,7 +26,7 @@ func (p *ParameterBase) Start() int {
 	return (p.Page - 1) * p.Rows()
 }
 
-func ParseSort(sort []string, defaults ...string) string {
+func ParseSort(sort []string, defaults ...string) []string {
 	orders := make([]string, 0, len(sort)+len(defaults))
 	for _, s := range sort {
 		if strings.HasPrefix(s, "-") {
@@ -37,7 +37,7 @@ func ParseSort(sort []string, defaults ...string) string {
 	}
 	orders = append(orders, defaults...)
 
-	return strings.Join(orders, ",")
+	return orders
 }
 
 func ParseQ(q string) string {
