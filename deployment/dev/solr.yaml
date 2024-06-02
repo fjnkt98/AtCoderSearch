@@ -53,6 +53,9 @@ spec:
           ports:
             - containerPort: 8983
               name: solr
+          env:
+            - name: SOLR_JAVA_MEM
+              value: "-Xms1024m -Xmx1024m"
           # resources:
           #   limits:
           #     memory: 1024Mi

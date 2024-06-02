@@ -37,6 +37,7 @@ func NewErrorListResponse(message string) ListResponse[any] {
 
 type ListProblemParameter struct {
 	ContestID []string `query:"contestId"`
+	Category  []string `query:"category"`
 }
 
 func (p ListProblemParameter) Validate() error {
@@ -59,7 +60,11 @@ func (h *ListHandler) ListProblem(ctx echo.Context) error {
 	if len(p.ContestID) > 0 {
 		rows, err = q.FetchProblemIDsByContestID(ctx.Request().Context(), p.ContestID)
 	} else {
-		rows, err = q.FetchProblemIDs(ctx.Request().Context())
+		if len(p.Category) > 0 {
+			rows, err = q.FetchProblemIDsByCategory(ctx.Request().Context(), p.Category)
+		} else {
+			rows, err = q.FetchProblemIDs(ctx.Request().Context())
+		}
 	}
 	if err != nil {
 		if errs.Is(err, pgx.ErrNoRows) {

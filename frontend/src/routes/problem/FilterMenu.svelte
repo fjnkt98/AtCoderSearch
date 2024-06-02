@@ -1,31 +1,19 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
-  import type { NumericRange } from "$lib/request";
+  import { booleanFromQueryString, numberFromQueryString, parseRange, rangeFromQueryStrings } from "$lib/request";
   import type { SearchProblemFacet } from "$lib/response";
 
   export let facet: SearchProblemFacet | null;
 
-  let categories: string[] = [];
-  let difficultyRange: string | null;
+  let categories: string[] = $page.url.searchParams.getAll("category");
+  let difficultyRange: string | null = rangeFromQueryStrings($page.url.searchParams, "difficultyFrom", "difficultyTo");
 
-  let difficulty: number | null;
+  let difficulty: number | null = numberFromQueryString($page.url.searchParams.get("difficulty"));
   let userId: string | null = $page.url.searchParams.get("userId");
-  let excludeSolved: boolean = false;
-  let excludeExperimental: boolean = false;
-  let prioritizeRecent: boolean = false;
-
-  function parseRange(label: string): NumericRange {
-    const [begin, end] = label.split("~");
-    const result: NumericRange = { begin: null, end: null };
-    if (begin.trim() !== "") {
-      result.begin = Number(begin.trim());
-    }
-    if (end.trim() !== "") {
-      result.end = Number(end.trim());
-    }
-    return result;
-  }
+  let excludeSolved: boolean = booleanFromQueryString($page.url.searchParams.get("excludeSolved")) ?? false;
+  let excludeExperimental: boolean = booleanFromQueryString($page.url.searchParams.get("excludeExperimental")) ?? false;
+  let prioritizeRecent: boolean = booleanFromQueryString($page.url.searchParams.get("prioritizeRecent")) ?? false;
 
   function filter() {
     const p = new URLSearchParams($page.url.searchParams);

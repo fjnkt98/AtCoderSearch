@@ -104,12 +104,14 @@
       return result;
     },
   });
-  const contestQuery = createQuery({
+  $: contestQuery = createQuery({
     queryKey: ["listContest", category],
     queryFn: async () => {
       const p = new URLSearchParams();
       if (category != null) {
         p.set("category", category);
+      } else {
+        p.delete("category");
       }
       const host = browser ? String(env.PUBLIC_EXTERNAL_API_HOST) : String(env.PUBLIC_INTERNAL_API_HOST);
       const response = await fetch(`${host}/api/list/contest?${p.toString()}`);
@@ -117,12 +119,19 @@
       return result;
     },
   });
-  const problemQuery = createQuery({
+  $: problemQuery = createQuery({
     queryKey: ["listProblem", contestId],
     queryFn: async () => {
       const p = new URLSearchParams();
       if (contestId != null) {
         p.set("contestId", contestId);
+      } else {
+        p.delete("contestId");
+      }
+      if (category != null) {
+        p.set("category", category);
+      } else {
+        p.delete("category");
       }
       const host = browser ? String(env.PUBLIC_EXTERNAL_API_HOST) : String(env.PUBLIC_INTERNAL_API_HOST);
       const response = await fetch(`${host}/api/list/problem?${p.toString()}`);
@@ -230,22 +239,6 @@
       <option value="CE">CE</option>
       <option value="MLE">MLE</option>
     </select>
-  </div>
-
-  <div class="my-1 rounded-md px-2 py-1 shadow-sm shadow-gray-500">
-    <p class="text-md font-semibold">ユーザID</p>
-    <input
-      type="search"
-      class="rounded-md border border-gray-900 bg-transparent px-2 text-gray-700 focus:border-blue-700"
-      placeholder="ユーザID"
-      bind:value={userId}
-      on:keydown={(e) => {
-        if (e.key === "Enter") {
-          e.preventDefault();
-          filter();
-        }
-      }}
-    />
   </div>
 
   <div class="my-1 rounded-md px-2 py-1 shadow-sm shadow-gray-500">

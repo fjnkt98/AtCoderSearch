@@ -50,6 +50,31 @@ export const booleanFromQueryString = (s: string | null): boolean | null => {
   }
 };
 
+export function parseRange(label: string): NumericRange {
+  const [begin, end] = label.split("~");
+  const result: NumericRange = { begin: null, end: null };
+  if (begin.trim() !== "") {
+    result.begin = Number(begin.trim());
+  }
+  if (end.trim() !== "") {
+    result.end = Number(end.trim());
+  }
+  return result;
+}
+
+export function rangeFromQueryStrings(params: URLSearchParams, fromKey: string, toKey: string): string | null {
+  const from = params.get(fromKey);
+  const to = params.get(toKey);
+
+  if (from == null && to == null) {
+    return null;
+  }
+  const fromValue = from ?? "";
+  const toValue = to ?? "";
+
+  return `${fromValue} ~ ${toValue}`;
+}
+
 export interface SortValue {
   label: string;
   values: string[];
