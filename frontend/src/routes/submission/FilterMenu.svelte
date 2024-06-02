@@ -249,22 +249,6 @@
   </div>
 
   <div class="my-1 rounded-md px-2 py-1 shadow-sm shadow-gray-500">
-    <p class="text-md font-semibold">ユーザID</p>
-    <input
-      type="search"
-      class="rounded-md border border-gray-900 bg-transparent px-2 text-gray-700 focus:border-blue-700"
-      placeholder="ユーザID"
-      bind:value={userId}
-      on:keydown={(e) => {
-        if (e.key === "Enter") {
-          e.preventDefault();
-          filter();
-        }
-      }}
-    />
-  </div>
-
-  <div class="my-1 rounded-md px-2 py-1 shadow-sm shadow-gray-500">
     <p class="text-md font-semibold">得点</p>
     <input
       type="number"
