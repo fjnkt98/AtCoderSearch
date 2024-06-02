@@ -104,12 +104,14 @@
       return result;
     },
   });
-  const contestQuery = createQuery({
+  $: contestQuery = createQuery({
     queryKey: ["listContest", category],
     queryFn: async () => {
       const p = new URLSearchParams();
       if (category != null) {
         p.set("category", category);
+      } else {
+        p.delete("category");
       }
       const host = browser ? String(env.PUBLIC_EXTERNAL_API_HOST) : String(env.PUBLIC_INTERNAL_API_HOST);
       const response = await fetch(`${host}/api/list/contest?${p.toString()}`);
@@ -117,12 +119,19 @@
       return result;
     },
   });
-  const problemQuery = createQuery({
+  $: problemQuery = createQuery({
     queryKey: ["listProblem", contestId],
     queryFn: async () => {
       const p = new URLSearchParams();
       if (contestId != null) {
         p.set("contestId", contestId);
+      } else {
+        p.delete("contestId");
+      }
+      if (category != null) {
+        p.set("category", category);
+      } else {
+        p.delete("category");
       }
       const host = browser ? String(env.PUBLIC_EXTERNAL_API_HOST) : String(env.PUBLIC_INTERNAL_API_HOST);
       const response = await fetch(`${host}/api/list/problem?${p.toString()}`);
