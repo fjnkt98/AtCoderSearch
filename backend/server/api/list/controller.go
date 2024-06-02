@@ -3,7 +3,6 @@ package list
 import (
 	"encoding/json"
 	"fjnkt98/atcodersearch/repository"
-	"log/slog"
 	"net/http"
 
 	"github.com/coocood/freecache"
@@ -47,10 +46,10 @@ func (p ListProblemParameter) Validate() error {
 func (h *ListHandler) ListProblem(ctx echo.Context) error {
 	var p ListProblemParameter
 	if err := ctx.Bind(&p); err != nil {
-		return ctx.JSON(http.StatusBadRequest, NewErrorListResponse("bad request"))
+		return &echo.HTTPError{Code: http.StatusBadRequest, Message: NewErrorListResponse("bad request"), Internal: err}
 	}
 	if err := ctx.Validate(p); err != nil {
-		return ctx.JSON(http.StatusBadRequest, NewErrorListResponse(err.Error()))
+		return &echo.HTTPError{Code: http.StatusBadRequest, Message: NewErrorListResponse(err.Error()), Internal: err}
 	}
 
 	q := repository.New(h.pool)
@@ -66,8 +65,7 @@ func (h *ListHandler) ListProblem(ctx echo.Context) error {
 		if errs.Is(err, pgx.ErrNoRows) {
 			return ctx.JSON(http.StatusOK, ListResponse[any]{})
 		} else {
-			slog.Error("failed to fetch problems", slog.Any("error", err))
-			return ctx.JSON(http.StatusInternalServerError, NewErrorListResponse("request failed"))
+			return &echo.HTTPError{Code: http.StatusInternalServerError, Message: NewErrorListResponse("request failed"), Internal: err}
 		}
 	}
 	return ctx.JSON(http.StatusOK, ListResponse[string]{Items: rows})
@@ -84,10 +82,10 @@ func (p ListContestParameter) Validate() error {
 func (h *ListHandler) ListContest(ctx echo.Context) error {
 	var p ListContestParameter
 	if err := ctx.Bind(&p); err != nil {
-		return ctx.JSON(http.StatusBadRequest, NewErrorListResponse("bad request"))
+		return &echo.HTTPError{Code: http.StatusBadRequest, Message: NewErrorListResponse("bad request"), Internal: err}
 	}
 	if err := ctx.Validate(p); err != nil {
-		return ctx.JSON(http.StatusBadRequest, NewErrorListResponse(err.Error()))
+		return &echo.HTTPError{Code: http.StatusBadRequest, Message: NewErrorListResponse(err.Error()), Internal: err}
 	}
 
 	q := repository.New(h.pool)
@@ -103,8 +101,7 @@ func (h *ListHandler) ListContest(ctx echo.Context) error {
 		if errs.Is(err, pgx.ErrNoRows) {
 			return ctx.JSON(http.StatusOK, ListResponse[any]{})
 		} else {
-			slog.Error("failed to fetch contests", slog.Any("error", err))
-			return ctx.JSON(http.StatusInternalServerError, NewErrorListResponse("request failed"))
+			return &echo.HTTPError{Code: http.StatusInternalServerError, Message: NewErrorListResponse("request failed"), Internal: err}
 		}
 	}
 	return ctx.JSON(http.StatusOK, ListResponse[string]{Items: rows})
@@ -118,8 +115,7 @@ func (h *ListHandler) ListCategory(ctx echo.Context) error {
 		if errs.Is(err, pgx.ErrNoRows) {
 			return ctx.JSON(http.StatusOK, ListResponse[any]{})
 		} else {
-			slog.Error("failed to fetch categories", slog.Any("error", err))
-			return ctx.JSON(http.StatusInternalServerError, NewErrorListResponse("request failed"))
+			return &echo.HTTPError{Code: http.StatusInternalServerError, Message: NewErrorListResponse("request failed"), Internal: err}
 		}
 	}
 	return ctx.JSON(http.StatusOK, ListResponse[string]{Items: rows})
@@ -141,10 +137,10 @@ type Language struct {
 func (h *ListHandler) ListLanguage(ctx echo.Context) error {
 	var p ListLanguageParameter
 	if err := ctx.Bind(&p); err != nil {
-		return ctx.JSON(http.StatusBadRequest, NewErrorListResponse("bad request"))
+		return &echo.HTTPError{Code: http.StatusBadRequest, Message: NewErrorListResponse("bad request"), Internal: err}
 	}
 	if err := ctx.Validate(p); err != nil {
-		return ctx.JSON(http.StatusBadRequest, NewErrorListResponse(err.Error()))
+		return &echo.HTTPError{Code: http.StatusBadRequest, Message: NewErrorListResponse(err.Error()), Internal: err}
 	}
 
 	q := repository.New(h.pool)
@@ -160,15 +156,14 @@ func (h *ListHandler) ListLanguage(ctx echo.Context) error {
 		if errs.Is(err, pgx.ErrNoRows) {
 			return ctx.JSON(http.StatusOK, ListResponse[Language]{})
 		} else {
-			slog.Error("failed to fetch languages", slog.Any("error", err))
-			return ctx.JSON(http.StatusInternalServerError, NewErrorListResponse("request failed"))
+			return &echo.HTTPError{Code: http.StatusInternalServerError, Message: NewErrorListResponse("request failed"), Internal: err}
 		}
 	}
 
 	items := make([]Language, 0)
 	if len(row) != 0 {
 		if err := json.Unmarshal(row, &items); err != nil {
-			return ctx.JSON(http.StatusInternalServerError, NewErrorListResponse("request failed"))
+			return &echo.HTTPError{Code: http.StatusInternalServerError, Message: NewErrorListResponse("request failed"), Internal: err}
 		}
 	}
 

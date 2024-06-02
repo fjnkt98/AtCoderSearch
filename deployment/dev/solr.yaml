@@ -64,8 +64,6 @@ spec:
               mountPath: /var/solr/data/users/data
             - name: submissions-pvc
               mountPath: /var/solr/data/submissions/data
-            - name: solutions-pvc
-              mountPath: /var/solr/data/solutions/data
       imagePullSecrets:
         - name: regcred
   volumeClaimTemplates:
@@ -87,14 +85,6 @@ spec:
             storage: 3Gi
     - metadata:
         name: submissions-pvc
-      spec:
-        accessModes:
-          - ReadWriteOnce
-        resources:
-          requests:
-            storage: 3Gi
-    - metadata:
-        name: solutions-pvc
       spec:
         accessModes:
           - ReadWriteOnce

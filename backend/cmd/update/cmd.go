@@ -11,7 +11,6 @@ func NewUpdateCmd() *cli.Command {
 			newUpdateProblemCmd(),
 			newUpdateUserCmd(),
 			newUpdateSubmissionCmd(),
-			newUpdateSolutionCmd(),
 			newUpdateLanguageCmd(),
 		},
 	}

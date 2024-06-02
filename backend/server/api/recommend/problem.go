@@ -3,7 +3,6 @@ package recommend
 import (
 	"fjnkt98/atcodersearch/pkg/solr"
 	"fjnkt98/atcodersearch/server/api"
-	"log/slog"
 	"net/http"
 	"strings"
 
@@ -73,10 +72,10 @@ func NewRecommendProblemHandler(core *solr.SolrCore) *RecommendProblemHandler {
 func (h *RecommendProblemHandler) RecommendProblem(ctx echo.Context) error {
 	var p ProblemParameter
 	if err := ctx.Bind(&p); err != nil {
-		return ctx.JSON(http.StatusBadRequest, api.NewErrorResponse("bad request", nil))
+		return &echo.HTTPError{Code: http.StatusBadRequest, Message: api.NewErrorResponse("bad request", nil)}
 	}
 	if err := ctx.Validate(p); err != nil {
-		return ctx.JSON(http.StatusBadRequest, api.NewErrorResponse(err.Error(), p))
+		return &echo.HTTPError{Code: http.StatusBadRequest, Message: api.NewErrorResponse(err.Error(), p), Internal: err}
 	}
 
 	q := p.Query(h.core)
@@ -85,14 +84,12 @@ func (h *RecommendProblemHandler) RecommendProblem(ctx echo.Context) error {
 		if strings.HasPrefix(res.Raw.Error.Msg, "Error completing MLT request.") {
 			return ctx.JSON(http.StatusOK, api.NewEmptyResponse())
 		}
-		slog.Error("request failed", slog.Any("error", err))
-		return ctx.JSON(http.StatusInternalServerError, api.NewErrorResponse("request failed", p))
+		return &echo.HTTPError{Code: http.StatusInternalServerError, Message: api.NewErrorResponse("request failed", p), Internal: err}
 	}
 
 	var items []ProblemResponse
 	if err := res.Scan(&items); err != nil {
-		slog.Error("request failed", slog.Any("error", err))
-		return ctx.JSON(http.StatusInternalServerError, api.NewErrorResponse("request failed", p))
+		return &echo.HTTPError{Code: http.StatusInternalServerError, Message: api.NewErrorResponse("request failed", p), Internal: err}
 	}
 
 	result := api.ResultResponse[ProblemResponse]{

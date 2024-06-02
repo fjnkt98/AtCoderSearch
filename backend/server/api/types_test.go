@@ -116,9 +116,9 @@ func TestFacetCountsFromRangeBucket(t *testing.T) {
 			{Begin: ptr(0), End: ptr(100), Count: 1},
 			{Begin: ptr(100), End: nil, Count: 2},
 		}, expected: []FacetCount{
-			{Label: "~ 0", Count: 0},
+			{Label: " ~ 0", Count: 0},
 			{Label: "0 ~ 100", Count: 1},
-			{Label: "100 ~", Count: 2},
+			{Label: "100 ~ ", Count: 2},
 		}},
 	}
 
@@ -127,7 +127,7 @@ func TestFacetCountsFromRangeBucket(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			actual := FacetCountsFromRangeBucket(tt.value)
 			if !reflect.DeepEqual(tt.expected, actual) {
-				t.Errorf("expected %+v, but got %+v", tt.expected, actual)
+				t.Errorf("expected \n%+v\n, but got \n%+v\n", tt.expected, actual)
 			}
 		})
 	}
