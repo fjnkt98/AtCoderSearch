@@ -1,13 +1,16 @@
 package search
 
 import (
-	"fjnkt98/atcodersearch/pkg/solr"
 	"fjnkt98/atcodersearch/server/api"
 	"net/http"
-	"strings"
+	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
+	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jackc/pgx/v5/stdlib"
 	"github.com/labstack/echo/v4"
+	"github.com/uptrace/bun"
+	"github.com/uptrace/bun/dialect/pgdialect"
 )
 
 type SubmissionParameter struct {
@@ -36,10 +39,10 @@ func (p SubmissionParameter) Validate() error {
 		validation.Field(&p.Limit, validation.Min(0), validation.Max(200)),
 		validation.Field(&p.Page, validation.Min(0)),
 		validation.Field(&p.Sort, validation.Each(validation.In(
-			"executionTime",
-			"-executionTime",
-			"submittedAt",
-			"-submittedAt",
+			"execution_time",
+			"-execution_time",
+			"epoch_second",
+			"-epoch_second",
 			"point",
 			"-point",
 			"length",
@@ -48,57 +51,110 @@ func (p SubmissionParameter) Validate() error {
 	)
 }
 
-func (p *SubmissionParameter) Query(core *solr.SolrCore) *solr.SelectQuery {
-	q := core.NewSelect().
-		Rows(p.Rows()).
-		Start(p.Start()).
-		Sort(api.ParseSort(p.Sort)).
-		Fl(strings.Join(solr.FieldList(new(SubmissionResponse)), ",")).
-		Q("*:*").
-		Df("null").
-		Fq(
-			api.IntegerRangeFilter(p.EpochSecondFrom, p.EpochSecondTo, "epochSecond", api.LocalParam("tag", "epochSecond")),
-			api.TermsFilter(p.ProblemID, "problemId", api.LocalParam("tag", "problemId")),
-			api.TermsFilter(p.ContestID, "contestId", api.LocalParam("tag", "contestId")),
-			api.TermsFilter(p.Category, "category", api.LocalParam("tag", "category")),
-			api.TermsFilter(p.UserID, "userId", api.LocalParam("tag", "userId")),
-			api.TermsFilter(p.Language, "language", api.LocalParam("tag", "language")),
-			api.TermsFilter(p.LanguageGroup, "languageGroup", api.LocalParam("tag", "languageGroup")),
-			api.FloatRangeFilter(p.PointFrom, p.PointTo, "point", api.LocalParam("tag", "point")),
-			api.IntegerRangeFilter(p.LengthFrom, p.LengthTo, "length", api.LocalParam("tag", "length")),
-			api.TermsFilter(p.Result, "result", api.LocalParam("tag", "result")),
-			api.IntegerRangeFilter(p.ExecutionTimeFrom, p.ExecutionTimeTo, "executionTime", api.LocalParam("tag", "executionTime")),
-		)
+func (p *SubmissionParameter) Query(pool *pgxpool.Pool) *bun.SelectQuery {
+	db := bun.NewDB(stdlib.OpenDBFromPool(pool), pgdialect.New())
+
+	q := db.NewSelect().
+		ColumnExpr("s.id AS submission_id").
+		ColumnExpr("TO_TIMESTAMP(s.epoch_second) AS submitted_at").
+		ColumnExpr("FORMAT('https://atcoder.jp/contests/%s/submissions/%s', s.contest_id, s.id) AS submission_url").
+		ColumnExpr("s.problem_id").
+		ColumnExpr("p.title AS problem_title").
+		ColumnExpr("s.contest_id").
+		ColumnExpr("c.title AS contest_title").
+		ColumnExpr("c.category").
+		ColumnExpr("d.difficulty").
+		ColumnExpr("CASE WHEN d.difficulty < 0 THEN 'black' WHEN d.difficulty < 400 THEN 'gray' WHEN d.difficulty < 800 THEN 'brown' WHEN d.difficulty < 1200 THEN 'green' WHEN d.difficulty < 1600 THEN 'cyan' WHEN d.difficulty < 2000 THEN 'blue' WHEN d.difficulty < 2400 THEN 'yellow' WHEN d.difficulty < 2800 THEN 'orange' WHEN d.difficulty < 3200 THEN 'red' WHEN d.difficulty < 3600 THEN 'silver' ELSE 'gold' END AS color").
+		ColumnExpr("s.user_id").
+		ColumnExpr("s.language").
+		ColumnExpr("s.point").
+		ColumnExpr("s.length").
+		ColumnExpr("s.result").
+		ColumnExpr("s.execution_time").
+		TableExpr("submissions AS s").
+		Join("LEFT JOIN contests AS c ON s.contest_id = c.contest_id").
+		Join("LEFT JOIN problems AS p ON s.problem_id = p.problem_id").
+		Join("LEFT JOIN difficulties AS d ON s.problem_id = d.problem_id").
+		Join("LEFT JOIN languages AS l ON s.language = l.language").
+		Order(api.ParseSort(p.Sort)...).
+		Limit(p.Rows()).
+		Offset(p.Start())
+
+	if p.EpochSecondFrom != nil {
+		q = q.Where("s.epoch_second > ?", p.EpochSecondFrom)
+	}
+	if p.EpochSecondTo != nil {
+		q = q.Where("s.epoch_second < ?", p.EpochSecondTo)
+	}
+	if len(p.ProblemID) > 0 {
+		q = q.Where("s.problem_id in (?)", bun.In(p.ProblemID))
+	}
+	if len(p.ContestID) > 0 {
+		q = q.Where("s.contest_id in (?)", bun.In(p.ContestID))
+	}
+	if len(p.Category) > 0 {
+		q = q.Where("c.category in (?)", bun.In(p.Category))
+	}
+	if len(p.UserID) > 0 {
+		q = q.Where("s.user_id in (?)", bun.In(p.UserID))
+	}
+	if len(p.Language) > 0 {
+		q = q.Where("s.language in (?)", bun.In(p.Language))
+	}
+	if len(p.LanguageGroup) > 0 {
+		q = q.Where("l.group in (?)", bun.In(p.LanguageGroup))
+	}
+	if p.PointFrom != nil {
+		q = q.Where("s.point > ?", p.PointFrom)
+	}
+	if p.PointTo != nil {
+		q = q.Where("s.point < ?", p.PointTo)
+	}
+	if p.LengthFrom != nil {
+		q = q.Where("s.length > ?", p.LengthFrom)
+	}
+	if p.LengthTo != nil {
+		q = q.Where("s.length < ?", p.LengthTo)
+	}
+	if len(p.Result) > 0 {
+		q = q.Where("s.result in (?)", bun.In(p.Result))
+	}
+	if p.ExecutionTimeFrom != nil {
+		q = q.Where("s.execution_time > ?", p.ExecutionTimeFrom)
+	}
+	if p.ExecutionTimeTo != nil {
+		q = q.Where("s.execution_time < ?", p.ExecutionTimeTo)
+	}
 
 	return q
 }
 
 type SubmissionResponse struct {
-	SubmissionID  int64                 `json:"submissionId"`
-	SubmittedAt   solr.FromSolrDateTime `json:"submittedAt"`
-	SubmissionURL string                `json:"submissionUrl"`
-	ProblemID     string                `json:"problemId"`
-	ProblemTitle  string                `json:"problemTitle"`
-	ContestID     string                `json:"contestId"`
-	ContestTitle  string                `json:"contestTitle"`
-	Category      string                `json:"category"`
-	Difficulty    int                   `json:"difficulty"`
-	Color         string                `json:"color"`
-	UserID        string                `json:"userId"`
-	Language      string                `json:"language"`
-	Point         float64               `json:"point"`
-	Length        int64                 `json:"length"`
-	Result        string                `json:"result"`
-	ExecutionTime *int64                `json:"executionTime"`
+	SubmissionID  int64     `bun:"submission_id" json:"submissionId"`
+	SubmittedAt   time.Time `bun:"submitted_at" json:"submittedAt"`
+	SubmissionURL string    `bun:"submission_url" json:"submissionUrl"`
+	ProblemID     string    `bun:"problem_id" json:"problemId"`
+	ProblemTitle  string    `bun:"problem_title" json:"problemTitle"`
+	ContestID     string    `bun:"contest_id" json:"contestId"`
+	ContestTitle  string    `bun:"contest_title" json:"contestTitle"`
+	Category      string    `bun:"category" json:"category"`
+	Difficulty    int       `bun:"difficulty" json:"difficulty"`
+	Color         string    `bun:"color" json:"color"`
+	UserID        string    `bun:"user_id" json:"userId"`
+	Language      string    `bun:"language" json:"language"`
+	Point         float64   `bun:"point" json:"point"`
+	Length        int64     `bun:"length" json:"length"`
+	Result        string    `bun:"result" json:"result"`
+	ExecutionTime *int64    `bun:"execution_time" json:"executionTime"`
 }
 
 type SearchSubmissionHandler struct {
-	core *solr.SolrCore
+	pool *pgxpool.Pool
 }
 
-func NewSearchSubmissionHandler(core *solr.SolrCore) *SearchSubmissionHandler {
+func NewSearchSubmissionHandler(pool *pgxpool.Pool) *SearchSubmissionHandler {
 	return &SearchSubmissionHandler{
-		core: core,
+		pool: pool,
 	}
 }
 
@@ -111,30 +167,17 @@ func (h *SearchSubmissionHandler) SearchSubmission(ctx echo.Context) error {
 		return &echo.HTTPError{Code: http.StatusBadRequest, Message: api.NewErrorResponse(err.Error(), p), Internal: err}
 	}
 
-	q := p.Query(h.core)
-	res, err := q.Exec(ctx.Request().Context())
-	if err != nil {
-		return &echo.HTTPError{Code: http.StatusInternalServerError, Message: api.NewErrorResponse("request failed", p), Internal: err}
-	}
-
-	facet, err := res.Facet()
-	if err != nil {
-		return &echo.HTTPError{Code: http.StatusInternalServerError, Message: api.NewErrorResponse("request failed", p), Internal: err}
-	}
-
+	q := p.Query(h.pool)
 	var items []SubmissionResponse
-	if err := res.Scan(&items); err != nil {
+	err := q.Scan(ctx.Request().Context(), &items)
+	if err != nil {
 		return &echo.HTTPError{Code: http.StatusInternalServerError, Message: api.NewErrorResponse("request failed", p), Internal: err}
 	}
 
 	result := api.ResultResponse[SubmissionResponse]{
 		Stats: api.ResultStats{
-			Total:  res.Raw.Response.NumFound,
-			Index:  (res.Raw.Response.Start / p.Rows()) + 1,
 			Count:  len(items),
-			Pages:  (res.Raw.Response.NumFound + p.Rows() - 1) / p.Rows(),
 			Params: p,
-			Facet:  api.NewFacetCount(facet),
 		},
 		Items: items,
 	}
