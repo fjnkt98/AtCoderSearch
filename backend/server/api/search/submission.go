@@ -180,7 +180,7 @@ func (h *SearchSubmissionHandler) SearchSubmission(ctx echo.Context) error {
 		Stats: api.ResultStats{
 			Time:   int(time.Since(startAt).Milliseconds()),
 			Total:  0,
-			Index:  0,
+			Index:  p.Page,
 			Count:  len(items),
 			Pages:  0,
 			Params: p,
