@@ -113,6 +113,17 @@ WHERE
 ORDER BY
     "problem_id" ASC;
 
+-- name: FetchProblemIDsByCategory :many
+SELECT
+    "problem_id"
+FROM
+    "problems"
+    LEFT JOIN "contests" USING ("contest_id")
+WHERE
+    "category" = ANY (@category::TEXT[])
+ORDER BY
+    "problem_id" ASC;
+
 -- name: FetchRatingByUserID :one
 SELECT
     "rating"

@@ -289,6 +289,38 @@ func (q *Queries) FetchProblemIDs(ctx context.Context) ([]string, error) {
 	return items, nil
 }
 
+const fetchProblemIDsByCategory = `-- name: FetchProblemIDsByCategory :many
+SELECT
+    "problem_id"
+FROM
+    "problems"
+    LEFT JOIN "contests" USING ("contest_id")
+WHERE
+    "category" = ANY ($1::TEXT[])
+ORDER BY
+    "problem_id" ASC
+`
+
+func (q *Queries) FetchProblemIDsByCategory(ctx context.Context, category []string) ([]string, error) {
+	rows, err := q.db.Query(ctx, fetchProblemIDsByCategory, category)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []string
+	for rows.Next() {
+		var problem_id string
+		if err := rows.Scan(&problem_id); err != nil {
+			return nil, err
+		}
+		items = append(items, problem_id)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const fetchProblemIDsByContestID = `-- name: FetchProblemIDsByContestID :many
 SELECT
     "problem_id"
