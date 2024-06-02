@@ -46,7 +46,7 @@ func newUpdateSubmissionCmd() *cli.Command {
 			},
 			&cli.IntFlag{
 				Name:     "chunk-size",
-				Value:    100000,
+				Value:    50000,
 				Category: "generate",
 			},
 			&cli.IntFlag{
