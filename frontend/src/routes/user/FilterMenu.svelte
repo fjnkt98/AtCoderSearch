@@ -1,27 +1,15 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { page } from "$app/stores";
-  import type { NumericRange } from "$lib/request";
+  import { parseRange, rangeFromQueryStrings } from "$lib/request";
   import type { SearchUserFacet } from "$lib/response";
 
   export let facet: SearchUserFacet | null;
 
   let countries: string[] = $page.url.searchParams.getAll("country");
-  let ratingRange: string | null;
-  let birthYearRange: string | null;
-  let joinCountRange: string | null;
-
-  function parseRange(label: string): NumericRange {
-    const [begin, end] = label.split("~");
-    const result: NumericRange = { begin: null, end: null };
-    if (begin.trim() !== "") {
-      result.begin = Number(begin.trim());
-    }
-    if (end.trim() !== "") {
-      result.end = Number(end.trim());
-    }
-    return result;
-  }
+  let ratingRange: string | null = rangeFromQueryStrings($page.url.searchParams, "ratingFrom", "ratingTo");
+  let birthYearRange: string | null = rangeFromQueryStrings($page.url.searchParams, "birthYearFrom", "birthYearTo");
+  let joinCountRange: string | null = rangeFromQueryStrings($page.url.searchParams, "joinCountFrom", "joinCountTo");
 
   function filter() {
     const p = new URLSearchParams($page.url.searchParams);
