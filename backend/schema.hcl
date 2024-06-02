@@ -239,6 +239,9 @@ table "submissions" {
   index "submissions_contest_id_index" {
     columns = [column.contest_id]
   }
+  index "submissions_execution_time_index" {
+    columns = [column.execution_time]
+  }
   index "submissions_epoch_second_index" {
     columns = [column.epoch_second]
   }
