@@ -159,6 +159,8 @@ func NewSearchSubmissionHandler(pool *pgxpool.Pool) *SearchSubmissionHandler {
 }
 
 func (h *SearchSubmissionHandler) SearchSubmission(ctx echo.Context) error {
+	startAt := time.Now()
+
 	var p SubmissionParameter
 	if err := ctx.Bind(&p); err != nil {
 		return &echo.HTTPError{Code: http.StatusBadRequest, Message: api.NewErrorResponse("bad request", nil)}
@@ -176,7 +178,11 @@ func (h *SearchSubmissionHandler) SearchSubmission(ctx echo.Context) error {
 
 	result := api.ResultResponse[SubmissionResponse]{
 		Stats: api.ResultStats{
+			Time:   int(time.Since(startAt).Milliseconds()),
+			Total:  0,
+			Index:  0,
 			Count:  len(items),
+			Pages:  0,
 			Params: p,
 		},
 		Items: items,

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -118,6 +119,8 @@ func NewSearchProblemHandler(core *solr.SolrCore, pool *pgxpool.Pool) *SearchPro
 }
 
 func (h *SearchProblemHandler) SearchProblem(ctx echo.Context) error {
+	startAt := time.Now()
+
 	var p ProblemParameter
 	if err := ctx.Bind(&p); err != nil {
 		return &echo.HTTPError{Code: http.StatusBadRequest, Message: api.NewErrorResponse("bad request", nil)}
@@ -144,6 +147,7 @@ func (h *SearchProblemHandler) SearchProblem(ctx echo.Context) error {
 
 	result := api.ResultResponse[ProblemResponse]{
 		Stats: api.ResultStats{
+			Time:   int(time.Since(startAt).Milliseconds()),
 			Total:  res.Raw.Response.NumFound,
 			Index:  (res.Raw.Response.Start / p.Rows()) + 1,
 			Count:  len(items),
