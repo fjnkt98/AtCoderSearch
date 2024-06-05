@@ -64,11 +64,7 @@ func NewServeCmd() *cli.Command {
 				recommend.NewRecommendProblemHandler(core).Register(e)
 			}
 			{
-				core, err := solr.NewSolrCore(host, settings.SUBMISSION_CORE_NAME)
-				if err != nil {
-					return errs.Wrap(err)
-				}
-				search.NewSearchSubmissionHandler(core).Register(e)
+				search.NewSearchSubmissionHandler(pool).Register(e)
 			}
 			list.NewListHandler(pool).Register(e)
 

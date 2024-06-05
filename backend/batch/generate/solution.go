@@ -3,6 +3,7 @@ package generate
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/goark/errs"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -31,28 +32,35 @@ func (r *SolutionRow) Document(ctx context.Context) (*SolutionDoc, error) {
 }
 
 type SolutionRowReader struct {
-	pool     *pgxpool.Pool
-	interval int
+	pool        *pgxpool.Pool
+	interval    int
+	lastUpdated *time.Time
 }
 
-func NewSolutionRowReader(pool *pgxpool.Pool, interval int) *SolutionRowReader {
+func NewSolutionRowReader(pool *pgxpool.Pool, interval int, lastUpdated *time.Time) *SolutionRowReader {
 	return &SolutionRowReader{
-		pool:     pool,
-		interval: interval,
+		pool:        pool,
+		interval:    interval,
+		lastUpdated: lastUpdated,
 	}
 }
 
 func (r *SolutionRowReader) ReadRows(ctx context.Context, tx chan<- *SolutionRow) error {
 	db := bun.NewDB(stdlib.OpenDBFromPool(r.pool), pgdialect.New())
-	rows, err := db.NewSelect().
+
+	q := db.NewSelect().
 		Distinct().
 		ColumnExpr("s.problem_id").
 		ColumnExpr("s.user_id").
 		TableExpr("submissions AS s").
 		Where("s.result = ?", "AC").
-		Where("s.epoch_second > EXTRACT(EPOCH FROM CURRENT_DATE - CAST(? || ' day' AS INTERVAL))", r.interval).
-		Rows(ctx)
+		Where("s.epoch_second > EXTRACT(EPOCH FROM CURRENT_DATE - CAST(? || ' day' AS INTERVAL))", r.interval)
 
+	if r.lastUpdated != nil {
+		q = q.Where("s.updated_at > ?", r.lastUpdated)
+	}
+
+	rows, err := q.Rows(ctx)
 	if err != nil {
 		return errs.New(
 			"failed to read rows",

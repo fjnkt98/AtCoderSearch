@@ -5,44 +5,29 @@ import (
 	"fjnkt98/atcodersearch/pkg/solr"
 	"fjnkt98/atcodersearch/repository"
 	"fjnkt98/atcodersearch/settings"
-	"time"
 
 	"github.com/goark/errs"
 	"github.com/urfave/cli/v2"
 )
 
-func newUpdateSubmissionCmd() *cli.Command {
+func newUpdateSolutionCmd() *cli.Command {
 	return &cli.Command{
-		Name: "submission",
+		Name: "solution",
 		Flags: []cli.Flag{
-			&cli.DurationFlag{
-				Name:     "duration",
-				Value:    1000 * time.Millisecond,
-				Category: "crawl",
-			},
-			&cli.IntFlag{
-				Name:     "retry",
-				Value:    0,
-				Category: "crawl",
-			},
-			&cli.StringFlag{
-				Name:     "target",
-				Category: "crawl",
-			},
 			&cli.BoolFlag{
 				Name:     "all",
 				Value:    false,
-				Category: "generate",
+				Category: "crawl",
 			},
 			&cli.IntFlag{
 				Name:     "interval",
-				Value:    90,
+				Value:    180,
 				Category: "generate",
 			},
 			&cli.PathFlag{
 				Name:     "save-dir",
 				Category: "generate, post",
-				EnvVars:  []string{"SUBMISSION_SAVE_DIR"},
+				EnvVars:  []string{"SOLUTION_SAVE_DIR"},
 			},
 			&cli.IntFlag{
 				Name:     "chunk-size",
@@ -70,14 +55,12 @@ func newUpdateSubmissionCmd() *cli.Command {
 			if err != nil {
 				return errs.Wrap(err)
 			}
-			core, err := solr.NewSolrCore(ctx.String("solr-host"), settings.SUBMISSION_CORE_NAME)
+			core, err := solr.NewSolrCore(ctx.String("solr-host"), settings.SOLUTION_CORE_NAME)
 			if err != nil {
 				return errs.Wrap(err)
 			}
 
-			config := update.UpdateSubmissionConfig{
-				Duration:           ctx.Duration("duration"),
-				Retry:              ctx.Int("retry"),
+			config := update.UpdateSolutionConfig{
 				All:                ctx.Bool("all"),
 				Interval:           ctx.Int("interval"),
 				SaveDir:            ctx.String("save-dir"),
@@ -87,7 +70,7 @@ func newUpdateSubmissionCmd() *cli.Command {
 				Optimize:           ctx.Bool("optimize"),
 			}
 
-			if err := update.UpdateSubmission(ctx.Context, pool, core, config); err != nil {
+			if err := update.UpdateSolution(ctx.Context, pool, core, config); err != nil {
 				return errs.Wrap(err)
 			}
 			return nil

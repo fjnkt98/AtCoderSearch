@@ -10,7 +10,7 @@ func NewPostCmd() *cli.Command {
 		Subcommands: []*cli.Command{
 			newPostProblemCmd(),
 			newPostUserCmd(),
-			newPostSubmissionCmd(),
+			newPostSolutionCmd(),
 		},
 	}
 }

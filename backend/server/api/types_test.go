@@ -60,14 +60,14 @@ func TestParseSort(t *testing.T) {
 	cases := []struct {
 		name     string
 		value    []string
-		expected string
+		expected []string
 	}{
-		{name: "nil", value: nil, expected: ""},
-		{name: "empty", value: []string{}, expected: ""},
-		{name: "single-asc", value: []string{"score"}, expected: "score asc"},
-		{name: "single-desc", value: []string{"-score"}, expected: "score desc"},
-		{name: "multiple-asc", value: []string{"score", "id"}, expected: "score asc,id asc"},
-		{name: "multiple-desc", value: []string{"-score", "-id"}, expected: "score desc,id desc"},
+		{name: "nil", value: nil, expected: []string{}},
+		{name: "empty", value: []string{}, expected: []string{}},
+		{name: "single-asc", value: []string{"score"}, expected: []string{"score asc"}},
+		{name: "single-desc", value: []string{"-score"}, expected: []string{"score desc"}},
+		{name: "multiple-asc", value: []string{"score", "id"}, expected: []string{"score asc", "id asc"}},
+		{name: "multiple-desc", value: []string{"-score", "-id"}, expected: []string{"score desc", "id desc"}},
 	}
 
 	for _, tt := range cases {

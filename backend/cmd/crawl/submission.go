@@ -26,8 +26,7 @@ func newCrawlSubmissionCmd() *cli.Command {
 				Value:   0,
 			},
 			&cli.StringFlag{
-				Name:  "target",
-				Value: "ABC,ABC-Like,ARC,ARC-Like,AGC,AGC-Like,JOI,Other Sponsored,PAST",
+				Name: "target",
 			},
 			&cli.StringFlag{
 				Name:    "atcoder-username",
@@ -56,12 +55,16 @@ func newCrawlSubmissionCmd() *cli.Command {
 			if err != nil {
 				return errs.Wrap(err)
 			}
+			var targets []string
+			if target := ctx.String("target"); target != "" {
+				targets = strings.Split(target, ",")
+			}
 			crawler := crawl.NewSubmissionCrawler(
 				client,
 				pool,
 				ctx.Duration("duration"),
 				ctx.Int("retry"),
-				strings.Split(ctx.String("target"), ","),
+				targets,
 			)
 
 			if err := crawler.Crawl(ctx.Context); err != nil {

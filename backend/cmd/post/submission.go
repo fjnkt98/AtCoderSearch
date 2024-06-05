@@ -9,13 +9,13 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func newPostSubmissionCmd() *cli.Command {
+func newPostSolutionCmd() *cli.Command {
 	return &cli.Command{
 		Name: "submission",
 		Flags: []cli.Flag{
 			&cli.PathFlag{
 				Name:    "save-dir",
-				EnvVars: []string{"SUBMISSION_SAVE_DIR"},
+				EnvVars: []string{"SOLUTION_SAVE_DIR"},
 			},
 			&cli.BoolFlag{
 				Name:    "optimize",
@@ -33,7 +33,7 @@ func newPostSubmissionCmd() *cli.Command {
 			},
 		},
 		Action: func(ctx *cli.Context) error {
-			core, err := solr.NewSolrCore(ctx.String("solr-host"), settings.SUBMISSION_CORE_NAME)
+			core, err := solr.NewSolrCore(ctx.String("solr-host"), settings.SOLUTION_CORE_NAME)
 			if err != nil {
 				return errs.Wrap(err)
 			}

@@ -8,10 +8,10 @@ func NewUpdateCmd() *cli.Command {
 	return &cli.Command{
 		Name: "update",
 		Subcommands: []*cli.Command{
-			newUpdateProblemCmd(),
-			newUpdateUserCmd(),
-			newUpdateSubmissionCmd(),
 			newUpdateLanguageCmd(),
+			newUpdateProblemCmd(),
+			newUpdateSolutionCmd(),
+			newUpdateUserCmd(),
 		},
 	}
 }

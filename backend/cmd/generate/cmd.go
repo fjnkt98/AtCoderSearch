@@ -10,7 +10,7 @@ func NewGenerateCmd() *cli.Command {
 		Subcommands: []*cli.Command{
 			newGenerateProblemCmd(),
 			newGenerateUserCmd(),
-			newGenerateSubmissionCmd(),
+			// newGenerateSolutionCmd(),
 		},
 	}
 }

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -44,7 +45,7 @@ func (p *ProblemParameter) Query(core *solr.SolrCore) *solr.SelectQuery {
 	q := core.NewSelect().
 		Rows(p.Rows()).
 		Start(p.Start()).
-		Sort(api.ParseSort(p.Sort, "problemId asc")).
+		Sort(strings.Join(api.ParseSort(p.Sort, "problemId asc"), ",")).
 		Fl(strings.Join(solr.FieldList(new(ProblemResponse)), ",")).
 		Q(api.ParseQ(p.Q)).
 		Op("AND").
@@ -60,7 +61,7 @@ func (p *ProblemParameter) Query(core *solr.SolrCore) *solr.SelectQuery {
 
 	if p.ExcludeSolved && p.UserID != "" {
 		q = q.Fq(
-			fmt.Sprintf(`-{!join fromIndex=%s from=problemId to=problemId v='+userId:"%s" +result:AC'}`, settings.SUBMISSION_CORE_NAME, solr.Sanitize(p.UserID)),
+			fmt.Sprintf(`-{!join fromIndex=%s from=problemId to=problemId v='userId:"%s"'}`, settings.SOLUTION_CORE_NAME, solr.Sanitize(p.UserID)),
 		)
 	}
 
@@ -118,6 +119,8 @@ func NewSearchProblemHandler(core *solr.SolrCore, pool *pgxpool.Pool) *SearchPro
 }
 
 func (h *SearchProblemHandler) SearchProblem(ctx echo.Context) error {
+	startAt := time.Now()
+
 	var p ProblemParameter
 	if err := ctx.Bind(&p); err != nil {
 		return &echo.HTTPError{Code: http.StatusBadRequest, Message: api.NewErrorResponse("bad request", nil)}
@@ -144,6 +147,7 @@ func (h *SearchProblemHandler) SearchProblem(ctx echo.Context) error {
 
 	result := api.ResultResponse[ProblemResponse]{
 		Stats: api.ResultStats{
+			Time:   int(time.Since(startAt).Milliseconds()),
 			Total:  res.Raw.Response.NumFound,
 			Index:  (res.Raw.Response.Start / p.Rows()) + 1,
 			Count:  len(items),

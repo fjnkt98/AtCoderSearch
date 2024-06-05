@@ -46,8 +46,8 @@ services:
         source: middlewares/solr/problems/conf
         target: /var/solr/data/problems/conf
       - type: bind
-        source: middlewares/solr/submissions/conf
-        target: /var/solr/data/submissions/conf
+        source: middlewares/solr/solutions/conf
+        target: /var/solr/data/solutions/conf
       - type: bind
         source: middlewares/solr/users/conf
         target: /var/solr/data/users/conf
@@ -66,8 +66,8 @@ services:
         source: middlewares/solr/problems/conf
         target: /var/solr/data/problems/conf
       - type: bind
-        source: middlewares/solr/submissions/conf
-        target: /var/solr/data/submissions/conf
+        source: middlewares/solr/solutions/conf
+        target: /var/solr/data/solutions/conf
       - type: bind
         source: middlewares/solr/users/conf
         target: /var/solr/data/users/conf

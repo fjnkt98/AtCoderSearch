@@ -18,7 +18,7 @@ INSERT INTO
 VALUES
     ($1, NOW(), $2)
 RETURNING
-    "id"
+    id, name, started_at, finished_at, status, options
 `
 
 type CreateBatchHistoryParams struct {
@@ -26,11 +26,18 @@ type CreateBatchHistoryParams struct {
 	Options []byte `db:"options"`
 }
 
-func (q *Queries) CreateBatchHistory(ctx context.Context, arg CreateBatchHistoryParams) (int64, error) {
+func (q *Queries) CreateBatchHistory(ctx context.Context, arg CreateBatchHistoryParams) (BatchHistory, error) {
 	row := q.db.QueryRow(ctx, createBatchHistory, arg.Name, arg.Options)
-	var id int64
-	err := row.Scan(&id)
-	return id, err
+	var i BatchHistory
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.StartedAt,
+		&i.FinishedAt,
+		&i.Status,
+		&i.Options,
+	)
+	return i, err
 }
 
 const createCrawlHistory = `-- name: CreateCrawlHistory :one
@@ -372,16 +379,7 @@ func (q *Queries) FetchRatingByUserID(ctx context.Context, userID string) (int32
 
 const insertProblem = `-- name: InsertProblem :execresult
 INSERT INTO
-    "problems" (
-        "problem_id",
-        "contest_id",
-        "problem_index",
-        "name",
-        "title",
-        "url",
-        "html",
-        "updated_at"
-    )
+    "problems" ("problem_id", "contest_id", "problem_index", "name", "title", "url", "html", "updated_at")
 VALUES
     ($1, $2, $3, $4, $5, $6, $7, NOW())
 ON CONFLICT ("problem_id") DO
@@ -418,13 +416,15 @@ func (q *Queries) InsertProblem(ctx context.Context, arg InsertProblemParams) (p
 	)
 }
 
-const updateBatchHistory = `-- name: UpdateBatchHistory :exec
+const updateBatchHistory = `-- name: UpdateBatchHistory :one
 UPDATE "batch_history"
 SET
     "finished_at" = NOW(),
     "status" = $1
 WHERE
     "id" = $2
+RETURNING
+    id, name, started_at, finished_at, status, options
 `
 
 type UpdateBatchHistoryParams struct {
@@ -432,9 +432,18 @@ type UpdateBatchHistoryParams struct {
 	ID     int64  `db:"id"`
 }
 
-func (q *Queries) UpdateBatchHistory(ctx context.Context, arg UpdateBatchHistoryParams) error {
-	_, err := q.db.Exec(ctx, updateBatchHistory, arg.Status, arg.ID)
-	return err
+func (q *Queries) UpdateBatchHistory(ctx context.Context, arg UpdateBatchHistoryParams) (BatchHistory, error) {
+	row := q.db.QueryRow(ctx, updateBatchHistory, arg.Status, arg.ID)
+	var i BatchHistory
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.StartedAt,
+		&i.FinishedAt,
+		&i.Status,
+		&i.Options,
+	)
+	return i, err
 }
 
 const updateLanguages = `-- name: UpdateLanguages :execresult
