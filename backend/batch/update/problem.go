@@ -9,6 +9,7 @@ import (
 	"fjnkt98/atcodersearch/pkg/atcoder"
 	"fjnkt98/atcodersearch/pkg/solr"
 	"fjnkt98/atcodersearch/repository"
+	"fjnkt98/atcodersearch/settings"
 	"log/slog"
 	"time"
 
@@ -28,33 +29,32 @@ type UpdateProblemConfig struct {
 }
 
 func UpdateProblem(ctx context.Context, pool *pgxpool.Pool, core *solr.SolrCore, config UpdateProblemConfig) error {
-	slog.Info("Start UpdateProblem")
+	slog.Info("Start Batch", slog.String("name", settings.UPDATE_PROBLEM_BATCH_NAME), slog.Any("config", config))
 	options, err := json.Marshal(config)
 	if err != nil {
 		return errs.New("failed to marshal update problem config", errs.WithCause(err))
 	}
 
-	q := repository.New(pool)
-
-	id, err := q.CreateBatchHistory(ctx, repository.CreateBatchHistoryParams{Name: "UpdateProblem", Options: options})
+	h, err := repository.NewBatchHistory(ctx, pool, settings.UPDATE_PROBLEM_BATCH_NAME, options)
 	if err != nil {
-		return errs.New("failed to create batch history", errs.WithCause(err))
+		return errs.Wrap(err, errs.WithCause(err), errs.WithContext("name", settings.UPDATE_PROBLEM_BATCH_NAME), errs.WithContext("config", config))
 	}
+	defer h.Fail(ctx, pool)
 
 	if !config.SkipFetch {
 		problemsClient := atcoder.NewAtCoderProblemsClient()
 		atcoderClient, err := atcoder.NewAtCoderClient()
 		if err != nil {
-			return errs.Wrap(err)
+			return errs.Wrap(err, errs.WithContext("name", settings.UPDATE_PROBLEM_BATCH_NAME), errs.WithContext("config", config))
 		}
 		if err := crawl.NewContestCrawler(problemsClient, pool).Crawl(ctx); err != nil {
-			return errs.Wrap(err)
+			return errs.Wrap(err, errs.WithContext("name", settings.UPDATE_PROBLEM_BATCH_NAME), errs.WithContext("config", config))
 		}
 		if err := crawl.NewDifficultyCrawler(problemsClient, pool).Crawl(ctx); err != nil {
-			return errs.Wrap(err)
+			return errs.Wrap(err, errs.WithContext("name", settings.UPDATE_PROBLEM_BATCH_NAME), errs.WithContext("config", config))
 		}
 		if err := crawl.NewProblemCrawler(problemsClient, atcoderClient, pool, config.Duration, config.All).Crawl(ctx); err != nil {
-			return errs.Wrap(err)
+			return errs.Wrap(err, errs.WithContext("name", settings.UPDATE_PROBLEM_BATCH_NAME), errs.WithContext("config", config))
 		}
 	}
 
@@ -65,7 +65,7 @@ func UpdateProblem(ctx context.Context, pool *pgxpool.Pool, core *solr.SolrCore,
 		generate.WithChunkSize(config.ChunkSize),
 		generate.WithConcurrent(config.GenerateConcurrent),
 	); err != nil {
-		return errs.Wrap(err)
+		return errs.Wrap(err, errs.WithContext("name", settings.UPDATE_PROBLEM_BATCH_NAME), errs.WithContext("config", config))
 	}
 
 	if err := post.PostDocument(
@@ -76,13 +76,13 @@ func UpdateProblem(ctx context.Context, pool *pgxpool.Pool, core *solr.SolrCore,
 		post.WithOptimize(config.Optimize),
 		post.WithTruncate(true),
 	); err != nil {
-		return errs.Wrap(err)
+		return errs.Wrap(err, errs.WithContext("name", settings.UPDATE_PROBLEM_BATCH_NAME), errs.WithContext("config", config))
 	}
 
-	if err := q.UpdateBatchHistory(ctx, repository.UpdateBatchHistoryParams{ID: id, Status: "finished"}); err != nil {
-		return errs.New("failed to update batch history", errs.WithCause(err))
+	if err := h.Finish(ctx, pool); err != nil {
+		return errs.Wrap(err, errs.WithCause(err), errs.WithContext("name", settings.UPDATE_PROBLEM_BATCH_NAME), errs.WithContext("config", config))
 	}
 
-	slog.Info("Finish UpdateProblem")
+	slog.Info("Finish Batch", slog.String("name", settings.UPDATE_PROBLEM_BATCH_NAME), slog.Any("config", config))
 	return nil
 }

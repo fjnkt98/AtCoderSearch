@@ -13,7 +13,7 @@ ENV SOLR_TIMEZONE = "JST"
 
 COPY --chown=solr:solr ./problems /var/solr/data/problems
 COPY --chown=solr:solr ./users /var/solr/data/users
-COPY --chown=solr:solr ./submissions /var/solr/data/submissions
+COPY --chown=solr:solr ./solutions /var/solr/data/solutions
 COPY --chown=solr:solr ./dict/lucene-analysis-kuromoji-9.9.2-unidic-2.1.2.jar /opt/solr/server/solr-webapp/webapp/WEB-INF/lib/lucene-analysis-kuromoji-9.9.2.jar
 
 USER solr

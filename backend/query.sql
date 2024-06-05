@@ -72,16 +72,7 @@ FROM
 
 -- name: InsertProblem :execresult
 INSERT INTO
-    "problems" (
-        "problem_id",
-        "contest_id",
-        "problem_index",
-        "name",
-        "title",
-        "url",
-        "html",
-        "updated_at"
-    )
+    "problems" ("problem_id", "contest_id", "problem_index", "name", "title", "url", "html", "updated_at")
 VALUES
     ($1, $2, $3, $4, $5, $6, $7, NOW())
 ON CONFLICT ("problem_id") DO
@@ -161,15 +152,17 @@ INSERT INTO
 VALUES
     ($1, NOW(), $2)
 RETURNING
-    "id";
+    *;
 
--- name: UpdateBatchHistory :exec
+-- name: UpdateBatchHistory :one
 UPDATE "batch_history"
 SET
     "finished_at" = NOW(),
     "status" = $1
 WHERE
-    "id" = $2;
+    "id" = $2
+RETURNING
+    *;
 
 -- name: FetchLatestBatchHistory :one
 SELECT

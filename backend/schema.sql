@@ -24,6 +24,8 @@ CREATE TABLE "public"."submissions" ("id" bigint NOT NULL, "epoch_second" bigint
 CREATE INDEX "submissions_contest_id_index" ON "public"."submissions" ("contest_id");
 -- Create index "submissions_epoch_second_index" to table: "submissions"
 CREATE INDEX "submissions_epoch_second_index" ON "public"."submissions" ("epoch_second");
+-- Create index "submissions_execution_time_index" to table: "submissions"
+CREATE INDEX "submissions_execution_time_index" ON "public"."submissions" ("execution_time");
 -- Create index "submissions_language_index" to table: "submissions"
 CREATE INDEX "submissions_language_index" ON "public"."submissions" ("language");
 -- Create index "submissions_length_index" to table: "submissions"
@@ -34,6 +36,8 @@ CREATE INDEX "submissions_point_index" ON "public"."submissions" ("point");
 CREATE INDEX "submissions_problem_id_index" ON "public"."submissions" ("problem_id");
 -- Create index "submissions_result_index" to table: "submissions"
 CREATE INDEX "submissions_result_index" ON "public"."submissions" ("result");
+-- Create index "submissions_updated_at_index" to table: "submissions"
+CREATE INDEX "submissions_updated_at_index" ON "public"."submissions" ("epoch_second", "updated_at");
 -- Create index "submissions_user_id_index" to table: "submissions"
 CREATE INDEX "submissions_user_id_index" ON "public"."submissions" ("user_id");
 -- Create "users" table

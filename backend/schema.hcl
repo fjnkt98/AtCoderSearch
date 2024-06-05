@@ -263,6 +263,9 @@ table "submissions" {
   index "submissions_user_id_index" {
     columns = [column.user_id]
   }
+  index "submissions_updated_at_index" {
+    columns = [column.epoch_second, column.updated_at]
+  }
   partition {
     type    = RANGE
     columns = [column.epoch_second]
