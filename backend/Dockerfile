@@ -44,6 +44,7 @@ RUN curl -sSf https://atlasgo.sh | sh
 
 COPY --from=stage --chown=atcodersearch:atcodersearch /app/atcodersearch /usr/local/bin/atcodersearch
 COPY --from=stage --chown=atcodersearch:atcodersearch /app/schema.hcl /etc/schema.hcl
+COPY --from=stage --chown=atcodersearch:atcodersearch /app/partitions.sql /etc/partitions.sql
 
 USER atcodersearch
 
