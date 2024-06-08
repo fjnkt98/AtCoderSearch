@@ -11,7 +11,7 @@ import (
 
 func newPostSolutionCmd() *cli.Command {
 	return &cli.Command{
-		Name: "submission",
+		Name: "solution",
 		Flags: []cli.Flag{
 			&cli.PathFlag{
 				Name:    "save-dir",
