@@ -16,13 +16,13 @@ func NewBatchHistory(ctx context.Context, pool *pgxpool.Pool, name string, optio
 	return &h, nil
 }
 
-func overwrite(l *BatchHistory, r BatchHistory) {
-	l.ID = r.ID
-	l.Name = r.Name
-	l.StartedAt = r.StartedAt
-	l.FinishedAt = r.FinishedAt
-	l.Status = r.Status
-	l.Options = r.Options
+func (h *BatchHistory) overwrite(r BatchHistory) {
+	h.ID = r.ID
+	h.Name = r.Name
+	h.StartedAt = r.StartedAt
+	h.FinishedAt = r.FinishedAt
+	h.Status = r.Status
+	h.Options = r.Options
 }
 
 func (h *BatchHistory) Finish(ctx context.Context, pool *pgxpool.Pool) error {
@@ -32,7 +32,7 @@ func (h *BatchHistory) Finish(ctx context.Context, pool *pgxpool.Pool) error {
 	if err != nil {
 		return errs.Wrap(err, errs.WithContext("name", h.Name))
 	}
-	overwrite(h, updated)
+	h.overwrite(updated)
 
 	return nil
 }
@@ -47,7 +47,7 @@ func (h *BatchHistory) Fail(ctx context.Context, pool *pgxpool.Pool) error {
 	if err != nil {
 		return errs.Wrap(err, errs.WithContext("name", h.Name))
 	}
-	overwrite(h, updated)
+	h.overwrite(updated)
 
 	return nil
 }

@@ -1,7 +1,7 @@
 services:
-  db:
+  test-db:
     image: postgres:15-bullseye
-    container_name: atcodersearch-postgres
+    container_name: atcodersearch-test-postgres
     environment:
       POSTGRES_PASSWORD: atcodersearch
       POSTGRES_USER: atcodersearch
@@ -9,18 +9,16 @@ services:
       POSTGRES_HOST_AUTH_METHOD: password
       TZ: "Asia/Tokyo"
     volumes:
-      - type: volume
-        source: atcodersearch-postgres
-        target: /var/lib/postgresql/data
+      - type: bind
+        source: ./backend/schema.sql
+        target: /docker-entrypoint-initdb.d/schema.sql
     ports:
-      - 5432:5432
+      - 15432:5432
     networks:
-      atcodersearch-net:
-  solr:
+      atcodersearch-test-net:
+  test-solr:
     image: atcodersearch-solr
-    container_name: atcodersearch-solr
-    environment:
-      SOLR_JAVA_MEM: "-Xms1024m -Xmx1024m"
+    container_name: atcodersearch-test-solr
     build:
       context: middlewares/solr
       dockerfile: Dockerfile
@@ -35,12 +33,9 @@ services:
         source: middlewares/solr/users/conf
         target: /var/solr/data/users/conf
     ports:
-      - 8983:8983
+      - 18983:8983
     networks:
-      atcodersearch-net:
+      atcodersearch-test-net:
 
 networks:
-  atcodersearch-net:
-
-volumes:
-  atcodersearch-postgres:
+  atcodersearch-test-net:
