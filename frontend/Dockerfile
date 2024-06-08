@@ -1,10 +1,17 @@
-# docker build -t atcodersearch-frontend:latest .
-# docker container run --rm --name atcodersearch-frontend -p 3000:3000 atcodersearch-frontend:latest
-
 FROM node:18-bullseye-slim AS stage
+
 WORKDIR /app
 
-COPY . .
+COPY ./src /app/src
+COPY ./static /app/static
+COPY ./package-lock.json /app/package-lock.json
+COPY ./package.json /app/package.json
+COPY ./postcss.config.js /app/postcss.config.js
+COPY ./svelte.config.js /app/svelte.config.js
+COPY ./tailwind.config.js /app/tailwind.config.js
+COPY ./tsconfig.json /app/tsconfig.json
+COPY ./vite.config.ts /app/vite.config.ts
+
 RUN npm install && npm run build
 
 FROM node:18-bullseye-slim

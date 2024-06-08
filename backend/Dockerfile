@@ -9,7 +9,18 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-COPY . .
+COPY ./batch /app/batch
+COPY ./cmd /app/cmd
+COPY ./pkg /app/pkg
+COPY ./repository /app/repository
+COPY ./server /app/server
+COPY ./settings /app/settings
+COPY ./go.mod /app/go.mod
+COPY ./go.sum /app/go.sum
+COPY ./main.go /app/main.go
+COPY ./partitions.sql /app/partitions.sql
+COPY ./schema.hcl /app/schema.hcl
+
 RUN go build -o /app/atcodersearch
 
 # ---------------------------------------------------------------------------------------------
