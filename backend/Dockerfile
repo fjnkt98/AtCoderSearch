@@ -32,7 +32,7 @@ RUN groupadd --gid 1000 atcodersearch \
 RUN curl -sSf https://atlasgo.sh | sh
 
 COPY --from=stage --chown=atcodersearch:atcodersearch /app/atcodersearch /usr/local/bin/atcodersearch
-COPY --from=stage --chown=atcodersearch:atcodersearch /app/schema.sql /etc/schema.sql
+COPY --from=stage --chown=atcodersearch:atcodersearch /app/schema.hcl /etc/schema.hcl
 
 USER atcodersearch
 
