@@ -50,7 +50,7 @@ USER atcodersearch
 
 RUN mkdir -p /var/tmp/atcoder/problem \
     && mkdir -p /var/tmp/atcoder/user \
-    && mkdir -p /var/tmp/atcoder/submission 
-ENV PROBLEM_SAVE_DIR=/var/tmp/atcoder/problem USER_SAVE_DIR=/var/tmp/atcoder/user SUBMISSION_SAVE_DIR=/var/tmp/atcoder/submission
+    && mkdir -p /var/tmp/atcoder/solution
+ENV PROBLEM_SAVE_DIR=/var/tmp/atcoder/problem USER_SAVE_DIR=/var/tmp/atcoder/user SOLUTION_SAVE_DIR=/var/tmp/atcoder/solution
 
 CMD ["atcodersearch"]
