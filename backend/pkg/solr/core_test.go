@@ -1,28 +1,20 @@
-//go:build test_solr
-
-// Run this tests with the Docker container started with the following command.
-//
-// ```
-// docker run --rm -d -p 18983:8983 --name solr_example solr:9.1.0 solr-precreate example
-// ```
-
 package solr
 
 import (
 	"context"
-	"net/url"
+	"fjnkt98/atcodersearch/settings"
 	"reflect"
 	"strings"
 	"testing"
 	"time"
 )
 
-type SampleDocument struct {
-	ID string `json:"id"`
+type problem struct {
+	ProblemID string `json:"problemId"`
 }
 
 func TestStatus(t *testing.T) {
-	core, err := NewSolrCore("http://localhost:18983", "example")
+	core, err := NewSolrCore("http://localhost:18983", settings.PROBLEM_CORE_NAME)
 	if err != nil {
 		t.Fatalf("failed to create solr core: %s", err.Error())
 	}
@@ -32,13 +24,13 @@ func TestStatus(t *testing.T) {
 		t.Errorf("failed to get core status: %s", err.Error())
 	}
 
-	if status.Name != "example" {
+	if status.Name != settings.PROBLEM_CORE_NAME {
 		t.Errorf("different core status name: expected `example` but got `%s`", status.Name)
 	}
 }
 
 func TestReload(t *testing.T) {
-	core, err := NewSolrCore("http://localhost:18983", "example")
+	core, err := NewSolrCore("http://localhost:18983", settings.PROBLEM_CORE_NAME)
 	if err != nil {
 		t.Fatalf("failed to create solr core: %s", err.Error())
 	}
@@ -68,7 +60,7 @@ func TestReload(t *testing.T) {
 }
 
 func TestPing(t *testing.T) {
-	core, err := NewSolrCore("http://localhost:18983", "example")
+	core, err := NewSolrCore("http://localhost:18983", settings.PROBLEM_CORE_NAME)
 	if err != nil {
 		t.Fatalf("failed to create solr core: %s", err.Error())
 		return
@@ -76,13 +68,16 @@ func TestPing(t *testing.T) {
 
 	ctx := context.Background()
 	res, err := core.Ping(ctx)
+	if err != nil {
+		t.Fatalf("failed to ping: %s", err.Error())
+	}
 	if res.Status != "OK" {
 		t.Errorf("ping returns non-ok message: expected `OK` but got `%s`", res.Status)
 	}
 }
 
 func TestScenario(t *testing.T) {
-	core, err := NewSolrCore("http://localhost:18983", "example")
+	core, err := NewSolrCore("http://localhost:18983", settings.PROBLEM_CORE_NAME)
 	if err != nil {
 		t.Fatalf("failed to create solr core: %s", err.Error())
 	}
@@ -95,9 +90,6 @@ func TestScenario(t *testing.T) {
 		t.Fatalf("failed to commit core: %s", err.Error())
 	}
 
-	params := url.Values{}
-	params.Set("q", "*:*")
-
 	res, err := core.NewSelect().Q("*:*").Exec(ctx)
 	if err != nil {
 		t.Fatalf("failed to select document")
@@ -106,7 +98,7 @@ func TestScenario(t *testing.T) {
 		t.Fatalf("unmatched number of document: expected 0, but got %d", res.Raw.Response.NumFound)
 	}
 
-	document := strings.NewReader(`[{"id":"001"}]`)
+	document := strings.NewReader(`[{"problemId":"abc300_a"}]`)
 	if _, err := core.Post(ctx, document, "application/json"); err != nil {
 		t.Fatalf("failed to post document: %s", err.Error())
 	}
@@ -123,8 +115,8 @@ func TestScenario(t *testing.T) {
 		t.Fatalf("unmatched number of document")
 	}
 
-	want := []SampleDocument{{ID: "001"}}
-	var actual []SampleDocument
+	want := []problem{{ProblemID: "abc300_a"}}
+	var actual []problem
 	if err := res.Scan(&actual); err != nil {
 		t.Fatalf("failed to scan the documents: %s", err.Error())
 	}

@@ -19,8 +19,6 @@ services:
   solr:
     image: atcodersearch-solr
     container_name: atcodersearch-solr
-    environment:
-      SOLR_JAVA_MEM: "-Xms1024m -Xmx1024m"
     build:
       context: middlewares/solr
       dockerfile: Dockerfile

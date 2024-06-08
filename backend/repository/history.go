@@ -37,9 +37,11 @@ func (h *BatchHistory) Finish(ctx context.Context, pool *pgxpool.Pool) error {
 	return nil
 }
 
+var ErrHistoryConfirmed = errs.New("the batch history already confirmed")
+
 func (h *BatchHistory) Fail(ctx context.Context, pool *pgxpool.Pool) error {
 	if h.Status != "working" {
-		return nil
+		return ErrHistoryConfirmed
 	}
 	q := New(pool)
 

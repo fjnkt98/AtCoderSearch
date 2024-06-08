@@ -15,27 +15,18 @@ spec:
           image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:develop
           imagePullPolicy: Always
           env:
-            - name: DB_USER
-              value: atcodersearch
-            - name: DB_PASSWORD
-              value: atcodersearch
-            - name: DB_HOST
-              value: postgresql-0.postgresql-headless
-            - name: DB_PORT
-              value: "5432"
-            - name: DB_CONFIG
-              value: /etc/schema.sql
+            - name: DATABASE_URL
+              value: postgres://atcodersearch:atcodersearch@localhost:15432/atcodersearch?sslmode=disable
           securityContext:
             runAsUser: 1000
             runAsGroup: 1000
             runAsNonRoot: true
           command:
-            - sqldef
-            - --user=$(DB_USER)
-            - --password=$(DB_PASSWORD)
-            - --host=$(DB_HOST)
-            - --port=$(DB_PORT)
-            - --file=$(DB_CONFIG)
-            - atcodersearch
+            - atlas
+            - schema
+            - apply
+            - --url=$(DATABASE_URL)
+            - --to='file:///etc/schema.hcl'
+            - --auto-approve
       imagePullSecrets:
         - name: regcred

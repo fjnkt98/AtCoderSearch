@@ -11,7 +11,10 @@ services:
     volumes:
       - type: bind
         source: ./backend/schema.sql
-        target: /docker-entrypoint-initdb.d/schema.sql
+        target: /docker-entrypoint-initdb.d/01_schema.sql
+      - type: bind
+        source: ./backend/partitions.sql
+        target: /docker-entrypoint-initdb.d/02_partitions.sql
     ports:
       - 15432:5432
     networks:
