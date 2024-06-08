@@ -78,7 +78,7 @@ spec:
             - "-c"
             - "timezone=Asia/Tokyo"
             - "-c"
-            - "statement_timeout=600000"
+            - "statement_timeout=3600000"
       initContainers:
         - name: chown-data-directory
           image: busybox:1.28
