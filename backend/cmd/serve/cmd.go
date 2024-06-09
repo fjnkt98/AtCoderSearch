@@ -31,8 +31,9 @@ func NewServeCmd() *cli.Command {
 			},
 		},
 		Action: func(ctx *cli.Context) error {
+			allowedOrigins := ctx.StringSlice("allow-origin")
 			e := server.NewServer(
-				server.WithAllowOrigins(ctx.StringSlice("allow-origin")),
+				server.WithAllowOrigins(allowedOrigins),
 			)
 
 			pool, err := repository.NewPool(ctx.Context, ctx.String("database-url"))
@@ -70,7 +71,7 @@ func NewServeCmd() *cli.Command {
 
 			port := ctx.Int("port")
 			go func() {
-				slog.Info("start server", slog.Int("port", port))
+				slog.Info("start server", slog.Int("port", port), slog.Any("allowed origins", allowedOrigins))
 				if err := e.Start(fmt.Sprintf(":%d", port)); err != nil && err != http.ErrServerClosed {
 					slog.Error("failed to start server", slog.Int("port", port), slog.Any("error", err))
 					panic(fmt.Sprintf("failed to start server: %s", err.Error()))
