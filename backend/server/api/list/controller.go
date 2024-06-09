@@ -28,6 +28,26 @@ type ListResponse[T any] struct {
 	Message string `json:"message,omitempty"`
 }
 
+func NewListResponse[T any](items []T) ListResponse[T] {
+	return NewListResponseWithMessage(items, "")
+}
+
+func NewListResponseWithMessage[T any](items []T, message string) ListResponse[T] {
+	if items == nil {
+		items = []T{}
+	}
+	return ListResponse[T]{
+		Items:   items,
+		Message: message,
+	}
+}
+
+func NewEmptyListResponse() ListResponse[any] {
+	return ListResponse[any]{
+		Items: []any{},
+	}
+}
+
 func NewErrorListResponse(message string) ListResponse[any] {
 	return ListResponse[any]{
 		Items:   []any{},
@@ -68,12 +88,12 @@ func (h *ListHandler) ListProblem(ctx echo.Context) error {
 	}
 	if err != nil {
 		if errs.Is(err, pgx.ErrNoRows) {
-			return ctx.JSON(http.StatusOK, ListResponse[any]{})
+			return ctx.JSON(http.StatusOK, NewEmptyListResponse())
 		} else {
 			return &echo.HTTPError{Code: http.StatusInternalServerError, Message: NewErrorListResponse("request failed"), Internal: err}
 		}
 	}
-	return ctx.JSON(http.StatusOK, ListResponse[string]{Items: rows})
+	return ctx.JSON(http.StatusOK, NewListResponse(rows))
 }
 
 type ListContestParameter struct {
@@ -95,7 +115,7 @@ func (h *ListHandler) ListContest(ctx echo.Context) error {
 
 	q := repository.New(h.pool)
 
-	var rows []string
+	var rows = make([]string, 0)
 	var err error
 	if len(p.Category) > 0 {
 		rows, err = q.FetchContestIDsByCategory(ctx.Request().Context(), p.Category)
@@ -104,26 +124,27 @@ func (h *ListHandler) ListContest(ctx echo.Context) error {
 	}
 	if err != nil {
 		if errs.Is(err, pgx.ErrNoRows) {
-			return ctx.JSON(http.StatusOK, ListResponse[any]{})
+			return ctx.JSON(http.StatusOK, NewEmptyListResponse())
 		} else {
 			return &echo.HTTPError{Code: http.StatusInternalServerError, Message: NewErrorListResponse("request failed"), Internal: err}
 		}
 	}
-	return ctx.JSON(http.StatusOK, ListResponse[string]{Items: rows})
+	return ctx.JSON(http.StatusOK, NewListResponse(rows))
 }
 
 func (h *ListHandler) ListCategory(ctx echo.Context) error {
 	q := repository.New(h.pool)
 
+	var rows = make([]string, 0)
 	rows, err := q.FetchCategories(ctx.Request().Context())
 	if err != nil {
 		if errs.Is(err, pgx.ErrNoRows) {
-			return ctx.JSON(http.StatusOK, ListResponse[any]{})
+			return ctx.JSON(http.StatusOK, NewEmptyListResponse())
 		} else {
 			return &echo.HTTPError{Code: http.StatusInternalServerError, Message: NewErrorListResponse("request failed"), Internal: err}
 		}
 	}
-	return ctx.JSON(http.StatusOK, ListResponse[string]{Items: rows})
+	return ctx.JSON(http.StatusOK, NewListResponse(rows))
 }
 
 type ListLanguageParameter struct {
@@ -159,7 +180,7 @@ func (h *ListHandler) ListLanguage(ctx echo.Context) error {
 	}
 	if err != nil {
 		if errs.Is(err, pgx.ErrNoRows) {
-			return ctx.JSON(http.StatusOK, ListResponse[Language]{})
+			return ctx.JSON(http.StatusOK, NewEmptyListResponse())
 		} else {
 			return &echo.HTTPError{Code: http.StatusInternalServerError, Message: NewErrorListResponse("request failed"), Internal: err}
 		}
@@ -172,7 +193,7 @@ func (h *ListHandler) ListLanguage(ctx echo.Context) error {
 		}
 	}
 
-	return ctx.JSON(http.StatusOK, ListResponse[Language]{Items: items})
+	return ctx.JSON(http.StatusOK, NewListResponse(items))
 }
 
 func (h *ListHandler) Register(e *echo.Echo) {
