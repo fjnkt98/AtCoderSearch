@@ -170,7 +170,7 @@ func (h *SearchSubmissionHandler) SearchSubmission(ctx echo.Context) error {
 	}
 
 	q := p.Query(h.pool)
-	var items []SubmissionResponse
+	items := make([]SubmissionResponse, 0, p.Rows())
 	err := q.Scan(ctx.Request().Context(), &items)
 	if err != nil {
 		return &echo.HTTPError{Code: http.StatusInternalServerError, Message: api.NewErrorResponse("request failed", p), Internal: err}
