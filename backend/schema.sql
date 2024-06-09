@@ -3,7 +3,7 @@ CREATE SCHEMA IF NOT EXISTS "public";
 -- Set comment to schema: "public"
 COMMENT ON SCHEMA "public" IS 'standard public schema';
 -- Create "batch_history" table
-CREATE TABLE "public"."batch_history" ("id" bigserial NOT NULL, "name" text NOT NULL, "started_at" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP, "finished_at" timestamptz NULL, "status" text NOT NULL DEFAULT 'working', "options" json NOT NULL, PRIMARY KEY ("id"));
+CREATE TABLE "public"."batch_history" ("id" bigserial NOT NULL, "name" text NOT NULL, "started_at" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP, "finished_at" timestamptz NULL, "status" text NOT NULL DEFAULT 'working', "options" json NULL, PRIMARY KEY ("id"));
 -- Create "contests" table
 CREATE TABLE "public"."contests" ("contest_id" text NOT NULL, "start_epoch_second" bigint NOT NULL, "duration_second" bigint NOT NULL, "title" text NOT NULL, "rate_change" text NOT NULL, "category" text NOT NULL, "updated_at" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY ("contest_id"));
 -- Create "difficulties" table
