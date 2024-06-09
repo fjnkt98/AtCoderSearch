@@ -207,7 +207,7 @@
       <p class="text-md font-semibold">問題</p>
       <select
         class="block rounded-md border border-gray-400 bg-white px-2 py-1"
-        bind:value={contestId}
+        bind:value={problemId}
         on:change={() => {
           filter();
         }}
