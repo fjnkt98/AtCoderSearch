@@ -68,7 +68,11 @@ func UpdateUser(ctx context.Context, pool *pgxpool.Pool, core *solr.SolrCore, co
 		post.WithOptimize(config.Optimize),
 		post.WithTruncate(true),
 	); err != nil {
-		return errs.Wrap(err, errs.WithContext("name", settings.UPDATE_USER_BATCH_NAME), errs.WithContext("config", config))
+		if errs.Is(err, post.ErrNoFiles) {
+			slog.Info("there is no files to post", slog.Any("detail", err))
+		} else {
+			return errs.Wrap(err, errs.WithContext("name", settings.UPDATE_USER_BATCH_NAME), errs.WithContext("config", config))
+		}
 	}
 
 	if err := h.Finish(ctx, pool); err != nil {
