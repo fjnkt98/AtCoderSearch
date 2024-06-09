@@ -1,12 +1,12 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: update-submission
+  name: update-solution
 spec:
   schedule: "*/5 0-2,4-23 * * *"
   concurrencyPolicy: Forbid
   startingDeadlineSeconds: 30
-  suspend: true
+  suspend: false
   jobTemplate:
     spec:
       backoffLimit: 0
@@ -17,7 +17,7 @@ spec:
         spec:
           restartPolicy: Never
           containers:
-            - name: update-submission-batch
+            - name: update-solution-batch
               image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:develop
               imagePullPolicy: Always
               env:
@@ -38,15 +38,15 @@ spec:
               args:
                 - atcodersearch
                 - update
-                - submission
-                - --optimize
+                - solution
+                - --interval=180
           imagePullSecrets:
             - name: regcred
 ---
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: update-submission-all
+  name: update-solution-all
 spec:
   schedule: "10 3 * * *"
   concurrencyPolicy: Forbid
@@ -62,7 +62,7 @@ spec:
         spec:
           restartPolicy: Never
           containers:
-            - name: update-submission-batch
+            - name: update-solution-batch
               image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:develop
               imagePullPolicy: Always
               env:
@@ -83,7 +83,7 @@ spec:
               args:
                 - atcodersearch
                 - update
-                - submission
+                - solution
                 - --all
                 - --optimize
           imagePullSecrets:
