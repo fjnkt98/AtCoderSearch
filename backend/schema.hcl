@@ -23,7 +23,7 @@ table "batch_history" {
     default = "working"
   }
   column "options" {
-    null = false
+    null = true
     type = json
   }
   primary_key {
