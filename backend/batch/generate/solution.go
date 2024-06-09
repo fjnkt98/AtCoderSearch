@@ -3,6 +3,7 @@ package generate
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"time"
 
 	"github.com/goark/errs"
@@ -57,6 +58,7 @@ func (r *SolutionRowReader) ReadRows(ctx context.Context, tx chan<- *SolutionRow
 		Where("s.epoch_second > EXTRACT(EPOCH FROM CURRENT_DATE - CAST(? || ' day' AS INTERVAL))", r.interval)
 
 	if r.lastUpdated != nil {
+		slog.Info("reading solutions differentially", slog.Any("since", r.lastUpdated))
 		q = q.Where("s.updated_at > ?", r.lastUpdated)
 	}
 
@@ -70,6 +72,7 @@ func (r *SolutionRowReader) ReadRows(ctx context.Context, tx chan<- *SolutionRow
 	defer rows.Close()
 	defer close(tx)
 
+	var count = 0
 	for rows.Next() {
 		select {
 		case <-ctx.Done():
@@ -83,8 +86,10 @@ func (r *SolutionRowReader) ReadRows(ctx context.Context, tx chan<- *SolutionRow
 				)
 			}
 			tx <- &row
+			count++
 		}
 	}
+	slog.Info("Finished reading row", slog.Int("count", count))
 
 	return nil
 }

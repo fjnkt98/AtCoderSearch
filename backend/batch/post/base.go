@@ -12,6 +12,8 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
+var ErrNoFiles = errs.New("no files to post")
+
 type PostDocumentOptions struct {
 	Concurrent int
 	Truncate   bool
@@ -55,6 +57,9 @@ func PostDocument(ctx context.Context, core *solr.SolrCore, saveDir string, opti
 			errs.WithCause(err),
 			errs.WithContext("directory", saveDir),
 		)
+	}
+	if len(files) == 0 {
+		return errs.Wrap(ErrNoFiles, errs.WithContext("directory", saveDir))
 	}
 
 	f := func(ctx context.Context, path string) error {

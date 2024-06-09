@@ -4,6 +4,7 @@ import (
 	"fjnkt98/atcodersearch/batch/post"
 	"fjnkt98/atcodersearch/pkg/solr"
 	"fjnkt98/atcodersearch/settings"
+	"log/slog"
 
 	"github.com/goark/errs"
 	"github.com/urfave/cli/v2"
@@ -47,7 +48,11 @@ func newPostProblemCmd() *cli.Command {
 				post.WithTruncate(ctx.Bool("truncate")),
 			)
 			if err != nil {
-				return errs.Wrap(err)
+				if errs.Is(err, post.ErrNoFiles) {
+					slog.Info("there is no files to post", slog.Any("detail", err))
+				} else {
+					return errs.Wrap(err)
+				}
 			}
 			return nil
 		},
