@@ -4,7 +4,6 @@ import (
 	"context"
 	"fjnkt98/atcodersearch/pkg/atcoder"
 	"fjnkt98/atcodersearch/repository"
-	"fmt"
 	"time"
 
 	"log/slog"
@@ -52,7 +51,7 @@ loop:
 				case <-ctx.Done():
 					return nil
 				default:
-					slog.Error("failed to crawl submission", slog.String("contestID", contestID), slog.String("error", fmt.Sprintf("%+v", err)))
+					slog.Error("failed to crawl submission", slog.String("contestID", contestID), slog.Any("error", err))
 					slog.Info("retry to crawl submission after 1 minutes...")
 					time.Sleep(time.Duration(60) * time.Second)
 					subs, err = c.client.FetchSubmissions(ctx, contestID, i)
