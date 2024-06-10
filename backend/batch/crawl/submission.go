@@ -8,7 +8,6 @@ import (
 
 	"log/slog"
 
-	mapset "github.com/deckarep/golang-set/v2"
 	"github.com/goark/errs"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -91,7 +90,7 @@ loop:
 		return nil
 	}
 
-	count, err := repository.BulkUpdate(ctx, c.pool, "submissions", convertSubmissions(dedupSubmissions(submissions)))
+	count, err := repository.BulkUpdate(ctx, c.pool, "submissions", repository.NewSubmissions(submissions))
 	if err != nil {
 		return errs.New("failed to bulk update submissions", errs.WithCause(err))
 	}
@@ -131,43 +130,4 @@ func (c *SubmissionCrawler) Crawl(ctx context.Context) error {
 		time.Sleep(c.duration)
 	}
 	return nil
-}
-
-func dedupSubmissions(submissions []atcoder.Submission) []atcoder.Submission {
-	result := make([]atcoder.Submission, 0, len(submissions))
-	ids := mapset.NewSet[int64]()
-	for _, s := range submissions {
-		if ids.Contains(s.ID) {
-			continue
-		}
-		ids.Add(s.ID)
-		result = append(result, s)
-	}
-	return result
-}
-
-func convertSubmissions(submissions []atcoder.Submission) []repository.Submission {
-	results := make([]repository.Submission, len(submissions))
-	for i, s := range submissions {
-		contestId := s.ContestID
-		userId := s.UserID
-		language := s.Language
-		point := s.Point
-		length := s.Length
-		result := s.Result
-
-		results[i] = repository.Submission{
-			ID:            s.ID,
-			EpochSecond:   s.EpochSecond,
-			ProblemID:     s.ProblemID,
-			ContestID:     &contestId,
-			UserID:        &userId,
-			Language:      &language,
-			Point:         &point,
-			Length:        &length,
-			Result:        &result,
-			ExecutionTime: s.ExecutionTime,
-		}
-	}
-	return results
 }

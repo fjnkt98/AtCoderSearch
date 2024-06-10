@@ -32,29 +32,11 @@ func (c *DifficultyCrawler) Crawl(ctx context.Context) error {
 	slog.Info("Finish crawling difficulties.")
 
 	slog.Info("Start to save difficulties.")
-	count, err := repository.BulkUpdate(ctx, c.pool, "difficulties", convertDifficulties(difficulties))
+	count, err := repository.BulkUpdate(ctx, c.pool, "difficulties", repository.NewDifficulties(difficulties))
 	if err != nil {
 		return errs.New("failed to bulk update difficulties", errs.WithCause(err))
 	}
 	slog.Info("Finish saving difficulties.", slog.Int64("count", count))
 
 	return nil
-}
-
-func convertDifficulties(difficulties map[string]atcoder.Difficulty) []repository.Difficulty {
-	result := make([]repository.Difficulty, 0, len(difficulties))
-	for problemID, d := range difficulties {
-		result = append(result, repository.Difficulty{
-			ProblemID:        problemID,
-			Slope:            d.Slope,
-			Intercept:        d.Intercept,
-			Variance:         d.Variance,
-			Difficulty:       d.Difficulty,
-			Discrimination:   d.Discrimination,
-			IrtLoglikelihood: d.IrtLogLikelihood,
-			IrtUsers:         d.IrtUsers,
-			IsExperimental:   d.IsExperimental,
-		})
-	}
-	return result
 }
