@@ -76,7 +76,7 @@ func (r *SolutionRowReader) ReadRows(ctx context.Context, tx chan<- *SolutionRow
 	for rows.Next() {
 		select {
 		case <-ctx.Done():
-			return nil
+			return ctx.Err()
 		default:
 			var row SolutionRow
 			if err := db.ScanRow(ctx, rows, &row); err != nil {
