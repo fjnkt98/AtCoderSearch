@@ -3,6 +3,8 @@ package generate
 import (
 	"context"
 	"fmt"
+	"os"
+	"path/filepath"
 	"reflect"
 	"testing"
 
@@ -46,6 +48,49 @@ func (r *SuccessRow) Document(ctx context.Context) (*Doc, error) {
 
 func (r *FailRow) Document(ctx context.Context) (*Doc, error) {
 	return nil, fmt.Errorf("fail")
+}
+
+func TestClean(t *testing.T) {
+	t.Run("empty", func(t *testing.T) {
+		dir := t.TempDir()
+
+		err := clean(dir)
+		if err != nil {
+			t.Errorf("expected nil, but got %s", err.Error())
+		}
+	})
+
+	t.Run("delete", func(t *testing.T) {
+		dir := t.TempDir()
+
+		_, err := os.Create(filepath.Join(dir, "doc-1.json"))
+		if err != nil {
+			t.Fatalf("failed to create test file: %s", err.Error())
+		}
+
+		before, err := filepath.Glob(filepath.Join(dir, "doc-1.json"))
+		if err != nil {
+			t.Fatalf("failed to glob test dir: %s", err.Error())
+		}
+
+		if err := clean(dir); err != nil {
+			t.Fatalf("failed to clean test dir: %s", err.Error())
+		}
+
+		after, err := filepath.Glob(filepath.Join(dir, "doc-1.json"))
+		if err != nil {
+			t.Fatalf("failed to glob test dir: %s", err.Error())
+		}
+
+		if (len(before) == len(after)) || (len(after) != 0) {
+			t.Errorf("expected len(before) == 1 and len(after) == 0, but got len(before) == %d and len(after) == %d", len(before), len(after))
+		}
+	})
+
+}
+
+func TestSave(t *testing.T) {
+
 }
 
 func TestConvert(t *testing.T) {
