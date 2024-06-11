@@ -1,8 +1,12 @@
 package generate
 
 import (
+	"context"
+	"fmt"
 	"reflect"
 	"testing"
+
+	"github.com/goark/errs"
 )
 
 func TestGenerateDocumentOptions(t *testing.T) {
@@ -30,4 +34,64 @@ func TestGenerateDocumentOptions(t *testing.T) {
 			}
 		})
 	}
+}
+
+type SuccessRow struct{}
+type FailRow struct{}
+type Doc struct{ Data string }
+
+func (r *SuccessRow) Document(ctx context.Context) (*Doc, error) {
+	return &Doc{Data: "doc"}, nil
+}
+
+func (r *FailRow) Document(ctx context.Context) (*Doc, error) {
+	return nil, fmt.Errorf("fail")
+}
+
+func TestConvert(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		ctx := context.Background()
+		rx := make(chan *SuccessRow, 1)
+		tx := make(chan *Doc, 1)
+
+		rx <- &SuccessRow{}
+		close(rx)
+
+		if err := convert(ctx, rx, tx); err != nil {
+			t.Errorf("failed to convert: %s", err.Error())
+		}
+
+		d := <-tx
+		close(tx)
+		expected := Doc{Data: "doc"}
+		if !reflect.DeepEqual(expected, *d) {
+			t.Errorf("expected \n%+v\n, but got \n+%v\n", expected, *d)
+		}
+	})
+
+	t.Run("fail", func(t *testing.T) {
+		ctx := context.Background()
+		rx := make(chan *FailRow, 1)
+		tx := make(chan *Doc, 1)
+
+		rx <- &FailRow{}
+		close(rx)
+
+		if err := convert(ctx, rx, tx); err == nil {
+			t.Errorf("expected err, but got nil")
+		}
+	})
+
+	t.Run("canceled", func(t *testing.T) {
+		ctx := context.Background()
+		ctx, cancel := context.WithCancel(ctx)
+		cancel()
+		rx := make(chan *SuccessRow, 1)
+		tx := make(chan *Doc, 1)
+
+		err := convert(ctx, rx, tx)
+		if !errs.Is(err, context.Canceled) {
+			t.Errorf("expected context.Canceled, but got %+v", err)
+		}
+	})
 }
