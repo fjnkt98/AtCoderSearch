@@ -40,7 +40,9 @@ func TestGenerateDocumentOptions(t *testing.T) {
 
 type SuccessRow struct{}
 type FailRow struct{}
-type Doc struct{ Data string }
+type Doc struct {
+	Data string `json:"data"`
+}
 
 func (r *SuccessRow) Document(ctx context.Context) (*Doc, error) {
 	return &Doc{Data: "doc"}, nil
@@ -86,11 +88,85 @@ func TestClean(t *testing.T) {
 			t.Errorf("expected len(before) == 1 and len(after) == 0, but got len(before) == %d and len(after) == %d", len(before), len(after))
 		}
 	})
-
 }
 
 func TestSave(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		dir := t.TempDir()
+		ctx := context.Background()
+		rx := make(chan *Doc, 1)
+		rx <- &Doc{Data: "data"}
+		close(rx)
 
+		if err := save[*Doc, *SuccessRow](ctx, rx, dir, 1); err != nil {
+			t.Fatalf("save failed: %s", err.Error())
+		}
+
+		expected := `[{"data":"data"}]
+`
+
+		buf, err := os.ReadFile(filepath.Join(dir, "doc-1.json"))
+		if err != nil {
+			t.Fatalf("failed to open test file: %s", err.Error())
+		}
+		actual := string(buf)
+
+		if expected != actual {
+			t.Errorf("expected \n%s\n, but got \n%s\n", expected, actual)
+		}
+	})
+
+	t.Run("residue", func(t *testing.T) {
+		dir := t.TempDir()
+		ctx := context.Background()
+		rx := make(chan *Doc, 3)
+		rx <- &Doc{Data: "data1"}
+		rx <- &Doc{Data: "data2"}
+		rx <- &Doc{Data: "data3"}
+		close(rx)
+
+		if err := save[*Doc, *SuccessRow](ctx, rx, dir, 2); err != nil {
+			t.Fatalf("save failed: %s", err.Error())
+		}
+
+		expected1 := `[{"data":"data1"},{"data":"data2"}]
+`
+		expected2 := `[{"data":"data3"}]
+`
+
+		buf, err := os.ReadFile(filepath.Join(dir, "doc-2.json"))
+		if err != nil {
+			t.Fatalf("failed to open test file: %s", err.Error())
+		}
+		actual1 := string(buf)
+
+		if expected1 != actual1 {
+			t.Errorf("expected \n%s\n, but got \n%s\n", expected1, actual1)
+		}
+
+		buf, err = os.ReadFile(filepath.Join(dir, "doc-3.json"))
+		if err != nil {
+			t.Fatalf("failed to open test file: %s", err.Error())
+		}
+		actual2 := string(buf)
+
+		if expected2 != actual2 {
+			t.Errorf("expected \n%s\n, but got \n%s\n", expected2, actual2)
+		}
+	})
+
+	t.Run("canceled", func(t *testing.T) {
+		dir := t.TempDir()
+		ctx := context.Background()
+		ctx, cancel := context.WithCancel(ctx)
+		cancel()
+
+		rx := make(chan *Doc, 3)
+		err := save[*Doc, *SuccessRow](ctx, rx, dir, 1)
+		if !errs.Is(err, context.Canceled) {
+			t.Errorf("expected context.Canceled, but got %+v", err)
+		}
+	})
 }
 
 func TestConvert(t *testing.T) {
