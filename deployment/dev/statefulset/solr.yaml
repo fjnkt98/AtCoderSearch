@@ -1,30 +1,3 @@
-apiVersion: v1
-kind: Service
-metadata:
-  name: solr-headless
-  labels:
-    app: solr
-spec:
-  clusterIP: None
-  selector:
-    app: solr
-  ports:
-    - port: 8983
-      name: solr
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: solr
-  labels:
-    app: solr
-spec:
-  selector:
-    app: solr
-  ports:
-    - port: 8983
-      name: solr
----
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -56,17 +29,17 @@ spec:
           env:
             - name: SOLR_JAVA_MEM
               value: "-Xms1024m -Xmx1024m"
-          # resources:
-          #   limits:
-          #     memory: 1024Mi
-          #     cpu: 1000m
+          resources:
+            limits:
+              memory: 2048Mi
+              cpu: 1000m
           volumeMounts:
             - name: problems-pvc
               mountPath: /var/solr/data/problems/data
             - name: users-pvc
               mountPath: /var/solr/data/users/data
-            - name: submissions-pvc
-              mountPath: /var/solr/data/submissions/data
+            - name: solutions-pvc
+              mountPath: /var/solr/data/solutions/data
       imagePullSecrets:
         - name: regcred
   volumeClaimTemplates:
@@ -87,7 +60,7 @@ spec:
           requests:
             storage: 3Gi
     - metadata:
-        name: submissions-pvc
+        name: solutions-pvc
       spec:
         accessModes:
           - ReadWriteOnce
