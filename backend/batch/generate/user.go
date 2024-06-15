@@ -101,7 +101,7 @@ func (r *UserRowReader) ReadRows(ctx context.Context, tx chan<- *UserRow) error 
 	for rows.Next() {
 		select {
 		case <-ctx.Done():
-			return nil
+			return ctx.Err()
 		default:
 			var row UserRow
 			err := db.ScanRow(ctx, rows, &row)

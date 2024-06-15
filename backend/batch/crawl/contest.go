@@ -32,26 +32,11 @@ func (c *ContestCrawler) Crawl(ctx context.Context) error {
 	slog.Info("Finish fetching contests.")
 
 	slog.Info("Start to save contests.")
-	count, err := repository.BulkUpdate(ctx, c.pool, "contests", convertContests(contests))
+	count, err := repository.BulkUpdate(ctx, c.pool, "contests", repository.NewContests(contests))
 	if err != nil {
 		return errs.New("failed to bulk update contests", errs.WithCause(err))
 	}
 	slog.Info("Finish saving contest list.", slog.Int64("count", count))
 
 	return nil
-}
-
-func convertContests(contests []atcoder.Contest) []repository.Contest {
-	result := make([]repository.Contest, len(contests))
-	for i, c := range contests {
-		result[i] = repository.Contest{
-			ContestID:        c.ID,
-			StartEpochSecond: c.StartEpochSecond,
-			DurationSecond:   c.DurationSecond,
-			Title:            c.Title,
-			RateChange:       c.RateChange,
-			Category:         c.Categorize(),
-		}
-	}
-	return result
 }

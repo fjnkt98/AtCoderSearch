@@ -164,14 +164,14 @@ loop:
 	for {
 		select {
 		case <-ctx.Done():
-			return nil
+			return ctx.Err()
 		case doc, ok := <-rx:
 			if !ok {
 				break loop
 			}
 			select {
 			case <-ctx.Done():
-				return nil
+				return ctx.Err()
 			default:
 			}
 
@@ -205,7 +205,7 @@ loop:
 	for {
 		select {
 		case <-ctx.Done():
-			return nil
+			return ctx.Err()
 		case row, ok := <-rx:
 			if !ok {
 				break loop
@@ -213,7 +213,7 @@ loop:
 
 			select {
 			case <-ctx.Done():
-				return nil
+				return ctx.Err()
 			default:
 			}
 

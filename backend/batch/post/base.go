@@ -89,14 +89,14 @@ func PostDocument(ctx context.Context, core *solr.SolrCore, saveDir string, opti
 			for {
 				select {
 				case <-ctx.Done():
-					return nil
+					return ctx.Err()
 				case path, ok := <-ch:
 					if !ok {
 						break loop
 					}
 					select {
 					case <-ctx.Done():
-						return nil
+						return ctx.Err()
 					default:
 					}
 
@@ -127,7 +127,7 @@ func PostDocument(ctx context.Context, core *solr.SolrCore, saveDir string, opti
 		wg.Wait()
 		select {
 		case <-ctx.Done():
-			return nil
+			return ctx.Err()
 		default:
 			if option.Optimize {
 				if _, err := core.Optimize(ctx); err != nil {

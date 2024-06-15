@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   name: crawl-submission
 spec:
-  schedule: "0 0-20/1 * * *"
+  schedule: "0/30 0-20/1 * * *"
   concurrencyPolicy: Forbid
   startingDeadlineSeconds: 30
   suspend: true
@@ -49,8 +49,7 @@ spec:
                 - atcodersearch
                 - crawl
                 - submission
-                - --duration=3s
+                - --duration=1s
                 - --retry=10
-                - --target='ABC,ABC-Like,ARC,ARC-Like,AGC,AGC-Like,JOI,Other Sponsored,PAST,AHC,Marathon,Other Contests'
           imagePullSecrets:
             - name: regcred

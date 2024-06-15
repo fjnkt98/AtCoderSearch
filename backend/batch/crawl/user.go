@@ -49,30 +49,10 @@ loop:
 
 		time.Sleep(c.duration)
 	}
-	count, err := repository.BulkUpdate(ctx, c.pool, "users", convertUsers(users))
+	count, err := repository.BulkUpdate(ctx, c.pool, "users", repository.NewUsers(users))
 	if err != nil {
 		return errs.New("failed to bulk update users", errs.WithCause(err))
 	}
 	slog.Info("Finish crawling users successfully.", slog.Int64("count", count))
 	return nil
-}
-
-func convertUsers(users []atcoder.User) []repository.User {
-	result := make([]repository.User, len(users))
-	for i, u := range users {
-		result[i] = repository.User{
-			UserID:        u.UserID,
-			Rating:        u.Rating,
-			HighestRating: u.HighestRating,
-			Affiliation:   u.Affiliation,
-			BirthYear:     u.BirthYear,
-			Country:       u.Country,
-			Crown:         u.Crown,
-			JoinCount:     u.JoinCount,
-			Rank:          u.Rank,
-			ActiveRank:    u.ActiveRank,
-			Wins:          u.Wins,
-		}
-	}
-	return result
 }
