@@ -57,7 +57,7 @@ spec:
                   valueFrom:
                     secretKeyRef:
                       name: aws-s3-auth
-                      key: aws-s3-key-id
+                      key: aws-s3-access-key-id
                 - name: AWS_SECRET_ACCESS_KEY
                   valueFrom:
                     secretKeyRef:
