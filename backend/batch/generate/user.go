@@ -2,54 +2,17 @@ package generate
 
 import (
 	"context"
-	"fjnkt98/atcodersearch/batch"
 	"fmt"
 
-	"log/slog"
-
 	"github.com/goark/errs"
+	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jackc/pgx/v5/stdlib"
 	"github.com/uptrace/bun"
+	"github.com/uptrace/bun/dialect/pgdialect"
 )
 
-type UserGenerator interface {
-	batch.Batch
-	GenerateUser(ctx context.Context) error
-}
-
-type userGenerator struct {
-	defaultGenerator
-}
-
-func NewUserGenerator(reader RowReader, saveDir string, chunkSize int, concurrent int) UserGenerator {
-	return &userGenerator{
-		defaultGenerator{
-			config: defaultGeneratorConfig{
-				SaveDir:    saveDir,
-				ChunkSize:  chunkSize,
-				Concurrent: concurrent,
-			},
-			reader: reader,
-		},
-	}
-}
-
-func (g *userGenerator) Name() string {
-	return "UserGenerator"
-}
-
-func (g *userGenerator) Run(ctx context.Context) error {
-	return g.GenerateUser(ctx)
-}
-
-func (g *userGenerator) GenerateUser(ctx context.Context) error {
-	if err := g.Generate(ctx); err != nil {
-		return errs.Wrap(err)
-	}
-	return nil
-}
-
 type UserRow struct {
-	UserName      string  `bun:"user_name"`
+	UserID        string  `bun:"user_id"`
 	Rating        int     `bun:"rating"`
 	HighestRating int     `bun:"highest_rating"`
 	Affiliation   *string `bun:"affiliation"`
@@ -62,26 +25,26 @@ type UserRow struct {
 	Wins          int     `bun:"wins"`
 }
 
-type UserDocument struct {
-	UserName      string  `solr:"user_name,text_unigram"`
-	Rating        int     `solr:"rating"`
-	HighestRating int     `solr:"highest_rating"`
-	Affiliation   *string `solr:"affiliation,text_unigram"`
-	BirthYear     *int    `solr:"birth_year"`
-	Country       *string `solr:"country"`
-	Crown         *string `solr:"crown"`
-	JoinCount     int     `solr:"join_count"`
-	Rank          int     `solr:"rank"`
-	ActiveRank    *int    `solr:"active_rank"`
-	Wins          int     `solr:"wins" `
-	Color         string  `solr:"color"`
-	HighestColor  string  `solr:"highest_color"`
-	UserURL       string  `solr:"user_url"`
+type UserDoc struct {
+	UserID        string  `json:"userId"`
+	Rating        int     `json:"rating"`
+	HighestRating int     `json:"highestRating"`
+	Affiliation   *string `json:"affiliation"`
+	BirthYear     *int    `json:"birthYear"`
+	Country       *string `json:"country"`
+	Crown         *string `json:"crown"`
+	JoinCount     int     `json:"joinCount"`
+	Rank          int     `json:"rank"`
+	ActiveRank    *int    `json:"activeRank"`
+	Wins          int     `json:"wins" `
+	Color         string  `json:"color"`
+	HighestColor  string  `json:"highestColor"`
+	UserURL       string  `json:"userUrl"`
 }
 
-func (r *UserRow) Document(ctx context.Context) (map[string]any, error) {
-	return StructToMap(UserDocument{
-		UserName:      r.UserName,
+func (r *UserRow) Document(ctx context.Context) (*UserDoc, error) {
+	return &UserDoc{
+		UserID:        r.UserID,
 		Rating:        r.Rating,
 		HighestRating: r.HighestRating,
 		Affiliation:   r.Affiliation,
@@ -94,24 +57,25 @@ func (r *UserRow) Document(ctx context.Context) (map[string]any, error) {
 		Wins:          r.Wins,
 		Color:         RateToColor(r.Rating),
 		HighestColor:  RateToColor(r.HighestRating),
-		UserURL:       fmt.Sprintf("https://atcoder.jp/users/%s", r.UserName),
-	}), nil
+		UserURL:       fmt.Sprintf("https://atcoder.jp/users/%s", r.UserID),
+	}, nil
 }
 
-type userRowReader struct {
-	db *bun.DB
+type UserRowReader struct {
+	pool *pgxpool.Pool
 }
 
-func NewUserRowReader(db *bun.DB) RowReader {
-	return &userRowReader{
-		db: db,
+func NewUserRowReader(pool *pgxpool.Pool) *UserRowReader {
+	return &UserRowReader{
+		pool: pool,
 	}
 }
 
-func (r *userRowReader) ReadRows(ctx context.Context, tx chan<- Documenter) error {
-	rows, err := r.db.NewSelect().
+func (r *UserRowReader) ReadRows(ctx context.Context, tx chan<- *UserRow) error {
+	db := bun.NewDB(stdlib.OpenDBFromPool(r.pool), pgdialect.New())
+	rows, err := db.NewSelect().
 		Column(
-			"user_name",
+			"user_id",
 			"rating",
 			"highest_rating",
 			"affiliation",
@@ -137,11 +101,10 @@ func (r *userRowReader) ReadRows(ctx context.Context, tx chan<- Documenter) erro
 	for rows.Next() {
 		select {
 		case <-ctx.Done():
-			slog.Info("read rows canceled.")
-			return batch.ErrInterrupt
+			return ctx.Err()
 		default:
 			var row UserRow
-			err := r.db.ScanRow(ctx, rows, &row)
+			err := db.ScanRow(ctx, rows, &row)
 			if err != nil {
 				return errs.New(
 					"failed to scan row",
@@ -153,5 +116,8 @@ func (r *userRowReader) ReadRows(ctx context.Context, tx chan<- Documenter) erro
 	}
 
 	return nil
+}
 
+func GenerateUserDocument(ctx context.Context, reader RowReader[*UserRow], saveDir string, options ...option) error {
+	return GenerateDocument(ctx, reader, saveDir, options...)
 }

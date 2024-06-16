@@ -19,45 +19,37 @@ import (
 )
 
 type Submission struct {
-	ID            int
+	ID            int64
 	EpochSecond   int64
 	ProblemID     string
 	ContestID     string
 	UserID        string
 	Language      string
 	Point         float64
-	Length        int
+	Length        int32
 	Result        string
-	ExecutionTime *int
+	ExecutionTime *int32
 }
 
 type User struct {
-	UserName      string
-	Rating        int
-	HighestRating int
+	UserID        string
+	Rating        int32
+	HighestRating int32
 	Affiliation   *string
-	BirthYear     *int
+	BirthYear     *int32
 	Country       *string
 	Crown         *string
-	JoinCount     int
-	Rank          int
-	ActiveRank    *int
-	Wins          int
+	JoinCount     int32
+	Rank          int32
+	ActiveRank    *int32
+	Wins          int32
 }
 
-type AtCoderClient interface {
-	FetchSubmissions(ctx context.Context, contestID string, page int) ([]Submission, error)
-	FetchSubmissionResult(ctx context.Context, contestID string, submissionID int64) (string, error)
-	FetchProblem(ctx context.Context, contestID string, problemID string) (string, error)
-	FetchUsers(ctx context.Context, page int) ([]User, error)
-	Login(ctx context.Context, username string, password string) error
-}
-
-type atcoderClient struct {
+type AtCoderClient struct {
 	client *http.Client
 }
 
-func NewAtCoderClient() (AtCoderClient, error) {
+func NewAtCoderClient() (*AtCoderClient, error) {
 	jar, err := cookiejar.New(&cookiejar.Options{})
 	if err != nil {
 		return nil, errs.New(
@@ -71,7 +63,7 @@ func NewAtCoderClient() (AtCoderClient, error) {
 		Timeout: time.Duration(30) * time.Second,
 	}
 
-	return &atcoderClient{client: &client}, nil
+	return &AtCoderClient{client: &client}, nil
 }
 
 func extractCSRFToken(body string) string {
@@ -86,7 +78,7 @@ func extractCSRFToken(body string) string {
 	return token
 }
 
-func (c *atcoderClient) FetchSubmissions(ctx context.Context, contestID string, page int) ([]Submission, error) {
+func (c *AtCoderClient) FetchSubmissions(ctx context.Context, contestID string, page int) ([]Submission, error) {
 	p, err := url.JoinPath("https://atcoder.jp", "contests", contestID, "submissions")
 	if err != nil {
 		return nil, errs.New(
@@ -202,13 +194,17 @@ func scrapeSubmissions(html io.Reader) ([]Submission, error) {
 				if err != nil {
 					errors = append(errors, err)
 				}
-				s.Length = length
+				s.Length = int32(length)
 			case 6:
 				s.Result = td.Text()
 			case 7, 9:
 				a := td.Find("td > a")
 				if href, ok := a.Attr("href"); ok {
-					s.ID, _ = strconv.Atoi(path.Base(href))
+					id, err := strconv.Atoi(path.Base(href))
+					if err != nil {
+						errors = append(errors, err)
+					}
+					s.ID = int64(id)
 				} else {
 					t := td.Text()
 					t = strings.TrimSuffix(t, "ms")
@@ -217,7 +213,8 @@ func scrapeSubmissions(html io.Reader) ([]Submission, error) {
 					if err != nil {
 						errors = append(errors, err)
 					}
-					s.ExecutionTime = &et
+					executionTime := int32(et)
+					s.ExecutionTime = &executionTime
 				}
 			}
 		})
@@ -231,7 +228,7 @@ func scrapeSubmissions(html io.Reader) ([]Submission, error) {
 	return submissions, nil
 }
 
-func (c *atcoderClient) FetchSubmissionResult(ctx context.Context, contestID string, submissionID int64) (string, error) {
+func (c *AtCoderClient) FetchSubmissionResult(ctx context.Context, contestID string, submissionID int64) (string, error) {
 	p, err := url.JoinPath("https://atcoder.jp/contests", contestID, "submissions", strconv.Itoa(int(submissionID)))
 	if err != nil {
 		return "", errs.New(
@@ -304,7 +301,7 @@ func scrapeSubmissionResult(html io.Reader) (string, error) {
 	return result, nil
 }
 
-func (c *atcoderClient) FetchProblem(ctx context.Context, contestID string, problemID string) (string, error) {
+func (c *AtCoderClient) FetchProblem(ctx context.Context, contestID string, problemID string) (string, error) {
 	p, err := url.JoinPath("https://atcoder.jp/contests", contestID, "tasks", problemID)
 	if err != nil {
 		return "", errs.New(
@@ -354,7 +351,7 @@ func (c *atcoderClient) FetchProblem(ctx context.Context, contestID string, prob
 	return buf.String(), nil
 }
 
-func (c *atcoderClient) FetchUsers(ctx context.Context, page int) ([]User, error) {
+func (c *AtCoderClient) FetchUsers(ctx context.Context, page int) ([]User, error) {
 	u, _ := url.Parse("https://atcoder.jp/ranking/all")
 	v := url.Values{}
 	v.Set("contestType", "algo")
@@ -418,14 +415,14 @@ func scrapeUsers(html io.Reader) ([]User, error) {
 				if rank, err := strconv.Atoi(m[1]); err != nil {
 					errors = append(errors, err)
 				} else {
-					user.Rank = int(rank)
+					user.Rank = int32(rank)
 				}
 
 				activeRankStr := strings.TrimSpace(td.Contents().Not("span").Text())
 				if r, err := strconv.Atoi(activeRankStr); err != nil {
 					user.ActiveRank = nil
 				} else {
-					rank := int(r)
+					rank := int32(r)
 					user.ActiveRank = &rank
 				}
 			case 1:
@@ -438,7 +435,7 @@ func scrapeUsers(html io.Reader) ([]User, error) {
 							user.Country = &country
 						}
 					case 1:
-						user.UserName = a.Find("a > span").Text()
+						user.UserID = a.Find("a > span").Text()
 					case 2:
 						affiliation := a.Find("a > span").Text()
 						if affiliation != "" {
@@ -456,32 +453,32 @@ func scrapeUsers(html io.Reader) ([]User, error) {
 				if year, err := strconv.Atoi(td.Text()); err != nil {
 					user.BirthYear = nil
 				} else {
-					year := int(year)
+					year := int32(year)
 					user.BirthYear = &year
 				}
 			case 3:
 				if rating, err := strconv.Atoi(td.Text()); err != nil {
 					errors = append(errors, errs.New("failed to convert the rating", errs.WithCause(err), errs.WithContext("row number", i), errs.WithContext("col number", j)))
 				} else {
-					user.Rating = rating
+					user.Rating = int32(rating)
 				}
 			case 4:
 				if highestRating, err := strconv.Atoi(td.Text()); err != nil {
 					errors = append(errors, errs.New("failed to convert the highest rating", errs.WithCause(err), errs.WithContext("row number", i), errs.WithContext("col number", j)))
 				} else {
-					user.HighestRating = highestRating
+					user.HighestRating = int32(highestRating)
 				}
 			case 5:
 				if joinCount, err := strconv.Atoi(td.Text()); err != nil {
 					errors = append(errors, errs.New("failed to convert the join count", errs.WithCause(err), errs.WithContext("row number", i), errs.WithContext("col number", j)))
 				} else {
-					user.JoinCount = int(joinCount)
+					user.JoinCount = int32(joinCount)
 				}
 			case 6:
 				if wins, err := strconv.Atoi(td.Text()); err != nil {
 					errors = append(errors, errs.New("failed to convert the win count", errs.WithCause(err), errs.WithContext("row number", i), errs.WithContext("col number", j)))
 				} else {
-					user.Wins = int(wins)
+					user.Wins = int32(wins)
 				}
 			}
 		})
@@ -495,7 +492,7 @@ func scrapeUsers(html io.Reader) ([]User, error) {
 	return users, nil
 }
 
-func (c *atcoderClient) Login(ctx context.Context, username, password string) error {
+func (c *AtCoderClient) Login(ctx context.Context, username, password string) error {
 	uri := "https://atcoder.jp/login"
 	req, err := http.NewRequest(http.MethodGet, uri, nil)
 	if err != nil {

@@ -2,31 +2,29 @@ package solr
 
 import (
 	"context"
+	"encoding/json"
 	"io"
 	"net/http"
 	"net/url"
+	"strings"
 
 	"github.com/goark/errs"
 )
 
+// ErrNonOKResponse is the error returned when Solr returns a status code other than 200.
 var ErrNonOKResponse = errs.New("non-ok status code returned")
 
-type SolrCore interface {
-	Name() string
-	Ping(ctx context.Context) (io.ReadCloser, error)
-	Status(ctx context.Context) (io.ReadCloser, error)
-	Reload(ctx context.Context) (io.ReadCloser, error)
-	Select(ctx context.Context, params url.Values) (io.ReadCloser, error)
-	Post(ctx context.Context, body io.Reader, contentType string) (io.ReadCloser, error)
-}
-
-type core struct {
+// SolrCore is a struct that abstracts the core of Solr.
+type SolrCore struct {
 	host   url.URL
 	name   string
 	client *http.Client
 }
 
-func NewSolrCore(host string, name string) (SolrCore, error) {
+// NewSolrCore creates a new SolrCore instance.
+// It returns an error when the given host url is invalid.
+// It doesn't return an error to specify the name of a core that does not exist.
+func NewSolrCore(host string, name string) (*SolrCore, error) {
 	parsedHost, err := url.Parse(host)
 	if err != nil {
 		return nil, errs.New(
@@ -37,14 +35,16 @@ func NewSolrCore(host string, name string) (SolrCore, error) {
 		)
 	}
 
-	return &core{
+	return &SolrCore{
 		host:   url.URL{Scheme: parsedHost.Scheme, Host: parsedHost.Host},
 		name:   name,
 		client: &http.Client{},
 	}, nil
 }
 
-func MustNewSolrCore(host string, name string) SolrCore {
+// MustNewSolrCore creates a new SolrCore instance.
+// Panic if an error occurs internally.
+func MustNewSolrCore(host string, name string) *SolrCore {
 	core, err := NewSolrCore(host, name)
 	if err != nil {
 		panic(err)
@@ -53,40 +53,53 @@ func MustNewSolrCore(host string, name string) SolrCore {
 	return core
 }
 
-func (c *core) Name() string {
+// Name returns the name of the Solr core.
+func (c *SolrCore) Name() string {
 	return c.name
 }
 
-func (c *core) Ping(ctx context.Context) (io.ReadCloser, error) {
+// Ping pings to the Solr core.
+func (c *SolrCore) Ping(ctx context.Context) (*PingResponse, error) {
 	u := c.host.JoinPath("solr", c.name, "admin", "ping")
 	req, err := http.NewRequestWithContext(ctx, "GET", u.String(), nil)
 	if err != nil {
 		return nil, errs.New(
 			"failed to prepare ping request",
 			errs.WithCause(err),
-			errs.WithContext("url", u.String()),
+			errs.WithContext("uri", u.String()),
 		)
 	}
 
-	if res, err := c.client.Do(req); err != nil {
+	res, err := c.client.Do(req)
+	if err != nil {
 		return nil, errs.New(
 			"failed to execute ping request",
 			errs.WithCause(err),
-			errs.WithContext("url", u.String()),
+			errs.WithContext("uri", u.String()),
 		)
-	} else {
-		if res.StatusCode != http.StatusOK {
-			return res.Body, errs.Wrap(
-				ErrNonOKResponse,
-				errs.WithCause(err),
-				errs.WithContext("url", u.String()),
-			)
-		}
-		return res.Body, nil
 	}
+	defer res.Body.Close()
+	var body PingResponse
+	if err := json.NewDecoder(res.Body).Decode(&body); err != nil {
+		return nil, errs.New(
+			"failed to decode ping response",
+			errs.WithCause(err),
+			errs.WithContext("uri", u.String()),
+		)
+	}
+
+	if res.StatusCode != http.StatusOK {
+		return &body, errs.Wrap(
+			ErrNonOKResponse,
+			errs.WithCause(err),
+			errs.WithContext("uri", u.String()),
+		)
+	}
+	return &body, nil
 }
 
-func (c *core) Status(ctx context.Context) (io.ReadCloser, error) {
+// Status gets the status of the Solr core.
+func (c *SolrCore) Status(ctx context.Context) (*CoreStatus, error) {
 	v := url.Values{}
 	v.Set("action", "STATUS")
 	v.Set("core", c.name)
@@ -102,25 +115,42 @@ func (c *core) Status(ctx context.Context) (io.ReadCloser, error) {
 		)
 	}
 
-	if res, err := c.client.Do(req); err != nil {
+	res, err := c.client.Do(req)
+	if err != nil {
 		return nil, errs.New(
 			"failed to execute status request",
 			errs.WithCause(err),
 			errs.WithContext("url", u.String()),
 		)
-	} else {
-		if res.StatusCode != http.StatusOK {
-			return res.Body, errs.Wrap(
-				ErrNonOKResponse,
-				errs.WithCause(err),
-				errs.WithContext("url", u.String()),
-			)
-		}
-		return res.Body, nil
 	}
+	defer res.Body.Close()
+	var body CoreStatuses
+	if err := json.NewDecoder(res.Body).Decode(&body); err != nil {
+		return nil, errs.New(
+			"failed to decode status response",
+			errs.WithCause(err),
+			errs.WithContext("url", u.String()),
+		)
+	}
+	if res.StatusCode != http.StatusOK {
+		return nil, errs.Wrap(
+			ErrNonOKResponse,
+			errs.WithCause(err),
+			errs.WithContext("url", u.String()),
+		)
+	}
+	status, ok := body.Status[c.name]
+	if !ok {
+		return nil, errs.New(
+			"core not found",
+			errs.WithContext("statues", body),
+		)
+	}
+	return &status, nil
 }
 
-func (c *core) Reload(ctx context.Context) (io.ReadCloser, error) {
+// Reload reloads the Solr core.
+func (c *SolrCore) Reload(ctx context.Context) (*SimpleResponse, error) {
 	v := url.Values{}
 	v.Set("action", "RELOAD")
 	v.Set("core", c.name)
@@ -136,59 +166,48 @@ func (c *core) Reload(ctx context.Context) (io.ReadCloser, error) {
 		)
 	}
 
-	if res, err := c.client.Do(req); err != nil {
+	res, err := c.client.Do(req)
+	if err != nil {
 		return nil, errs.New(
 			"failed to execute reload request",
 			errs.WithCause(err),
 			errs.WithContext("url", u.String()),
 		)
-	} else {
-		if res.StatusCode != http.StatusOK {
-			return res.Body, errs.Wrap(
-				ErrNonOKResponse,
-				errs.WithCause(err),
-				errs.WithContext("url", u.String()),
-			)
-		}
-		return res.Body, nil
 	}
-}
-
-func (c *core) Select(ctx context.Context, params url.Values) (io.ReadCloser, error) {
-	u := c.host.JoinPath("solr", c.name, "select")
-	u.RawQuery = params.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, "GET", u.String(), nil)
-	if err != nil {
+	defer res.Body.Close()
+	var body SimpleResponse
+	if err := json.NewDecoder(res.Body).Decode(&body); err != nil {
 		return nil, errs.New(
-			"failed to prepare select request",
+			"failed to decode reload response",
 			errs.WithCause(err),
 			errs.WithContext("url", u.String()),
 		)
 	}
-
-	if res, err := c.client.Do(req); err != nil {
-		return nil, errs.New(
-			"failed to execute select request",
+	if res.StatusCode != http.StatusOK {
+		return &body, errs.Wrap(
+			ErrNonOKResponse,
 			errs.WithCause(err),
 			errs.WithContext("url", u.String()),
 		)
-	} else {
-		if res.StatusCode != http.StatusOK {
-			return res.Body, errs.Wrap(
-				ErrNonOKResponse,
-				errs.WithCause(err),
-				errs.WithContext("url", u.String()),
-			)
-		}
-		return res.Body, nil
 	}
+	return &body, err
 }
 
-func (c *core) Post(ctx context.Context, body io.Reader, contentType string) (io.ReadCloser, error) {
+// NewSelect creates a new *SelectQuery instance.
+func (c *SolrCore) NewSelect() *SelectQuery {
+	return newSelectQuery(c.client, c.host.JoinPath("solr", c.name, "select"))
+}
+
+// NewMoreLikeThis creates a new *MoreLikeThisQuery instance.
+func (c *SolrCore) NewMoreLikeThis() *MoreLikeThisQuery {
+	return newMoreLikeThisQuery(c.client, c.host.JoinPath("solr", c.name, "select"))
+}
+
+// Post posts the data into Solr core.
+func (c *SolrCore) Post(ctx context.Context, src io.Reader, contentType string) (*SimpleResponse, error) {
 	u := c.host.JoinPath("solr", c.name, "update")
 
-	req, err := http.NewRequestWithContext(ctx, "POST", u.String(), body)
+	req, err := http.NewRequestWithContext(ctx, "POST", u.String(), src)
 	if err != nil {
 		return nil, errs.New(
 			"failed to prepare post request",
@@ -198,20 +217,81 @@ func (c *core) Post(ctx context.Context, body io.Reader, contentType string) (io
 	}
 	req.Header.Add("Content-Type", contentType)
 
-	if res, err := c.client.Do(req); err != nil {
+	res, err := c.client.Do(req)
+	if err != nil {
 		return nil, errs.New(
 			"failed to execute post request",
 			errs.WithCause(err),
 			errs.WithContext("url", u.String()),
 		)
+	}
+	defer res.Body.Close()
+	var body SimpleResponse
+	if err := json.NewDecoder(res.Body).Decode(&body); err != nil {
+		return nil, errs.New(
+			"failed to decode post response",
+			errs.WithCause(err),
+			errs.WithContext("url", u.String()),
+		)
+	}
+	if res.StatusCode != http.StatusOK {
+		return &body, errs.Wrap(
+			ErrNonOKResponse,
+			errs.WithCause(err),
+			errs.WithContext("url", u.String()),
+		)
+	}
+	return &body, nil
+}
+
+// Commit commits the Solr core.
+func (c *SolrCore) Commit(ctx context.Context) (*SimpleResponse, error) {
+	src := strings.NewReader(`{"commit":{}}`)
+	if res, err := c.Post(ctx, src, "application/json"); err != nil {
+		return res, errs.New(
+			"failed to commit",
+			errs.WithCause(err),
+		)
 	} else {
-		if res.StatusCode != http.StatusOK {
-			return res.Body, errs.Wrap(
-				ErrNonOKResponse,
-				errs.WithCause(err),
-				errs.WithContext("url", u.String()),
-			)
-		}
-		return res.Body, nil
+		return res, nil
+	}
+}
+
+// Optimize commits the Solr core with optimize.
+func (c *SolrCore) Optimize(ctx context.Context) (*SimpleResponse, error) {
+	src := strings.NewReader(`{"optimize":{}}`)
+	if res, err := c.Post(ctx, src, "application/json"); err != nil {
+		return res, errs.New(
+			"failed to optimize",
+			errs.WithCause(err),
+		)
+	} else {
+		return res, nil
+	}
+}
+
+// Rollback rollbacks the Solr core.
+func (c *SolrCore) Rollback() (*SimpleResponse, error) {
+	src := strings.NewReader(`{"rollback": {}}`)
+	if res, err := c.Post(context.Background(), src, "application/json"); err != nil {
+		return res, errs.New(
+			"failed to rollback",
+			errs.WithCause(err),
+		)
+	} else {
+		return res, nil
+	}
+}
+
+// Delete deletes all documents in the Solr core.
+func (c *SolrCore) Delete(ctx context.Context) (*SimpleResponse, error) {
+	src := strings.NewReader(`{"delete":{"query":"*:*"}}`)
+	if res, err := c.Post(ctx, src, "application/json"); err != nil {
+		return res, errs.New(
+			"failed to delete",
+			errs.WithCause(err),
+		)
+	} else {
+		return res, nil
 	}
 }

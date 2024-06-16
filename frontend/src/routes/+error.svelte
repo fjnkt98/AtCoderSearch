@@ -1,6 +1,8 @@
-<nav class="flex w-full items-center justify-start border">
-  <a href="/" class="mx-4 my-2 font-roboto text-3xl">AtCoder Search</a>
-</nav>
+<script lang="ts">
+  import Header from "$lib/Header.svelte";
+</script>
+
+<Header />
 
 <div class="flex-1 overflow-auto p-16">
   <div class="flex flex-col items-center justify-center">

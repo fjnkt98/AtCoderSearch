@@ -1,60 +1,35 @@
 package cmd
 
 import (
-	"os"
+	"fjnkt98/atcodersearch/cmd/crawl"
+	"fjnkt98/atcodersearch/cmd/generate"
+	"fjnkt98/atcodersearch/cmd/post"
+	"fjnkt98/atcodersearch/cmd/serve"
+	"fjnkt98/atcodersearch/cmd/update"
 
-	"github.com/spf13/cobra"
+	"github.com/urfave/cli/v2"
 )
 
-func newRootCmd(args []string, sub ...*cobra.Command) *cobra.Command {
-	rootCmd := &cobra.Command{
-		Use:   "atcodersearch",
-		Short: "root command for AtCoder Search",
-		Long:  "root command for AtCoder Search",
+func NewApp() *cli.App {
+	cli.NewApp()
+	return &cli.App{
+		Name: "atcodersearch",
+		Commands: []*cli.Command{
+			crawl.NewCrawlCmd(),
+			generate.NewGenerateCmd(),
+			post.NewPostCmd(),
+			update.NewUpdateCmd(),
+			serve.NewServeCmd(),
+		},
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:    "database-url",
+				EnvVars: []string{"DATABASE_URL"},
+			},
+			&cli.StringFlag{
+				Name:    "solr-host",
+				EnvVars: []string{"SOLR_HOST"},
+			},
+		},
 	}
-
-	rootCmd.SetArgs(args)
-
-	rootCmd.PersistentFlags().String("config", "", "path to the config file")
-	rootCmd.AddCommand(sub...)
-
-	return rootCmd
-}
-
-func Execute() error {
-	args := os.Args[1:]
-	var config RootConfig
-
-	rootCmd := newRootCmd(
-		args,
-		newCrawlCmd(
-			args,
-			newCrawlProblemCmd(args, &config, nil),
-			newCrawlUserCmd(args, &config, nil),
-			newCrawlSubmissionCmd(args, &config, nil),
-		),
-		newGenerateCmd(
-			args,
-			newGenerateProblemCmd(args, &config, nil),
-			newGenerateUserCmd(args, &config, nil),
-			newGenerateSubmissionCmd(args, &config, nil),
-		),
-		newUploadCmd(
-			args,
-			newUploadProblemCmd(args, &config, nil),
-			newUploadUserCmd(args, &config, nil),
-			newUploadSubmissionCmd(args, &config, nil),
-		),
-		newUpdateCmd(
-			args,
-			newUpdateProblemCmd(args, &config, nil),
-			newUpdateUserCmd(args, &config, nil),
-			newUpdateSubmissionCmd(args, &config, nil),
-			newUpdateLanguageCmd(args, &config, nil),
-		),
-		newServerCmd(args, &config, nil),
-		newMigrateCmd(args, &config, nil),
-	)
-
-	return rootCmd.Execute()
 }

@@ -1,103 +1,76 @@
-//go:build test_repository
-
 package repository
 
 import (
 	"context"
-	"fmt"
-	"os"
 	"reflect"
 	"testing"
+	"time"
+
+	"github.com/goark/errs"
 )
 
-func TestMain(m *testing.M) {
-	db, err := getTestDB()
-	if err != nil {
-		fmt.Printf("%+v", err)
-		os.Exit(1)
-	}
-	ctx := context.Background()
-	if _, err := db.NewDelete().Model(new(UpdateHistory)).Where("0 = 0").Exec(ctx); err != nil {
-		fmt.Printf("failed to delete records from `update_history`: %s", err.Error())
-		os.Exit(1)
-	}
-	if _, err := db.NewDelete().Model(new(SubmissionCrawlHistory)).Where("0 = 0").Exec(ctx); err != nil {
-		fmt.Printf("failed to delete records from `submission_crawl_history`: %s", err.Error())
-		os.Exit(1)
+func TestOverwrite(t *testing.T) {
+	startedAt := time.Date(2024, 6, 1, 0, 0, 0, 0, time.Local)
+	finishedAt := time.Date(2024, 6, 1, 3, 0, 0, 0, time.Local)
+
+	h := &BatchHistory{
+		ID:         1,
+		Name:       "Test",
+		StartedAt:  startedAt,
+		FinishedAt: nil,
+		Status:     "working",
+		Options:    nil,
 	}
 
-	os.Exit(m.Run())
-}
-
-func TestSaveAndGetSubmissionCrawlHistory(t *testing.T) {
-	db, err := getTestDB()
-	if err != nil {
-		t.Fatalf("%+v", err)
+	r := BatchHistory{
+		ID:         1,
+		Name:       "Test",
+		StartedAt:  startedAt,
+		FinishedAt: &finishedAt,
+		Status:     "finish",
+		Options:    nil,
 	}
 
-	repository := NewSubmissionCrawlHistoryRepository(db)
-
-	// Get the latest history
-	// expect an empty history to be returned
-	ctx := context.Background()
-	got, err := repository.GetLatestHistory(ctx, "abc300")
-	if err != nil {
-		t.Fatalf("failed to get latest history: %s", err.Error())
-	}
-	expected := SubmissionCrawlHistory{ContestID: "abc300"}
-	if !reflect.DeepEqual(got, expected) {
-		t.Fatalf("expected empty struct %+v, but got %+v", expected, got)
+	expected := &BatchHistory{
+		ID:         1,
+		Name:       "Test",
+		StartedAt:  startedAt,
+		FinishedAt: &finishedAt,
+		Status:     "finish",
+		Options:    nil,
 	}
 
-	// Save history
-	history := SubmissionCrawlHistory{
-		StartedAt: 10000000,
-		ContestID: "abc300",
-	}
-
-	if err := repository.Save(ctx, history); err != nil {
-		t.Fatalf("failed to save submission crawl history: %s", err.Error())
-	}
-
-	// Get the latest history again
-	// expect the history which has been saved some time ago to be returned
-	got, err = repository.GetLatestHistory(ctx, "abc300")
-	if err != nil {
-		t.Fatalf("failed to get latest history: %s", err.Error())
-	}
-	if !reflect.DeepEqual(history, got) {
-		t.Fatalf("expected empty struct %+v, but got %+v", history, got)
+	h.overwrite(r)
+	if !reflect.DeepEqual(h, expected) {
+		t.Errorf("expected \n%+v\n, but got \n%+v\n", expected, h)
 	}
 }
 
-func TestSaveAndGetUpdateHistory(t *testing.T) {
-	db, err := getTestDB()
-	if err != nil {
-		t.Fatalf("%+v", err)
-	}
-	repository := NewUpdateHistoryRepository(db)
+func TestFailShouldBeSkip(t *testing.T) {
+	startedAt := time.Date(2024, 6, 1, 0, 0, 0, 0, time.Local)
+	finishedAt := time.Date(2024, 6, 1, 3, 0, 0, 0, time.Local)
 
-	ctx := context.Background()
-	got, err := repository.GetLatest(ctx, "problem")
-	if err != nil {
-		t.Fatalf("failed to get update history: %s", err.Error())
+	h := &BatchHistory{
+		ID:         1,
+		Name:       "Test",
+		StartedAt:  startedAt,
+		FinishedAt: &finishedAt,
+		Status:     "finish",
+		Options:    nil,
 	}
-	expected := UpdateHistory{Domain: "problem", Status: "finished"}
-	if !reflect.DeepEqual(got, expected) {
-		t.Fatalf("expected default history %+v, but got %+v", expected, got)
-	}
-
-	history := NewUpdateHistory("problem", "{}")
-	if err := repository.Finish(ctx, &history); err != nil {
-		t.Fatalf("failed to save finished update history: %s", err.Error())
+	if err := h.Fail(context.Background(), nil); !errs.Is(err, ErrHistoryConfirmed) {
+		t.Fatalf("test failed: %s", err.Error())
 	}
 
-	got, err = repository.GetLatest(ctx, "problem")
-	if err != nil {
-		t.Fatalf("failed to get update history: %s", err.Error())
+	h = &BatchHistory{
+		ID:         1,
+		Name:       "Test",
+		StartedAt:  startedAt,
+		FinishedAt: &finishedAt,
+		Status:     "canceled",
+		Options:    nil,
 	}
-
-	if !history.wasSaved {
-		t.Fatalf("`wasSaved` of the saved history is still false")
+	if err := h.Fail(context.Background(), nil); !errs.Is(err, ErrHistoryConfirmed) {
+		t.Fatalf("test failed: %s", err.Error())
 	}
 }

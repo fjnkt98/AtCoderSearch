@@ -1,8 +1,9 @@
 <script lang="ts">
-  import { page } from "$app/stores";
   import { goto } from "$app/navigation";
-  export let end: number;
-  export let current: number;
+  import { page } from "$app/stores";
+
+  export let end: number = 999;
+  export let current: number = 1;
   export let enableEnd: boolean = true;
 
   const width = 4;
@@ -54,7 +55,7 @@
           (current.toString() === label ? "bg-gray-700 text-white hover:bg-gray-800" : "bg-white")}
         on:click={() => {
           const params = new URLSearchParams($page.url.searchParams);
-          params.set("page", label);
+          params.set("p", label);
           goto(`${$page.url.pathname}?${params.toString()}`);
         }}
         >{label}

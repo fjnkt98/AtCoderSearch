@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: fluentbit
+spec:
+  selector:
+    matchLabels:
+      name: fluentbit
+  template:
+    metadata:
+      labels:
+        name: fluentbit
+    spec:
+      containers:
+        - name: fluentbit
+          image: fluent/fluent-bit:3.0-debug
+          env:
+            - name: TZ
+              value: Asia/Tokyo
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: aws-cloudwatch-logs-auth
+                  key: aws-cloudwatch-logs-access-key-id
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: aws-cloudwatch-logs-auth
+                  key: aws-cloudwatch-logs-secret-key
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+          volumeMounts:
+            - name: var-log
+              mountPath: /var/log
+            - name: var-lib-docker-containers
+              mountPath: /var/lib/docker/containers
+              readOnly: true
+            - name: fluent-bit-config
+              mountPath: /fluent-bit/etc/fluent-bit.conf
+              subPath: fluent-bit.conf
+            - name: parsers-config
+              mountPath: /fluent-bit/etc/parsers.conf
+              subPath: parsers.conf
+      volumes:
+        - name: var-log
+          hostPath:
+            path: /var/log
+        - name: var-lib-docker-containers
+          hostPath:
+            path: /var/lib/docker/containers
+        - name: fluent-bit-config
+          configMap:
+            # microk8s kubectl create configmap fluent-bit-config --from-file=fluent-bit.conf --dry-run=client --output=yaml | microk8s kubectl apply -f -
+            name: fluent-bit-config
+        - name: parsers-config
+          configMap:
+            # microk8s kubectl create configmap parsers-config --from-file=parsers.conf --dry-run=client --output=yaml | microk8s kubectl apply -f -
+            name: parsers-config

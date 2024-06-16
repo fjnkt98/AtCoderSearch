@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: solr-headless
+  labels:
+    app: solr
+spec:
+  clusterIP: None
+  selector:
+    app: solr
+  ports:
+    - port: 8983
+      name: solr
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: solr
+  labels:
+    app: solr
+spec:
+  selector:
+    app: solr
+  ports:
+    - port: 8983
+      name: solr

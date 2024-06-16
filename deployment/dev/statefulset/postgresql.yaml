@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgresql
+spec:
+  selector:
+    matchLabels:
+      app: postgresql
+  serviceName: postgresql-headless
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: postgresql
+    spec:
+      terminationGracePeriodSeconds: 60
+      containers:
+        - name: postgresql
+          image: postgres:15-bullseye
+          env:
+            - name: POSTGRES_PASSWORD
+              value: atcodersearch
+            - name: POSTGRES_USER
+              value: atcodersearch
+            - name: POSTGRES_DB
+              value: atcodersearch
+            - name: POSTGRES_HOST_AUTH_METHOD
+              value: password
+          ports:
+            - containerPort: 5432
+              name: postgresql
+          volumeMounts:
+            - name: postgresql-pvc
+              mountPath: /var/lib/postgresql/data
+          securityContext:
+            runAsUser: 999
+            runAsGroup: 999
+            runAsNonRoot: true
+          args:
+            - "postgres"
+            - "-c"
+            - "shared_buffers=256MB"
+            - "-c"
+            - "checkpoint_timeout=30min"
+            - "-c"
+            - "checkpoint_completion_target=0.9"
+            - "-c"
+            - "max_wal_size=20GB"
+            - "-c"
+            - "log_timezone=Asia/Tokyo"
+            - "-c"
+            - "timezone=Asia/Tokyo"
+            - "-c"
+            - "statement_timeout=3600000"
+      initContainers:
+        - name: chown-data-directory
+          image: busybox:1.28
+          command:
+            - "/bin/chown"
+            - "-R"
+            - "999:999"
+            - "/var/lib/postgresql/data"
+          securityContext:
+            runAsNonRoot: false
+          volumeMounts:
+            - name: postgresql-pvc
+              mountPath: /var/lib/postgresql/data
+        - name: chmod-data-directory
+          image: busybox:1.28
+          command:
+            - "/bin/chmod"
+            - "-R"
+            - "0750"
+            - "/var/lib/postgresql/data"
+          securityContext:
+            runAsNonRoot: false
+          volumeMounts:
+            - name: postgresql-pvc
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: postgresql-pvc
+      spec:
+        accessModes:
+          - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: 30Gi

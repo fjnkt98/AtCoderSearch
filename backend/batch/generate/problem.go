@@ -2,56 +2,19 @@ package generate
 
 import (
 	"context"
-	"fjnkt98/atcodersearch/batch"
 	"fjnkt98/atcodersearch/pkg/solr"
 	"fmt"
 	"io"
 	"strings"
 	"time"
 
-	"log/slog"
-
 	"github.com/PuerkitoBio/goquery"
 	"github.com/goark/errs"
+	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jackc/pgx/v5/stdlib"
 	"github.com/uptrace/bun"
+	"github.com/uptrace/bun/dialect/pgdialect"
 )
-
-type ProblemGenerator interface {
-	batch.Batch
-	GenerateProblem(ctx context.Context) error
-}
-
-type problemGenerator struct {
-	defaultGenerator
-}
-
-func NewProblemGenerator(reader RowReader, saveDir string, chunkSize int, concurrent int) ProblemGenerator {
-	return &problemGenerator{
-		defaultGenerator{
-			config: defaultGeneratorConfig{
-				SaveDir:    saveDir,
-				ChunkSize:  chunkSize,
-				Concurrent: concurrent,
-			},
-			reader: reader,
-		},
-	}
-}
-
-func (g *problemGenerator) Name() string {
-	return "ProblemGenerator"
-}
-
-func (g *problemGenerator) Run(ctx context.Context) error {
-	return g.GenerateProblem(ctx)
-}
-
-func (g *problemGenerator) GenerateProblem(ctx context.Context) error {
-	if err := g.Generate(ctx); err != nil {
-		return errs.Wrap(err)
-	}
-	return nil
-}
 
 type ProblemRow struct {
 	ProblemID      string `bun:"problem_id"`
@@ -68,25 +31,25 @@ type ProblemRow struct {
 	IsExperimental bool   `bun:"is_experimental"`
 }
 
-type ProblemDocument struct {
-	ProblemID      string                `solr:"problem_id"`
-	ProblemTitle   string                `solr:"problem_title,text_ja,text_en"`
-	ProblemURL     string                `solr:"problem_url"`
-	ContestID      string                `solr:"contest_id"`
-	ContestTitle   string                `solr:"contest_title,text_ja,text_en"`
-	ContestURL     string                `solr:"contest_url"`
-	Color          string                `solr:"color"`
-	StartAt        solr.IntoSolrDateTime `solr:"start_at"`
-	Duration       int64                 `solr:"duration"`
-	RateChange     string                `solr:"rate_change"`
-	Category       string                `solr:"category"`
-	Difficulty     *int                  `solr:"difficulty"`
-	IsExperimental bool                  `solr:"is_experimental"`
-	StatementJa    []string              `solr:"statement_ja,text_ja,text_reading"`
-	StatementEn    []string              `solr:"statement_en,text_en"`
+type ProblemDoc struct {
+	ProblemID      string                `json:"problemId"`
+	ProblemTitle   string                `json:"problemTitle"`
+	ProblemURL     string                `json:"problemUrl"`
+	ContestID      string                `json:"contestId"`
+	ContestTitle   string                `json:"contestTitle"`
+	ContestURL     string                `json:"contestUrl"`
+	Color          string                `json:"color"`
+	StartAt        solr.IntoSolrDateTime `json:"startAt"`
+	Duration       int64                 `json:"duration"`
+	RateChange     string                `json:"rateChange"`
+	Category       string                `json:"category"`
+	Difficulty     *int                  `json:"difficulty"`
+	IsExperimental bool                  `json:"isExperimental"`
+	StatementJa    []string              `json:"statementJa"`
+	StatementEn    []string              `json:"statementEn"`
 }
 
-func (r *ProblemRow) Document(ctx context.Context) (map[string]any, error) {
+func (r *ProblemRow) Document(ctx context.Context) (*ProblemDoc, error) {
 	statementJa, statementEn, err := ExtractStatements(strings.NewReader(r.HTML))
 	if err != nil {
 		return nil, errs.New(
@@ -106,7 +69,7 @@ func (r *ProblemRow) Document(ctx context.Context) (map[string]any, error) {
 		color = RateToColor(*r.Difficulty)
 	}
 
-	return StructToMap(ProblemDocument{
+	return &ProblemDoc{
 		ProblemID:      r.ProblemID,
 		ProblemURL:     r.ProblemURL,
 		ProblemTitle:   r.ProblemTitle,
@@ -122,7 +85,7 @@ func (r *ProblemRow) Document(ctx context.Context) (map[string]any, error) {
 		IsExperimental: r.IsExperimental,
 		StatementJa:    statementJa,
 		StatementEn:    statementEn,
-	}), nil
+	}, nil
 }
 
 func ExtractStatements(html io.Reader) ([]string, []string, error) {
@@ -185,33 +148,34 @@ func RateToColor(rate int) string {
 	}
 }
 
-type problemRowReader struct {
-	db *bun.DB
+type ProblemRowReader struct {
+	pool *pgxpool.Pool
 }
 
-func NewProblemRowReader(db *bun.DB) RowReader {
-	return &problemRowReader{
-		db: db,
+func NewProblemRowReader(pool *pgxpool.Pool) *ProblemRowReader {
+	return &ProblemRowReader{
+		pool: pool,
 	}
 }
 
-func (r *problemRowReader) ReadRows(ctx context.Context, tx chan<- Documenter) error {
-	rows, err := r.db.NewSelect().
-		ColumnExpr("?.? AS ?", bun.Ident("p"), bun.Ident("problem_id"), bun.Ident("problem_id")).
-		ColumnExpr("?.? AS ?", bun.Ident("p"), bun.Ident("title"), bun.Ident("problem_title")).
-		ColumnExpr("?.? AS ?", bun.Ident("p"), bun.Ident("url"), bun.Ident("problem_url")).
-		ColumnExpr("?.? AS ?", bun.Ident("p"), bun.Ident("html"), bun.Ident("html")).
-		ColumnExpr("?.? AS ?", bun.Ident("c"), bun.Ident("contest_id"), bun.Ident("contest_id")).
-		ColumnExpr("?.? AS ?", bun.Ident("c"), bun.Ident("title"), bun.Ident("contest_title")).
-		ColumnExpr("?.? AS ?", bun.Ident("c"), bun.Ident("start_epoch_second"), bun.Ident("start_at")).
-		ColumnExpr("?.? AS ?", bun.Ident("c"), bun.Ident("duration_second"), bun.Ident("duration")).
-		ColumnExpr("?.? AS ?", bun.Ident("c"), bun.Ident("rate_change"), bun.Ident("rate_change")).
-		ColumnExpr("?.? AS ?", bun.Ident("c"), bun.Ident("category"), bun.Ident("category")).
-		ColumnExpr("?.? AS ?", bun.Ident("d"), bun.Ident("difficulty"), bun.Ident("difficulty")).
-		ColumnExpr("COALESCE(?.?, FALSE) AS ?", bun.Ident("d"), bun.Ident("is_experimental"), bun.Ident("is_experimental")).
-		TableExpr("? AS ?", bun.Ident("problems"), bun.Ident("p")).
-		Join("JOIN ? AS ? ON ?.? = ?.?", bun.Ident("contests"), bun.Ident("c"), bun.Ident("p"), bun.Ident("contest_id"), bun.Ident("c"), bun.Ident("contest_id")).
-		Join("LEFT JOIN ? AS ? ON ?.? = ?.?", bun.Ident("difficulties"), bun.Ident("d"), bun.Ident("p"), bun.Ident("problem_id"), bun.Ident("d"), bun.Ident("problem_id")).
+func (r *ProblemRowReader) ReadRows(ctx context.Context, tx chan<- *ProblemRow) error {
+	db := bun.NewDB(stdlib.OpenDBFromPool(r.pool), pgdialect.New())
+	rows, err := db.NewSelect().
+		ColumnExpr("p.problem_id AS problem_id").
+		ColumnExpr("p.title AS problem_title").
+		ColumnExpr("p.url AS problem_url").
+		ColumnExpr("p.html AS html").
+		ColumnExpr("p.contest_id AS contest_id").
+		ColumnExpr("c.title AS contest_title").
+		ColumnExpr("c.start_epoch_second AS start_at").
+		ColumnExpr("c.duration_second AS duration").
+		ColumnExpr("c.rate_change AS rate_change").
+		ColumnExpr("c.category AS category").
+		ColumnExpr("d.difficulty AS difficulty").
+		ColumnExpr("COALESCE(d.is_experimental, FALSE) AS is_experimental").
+		TableExpr("problems AS p").
+		Join("JOIN contests AS c ON p.contest_id = c.contest_id").
+		Join("LEFT JOIN difficulties AS d ON p.problem_id = d.problem_id").
 		Rows(ctx)
 
 	if err != nil {
@@ -226,11 +190,10 @@ func (r *problemRowReader) ReadRows(ctx context.Context, tx chan<- Documenter) e
 	for rows.Next() {
 		select {
 		case <-ctx.Done():
-			slog.Info("read rows canceled.")
-			return batch.ErrInterrupt
+			return ctx.Err()
 		default:
 			var row ProblemRow
-			if err := r.db.ScanRow(ctx, rows, &row); err != nil {
+			if err := db.ScanRow(ctx, rows, &row); err != nil {
 				return errs.New(
 					"failed to scan row",
 					errs.WithCause(err),
@@ -241,4 +204,8 @@ func (r *problemRowReader) ReadRows(ctx context.Context, tx chan<- Documenter) e
 	}
 
 	return nil
+}
+
+func GenerateProblemDocument(ctx context.Context, reader RowReader[*ProblemRow], saveDir string, options ...option) error {
+	return GenerateDocument(ctx, reader, saveDir, options...)
 }

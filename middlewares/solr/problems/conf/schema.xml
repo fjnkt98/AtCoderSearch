@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<schema name="problems" version="1.6">
+  <fieldType name="i32" class="solr.IntPointField" docValues="true" />
+  <fieldType name="i64" class="solr.LongPointField" docValues="true" />
+  <fieldType name="f32" class="solr.FloatPointField" docValues="true" />
+  <fieldType name="f64" class="solr.DoublePointField" docValues="true" />
+  <fieldType name="String" class="solr.StrField" sortMissingLast="true" docValues="true" />
+  <fieldType name="bool" class="solr.BoolField" sortMissingLast="true" />
+  <fieldType name="DateTime" class="solr.DatePointField" docValues="true" />
+  <fieldType name="DateTimeRange" class="solr.DateRangeField" docValues="true" />
+
+  <fieldType name="Null" stored="false" indexed="false" multiValued="true" class="solr.StrField" />
+  <fieldType name="Binary" class="solr.BinaryField" />
+  <fieldType name="Rank" class="solr.RankField" />
+
+  <fieldType name="TextJa" class="solr.TextField" positionIncrementGap="100" autoGeneratePhraseQueries="false">
+    <analyzer type="index">
+      <tokenizer class="solr.JapaneseTokenizerFactory" mode="search" userDictionary="lang/ja/userdict.txt" userDictionaryEncoding="UTF-8" discardPunctuation="true" discardCompoundToken="false" />
+      <filter class="solr.JapanesePartOfSpeechStopFilterFactory" tags="lang/ja/stoptags.txt" />
+      <filter class="solr.CJKWidthFilterFactory" />
+      <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/ja/stopwords.txt" />
+      <filter class="solr.SynonymGraphFilterFactory" synonyms="lang/ja/synonyms.txt" ignoreCase="true" expand="true" tokenizerFactory="solr.JapaneseTokenizerFactory" tokenizerFactory.mode="normal" tokenizerFactory.userDictionary="lang/ja/userdict.txt" tokenizerFactory.userDictionaryEncoding="UTF-8" tokenizerFactory.discardPunctuation="true" />
+      <filter class="solr.FlattenGraphFilterFactory" />
+      <filter class="solr.JapaneseKatakanaStemFilterFactory" minimumLength="4" />
+      <filter class="solr.EnglishMinimalStemFilterFactory" />
+      <filter class="solr.LowerCaseFilterFactory" />
+    </analyzer>
+
+    <analyzer type="query">
+      <tokenizer class="solr.JapaneseTokenizerFactory" mode="search" userDictionary="lang/ja/userdict.txt" userDictionaryEncoding="UTF-8" discardPunctuation="true" discardCompoundToken="false" />
+      <filter class="solr.JapanesePartOfSpeechStopFilterFactory" tags="lang/ja/stoptags.txt" />
+      <filter class="solr.CJKWidthFilterFactory" />
+      <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/ja/stopwords.txt" />
+      <filter class="solr.JapaneseKatakanaStemFilterFactory" minimumLength="4" />
+      <filter class="solr.EnglishMinimalStemFilterFactory" />
+      <filter class="solr.LowerCaseFilterFactory" />
+    </analyzer>
+  </fieldType>
+
+  <fieldType name="TextReading" class="solr.TextField" positionIncrementGap="100" autoGeneratePhraseQueries="false">
+    <analyzer type="index">
+      <tokenizer class="solr.JapaneseTokenizerFactory" mode="search" userDictionary="lang/ja/userdict.txt" userDictionaryEncoding="UTF-8" discardPunctuation="true" discardCompoundToken="false" />
+      <filter class="solr.JapanesePartOfSpeechStopFilterFactory" tags="lang/ja/stoptags.txt" />
+      <filter class="solr.CJKWidthFilterFactory" />
+      <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/ja/stopwords.txt" />
+      <filter class="solr.JapaneseReadingFormFilterFactory" useRomaji="false" />
+      <filter class="solr.JapaneseKatakanaStemFilterFactory" minimumLength="4" />
+      <filter class="solr.EnglishMinimalStemFilterFactory" />
+      <filter class="solr.LowerCaseFilterFactory" />
+    </analyzer>
+
+    <analyzer type="query">
+      <tokenizer class="solr.JapaneseTokenizerFactory" mode="search" userDictionary="lang/ja/userdict.txt" userDictionaryEncoding="UTF-8" discardPunctuation="true" discardCompoundToken="false" />
+      <filter class="solr.JapanesePartOfSpeechStopFilterFactory" tags="lang/ja/stoptags.txt" />
+      <filter class="solr.CJKWidthFilterFactory" />
+      <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/ja/stopwords.txt" />
+      <filter class="solr.JapaneseReadingFormFilterFactory" useRomaji="false" />
+      <filter class="solr.JapaneseKatakanaStemFilterFactory" minimumLength="4" />
+      <filter class="solr.EnglishMinimalStemFilterFactory" />
+      <filter class="solr.LowerCaseFilterFactory" />
+    </analyzer>
+  </fieldType>
+
+  <fieldType name="TextEn" class="solr.TextField" positionIncrementGap="100" autoGeneratePhraseQueries="false">
+    <analyzer type="index">
+      <tokenizer class="solr.StandardTokenizerFactory" />
+      <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/en/stopwords.txt" />
+      <filter class="solr.LowerCaseFilterFactory" />
+      <filter class="solr.SynonymGraphFilterFactory" synonyms="lang/en/synonyms.txt" ignoreCase="true" expand="true" />
+      <filter class="solr.FlattenGraphFilterFactory" />
+      <filter class="solr.EnglishPossessiveFilterFactory" />
+      <filter class="solr.EnglishMinimalStemFilterFactory" />
+      <filter class="solr.PorterStemFilterFactory" />
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.StandardTokenizerFactory" />
+      <filter class="solr.StopFilterFactory" ignoreCase="true" words="lang/en/stopwords.txt" />
+      <filter class="solr.LowerCaseFilterFactory" />
+      <filter class="solr.EnglishPossessiveFilterFactory" />
+      <filter class="solr.EnglishMinimalStemFilterFactory" />
+      <filter class="solr.PorterStemFilterFactory" />
+    </analyzer>
+  </fieldType>
+
+  <fieldType name="TextWS" class="solr.TextField" positionIncrementGap="100" autoGeneratePhraseQueries="false">
+    <analyzer type="index">
+      <tokenizer class="solr.WhitespaceTokenizerFactory" />
+      <filter class="solr.LowerCaseFilterFactory" />
+      <filter class="solr.SynonymGraphFilterFactory" synonyms="lang/en/synonyms.txt" ignoreCase="true" expand="true" />
+      <filter class="solr.WordDelimiterGraphFilterFactory" />
+      <filter class="solr.FlattenGraphFilterFactory" />
+      <filter class="solr.EnglishPossessiveFilterFactory" />
+      <filter class="solr.EnglishMinimalStemFilterFactory" />
+      <filter class="solr.PorterStemFilterFactory" />
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.WhitespaceTokenizerFactory" />
+      <filter class="solr.LowerCaseFilterFactory" />
+      <filter class="solr.WordDelimiterGraphFilterFactory" />
+      <filter class="solr.EnglishPossessiveFilterFactory" />
+      <filter class="solr.EnglishMinimalStemFilterFactory" />
+      <filter class="solr.PorterStemFilterFactory" />
+    </analyzer>
+  </fieldType>
+
+  <fieldType name="TextUniGram" class="solr.TextField" positionIncrementGap="100" autoGeneratePhraseQueries="true">
+    <analyzer type="index">
+      <tokenizer class="solr.NGramTokenizerFactory" minGramSize="1" maxGramSize="1" />
+      <filter class="solr.CJKWidthFilterFactory" />
+      <!-- <filter class="solr.WordDelimiterGraphFilterFactory" />
+      <filter class="solr.FlattenGraphFilterFactory" /> -->
+      <filter class="solr.LowerCaseFilterFactory" />
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.NGramTokenizerFactory" minGramSize="1" maxGramSize="1" />
+      <filter class="solr.CJKWidthFilterFactory" />
+      <!-- <filter class="solr.WordDelimiterGraphFilterFactory" />
+      <filter class="solr.FlattenGraphFilterFactory" /> -->
+      <filter class="solr.LowerCaseFilterFactory" />
+    </analyzer>
+  </fieldType>
+
+  <field name="_version_" type="i64" indexed="false" stored="false" />
+  <field name="null" type="Null" indexed="false" stored="false" />
+
+  <uniqueKey>problemId</uniqueKey>
+  <field name="problemId" type="String" indexed="true" stored="true" />
+  <field name="problemTitle" type="String" indexed="true" stored="true" />
+  <field name="problemUrl" type="String" indexed="false" stored="true" />
+  <field name="contestId" type="String" indexed="true" stored="true" />
+  <field name="contestTitle" type="String" indexed="true" stored="true" />
+  <field name="contestUrl" type="String" indexed="false" stored="true" />
+  <field name="color" type="String" indexed="true" stored="true" />
+  <field name="startAt" type="DateTime" indexed="true" stored="true" />
+  <field name="duration" type="i64" indexed="true" stored="true" />
+  <field name="rateChange" type="String" indexed="true" stored="true" />
+  <field name="category" type="String" indexed="true" stored="true" />
+  <field name="difficulty" type="i32" indexed="true" stored="true" sortMissingLast="true" />
+  <field name="isExperimental" type="bool" indexed="true" stored="true" sortMissingLast="true" />
+  <field name="statementJa" type="TextJa" indexed="true" stored="true" multiValued="true" />
+  <field name="statementEn" type="TextEn" indexed="true" stored="true" multiValued="true" />
+
+  <field name="text_ja" type="TextJa" indexed="true" stored="true" multiValued="true" />
+  <field name="text_reading" type="TextReading" indexed="true" stored="true" multiValued="true" />
+  <field name="text_en" type="TextEn" indexed="true" stored="true" multiValued="true" />
+  <field name="text_ws" type="TextWS" indexed="true" stored="true" multiValued="true" />
+  <field name="text_unigram" type="TextUniGram" indexed="true" stored="true" multiValued="true" />
+
+  <dynamicField name="*__text_ja" type="TextJa" indexed="true" stored="false" multiValued="true" />
+  <dynamicField name="*__text_reading" type="TextReading" indexed="true" stored="false" multiValued="true" />
+  <dynamicField name="*__text_en" type="TextEn" indexed="true" stored="false" multiValued="true" />
+  <dynamicField name="*__text_ws" type="TextWS" indexed="true" stored="false" multiValued="true" />
+  <dynamicField name="*__text_unigram" type="TextUniGram" indexed="true" stored="false" multiValued="true" />
+
+  <copyField source="problemId" dest="text_ws" />
+  <copyField source="problemId" dest="problemId__text_ws" />
+  <copyField source="problemId" dest="text_unigram" />
+  <copyField source="problemId" dest="problemId__text_unigram" />
+
+  <copyField source="problemTitle" dest="text_ja" />
+  <copyField source="problemTitle" dest="problemTitle__text_ja" />
+  <copyField source="problemTitle" dest="text_en" />
+  <copyField source="problemTitle" dest="problemTitle__text_en" />
+  <copyField source="problemTitle" dest="text_unigram" />
+  <copyField source="problemTitle" dest="problemTitle__text_unigram" />
+
+  <copyField source="contestTitle" dest="text_ja" />
+  <copyField source="contestTitle" dest="contestTitle__text_ja" />
+  <copyField source="contestTitle" dest="text_en" />
+  <copyField source="contestTitle" dest="contestTitle__text_en" />
+  <copyField source="contestTitle" dest="text_unigram" />
+  <copyField source="contestTitle" dest="contestTitle__text_unigram" />
+
+  <copyField source="statementJa" dest="text_ja" />
+  <copyField source="statementJa" dest="text_reading" />
+  <copyField source="statementJa" dest="text_unigram" />
+
+  <copyField source="statementEn" dest="text_en" />
+  <copyField source="statementEn" dest="text_unigram" />
+</schema>

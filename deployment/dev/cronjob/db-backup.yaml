@@ -1,0 +1,85 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: db-backup
+spec:
+  schedule: "0 0 * * 1"
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 30
+  suspend: true
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      completions: 1
+      parallelism: 1
+      ttlSecondsAfterFinished: 30
+      template:
+        spec:
+          restartPolicy: Never
+          initContainers:
+            - name: dump-db
+              image: postgres:15-bullseye
+              env:
+                - name: TZ
+                  value: Asia/Tokyo
+                - name: POSTGRES_PASSWORD
+                  value: atcodersearch
+                - name: POSTGRES_USER
+                  value: atcodersearch
+                - name: POSTGRES_DB
+                  value: atcodersearch
+                - name: POSTGRES_HOST
+                  value: postgresql-0.postgresql-headless
+                - name: POSTGRES_PORT
+                  value: "5432"
+              resources:
+                requests:
+                  memory: 32Mi
+                  cpu: 25m
+              securityContext:
+                runAsUser: 999
+                runAsGroup: 999
+                runAsNonRoot: true
+              volumeMounts:
+                - name: dump-volume
+                  mountPath: /var/tmp/dump
+              command:
+                - /bin/bash
+                - -c
+                - echo "${POSTGRES_HOST}:${POSTGRES_PORT}:${POSTGRES_DB}:${POSTGRES_USER}:${POSTGRES_PASSWORD}" > ~/.pgpass && chmod 600 ~/.pgpass && pg_dump -Owc -U ${POSTGRES_USER} ${POSTGRES_DB} --port=${POSTGRES_PORT} --host=${POSTGRES_HOST} | gzip > /var/tmp/dump/atcodersearch.$(date '+%Y-%m-%d').dump.gz
+          containers:
+            - name: dump-upload
+              image: amazon/aws-cli
+              env:
+                - name: TZ
+                  value: Asia/Tokyo
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: aws-s3-auth
+                      key: aws-s3-access-key-id
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: aws-s3-auth
+                      key: aws-s3-secret-key
+                - name: AWS_REGION
+                  value: ap-northeast-1
+              resources:
+                requests:
+                  memory: 32Mi
+                  cpu: 25m
+              securityContext:
+                runAsUser: 1000
+                runAsGroup: 1000
+                runAsNonRoot: true
+              volumeMounts:
+                - name: dump-volume
+                  mountPath: /var/tmp/dump
+              command:
+                - /bin/bash
+                - -c
+                - aws s3 cp /var/tmp/dump/atcodersearch.$(date '+%Y-%m-%d').dump.gz s3://atcoder-search-dump/
+          volumes:
+            - name: dump-volume
+              emptyDir: {}
