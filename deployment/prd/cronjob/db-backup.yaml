@@ -6,7 +6,7 @@ spec:
   schedule: "0 0 * * 1"
   concurrencyPolicy: Forbid
   startingDeadlineSeconds: 30
-  suspend: false
+  suspend: true
   jobTemplate:
     spec:
       backoffLimit: 0
@@ -23,11 +23,20 @@ spec:
                 - name: TZ
                   value: Asia/Tokyo
                 - name: POSTGRES_PASSWORD
-                  value: atcodersearch
+                  valueFrom:
+                    secretKeyRef:
+                      name: db-auth
+                      key: password
                 - name: POSTGRES_USER
-                  value: atcodersearch
+                  valueFrom:
+                    secretKeyRef:
+                      name: db-auth
+                      key: username
                 - name: POSTGRES_DB
-                  value: atcodersearch
+                  valueFrom:
+                    secretKeyRef:
+                      name: db-auth
+                      key: database
                 - name: POSTGRES_HOST
                   value: postgresql-0.postgresql-headless
                 - name: POSTGRES_PORT
@@ -57,7 +66,7 @@ spec:
                   valueFrom:
                     secretKeyRef:
                       name: aws-s3-auth
-                      key: aws-s3-key-id
+                      key: aws-s3-access-key-id
                 - name: AWS_SECRET_ACCESS_KEY
                   valueFrom:
                     secretKeyRef:

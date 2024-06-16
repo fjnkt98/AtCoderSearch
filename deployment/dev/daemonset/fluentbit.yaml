@@ -52,9 +52,9 @@ spec:
             path: /var/lib/docker/containers
         - name: fluent-bit-config
           configMap:
-            # microk8s kubectl create configmap fluent-bit-config --from-file=fluentbit/fluent-bit.conf --dry-run=client --output=yaml | microk8s kubectl apply -f -
+            # microk8s kubectl create configmap fluent-bit-config --from-file=fluent-bit.conf --dry-run=client --output=yaml | microk8s kubectl apply -f -
             name: fluent-bit-config
         - name: parsers-config
           configMap:
-            # microk8s kubectl create configmap parsers-config --from-file=fluentbit/parsers.conf --dry-run=client --output=yaml | microk8s kubectl apply -f -
+            # microk8s kubectl create configmap parsers-config --from-file=parsers.conf --dry-run=client --output=yaml | microk8s kubectl apply -f -
             name: parsers-config
