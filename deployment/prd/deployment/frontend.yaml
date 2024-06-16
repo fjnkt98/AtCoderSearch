@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      terminationGracePeriodSeconds: 60
+      containers:
+        - name: frontend
+          image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-frontend:0.2.0
+          imagePullPolicy: Always
+          env:
+            - name: PUBLIC_EXTERNAL_API_HOST
+              value: https://atcoder-search.fjnkt98.com
+            - name: PUBLIC_INTERNAL_API_HOST
+              value: http://backend:8000
+          resources:
+            requests:
+              memory: 32Mi
+              cpu: 50m
+            limits:
+              memory: 128Mi
+              cpu: 250m
+          ports:
+            - name: frontend
+              containerPort: 3000
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            runAsNonRoot: true
+      imagePullSecrets:
+        - name: regcred
