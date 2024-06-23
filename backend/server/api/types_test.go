@@ -64,6 +64,7 @@ func TestParseSort(t *testing.T) {
 	}{
 		{name: "nil", value: nil, expected: []string{}},
 		{name: "empty", value: []string{}, expected: []string{}},
+		{name: "empty-string", value: []string{"", "-"}, expected: []string{}},
 		{name: "single-asc", value: []string{"score"}, expected: []string{"score asc"}},
 		{name: "single-desc", value: []string{"-score"}, expected: []string{"score desc"}},
 		{name: "multiple-asc", value: []string{"score", "id"}, expected: []string{"score asc", "id asc"}},

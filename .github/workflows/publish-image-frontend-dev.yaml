@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - develop
+    paths:
+      - frontend/**
 env:
   BUILD_CONTEXT: frontend
   ECR_REPOSITORY: atcodersearch-frontend

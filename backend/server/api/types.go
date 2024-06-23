@@ -30,8 +30,14 @@ func ParseSort(sort []string, defaults ...string) []string {
 	orders := make([]string, 0, len(sort)+len(defaults))
 	for _, s := range sort {
 		if strings.HasPrefix(s, "-") {
+			if s == "-" {
+				continue
+			}
 			orders = append(orders, fmt.Sprintf("%s desc", solr.Sanitize(s[1:])))
 		} else {
+			if s == "" {
+				continue
+			}
 			orders = append(orders, fmt.Sprintf("%s asc", solr.Sanitize(s)))
 		}
 	}

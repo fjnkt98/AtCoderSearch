@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - develop
+    paths:
+      - middlewares/solr/**
 env:
   BUILD_CONTEXT: middlewares/solr
   ECR_REPOSITORY: atcodersearch-solr
