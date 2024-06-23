@@ -28,7 +28,7 @@ spec:
               name: solr
           env:
             - name: SOLR_JAVA_MEM
-              value: "-Xms1024m -Xmx1024m"
+              value: "-Xms512m -Xmx512m"
           resources:
             limits:
               memory: 2048Mi
