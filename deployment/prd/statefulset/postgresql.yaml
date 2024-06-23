@@ -48,7 +48,7 @@ spec:
           args:
             - "postgres"
             - "-c"
-            - "shared_buffers=256MB"
+            - "shared_buffers=512MB"
             - "-c"
             - "checkpoint_timeout=30min"
             - "-c"
