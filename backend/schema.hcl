@@ -236,32 +236,96 @@ table "submissions" {
     type    = timestamptz
     default = sql("CURRENT_TIMESTAMP")
   }
-  index "submissions_contest_id_index" {
-    columns = [column.contest_id]
+  index "submissions_id_epoch_second_unique" {
+    unique = true
+    columns = [column.id, column.epoch_second]
   }
-  index "submissions_execution_time_index" {
-    columns = [column.execution_time]
+  index "submissions_problem_id_execution_time_index" {
+    columns = [column.problem_id, column.execution_time]
   }
-  index "submissions_epoch_second_index" {
-    columns = [column.epoch_second]
+  index "submissions_problem_id_epoch_second_index" {
+    columns = [column.problem_id, column.epoch_second]
   }
-  index "submissions_language_index" {
-    columns = [column.language]
+  index "submissions_problem_id_point_index" {
+    columns = [column.problem_id, column.point]
   }
-  index "submissions_length_index" {
-    columns = [column.length]
+  index "submissions_problem_id_length_index" {
+    columns = [column.problem_id, column.length]
   }
-  index "submissions_point_index" {
-    columns = [column.point]
+  index "submissions_contest_id_execution_time_index" {
+    columns = [column.contest_id, column.execution_time]
   }
-  index "submissions_problem_id_index" {
-    columns = [column.problem_id]
+  index "submissions_contest_id_epoch_second_index" {
+    columns = [column.contest_id, column.epoch_second]
   }
-  index "submissions_result_index" {
-    columns = [column.result]
+  index "submissions_contest_id_point_index" {
+    columns = [column.contest_id, column.point]
   }
-  index "submissions_user_id_index" {
-    columns = [column.user_id]
+  index "submissions_contest_id_length_index" {
+    columns = [column.contest_id, column.length]
+  }
+  index "submissions_user_id_execution_time_index" {
+    columns = [column.user_id, column.execution_time]
+  }
+  index "submissions_user_id_epoch_second_index" {
+    columns = [column.user_id, column.epoch_second]
+  }
+  index "submissions_user_id_point_index" {
+    columns = [column.user_id, column.point]
+  }
+  index "submissions_user_id_length_index" {
+    columns = [column.user_id, column.length]
+  }
+  index "submissions_language_execution_time_index" {
+    columns = [column.language, column.execution_time]
+  }
+  index "submissions_language_epoch_second_index" {
+    columns = [column.language, column.epoch_second]
+  }
+  index "submissions_language_point_index" {
+    columns = [column.language, column.point]
+  }
+  index "submissions_language_length_index" {
+    columns = [column.language, column.length]
+  }
+  index "submissions_point_execution_time_index" {
+    columns = [column.point, column.execution_time]
+  }
+  index "submissions_point_epoch_second_index" {
+    columns = [column.point, column.epoch_second]
+  }
+  index "submissions_point_length_index" {
+    columns = [column.point, column.length]
+  }
+  index "submissions_length_execution_time_index" {
+    columns = [column.length, column.execution_time]
+  }
+  index "submissions_length_epoch_second_index" {
+    columns = [column.length, column.epoch_second]
+  }
+  index "submissions_length_point_index" {
+    columns = [column.length, column.point]
+  }
+  index "submissions_result_execution_time_index" {
+    columns = [column.result, column.execution_time]
+  }
+  index "submissions_result_epoch_second_index" {
+    columns = [column.result, column.epoch_second]
+  }
+  index "submissions_result_point_index" {
+    columns = [column.result, column.point]
+  }
+  index "submissions_result_length_index" {
+    columns = [column.result, column.length]
+  }
+  index "submissions_execution_time_epoch_second_index" {
+    columns = [column.execution_time, column.epoch_second]
+  }
+  index "submissions_execution_time_point_index" {
+    columns = [column.execution_time, column.point]
+  }
+  index "submissions_execution_time_length_index" {
+    columns = [column.execution_time, column.length]
   }
   index "submissions_updated_at_index" {
     columns = [column.epoch_second, column.updated_at]
