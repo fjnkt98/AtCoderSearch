@@ -71,7 +71,7 @@ func NewServeCmd() *cli.Command {
 
 			port := ctx.Int("port")
 			go func() {
-				slog.Info("start server", slog.Int("port", port), slog.Any("allowed origins", allowedOrigins))
+				slog.Info("start server", slog.Int("port", port), slog.Any("allowedOrigins", allowedOrigins))
 				if err := e.Start(fmt.Sprintf(":%d", port)); err != nil && err != http.ErrServerClosed {
 					slog.Error("failed to start server", slog.Int("port", port), slog.Any("error", err))
 					panic(fmt.Sprintf("failed to start server: %s", err.Error()))

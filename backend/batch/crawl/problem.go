@@ -102,7 +102,7 @@ func (c *ProblemCrawler) Crawl(ctx context.Context) error {
 			return errs.New(
 				"failed to minify html",
 				errs.WithCause(err),
-				errs.WithContext("problem id", target.ID),
+				errs.WithContext("problemID", target.ID),
 			)
 		}
 

@@ -55,7 +55,7 @@ func (r *ProblemRow) Document(ctx context.Context) (*ProblemDoc, error) {
 		return nil, errs.New(
 			"failed to extract statement from problem",
 			errs.WithCause(err),
-			errs.WithContext("problem id", r.ProblemID),
+			errs.WithContext("problemID", r.ProblemID),
 		)
 	}
 
