@@ -6,7 +6,7 @@ spec:
   schedule: "30 2 * * *"
   concurrencyPolicy: Forbid
   startingDeadlineSeconds: 30
-  suspend: true
+  suspend: false
   jobTemplate:
     spec:
       backoffLimit: 0
