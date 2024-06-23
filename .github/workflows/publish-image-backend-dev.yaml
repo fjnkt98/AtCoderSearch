@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - develop
+    paths:
+      - backend/**
 env:
   BUILD_CONTEXT: backend
   ECR_REPOSITORY: atcodersearch-backend
