@@ -30,7 +30,7 @@ func NewSolrCore(host string, name string) (*SolrCore, error) {
 		return nil, errs.New(
 			"invalid host or core name was given",
 			errs.WithCause(err),
-			errs.WithContext("core name", name),
+			errs.WithContext("core", name),
 			errs.WithContext("host", host),
 		)
 	}

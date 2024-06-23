@@ -53,16 +53,16 @@ func (c *SubmissionCrawler) crawl(ctx context.Context, contestID string) ([]atco
 	q := repository.New(c.pool)
 	lastCrawled, err := q.FetchLatestCrawlHistory(ctx, contestID)
 	if err != nil && !errs.Is(err, pgx.ErrNoRows) {
-		return nil, errs.New("failed to fetch latest crawl history", errs.WithCause(err), errs.WithContext("contest id", contestID))
+		return nil, errs.New("failed to fetch latest crawl history", errs.WithCause(err), errs.WithContext("contestID", contestID))
 	}
 	startedAt := time.Now().Unix()
 
-	slog.Info("Start to crawl", slog.String("contest id", contestID), slog.Time("last crawled", time.Unix(lastCrawled, 0)))
+	slog.Info("Start to crawl", slog.String("contestID", contestID), slog.Time("lastCrawled", time.Unix(lastCrawled, 0)))
 
 	submissions := make([]atcoder.Submission, 0)
 loop:
 	for i := 1; i <= 1_000_000_000; i++ {
-		slog.Info("fetch submissions", slog.String("contest id", contestID), slog.Int("page", i))
+		slog.Info("fetch submissions", slog.String("contestID", contestID), slog.Int("page", i))
 
 		subs, err := c.client.FetchSubmissions(ctx, contestID, i)
 		if err != nil {
@@ -86,20 +86,20 @@ loop:
 				return nil, errs.New(
 					"failed to crawl submissions",
 					errs.WithCause(err),
-					errs.WithContext("contest id", contestID),
+					errs.WithContext("contestID", contestID),
 				)
 			}
 		}
 
 		if len(subs) == 0 {
-			slog.Info("There is no more submissions", slog.String("contest id", contestID))
+			slog.Info("There is no more submissions", slog.String("contestID", contestID))
 			break loop
 		}
 
 		submissions = append(submissions, subs...)
 
 		if subs[0].EpochSecond < lastCrawled {
-			slog.Info("Break crawling since all submissions after have been crawled.", slog.String("contest id", contestID), slog.Int("page", i))
+			slog.Info("Break crawling since all submissions after have been crawled.", slog.String("contestID", contestID), slog.Int("page", i))
 
 			time.Sleep(c.duration)
 			break loop
@@ -109,7 +109,7 @@ loop:
 	}
 
 	if _, err := q.CreateCrawlHistory(ctx, repository.CreateCrawlHistoryParams{StartedAt: startedAt, ContestID: contestID}); err != nil {
-		return nil, errs.New("failed to create crawl history", errs.WithCause(err), errs.WithContext("contest id", contestID))
+		return nil, errs.New("failed to create crawl history", errs.WithCause(err), errs.WithContext("contestID", contestID))
 	}
 
 	return submissions, nil
@@ -120,11 +120,12 @@ func (c *SubmissionCrawler) save(ctx context.Context, submissions []atcoder.Subm
 		return nil
 	}
 
+	slog.Info("Start to save submissions", slog.String("contestID", submissions[0].ContestID))
 	count, err := repository.BulkUpdate(ctx, c.pool, "submissions", repository.NewSubmissions(submissions))
 	if err != nil {
 		return errs.New("failed to bulk update submissions", errs.WithCause(err))
 	}
-	slog.Info("Save submissions successfully", slog.String("contest id", submissions[0].ContestID), slog.Int64("count", count))
+	slog.Info("Save submissions successfully", slog.String("contestID", submissions[0].ContestID), slog.Int64("count", count))
 	return nil
 }
 

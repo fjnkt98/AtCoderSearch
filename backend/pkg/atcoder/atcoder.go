@@ -84,7 +84,7 @@ func (c *AtCoderClient) FetchSubmissions(ctx context.Context, contestID string, 
 		return nil, errs.New(
 			"invalid contest id was given",
 			errs.WithCause(err),
-			errs.WithContext("contest id", contestID),
+			errs.WithContext("contestID", contestID),
 		)
 	}
 	u, err := url.Parse(p)
@@ -92,7 +92,7 @@ func (c *AtCoderClient) FetchSubmissions(ctx context.Context, contestID string, 
 		return nil, errs.New(
 			"invalid contest id was given",
 			errs.WithCause(err),
-			errs.WithContext("contest id", contestID),
+			errs.WithContext("contestID", contestID),
 		)
 	}
 	u.RawQuery = fmt.Sprintf("page=%d", page)
@@ -104,7 +104,7 @@ func (c *AtCoderClient) FetchSubmissions(ctx context.Context, contestID string, 
 			errs.WithCause(err),
 			errs.WithContext("uri", u.String()),
 			errs.WithContext("page", page),
-			errs.WithContext("contest id", contestID),
+			errs.WithContext("contestID", contestID),
 		)
 	}
 
@@ -115,7 +115,7 @@ func (c *AtCoderClient) FetchSubmissions(ctx context.Context, contestID string, 
 			errs.WithCause(err),
 			errs.WithContext("uri", u.String()),
 			errs.WithContext("page", page),
-			errs.WithContext("contest id", contestID),
+			errs.WithContext("contestID", contestID),
 		)
 	}
 	if res.StatusCode == http.StatusNotFound {
@@ -126,7 +126,7 @@ func (c *AtCoderClient) FetchSubmissions(ctx context.Context, contestID string, 
 			"non-ok status returned",
 			errs.WithContext("uri", u.String()),
 			errs.WithContext("page", page),
-			errs.WithContext("contest id", contestID),
+			errs.WithContext("contestID", contestID),
 		)
 	}
 
@@ -138,7 +138,7 @@ func (c *AtCoderClient) FetchSubmissions(ctx context.Context, contestID string, 
 			errs.WithCause(err),
 			errs.WithContext("uri", u.String()),
 			errs.WithContext("page", page),
-			errs.WithContext("contest id", contestID),
+			errs.WithContext("contestID", contestID),
 		)
 	}
 	for i := 0; i < len(submissions); i++ {
@@ -234,8 +234,8 @@ func (c *AtCoderClient) FetchSubmissionResult(ctx context.Context, contestID str
 		return "", errs.New(
 			"invalid contest id or submission id was given",
 			errs.WithCause(err),
-			errs.WithContext("contest id", contestID),
-			errs.WithContext("submission id", submissionID),
+			errs.WithContext("contestID", contestID),
+			errs.WithContext("submissionID", submissionID),
 		)
 	}
 	u, err := url.Parse(p)
@@ -243,8 +243,8 @@ func (c *AtCoderClient) FetchSubmissionResult(ctx context.Context, contestID str
 		return "", errs.New(
 			"invalid contest id or submission id was given",
 			errs.WithCause(err),
-			errs.WithContext("contest id", contestID),
-			errs.WithContext("submission id", submissionID),
+			errs.WithContext("contestID", contestID),
+			errs.WithContext("submissionID", submissionID),
 		)
 	}
 
@@ -307,8 +307,8 @@ func (c *AtCoderClient) FetchProblem(ctx context.Context, contestID string, prob
 		return "", errs.New(
 			"invalid contest id or problem id was given",
 			errs.WithCause(err),
-			errs.WithContext("contest id", contestID),
-			errs.WithContext("problem id", problemID),
+			errs.WithContext("contestID", contestID),
+			errs.WithContext("problemID", problemID),
 		)
 	}
 	u, err := url.Parse(p)
@@ -316,8 +316,8 @@ func (c *AtCoderClient) FetchProblem(ctx context.Context, contestID string, prob
 		return "", errs.New(
 			"invalid contest id or problem id was given",
 			errs.WithCause(err),
-			errs.WithContext("contest id", contestID),
-			errs.WithContext("problem id", problemID),
+			errs.WithContext("contestID", contestID),
+			errs.WithContext("problemID", problemID),
 		)
 	}
 
@@ -409,7 +409,7 @@ func scrapeUsers(html io.Reader) ([]User, error) {
 			case 0:
 				m := RANK_RE.FindStringSubmatch(td.Find("span").Text())
 				if m == nil || len(m) < 1 {
-					errors = append(errors, errs.New("rank text is not match the regexp", errs.WithContext("row number", i), errs.WithContext("col number", j)))
+					errors = append(errors, errs.New("rank text is not match the regexp", errs.WithContext("rowNumber", i), errs.WithContext("colNumber", j)))
 					break
 				}
 				if rank, err := strconv.Atoi(m[1]); err != nil {
@@ -458,25 +458,25 @@ func scrapeUsers(html io.Reader) ([]User, error) {
 				}
 			case 3:
 				if rating, err := strconv.Atoi(td.Text()); err != nil {
-					errors = append(errors, errs.New("failed to convert the rating", errs.WithCause(err), errs.WithContext("row number", i), errs.WithContext("col number", j)))
+					errors = append(errors, errs.New("failed to convert the rating", errs.WithCause(err), errs.WithContext("rowNumber", i), errs.WithContext("colNumber", j)))
 				} else {
 					user.Rating = int32(rating)
 				}
 			case 4:
 				if highestRating, err := strconv.Atoi(td.Text()); err != nil {
-					errors = append(errors, errs.New("failed to convert the highest rating", errs.WithCause(err), errs.WithContext("row number", i), errs.WithContext("col number", j)))
+					errors = append(errors, errs.New("failed to convert the highest rating", errs.WithCause(err), errs.WithContext("rowNumber", i), errs.WithContext("colNumber", j)))
 				} else {
 					user.HighestRating = int32(highestRating)
 				}
 			case 5:
 				if joinCount, err := strconv.Atoi(td.Text()); err != nil {
-					errors = append(errors, errs.New("failed to convert the join count", errs.WithCause(err), errs.WithContext("row number", i), errs.WithContext("col number", j)))
+					errors = append(errors, errs.New("failed to convert the join count", errs.WithCause(err), errs.WithContext("rowNumber", i), errs.WithContext("colNumber", j)))
 				} else {
 					user.JoinCount = int32(joinCount)
 				}
 			case 6:
 				if wins, err := strconv.Atoi(td.Text()); err != nil {
-					errors = append(errors, errs.New("failed to convert the win count", errs.WithCause(err), errs.WithContext("row number", i), errs.WithContext("col number", j)))
+					errors = append(errors, errs.New("failed to convert the win count", errs.WithCause(err), errs.WithContext("rowNumber", i), errs.WithContext("colNumber", j)))
 				} else {
 					user.Wins = int32(wins)
 				}
