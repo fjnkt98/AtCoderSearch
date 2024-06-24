@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   name: crawl-submission
 spec:
-  schedule: "0/30 0-20/1 * * *"
+  schedule: "*/15 * * * *"
   concurrencyPolicy: Forbid
   startingDeadlineSeconds: 30
   suspend: false
