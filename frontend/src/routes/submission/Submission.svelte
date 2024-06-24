@@ -30,8 +30,8 @@
       <span class="block whitespace-nowrap text-xs text-gray-700">{convertDateTime(item.submittedAt)}</span>
     </div>
     <div class="my-0.5 flex flex-row items-center gap-2">
-      <span class="block w-1/3 break-normal text-sm">{item.contestId.toUpperCase()}</span>
-      <span class={`block flex-grow text-center text-sm font-medium ${textColorStyles.get(item.color ?? "black")}`}>{item.problemTitle}</span>
+      <span class="block w-1/3 break-normal text-sm sm:text-base">{item.contestId.toUpperCase()}</span>
+      <span class={`block flex-grow text-center text-sm font-medium sm:text-base ${textColorStyles.get(item.color ?? "black")}`}>{item.problemTitle}</span>
     </div>
   </div>
 

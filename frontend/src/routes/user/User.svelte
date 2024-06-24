@@ -27,7 +27,7 @@
     </div>
     <div class="flex flex-grow flex-col">
       <div class="flex flex-row items-center justify-start gap-1">
-        <a href={item.userUrl} class={`block flex-grow text-center ${textColorStyles.get(item.color ?? "black")}`} target="_blank">{item.userId}</a>
+        <a href={item.userUrl} class={`block flex-grow text-center sm:text-lg ${textColorStyles.get(item.color ?? "black")}`} target="_blank">{item.userId}</a>
       </div>
 
       {#if item.affiliation != null}
