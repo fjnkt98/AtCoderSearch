@@ -83,6 +83,7 @@ export type Submission = {
   color: string;
   userId: string;
   language: string;
+  languageGroup: string;
   point: number;
   length: number;
   result: string;

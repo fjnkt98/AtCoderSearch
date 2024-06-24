@@ -14,35 +14,33 @@
   ]);
 </script>
 
-<div class="mx-2 my-1 flex min-w-96 flex-row rounded-lg bg-white px-3 py-2 shadow-sm shadow-gray-400">
+<div class="mx-2 my-1 flex flex-row rounded-lg bg-white px-1 py-2 shadow-sm shadow-gray-400 md:px-3 lg:min-w-96">
   <div class="flex flex-grow flex-row items-center justify-between">
-    <span class="block w-16 text-center">{item.rank}</span>
+    <div class="flex w-12 flex-col items-center justify-between">
+      {#if item.crown != null}
+        <Icon src={FaSolidCrown} color={crownColors.get(item.crown)} />
+      {/if}
+      <span class="block text-center">{item.rank}</span>
+      {#if item.country != null}
+        <span class="block text-center text-xs">{item.country}</span>
+      {/if}
+    </div>
     <div class="flex flex-grow flex-col">
       <div class="flex flex-row items-center justify-start gap-1">
-        {#if item.crown != null}
-          <Icon src={FaSolidCrown} color={crownColors.get(item.crown)} />
-        {/if}
-        <a href={item.userUrl} class={`block flex-grow  text-xl ${textColorStyles.get(item.color ?? "black")}`} target="_blank">{item.userId}</a>
+        <a href={item.userUrl} class={`block flex-grow text-center sm:text-lg ${textColorStyles.get(item.color ?? "black")}`} target="_blank">{item.userId}</a>
       </div>
 
       {#if item.affiliation != null}
-        <span class="block text-sm text-gray-600">{item.affiliation}</span>
+        <span class="block text-pretty text-center text-xs text-gray-600">{item.affiliation}</span>
       {/if}
     </div>
   </div>
 
-  <div class="flex-0 flex min-w-32 flex-col justify-center text-gray-900">
+  <div class="flex-0 flex flex-col justify-center text-gray-900">
     <div class="flex flex-row items-center justify-between gap-4 text-xs">
-      <span class="block">レーティング</span>
+      <span class="block text-nowrap">レーティング</span>
       <span class="block">{item.rating}</span>
     </div>
-
-    {#if item.country != null}
-      <div class="flex flex-row items-center justify-between gap-4 text-xs">
-        <span class="block">国と地域</span>
-        <span class="block">{item.country}</span>
-      </div>
-    {/if}
     {#if item.birthYear != null}
       <div class="flex flex-row items-center justify-between gap-4 text-xs">
         <span class="block">誕生年</span>

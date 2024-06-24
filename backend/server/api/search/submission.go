@@ -67,6 +67,7 @@ func (p *SubmissionParameter) Query(pool *pgxpool.Pool) *bun.SelectQuery {
 		ColumnExpr("CASE WHEN d.difficulty < 0 THEN 'black' WHEN d.difficulty < 400 THEN 'gray' WHEN d.difficulty < 800 THEN 'brown' WHEN d.difficulty < 1200 THEN 'green' WHEN d.difficulty < 1600 THEN 'cyan' WHEN d.difficulty < 2000 THEN 'blue' WHEN d.difficulty < 2400 THEN 'yellow' WHEN d.difficulty < 2800 THEN 'orange' WHEN d.difficulty < 3200 THEN 'red' WHEN d.difficulty < 3600 THEN 'silver' ELSE 'gold' END AS color").
 		ColumnExpr("s.user_id").
 		ColumnExpr("s.language").
+		ColumnExpr("l.group AS language_group").
 		ColumnExpr("s.point").
 		ColumnExpr("s.length").
 		ColumnExpr("s.result").
@@ -142,6 +143,7 @@ type SubmissionResponse struct {
 	Color         string    `bun:"color" json:"color"`
 	UserID        string    `bun:"user_id" json:"userId"`
 	Language      string    `bun:"language" json:"language"`
+	LanguageGroup string    `bun:"language_group" json:"languageGroup"`
 	Point         float64   `bun:"point" json:"point"`
 	Length        int64     `bun:"length" json:"length"`
 	Result        string    `bun:"result" json:"result"`
