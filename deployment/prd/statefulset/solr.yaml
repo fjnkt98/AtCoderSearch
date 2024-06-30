@@ -21,7 +21,7 @@ spec:
       terminationGracePeriodSeconds: 60
       containers:
         - name: solr
-          image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-solr:0.2.0
+          image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-solr:0.2.1
           imagePullPolicy: Always
           ports:
             - containerPort: 8983
