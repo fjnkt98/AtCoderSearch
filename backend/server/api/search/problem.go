@@ -49,7 +49,8 @@ func (p *ProblemParameter) Query(core *solr.SolrCore) *solr.SelectQuery {
 		Fl(strings.Join(solr.FieldList(new(ProblemResponse)), ",")).
 		Q(api.ParseQ(p.Q)).
 		Op("AND").
-		Qf("text_ja text_en text_reading").
+		Qf("text_ja text_en text_reading text_unigram^0 text_ws^10").
+		Bq(p.Bq()...).
 		Sow(true).
 		QAlt("*:*").
 		Fq(
@@ -88,6 +89,24 @@ func (p *ProblemParameter) Query(core *solr.SolrCore) *solr.SelectQuery {
 	q = q.JsonFacet(jsonFacet)
 
 	return q
+}
+
+func (p *ProblemParameter) Bq() []string {
+	parsed := solr.Parse(p.Q)
+	res := make([]string, 0, len(parsed))
+	for _, w := range parsed {
+		if w.Negative {
+			continue
+		}
+
+		w.Phrase = true
+		res = append(
+			res,
+			fmt.Sprintf("text_ja:%s", w.String()),
+			fmt.Sprintf("text_en:%s", w.String()),
+		)
+	}
+	return res
 }
 
 type ProblemResponse struct {
