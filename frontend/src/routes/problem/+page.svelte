@@ -16,7 +16,7 @@
   const widthThreshold = 768;
 
   let opened = false;
-  let s: string = $page.url.searchParams.get("s") ?? "2";
+  let s: string = $page.url.searchParams.get("s") ?? "1";
 
   export let data: SearchProblemResult;
   const searchQuery = createQuery({
