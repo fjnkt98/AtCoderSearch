@@ -10,7 +10,7 @@ export async function fetchSearchProblemResult(params: URLSearchParams, fetch: (
     limit: 60,
     page: numberFromQueryString(params.get("p")) ?? 1,
     q: params.get("q"),
-    sort: selections.get(params.get("s") ?? "2")?.values ?? ["-startAt"],
+    sort: selections.get(params.get("s") ?? "1")?.values ?? ["-score"],
     facet: ["category", "difficulty"],
     category: params.getAll("category"),
     difficultyFrom: numberFromQueryString(params.get("difficultyFrom")),

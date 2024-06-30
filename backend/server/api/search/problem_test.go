@@ -114,3 +114,28 @@ func TestSearchProblemSort(t *testing.T) {
 		})
 	}
 }
+
+func TestSearchProblemBq(t *testing.T) {
+	cases := []struct {
+		name     string
+		param    ProblemParameter
+		expected []string
+	}{
+		{name: "empty", param: ProblemParameter{}, expected: []string{}},
+		{name: "one word", param: ProblemParameter{Q: "foo"}, expected: []string{`text_ja:"foo"`, `text_en:"foo"`}},
+		{name: "multiple word", param: ProblemParameter{Q: "foo bar"}, expected: []string{`text_ja:"foo"`, `text_en:"foo"`, `text_ja:"bar"`, `text_en:"bar"`}},
+		{name: "negative word", param: ProblemParameter{Q: "foo -bar"}, expected: []string{`text_ja:"foo"`, `text_en:"foo"`}},
+		{name: "phrase word", param: ProblemParameter{Q: `foo "bar"`}, expected: []string{`text_ja:"foo"`, `text_en:"foo"`, `text_ja:"bar"`, `text_en:"bar"`}},
+	}
+
+	for _, tt := range cases {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.param.Bq()
+
+			if !reflect.DeepEqual(tt.expected, actual) {
+				t.Errorf("expected \n%#v\n, but got \n%#v\n", tt.expected, actual)
+			}
+		})
+	}
+}
