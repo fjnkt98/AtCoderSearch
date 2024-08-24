@@ -1,0 +1,13 @@
+{
+  "sqltools.connections": [
+    {
+      "server": "localhost",
+      "port": 5432,
+      "driver": "PostgreSQL",
+      "name": "atcodersearch",
+      "database": "atcodersearch",
+      "username": "atcodersearch",
+      "password": "atcodersearch"
+    }
+  ]
+}
