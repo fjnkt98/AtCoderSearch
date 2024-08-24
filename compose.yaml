@@ -1,7 +1,7 @@
 services:
   postgresql:
     image: postgres:16-bullseye
-    container_name: atcodersearch-postgres
+    container_name: atcodersearch-postgresql
     environment:
       POSTGRES_PASSWORD: atcodersearch
       POSTGRES_USER: atcodersearch
@@ -10,10 +10,24 @@ services:
       TZ: "Asia/Tokyo"
     volumes:
       - type: volume
-        source: atcodersearch-postgres
+        source: atcodersearch-postgresql
         target: /var/lib/postgresql/data
     ports:
       - 5432:5432
+    networks:
+      atcodersearch-net:
+
+  meilisearch:
+    image: getmeili/meilisearch:prototype-japanese-184
+    container_name: atcodersearch-meilisearch
+    environment:
+      - MEILI_MASTER_KEY=meili-master-key
+    volumes:
+      - type: volume
+        source: atcodersearch-meilisearch
+        target: /meili_data
+    ports:
+      - 7700:7700
     networks:
       atcodersearch-net:
 
@@ -21,4 +35,5 @@ networks:
   atcodersearch-net:
 
 volumes:
-  atcodersearch-postgres:
+  atcodersearch-postgresql:
+  atcodersearch-meilisearch:
