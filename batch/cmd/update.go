@@ -98,7 +98,7 @@ func NewUpdateCmd() *cli.Command {
 	}
 
 	return &cli.Command{
-		Name: "crawl",
+		Name: "update",
 		Subcommands: []*cli.Command{
 			updateLanguageCmd,
 			updateProblemCmd,
