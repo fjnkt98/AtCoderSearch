@@ -1,11 +1,13 @@
 use std::{
+    borrow::Cow,
+    collections::HashMap,
     sync::{Arc, LazyLock},
     time::Duration,
 };
 
 use anyhow::Context as _;
 use regex::Regex;
-use reqwest::{cookie::Jar, Client, Url};
+use reqwest::{cookie::Jar, header::CONTENT_TYPE, Client, Url};
 
 static CSRF_PATTERN: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r#"var csrfToken = "(.+)""#).unwrap());
@@ -18,9 +20,8 @@ pub struct AtCoderClient {
 
 impl AtCoderClient {
     pub fn new() -> anyhow::Result<Self> {
-        let jar = Arc::new(Jar::default());
         let client = Client::builder()
-            .cookie_provider(jar)
+            .cookie_store(true)
             .timeout(Duration::from_secs(30))
             .build()
             .with_context(|| "create http client")?;
@@ -28,32 +29,113 @@ impl AtCoderClient {
         return Ok(Self { client });
     }
 
-    pub async fn login(
-        &self,
-        username: impl AsRef<str>,
-        password: impl AsRef<str>,
-    ) -> anyhow::Result<()> {
-        todo!()
+    pub async fn login<'a>(&self, username: &'a str, password: &'a str) -> anyhow::Result<()> {
+        let url = Url::parse("https://atcoder.jp/login").with_context(|| "parse login url")?;
+
+        let res = self
+            .client
+            .get(url.clone())
+            .send()
+            .await
+            .with_context(|| "request to login url")?;
+        let body = res.text().await.with_context(|| "get response body")?;
+
+        let token = extract_csrf_token(&body).with_context(|| "extract csrf token")?;
+
+        let form = HashMap::from([
+            ("username", username),
+            ("password", password),
+            ("csrf_token", &token),
+        ]);
+        let res = self
+            .client
+            .post(url)
+            .form(&form)
+            .send()
+            .await
+            .with_context(|| "request to login")?;
+
+        match res.error_for_status() {
+            Ok(_) => Ok(()),
+            Err(e) => Err(anyhow::anyhow!(
+                "login authentication failed with status: {:?}",
+                e.status()
+            )),
+        }
     }
 
-    pub async fn fetch_problem_html(
+    pub async fn fetch_problem_html<'a>(
         &self,
-        contest_id: impl AsRef<str>,
-        problem_id: impl AsRef<str>,
+        contest_id: &'a str,
+        problem_id: &'a str,
     ) -> anyhow::Result<String> {
-        todo!();
+        let url = Url::parse(
+            format!(
+                "https://atcoder.jp/contests/{}/tasks/{}",
+                contest_id, problem_id
+            )
+            .as_str(),
+        )
+        .with_context(|| "parse problem url")?;
+
+        let res = self
+            .client
+            .get(url)
+            .send()
+            .await
+            .with_context(|| "request to get problem html")?;
+
+        let body = res.text().await.with_context(|| "get response body")?;
+
+        Ok(body)
     }
 
     pub async fn fetch_users(&self, page: i64) -> anyhow::Result<Vec<User>> {
-        todo!();
+        let url =
+            Url::parse("https://atcoder.jp/ranking/all").with_context(|| "parse users url")?;
+
+        let params = HashMap::from([
+            ("contestType", String::from("algo")),
+            ("page", page.to_string()),
+        ]);
+
+        let res = self
+            .client
+            .get(url)
+            .query(&params)
+            .send()
+            .await
+            .with_context(|| "request to fetch users")?;
+
+        let body = res.text().await.with_context(|| "get response body")?;
+
+        let users = scrape_users(&body)?;
+
+        Ok(users)
     }
 
-    pub async fn fetch_submissions(
+    pub async fn fetch_submissions<'a>(
         &self,
-        contest_id: impl AsRef<str>,
+        contest_id: &'a str,
         page: i64,
     ) -> anyhow::Result<Vec<Submission>> {
-        todo!();
+        let url =
+            Url::parse(format!("https://atcoder.jp/contests/{}/submissions", contest_id).as_str())
+                .with_context(|| "parse submissions url")?;
+
+        let res = self
+            .client
+            .get(url)
+            .query(&[("page", page)])
+            .send()
+            .await
+            .with_context(|| "request to fetch submissions")?;
+
+        let body = res.text().await.with_context(|| "get response body")?;
+
+        let submissions = scrape_submissions(&body)?;
+
+        Ok(submissions)
     }
 }
 
