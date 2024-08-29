@@ -124,24 +124,165 @@ mod tests {
     use rstest::rstest;
 
     #[test]
+    fn test_new_atcoder_problems_client() {
+        AtCoderProblemsClient::new().unwrap();
+    }
+
+    #[test]
     fn test_contest_rated_target() {
-        let cases = [(
-            Contest {
-                id: String::from("test"),
-                start_epoch_second: 1468670399,
-                duration_second: 0,
-                title: String::from("test"),
-                rate_change: String::from("-"),
-            },
-            RatedTarget {
-                typ: RatedType::Unrated,
-                from: None,
-                to: None,
-            },
-        )];
+        let cases = [
+            (
+                Contest {
+                    id: String::from("test"),
+                    start_epoch_second: 1468670399,
+                    duration_second: 0,
+                    title: String::from("test"),
+                    rate_change: String::from(""),
+                },
+                RatedTarget {
+                    typ: RatedType::Unrated,
+                    from: None,
+                    to: None,
+                },
+            ),
+            (
+                Contest {
+                    id: String::from("test"),
+                    start_epoch_second: 1468670401,
+                    duration_second: 0,
+                    title: String::from("test"),
+                    rate_change: String::from("-"),
+                },
+                RatedTarget {
+                    typ: RatedType::Unrated,
+                    from: None,
+                    to: None,
+                },
+            ),
+            (
+                Contest {
+                    id: String::from("test"),
+                    start_epoch_second: 1468670401,
+                    duration_second: 0,
+                    title: String::from("test"),
+                    rate_change: String::from("All"),
+                },
+                RatedTarget {
+                    typ: RatedType::All,
+                    from: None,
+                    to: None,
+                },
+            ),
+            (
+                Contest {
+                    id: String::from("test"),
+                    start_epoch_second: 1468670401,
+                    duration_second: 0,
+                    title: String::from("test"),
+                    rate_change: String::from(" ~ 1199"),
+                },
+                RatedTarget {
+                    typ: RatedType::UpperBound,
+                    from: None,
+                    to: Some(1199),
+                },
+            ),
+            (
+                Contest {
+                    id: String::from("test"),
+                    start_epoch_second: 1468670401,
+                    duration_second: 0,
+                    title: String::from("test"),
+                    rate_change: String::from(" ~ 2799"),
+                },
+                RatedTarget {
+                    typ: RatedType::UpperBound,
+                    from: None,
+                    to: Some(2799),
+                },
+            ),
+            (
+                Contest {
+                    id: String::from("test"),
+                    start_epoch_second: 1468670401,
+                    duration_second: 0,
+                    title: String::from("test"),
+                    rate_change: String::from("1200 ~ "),
+                },
+                RatedTarget {
+                    typ: RatedType::LowerBound,
+                    from: Some(1200),
+                    to: None,
+                },
+            ),
+            (
+                Contest {
+                    id: String::from("test"),
+                    start_epoch_second: 1468670401,
+                    duration_second: 0,
+                    title: String::from("test"),
+                    rate_change: String::from("1200 ~ 2799"),
+                },
+                RatedTarget {
+                    typ: RatedType::Range,
+                    from: Some(1200),
+                    to: Some(2799),
+                },
+            ),
+        ];
 
         for (c, t) in cases {
             assert_eq!(t, c.rated_target())
+        }
+    }
+
+    #[test]
+    fn test_contest_categorize() {
+        let cases = [
+            (
+                Contest {
+                    id: String::from("abc042"),
+                    start_epoch_second: 1469275200,
+                    duration_second: 6000,
+                    title: String::from("AtCoder Beginner Contest 042"),
+                    rate_change: String::from(" ~ 1199"),
+                },
+                "ABC",
+            ),
+            (
+                Contest {
+                    id: String::from("zone2021"),
+                    duration_second: 6000,
+                    rate_change: String::from(" ~ 1999"),
+                    start_epoch_second: 1619870400,
+                    title: String::from("ZONeエナジー プログラミングコンテスト  “HELLO SPACE”"),
+                },
+                "ABC-Like",
+            ),
+            (
+                Contest {
+                    id: String::from("jsc2019-final"),
+                    duration_second: 10800,
+                    rate_change: String::from("-"),
+                    start_epoch_second: 1569728700,
+                    title: String::from("第一回日本最強プログラマー学生選手権決勝"),
+                },
+                "Other Sponsored",
+            ),
+            (
+                Contest {
+                    id: String::from("ttpc2019"),
+                    duration_second: 18000,
+                    rate_change: String::from("-"),
+                    start_epoch_second: 1567224300,
+                    title: String::from("東京工業大学プログラミングコンテスト2019"),
+                },
+                "Other Contests",
+            ),
+        ];
+
+        for (c, want) in cases {
+            assert_eq!(want, c.categorize())
         }
     }
 }
