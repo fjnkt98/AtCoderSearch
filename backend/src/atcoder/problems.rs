@@ -1,8 +1,9 @@
 use anyhow::Context as _;
 use regex::Regex;
-use std::{sync::LazyLock, time::Duration};
+use serde::Deserialize;
+use std::{collections::BTreeMap, sync::LazyLock, time::Duration};
 
-use reqwest::Client;
+use reqwest::{Client, Url};
 
 static AGC001_STARTED_AT: i64 = 1468670400;
 static JOI_PATTERN: LazyLock<Regex> = LazyLock::new(|| Regex::new(r#"^(jag|JAG)"#).unwrap());
@@ -56,6 +57,7 @@ impl AtCoderProblemsClient {
     pub fn new() -> anyhow::Result<Self> {
         let client = Client::builder()
             .timeout(Duration::from_secs(30))
+            .gzip(true)
             .build()
             .with_context(|| "create http client")?;
 
@@ -63,19 +65,58 @@ impl AtCoderProblemsClient {
     }
 
     pub async fn fetch_contests(&self) -> anyhow::Result<Vec<Contest>> {
-        todo!();
+        let uri = Url::parse("https://kenkoooo.com/atcoder/resources/contests.json")
+            .with_context(|| "parse contests.json uri")?;
+        let res = self
+            .client
+            .get(uri)
+            .send()
+            .await
+            .with_context(|| "request to contests.json")?;
+        let contests: Vec<Contest> = res
+            .json()
+            .await
+            .with_context(|| "deserialize contests json")?;
+
+        Ok(contests)
     }
 
     pub async fn fetch_problems(&self) -> anyhow::Result<Vec<Problem>> {
-        todo!();
+        let uri = Url::parse("https://kenkoooo.com/atcoder/resources/problems.json")
+            .with_context(|| "parse problems.json uri")?;
+        let res = self
+            .client
+            .get(uri)
+            .send()
+            .await
+            .with_context(|| "request to problems.json")?;
+        let problems: Vec<Problem> = res
+            .json()
+            .await
+            .with_context(|| "deserialize problems json")?;
+
+        Ok(problems)
     }
 
-    pub async fn fetch_difficulties(&self) -> anyhow::Result<Vec<Difficulty>> {
-        todo!();
+    pub async fn fetch_difficulties(&self) -> anyhow::Result<BTreeMap<String, Difficulty>> {
+        let uri = Url::parse("https://kenkoooo.com/atcoder/resources/problem-models.json")
+            .with_context(|| "parse problem-models.json uri")?;
+        let res = self
+            .client
+            .get(uri)
+            .send()
+            .await
+            .with_context(|| "request to problem-models.json")?;
+        let difficulties: BTreeMap<String, Difficulty> = res
+            .json()
+            .await
+            .with_context(|| "deserialize problems json")?;
+
+        Ok(difficulties)
     }
 }
 
-#[derive(Debug, PartialEq, PartialOrd)]
+#[derive(Debug, PartialEq, PartialOrd, Deserialize)]
 pub struct Contest {
     pub id: String,
     pub start_epoch_second: i64,
@@ -94,7 +135,7 @@ impl Contest {
     }
 }
 
-#[derive(Debug, PartialEq, PartialOrd)]
+#[derive(Debug, PartialEq, PartialOrd, Deserialize)]
 pub struct Problem {
     pub id: String,
     pub contest_id: String,
@@ -103,7 +144,7 @@ pub struct Problem {
     pub title: String,
 }
 
-#[derive(Debug, PartialEq, PartialOrd)]
+#[derive(Debug, PartialEq, PartialOrd, Deserialize)]
 pub struct Difficulty {
     pub slope: Option<f64>,
     pub intercept: Option<f64>,
@@ -112,7 +153,7 @@ pub struct Difficulty {
     pub discrimination: Option<f64>,
     pub irt_loglikelihood: Option<f64>,
     pub irt_users: Option<f64>,
-    pub is_experimental: bool,
+    pub is_experimental: Option<bool>,
 }
 
 #[cfg(test)]
@@ -126,6 +167,24 @@ mod tests {
     #[test]
     fn test_new_atcoder_problems_client() {
         AtCoderProblemsClient::new().unwrap();
+    }
+
+    #[tokio::test]
+    async fn test_fetch_contests() {
+        let client = AtCoderProblemsClient::new().unwrap();
+        client.fetch_contests().await.unwrap();
+    }
+
+    #[tokio::test]
+    async fn test_fetch_problems() {
+        let client = AtCoderProblemsClient::new().unwrap();
+        client.fetch_problems().await.unwrap();
+    }
+
+    #[tokio::test]
+    async fn test_fetch_difficulties() {
+        let client = AtCoderProblemsClient::new().unwrap();
+        client.fetch_difficulties().await.unwrap();
     }
 
     #[test]
