@@ -65,11 +65,11 @@ impl AtCoderProblemsClient {
     }
 
     pub async fn fetch_contests(&self) -> anyhow::Result<Vec<Contest>> {
-        let uri = Url::parse("https://kenkoooo.com/atcoder/resources/contests.json")
-            .with_context(|| "parse contests.json uri")?;
+        let url = Url::parse("https://kenkoooo.com/atcoder/resources/contests.json")
+            .with_context(|| "parse contests.json url")?;
         let res = self
             .client
-            .get(uri)
+            .get(url)
             .send()
             .await
             .with_context(|| "request to contests.json")?;
@@ -82,11 +82,11 @@ impl AtCoderProblemsClient {
     }
 
     pub async fn fetch_problems(&self) -> anyhow::Result<Vec<Problem>> {
-        let uri = Url::parse("https://kenkoooo.com/atcoder/resources/problems.json")
-            .with_context(|| "parse problems.json uri")?;
+        let url = Url::parse("https://kenkoooo.com/atcoder/resources/problems.json")
+            .with_context(|| "parse problems.json url")?;
         let res = self
             .client
-            .get(uri)
+            .get(url)
             .send()
             .await
             .with_context(|| "request to problems.json")?;
@@ -99,11 +99,11 @@ impl AtCoderProblemsClient {
     }
 
     pub async fn fetch_difficulties(&self) -> anyhow::Result<BTreeMap<String, Difficulty>> {
-        let uri = Url::parse("https://kenkoooo.com/atcoder/resources/problem-models.json")
-            .with_context(|| "parse problem-models.json uri")?;
+        let url = Url::parse("https://kenkoooo.com/atcoder/resources/problem-models.json")
+            .with_context(|| "parse problem-models.json url")?;
         let res = self
             .client
-            .get(uri)
+            .get(url)
             .send()
             .await
             .with_context(|| "request to problem-models.json")?;
