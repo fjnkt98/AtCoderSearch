@@ -1,4 +1,5 @@
 use anyhow::Context as _;
+use itertools::Itertools;
 use regex::Regex;
 use serde::Deserialize;
 use std::{collections::BTreeMap, sync::LazyLock, time::Duration};
@@ -34,19 +35,12 @@ static SPONSORED_PATTERN_3: LazyLock<Regex> = LazyLock::new(|| {
 });
 
 #[derive(Debug, PartialEq, PartialOrd)]
-pub enum RatedType {
+pub enum RatedTarget {
     Unrated,
     All,
-    Range,
-    UpperBound,
-    LowerBound,
-}
-
-#[derive(Debug, PartialEq, PartialOrd)]
-pub struct RatedTarget {
-    typ: RatedType,
-    from: Option<i64>,
-    to: Option<i64>,
+    Range { from: i64, to: i64 },
+    UpperBound { to: i64 },
+    LowerBound { from: i64 },
 }
 
 pub struct AtCoderProblemsClient {
@@ -127,11 +121,75 @@ pub struct Contest {
 
 impl Contest {
     pub fn rated_target(&self) -> RatedTarget {
-        todo!();
+        if self.start_epoch_second < AGC001_STARTED_AT {
+            return RatedTarget::Unrated;
+        }
+
+        match self.rate_change.as_str() {
+            "-" => RatedTarget::Unrated,
+            "All" => RatedTarget::All,
+            _ => {
+                if let Some((from, to)) = self.rate_change.split(" ~ ").collect_tuple() {
+                    match (from.parse::<i64>(), to.parse::<i64>()) {
+                        (Ok(from), Ok(to)) => RatedTarget::Range { from, to },
+                        (Ok(from), Err(_)) => RatedTarget::LowerBound { from },
+                        (Err(_), Ok(to)) => RatedTarget::UpperBound { to },
+                        (Err(_), Err(_)) => RatedTarget::Unrated,
+                    }
+                } else {
+                    RatedTarget::Unrated
+                }
+            }
+        }
     }
 
     pub fn categorize(&self) -> String {
-        todo!();
+        if self.id.starts_with("abc") {
+            return String::from("ABC");
+        }
+        if self.id.starts_with("arc") {
+            return String::from("ARC");
+        }
+        if self.id.starts_with("agc") {
+            return String::from("AGC");
+        }
+        if self.id.starts_with("ahc") {
+            return String::from("AHC");
+        }
+
+        match self.rated_target() {
+            RatedTarget::All => String::from("AGC-Like"),
+            RatedTarget::UpperBound { .. } => String::from("ABC-Like"),
+            RatedTarget::LowerBound { .. } => String::from("ARC-Like"),
+            RatedTarget::Unrated => {
+                if self.id.starts_with("past") {
+                    return String::from("PAST");
+                }
+                if self.id.starts_with("joi") {
+                    return String::from("JOI");
+                }
+                if JOI_PATTERN.is_match(&self.id) {
+                    return String::from("JOI");
+                }
+
+                if MARATHON_PATTERN_1.is_match(&self.id)
+                    || MARATHON_PATTERN_2.is_match(&self.id)
+                    || MARATHON_PATTERN_3.is_match(&self.id)
+                {
+                    return String::from("Marathon");
+                }
+
+                if SPONSORED_PATTERN_1.is_match(&self.title)
+                    || SPONSORED_PATTERN_2.is_match(&self.title)
+                    || SPONSORED_PATTERN_3.is_match(&self.title)
+                {
+                    return String::from("Other Sponsored");
+                }
+
+                return String::from("Other Contests");
+            }
+            _ => String::from("Other Contests"),
+        }
     }
 }
 
@@ -198,11 +256,7 @@ mod tests {
                     title: String::from("test"),
                     rate_change: String::from(""),
                 },
-                RatedTarget {
-                    typ: RatedType::Unrated,
-                    from: None,
-                    to: None,
-                },
+                RatedTarget::Unrated,
             ),
             (
                 Contest {
@@ -212,11 +266,7 @@ mod tests {
                     title: String::from("test"),
                     rate_change: String::from("-"),
                 },
-                RatedTarget {
-                    typ: RatedType::Unrated,
-                    from: None,
-                    to: None,
-                },
+                RatedTarget::Unrated,
             ),
             (
                 Contest {
@@ -226,11 +276,7 @@ mod tests {
                     title: String::from("test"),
                     rate_change: String::from("All"),
                 },
-                RatedTarget {
-                    typ: RatedType::All,
-                    from: None,
-                    to: None,
-                },
+                RatedTarget::All,
             ),
             (
                 Contest {
@@ -240,11 +286,7 @@ mod tests {
                     title: String::from("test"),
                     rate_change: String::from(" ~ 1199"),
                 },
-                RatedTarget {
-                    typ: RatedType::UpperBound,
-                    from: None,
-                    to: Some(1199),
-                },
+                RatedTarget::UpperBound { to: 1199 },
             ),
             (
                 Contest {
@@ -254,11 +296,7 @@ mod tests {
                     title: String::from("test"),
                     rate_change: String::from(" ~ 2799"),
                 },
-                RatedTarget {
-                    typ: RatedType::UpperBound,
-                    from: None,
-                    to: Some(2799),
-                },
+                RatedTarget::UpperBound { to: 2799 },
             ),
             (
                 Contest {
@@ -268,11 +306,7 @@ mod tests {
                     title: String::from("test"),
                     rate_change: String::from("1200 ~ "),
                 },
-                RatedTarget {
-                    typ: RatedType::LowerBound,
-                    from: Some(1200),
-                    to: None,
-                },
+                RatedTarget::LowerBound { from: 1200 },
             ),
             (
                 Contest {
@@ -282,10 +316,9 @@ mod tests {
                     title: String::from("test"),
                     rate_change: String::from("1200 ~ 2799"),
                 },
-                RatedTarget {
-                    typ: RatedType::Range,
-                    from: Some(1200),
-                    to: Some(2799),
+                RatedTarget::Range {
+                    from: 1200,
+                    to: 2799,
                 },
             ),
         ];
