@@ -276,7 +276,7 @@ impl SubmissionCrawlHistory {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use rstest::{fixture, rstest};
+    use rstest::rstest;
     use sqlx::{Pool, Postgres};
     use std::env;
     use testcontainers::{
