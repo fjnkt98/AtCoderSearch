@@ -276,67 +276,15 @@ impl SubmissionCrawlHistory {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::testutil::{create_container, create_pool_from_container};
     use rstest::rstest;
-    use sqlx::{Pool, Postgres};
-    use std::env;
-    use testcontainers::{
-        core::{IntoContainerPort, Mount, WaitFor},
-        runners::AsyncRunner,
-        ContainerAsync, ContainerRequest, GenericImage, ImageExt,
-    };
-
-    fn create_container() -> ContainerRequest<GenericImage> {
-        let schema = env::current_dir()
-            .unwrap()
-            .join("../db/schema.sql")
-            .canonicalize()
-            .unwrap();
-
-        let request = GenericImage::new("postgres", "16-bullseye")
-            .with_exposed_port(5432.tcp())
-            .with_wait_for(WaitFor::message_on_stdout(
-                "database system is ready to accept connections",
-            ))
-            .with_wait_for(WaitFor::message_on_stderr(
-                "database system is ready to accept connections",
-            ))
-            // .with_wait_for(WaitFor::millis(1000))
-            .with_mount(
-                Mount::bind_mount(
-                    schema.into_os_string().into_string().unwrap(),
-                    "/docker-entrypoint-initdb.d/schema.sql",
-                )
-                .with_access_mode(testcontainers::core::AccessMode::ReadOnly),
-            )
-            .with_env_var("POSTGRES_PASSWORD", "atcodersearch")
-            .with_env_var("POSTGRES_USER", "atcodersearch")
-            .with_env_var("POSTGRES_DB", "atcodersearch")
-            .with_env_var("POSTGRES_HOST_AUTH_METHOD", "password")
-            .with_env_var("TZ", "Asia/Tokyo");
-
-        request
-    }
-
-    async fn create_pool_from_container(
-        container: &ContainerAsync<GenericImage>,
-    ) -> Pool<Postgres> {
-        let host = container.get_host().await.unwrap();
-        let port = container.get_host_port_ipv4(5432).await.unwrap();
-
-        let url = format!(
-            "postgres://atcodersearch:atcodersearch@{}:{}/atcodersearch",
-            host, port
-        );
-        let pool = Pool::connect(&url).await.unwrap();
-
-        pool
-    }
+    use testcontainers::runners::AsyncRunner;
 
     #[rstest]
     #[tokio::test]
     async fn test_create_and_update_batch_history() {
-        let container = create_container().start().await.unwrap();
-        let pool = create_pool_from_container(&container).await;
+        let container = create_container().unwrap().start().await.unwrap();
+        let pool = create_pool_from_container(&container).await.unwrap();
 
         let mut history = BatchHistory::new(&pool, "TestBatch", Value::Null)
             .await
@@ -356,8 +304,8 @@ mod tests {
     #[rstest]
     #[tokio::test]
     async fn test_fetch_latest_batch_history() {
-        let container = create_container().start().await.unwrap();
-        let pool = create_pool_from_container(&container).await;
+        let container = create_container().unwrap().start().await.unwrap();
+        let pool = create_pool_from_container(&container).await.unwrap();
 
         let mut history1 = BatchHistory::new(&pool, "TestBatch", Value::Null)
             .await
@@ -379,8 +327,8 @@ mod tests {
     #[rstest]
     #[tokio::test]
     async fn test_create_and_update_submission_crawl_history() {
-        let container = create_container().start().await.unwrap();
-        let pool = create_pool_from_container(&container).await;
+        let container = create_container().unwrap().start().await.unwrap();
+        let pool = create_pool_from_container(&container).await.unwrap();
 
         let mut history = SubmissionCrawlHistory::new(&pool, "abc001").await.unwrap();
 
@@ -396,8 +344,8 @@ mod tests {
     #[rstest]
     #[tokio::test]
     async fn test_fetch_latest_submission_crawl_history() {
-        let container = create_container().start().await.unwrap();
-        let pool = create_pool_from_container(&container).await;
+        let container = create_container().unwrap().start().await.unwrap();
+        let pool = create_pool_from_container(&container).await.unwrap();
 
         let mut history1 = SubmissionCrawlHistory::new(&pool, "abc001").await.unwrap();
         let _history2 = SubmissionCrawlHistory::new(&pool, "abc001").await.unwrap();
