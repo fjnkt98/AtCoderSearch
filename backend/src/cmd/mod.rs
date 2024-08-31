@@ -1,3 +1,7 @@
+mod crawl;
+mod update;
+
+use crate::cmd::{crawl::CrawlCommand, update::UpdateCommands};
 use clap::{Args, Parser, Subcommand};
 use tokio_util::sync::CancellationToken;
 
@@ -37,64 +41,16 @@ enum Command {
     },
 }
 
-#[derive(Subcommand)]
-enum CrawlCommand {
-    Problem {
-        #[arg(long, default_value_t = 1, help = "crawl duration in sec.")]
-        duration: i64,
-        #[arg(short, long, help = "if true, crawl all problems.")]
-        all: bool,
-    },
-    User {
-        #[arg(long, default_value_t = 1)]
-        duration: i64,
-    },
-    Submission {
-        #[arg(long, default_value_t = 1)]
-        duration: i64,
-        #[arg(long, default_value_t = 0)]
-        retry: i64,
-        #[arg(long)]
-        target: String,
-        #[arg(long, env, hide_env_values = true)]
-        atcoder_username: String,
-        #[arg(long, env, hide_env_values = true)]
-        atcoder_password: String,
-    },
-}
-
-#[derive(Subcommand)]
-enum UpdateCommands {
-    Problem,
-    User,
-}
-
 impl App {
     pub async fn run(&self) -> anyhow::Result<()> {
         let token = CancellationToken::new();
 
         match &self.command {
-            Command::Crawl { args, command } => match command {
-                CrawlCommand::Problem { duration, all } => {
-                    println!("crawl problem with duration: {}, all: {}", duration, all)
-                }
-                CrawlCommand::User { duration } => {
-                    println!("crawl user with duration: {}", duration);
-                }
-                CrawlCommand::Submission {
-                    duration,
-                    retry,
-                    target,
-                    atcoder_username,
-                    atcoder_password,
-                } => {
-                    println!("crawl submission with duration: {}", duration);
-                }
-            },
-            Command::Update { args, command } => {}
-            Command::Serve { args, port } => {}
+            Command::Crawl { args, command } => command.exec(token, args).await,
+            Command::Update { args, command } => command.exec(token, args),
+            Command::Serve { args, port } => {
+                todo!();
+            }
         }
-
-        Ok(())
     }
 }
