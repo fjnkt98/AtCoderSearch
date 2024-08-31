@@ -121,7 +121,7 @@ CREATE TABLE public.schema_migrations (
 CREATE TABLE public.submission_crawl_histories (
     id bigint NOT NULL,
     contest_id text NOT NULL,
-    started_at bigint NOT NULL,
+    started_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     status text DEFAULT 'working'::text NOT NULL,
     finished_at timestamp with time zone
 );
@@ -13394,4 +13394,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20240824091447'),
     ('20240824091517'),
     ('20240830102505'),
-    ('20240831033102');
+    ('20240831033102'),
+    ('20240831033424');
