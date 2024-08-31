@@ -149,8 +149,9 @@ impl BatchHistory {
 pub struct SubmissionCrawlHistory {
     pub id: i64,
     pub contest_id: String,
-    pub started_at: i64,
+    pub started_at: DateTime<FixedOffset>,
     pub status: String,
+    pub finished_at: Option<DateTime<FixedOffset>>,
 }
 
 impl SubmissionCrawlHistory {
@@ -158,21 +159,86 @@ impl SubmissionCrawlHistory {
     where
         A: Acquire<'a, Database = Postgres>,
     {
-        todo!();
+        let mut conn = db.acquire().await.with_context(|| "acquire connection")?;
+
+        let sql = r#"
+        INSERT INTO
+            "submission_crawl_histories" ("contest_id")
+        VALUES
+            ($1)
+        RETURNING
+            *;
+        "#;
+
+        let history: SubmissionCrawlHistory = sqlx::query_as(sql)
+            .bind(contest_id)
+            .fetch_one(&mut *conn)
+            .await
+            .with_context(|| "create submission crawl history")?;
+
+        Ok(history)
     }
 
     pub async fn finish<'a, A>(&mut self, db: A) -> anyhow::Result<()>
     where
         A: Acquire<'a, Database = Postgres>,
     {
-        todo!();
+        let mut conn = db.acquire().await.with_context(|| "acquire connection")?;
+
+        let sql = r#"
+        UPDATE "submission_crawl_histories"
+        SET
+            "status" = 'finished',
+            "finished_at" = NOW()
+        WHERE
+            "id" = $1
+        RETURNING
+            *;
+        "#;
+
+        let history: SubmissionCrawlHistory = sqlx::query_as(sql)
+            .bind(self.id)
+            .fetch_one(&mut *conn)
+            .await
+            .with_context(|| "create submission crawl history")?;
+
+        self.status = history.status;
+        self.finished_at = history.finished_at;
+
+        Ok(())
     }
 
-    pub async fn fetch_latest<'a, A>(db: A) -> anyhow::Result<Self>
+    pub async fn fetch_latest<'a, A>(db: A, contest_id: &str) -> anyhow::Result<Self>
     where
         A: Acquire<'a, Database = Postgres>,
     {
-        todo!()
+        let mut conn = db.acquire().await.with_context(|| "acquire connection")?;
+
+        let sql = r#"
+        SELECT
+            "id",
+            "contest_id",
+            "started_at",
+            "finished_at",
+            "status"
+        FROM
+            "submission_crawl_histories"
+        WHERE
+            "contest_id" = $1
+            AND "status" = 'finished'
+        ORDER BY
+            "started_at" DESC
+        LIMIT
+            1;
+        "#;
+
+        let latest: SubmissionCrawlHistory = sqlx::query_as(sql)
+            .bind(contest_id)
+            .fetch_one(&mut *conn)
+            .await
+            .with_context(|| "fetch latest submission crawl history")?;
+
+        Ok(latest)
     }
 }
 
@@ -338,7 +404,9 @@ mod tests {
 
         history1.finish(&pool).await.unwrap();
 
-        let latest = SubmissionCrawlHistory::fetch_latest(&pool).await.unwrap();
+        let latest = SubmissionCrawlHistory::fetch_latest(&pool, "abc001")
+            .await
+            .unwrap();
 
         assert_eq!(history1, latest);
     }
