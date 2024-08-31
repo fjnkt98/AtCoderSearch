@@ -6,13 +6,20 @@ use std::{
 };
 
 use anyhow::Context as _;
+use chrono::DateTime;
+use itertools::Itertools;
 use regex::Regex;
 use reqwest::{cookie::Jar, header::CONTENT_TYPE, Client, Url};
+use scraper::{selectable::Selectable, Html, Selector};
 
 static CSRF_PATTERN: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r#"var csrfToken = "(.+)""#).unwrap());
 
 static RANK_PATTERN: LazyLock<Regex> = LazyLock::new(|| Regex::new(r#"\((\d+)\)"#).unwrap());
+
+static SUBMISSION_SCRAPER: LazyLock<SubmissionScraper> =
+    LazyLock::new(|| SubmissionScraper::new().unwrap());
+static USER_SCRAPER: LazyLock<UserScraper> = LazyLock::new(|| UserScraper::new().unwrap());
 
 pub struct AtCoderClient {
     client: Client,
@@ -109,7 +116,7 @@ impl AtCoderClient {
 
         let body = res.text().await.with_context(|| "get response body")?;
 
-        let users = scrape_users(&body)?;
+        let users = USER_SCRAPER.scrape(&body)?;
 
         Ok(users)
     }
@@ -133,7 +140,7 @@ impl AtCoderClient {
 
         let body = res.text().await.with_context(|| "get response body")?;
 
-        let submissions = scrape_submissions(&body)?;
+        let submissions = SUBMISSION_SCRAPER.scrape(&body)?;
 
         Ok(submissions)
     }
@@ -146,12 +153,341 @@ fn extract_csrf_token(body: &str) -> Option<String> {
         .and_then(|m| Some(m.as_str().to_owned()))
 }
 
-fn scrape_submissions<'a>(html: &'a str) -> anyhow::Result<Vec<Submission>> {
-    todo!()
+struct SubmissionScraper {
+    tbody: Selector,
+    tr: Selector,
+    td: Selector,
+    td_a: Selector,
 }
 
-fn scrape_users<'a>(html: &'a str) -> anyhow::Result<Vec<User>> {
-    todo!()
+impl SubmissionScraper {
+    pub fn new() -> anyhow::Result<Self> {
+        Ok(Self {
+            tbody: Selector::parse("tbody")
+                .map_err(|e| anyhow::anyhow!("failed to parse `tbody` selector: {:?}", e))?,
+            tr: Selector::parse("tr")
+                .map_err(|e| anyhow::anyhow!("failed to parse `tr` selector: {:?}", e))?,
+            td: Selector::parse("td")
+                .map_err(|e| anyhow::anyhow!("failed to parse `td` selector: {:?}", e))?,
+            td_a: Selector::parse("td > a")
+                .map_err(|e| anyhow::anyhow!("failed to parse `td > a` selector: {:?}", e))?,
+        })
+    }
+    pub fn scrape(&self, html: &str) -> anyhow::Result<Vec<Submission>> {
+        let doc = Html::parse_document(html);
+
+        let mut submissions: Vec<Submission> = Vec::with_capacity(20);
+        if let Some(tbody) = doc.select(&self.tbody).next() {
+            for (i, tr) in tbody.select(&self.tr).enumerate() {
+                let mut s = Submission {
+                    id: 0,
+                    epoch_second: 0,
+                    problem_id: String::new(),
+                    contest_id: String::new(),
+                    user_id: String::new(),
+                    language: String::new(),
+                    point: 0.0,
+                    length: 0,
+                    result: String::new(),
+                    execution_time: None,
+                };
+
+                for (j, td) in tr.select(&self.td).enumerate() {
+                    match j {
+                        0 => {
+                            let text = td.text().collect_vec().concat();
+                            let dt = DateTime::parse_from_str(&text, "%Y-%m-%d %H:%M:%S%z")
+                                .with_context(|| {
+                                    format!("parse datetime {} at row {}, col {}", text, i, j)
+                                })?;
+
+                            s.epoch_second = dt.timestamp();
+                        }
+                        1 => {
+                            let a = td.select(&self.td_a).next().with_context(|| {
+                                format!("`td > a` not found at row {}, col {}", i, j)
+                            })?;
+                            let href = a.value().attr("href").with_context(|| {
+                                format!(
+                                    "`href` attribute of `td > a` not found at row {}, col {}",
+                                    i, j
+                                )
+                            })?;
+                            let parts = href.split('/').collect_vec();
+
+                            // s.contest_id
+                            s.contest_id = parts
+                                .get(2)
+                                .with_context(|| {
+                                    format!("failed to get part at index 1 at row {}, col {}", i, j)
+                                })?
+                                .to_string();
+                            s.problem_id = parts
+                                .get(4)
+                                .with_context(|| {
+                                    format!("failed to get part at index 1 at row {}, col {}", i, j)
+                                })?
+                                .to_string();
+                        }
+                        2 => {
+                            let a = td.select(&self.td_a).next().with_context(|| {
+                                format!("`td > a` not found at row {}, col {}", i, j)
+                            })?;
+                            let href = a.value().attr("href").with_context(|| {
+                                format!(
+                                    "`href` attribute of `td > a` not found at row {}, col {}",
+                                    i, j
+                                )
+                            })?;
+                            let parts = href.split('/').collect_vec();
+
+                            s.user_id = parts
+                                .last()
+                                .with_context(|| {
+                                    format!(
+                                        "failed to get user_id from {} at row {}, col {}",
+                                        href, i, j
+                                    )
+                                })?
+                                .to_string();
+                        }
+                        3 => {
+                            s.language = td.text().collect_vec().concat();
+                        }
+                        4 => {
+                            let text = td.text().collect_vec().concat();
+                            s.point = text.parse().with_context(|| {
+                                format!("parse point {} at row {}, col {}", text, i, j)
+                            })?;
+                        }
+                        5 => {
+                            let text = td.text().collect_vec().concat();
+                            s.length =
+                                text.trim_end_matches(" Byte").parse().with_context(|| {
+                                    format!("parse length {} at row {}, col {}", text, i, j)
+                                })?;
+                        }
+                        6 => {
+                            s.result = td.text().collect_vec().concat();
+                        }
+                        7 | 9 => {
+                            match td
+                                .select(&self.td_a)
+                                .next()
+                                .and_then(|a| a.value().attr("href"))
+                            {
+                                Some(href) => {
+                                    let parts = href.split('/').collect_vec();
+                                    s.id = parts
+                                        .last()
+                                        .with_context(|| {
+                                            format!(
+                                                "failed to get last part at row {}, col {}",
+                                                i, j
+                                            )
+                                        })?
+                                        .parse()
+                                        .with_context(|| {
+                                            format!("parse id at row {}, col {}", i, j)
+                                        })?;
+                                }
+                                None => {
+                                    let text = td.text().collect_vec().concat();
+                                    s.execution_time =
+                                        Some(text.trim_end_matches(" ms").parse().with_context(
+                                            || {
+                                                format!(
+                                                    "parse execution time at row {}, col {}",
+                                                    i, j
+                                                )
+                                            },
+                                        )?);
+                                }
+                            };
+                        }
+                        _ => {}
+                    };
+                }
+
+                submissions.push(s);
+            }
+        };
+
+        Ok(submissions)
+    }
+}
+
+struct UserScraper {
+    table_tbody: Selector,
+    tr: Selector,
+    td: Selector,
+    span: Selector,
+    a: Selector,
+    img: Selector,
+    a_span: Selector,
+    td_img: Selector,
+}
+
+impl UserScraper {
+    pub fn new() -> anyhow::Result<Self> {
+        Ok(Self {
+            table_tbody: Selector::parse(".table > tbody").map_err(|e| {
+                anyhow::anyhow!("failed to parse `.table > tbody` selector: {:?}", e)
+            })?,
+            tr: Selector::parse("tr")
+                .map_err(|e| anyhow::anyhow!("failed to parse `tr` selector: {:?}", e))?,
+            td: Selector::parse("td")
+                .map_err(|e| anyhow::anyhow!("failed to parse `td` selector: {:?}", e))?,
+            span: Selector::parse("span")
+                .map_err(|e| anyhow::anyhow!("failed to parse `span` selector: {:?}", e))?,
+            a: Selector::parse("a")
+                .map_err(|e| anyhow::anyhow!("failed to parse `a` selector: {:?}", e))?,
+            img: Selector::parse("img")
+                .map_err(|e| anyhow::anyhow!("failed to parse `img` selector: {:?}", e))?,
+            a_span: Selector::parse("a > span")
+                .map_err(|e| anyhow::anyhow!("failed to parse `a > span` selector: {:?}", e))?,
+            td_img: Selector::parse("td > img")
+                .map_err(|e| anyhow::anyhow!("failed to parse `td > img` selector: {:?}", e))?,
+        })
+    }
+
+    pub fn scrape(&self, html: &str) -> anyhow::Result<Vec<User>> {
+        let doc = Html::parse_document(html);
+
+        let mut users: Vec<User> = Vec::with_capacity(10);
+
+        if let Some(tbody) = doc.select(&self.table_tbody).next() {
+            for (i, tr) in tbody.select(&self.tr).enumerate() {
+                let mut user = User {
+                    user_id: String::new(),
+                    rating: 0,
+                    highest_rating: 0,
+                    affiliation: None,
+                    birth_year: None,
+                    country: None,
+                    crown: None,
+                    join_count: 0,
+                    rank: 0,
+                    active_rank: None,
+                    wins: 0,
+                };
+
+                for (j, td) in tr.select(&self.td).enumerate() {
+                    match j {
+                        0 => {
+                            let text = td
+                                .select(&self.span)
+                                .next()
+                                .and_then(|span| Some(span.text().collect_vec().concat()))
+                                .with_context(|| {
+                                    format!("get text of `span` at row {}, col {}", i, j)
+                                })?;
+
+                            let caps = RANK_PATTERN
+                                .captures(&text)
+                                .with_context(|| "capture rank pattern")?;
+                            let rank =
+                                caps.get(1)
+                                    .with_context(|| "capture the rank")
+                                    .and_then(|m| {
+                                        m.as_str().parse::<i64>().with_context(|| "parse rank text")
+                                    })?;
+                            user.rank = rank;
+
+                            let text = td
+                                .text()
+                                .filter(|text| !RANK_PATTERN.is_match(text))
+                                .map(|text| text.trim())
+                                .join("");
+                            if let Ok(active_rank) = text.parse::<i64>() {
+                                user.active_rank = Some(active_rank);
+                            }
+                        }
+                        1 => {
+                            for (k, a) in td.select(&self.a).enumerate() {
+                                match k {
+                                    0 => {
+                                        let img =
+                                            a.select(&self.img).next().with_context(|| {
+                                                format!("`img` not found at row {}, col {}", i, j)
+                                            })?;
+                                        if let Some(country) = img
+                                            .value()
+                                            .attr("src")
+                                            .and_then(|src| src.split('/').last())
+                                            .and_then(|last| last.split('.').next())
+                                        {
+                                            user.country = Some(country.to_owned());
+                                        }
+                                    }
+                                    1 => {
+                                        user.user_id = a
+                                            .select(&self.a_span)
+                                            .next()
+                                            .with_context(|| "")?
+                                            .text()
+                                            .collect_vec()
+                                            .concat();
+                                    }
+                                    2 => {
+                                        if let Some(span) = a.select(&self.a_span).next() {
+                                            let text = span.text().collect_vec().concat();
+                                            user.affiliation =
+                                                if text.is_empty() { None } else { Some(text) };
+                                        }
+                                    }
+                                    _ => {}
+                                }
+
+                                if let Some(crown) = td
+                                    .select(&self.td_img)
+                                    .next()
+                                    .and_then(|img| img.value().attr("src"))
+                                    .and_then(|src| src.split('/').last())
+                                    .and_then(|last| last.split('.').next())
+                                {
+                                    user.crown = Some(crown.to_owned());
+                                }
+                            }
+                        }
+                        2 => {
+                            if let Ok(year) = td.text().collect_vec().concat().parse::<i64>() {
+                                user.birth_year = Some(year);
+                            };
+                        }
+                        3 => {
+                            if let Ok(rating) = td.text().collect_vec().concat().parse::<i64>() {
+                                user.rating = rating;
+                            };
+                        }
+                        4 => {
+                            if let Ok(highest_rating) =
+                                td.text().collect_vec().concat().parse::<i64>()
+                            {
+                                user.highest_rating = highest_rating;
+                            };
+                        }
+                        5 => {
+                            if let Ok(join_count) = td.text().collect_vec().concat().parse::<i64>()
+                            {
+                                user.join_count = join_count;
+                            };
+                        }
+                        6 => {
+                            if let Ok(wins) = td.text().collect_vec().concat().parse::<i64>() {
+                                user.wins = wins;
+                            };
+                        }
+                        _ => {}
+                    }
+                }
+
+                users.push(user);
+            }
+        }
+
+        Ok(users)
+    }
 }
 
 #[derive(Debug, PartialEq, PartialOrd)]
@@ -230,9 +566,9 @@ mod tests {
             },
         ];
 
-        let actual = scrape_submissions(&html).unwrap();
+        let actual = SUBMISSION_SCRAPER.scrape(&html).unwrap();
 
-        assert_eq!(want, actual)
+        assert_eq!(want, &actual[..2])
     }
 
     #[rstest]
@@ -372,7 +708,7 @@ mod tests {
             },
         ];
 
-        let actual = scrape_users(&html).unwrap();
+        let actual = USER_SCRAPER.scrape(&html).unwrap();
         assert_eq!(want, actual)
     }
 
