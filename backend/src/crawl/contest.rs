@@ -1,6 +1,6 @@
 use crate::atcoder::{AtCoderProblemsClient, Contest};
 use anyhow::Context;
-use sqlx::{self, postgres::Postgres, Acquire, Execute, Pool, QueryBuilder};
+use sqlx::{self, postgres::Postgres, Acquire, Pool, QueryBuilder};
 
 pub async fn crawl_contest(
     client: &AtCoderProblemsClient,
@@ -13,9 +13,9 @@ pub async fn crawl_contest(
 
     let mut tx = pool.begin().await.with_context(|| "begin transaction")?;
 
-    let mut count = 0;
+    let mut _count = 0;
     for chunk in contests.chunks(1000) {
-        count += insert_contests(&mut tx, chunk)
+        _count += insert_contests(&mut tx, chunk)
             .await
             .with_context(|| "insert contests")?;
     }
@@ -73,14 +73,7 @@ where
 mod test {
     use super::*;
     use crate::testutil::{create_container, create_pool_from_container};
-    use rstest::rstest;
-    use sqlx::{Pool, Postgres};
-    use std::env;
-    use testcontainers::{
-        core::{IntoContainerPort, Mount, WaitFor},
-        runners::AsyncRunner,
-        ContainerAsync, ContainerRequest, GenericImage, ImageExt,
-    };
+    use testcontainers::runners::AsyncRunner;
 
     #[tokio::test]
     async fn test_insert_contests() {
