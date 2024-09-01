@@ -34,7 +34,7 @@ static SPONSORED_PATTERN_3: LazyLock<Regex> = LazyLock::new(|| {
         .unwrap()
 });
 
-#[derive(Debug, PartialEq, PartialOrd)]
+#[derive(Debug, PartialEq, PartialOrd, Clone)]
 pub enum RatedTarget {
     Unrated,
     All,
@@ -110,7 +110,7 @@ impl AtCoderProblemsClient {
     }
 }
 
-#[derive(Debug, PartialEq, PartialOrd, Deserialize)]
+#[derive(Debug, PartialEq, PartialOrd, Deserialize, Clone)]
 pub struct Contest {
     pub id: String,
     pub start_epoch_second: i64,
@@ -193,7 +193,7 @@ impl Contest {
     }
 }
 
-#[derive(Debug, PartialEq, PartialOrd, Deserialize)]
+#[derive(Debug, PartialEq, PartialOrd, Deserialize, Clone)]
 pub struct Problem {
     pub id: String,
     pub contest_id: String,
@@ -202,7 +202,16 @@ pub struct Problem {
     pub title: String,
 }
 
-#[derive(Debug, PartialEq, PartialOrd, Deserialize)]
+impl Problem {
+    pub fn url(&self) -> String {
+        format!(
+            "https://atcoder.jp/contests/{}/tasks/{}",
+            self.contest_id, self.id
+        )
+    }
+}
+
+#[derive(Debug, PartialEq, PartialOrd, Deserialize, Clone)]
 pub struct Difficulty {
     pub slope: Option<f64>,
     pub intercept: Option<f64>,
@@ -376,5 +385,17 @@ mod tests {
         for (c, want) in cases {
             assert_eq!(want, c.categorize())
         }
+    }
+
+    #[test]
+    fn test_problem_url() {
+        let p = Problem {
+            id: String::from("abc001_a"),
+            contest_id: String::from("abc001"),
+            problem_index: String::from("A"),
+            name: String::from("problem name"),
+            title: String::from("problem title"),
+        };
+        assert_eq!("https://atcoder.jp/contests/abc001/tasks/abc001_a", p.url());
     }
 }

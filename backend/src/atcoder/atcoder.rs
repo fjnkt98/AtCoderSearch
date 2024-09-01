@@ -490,7 +490,7 @@ impl UserScraper {
     }
 }
 
-#[derive(Debug, PartialEq, PartialOrd)]
+#[derive(Debug, PartialEq, PartialOrd, Clone)]
 pub struct User {
     pub user_id: String,
     pub rating: i64,
@@ -505,7 +505,7 @@ pub struct User {
     pub wins: i64,
 }
 
-#[derive(Debug, PartialEq, PartialOrd)]
+#[derive(Debug, PartialEq, PartialOrd, Clone)]
 pub struct Submission {
     pub id: i64,
     pub epoch_second: i64,
