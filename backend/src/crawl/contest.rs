@@ -2,7 +2,7 @@ use crate::atcoder::{AtCoderProblemsClient, Contest};
 use anyhow::Context;
 use sqlx::{self, postgres::Postgres, Acquire, Pool, QueryBuilder};
 
-pub async fn crawl_contest(
+pub async fn crawl_contests(
     client: &AtCoderProblemsClient,
     pool: &Pool<Postgres>,
 ) -> anyhow::Result<()> {
@@ -36,7 +36,6 @@ where
     let mut builder: QueryBuilder<Postgres> = sqlx::QueryBuilder::new(
         r#"INSERT INTO "contests" ("contest_id", "start_epoch_second", "duration_second", "title", "rate_change", "category", "updated_at") "#,
     );
-
     builder.push_values(contests.iter(), |mut separated, c| {
         separated
             .push_bind(&c.id)
@@ -47,16 +46,7 @@ where
             .push_bind(c.categorize())
             .push("NOW()");
     });
-    builder.push(r#" ON CONFLICT ("contest_id") DO UPDATE SET "#);
-
-    let mut separated = builder.separated(", ");
-    separated.push(r#""contest_id" = EXCLUDED."contest_id""#);
-    separated.push(r#""start_epoch_second" = EXCLUDED."start_epoch_second""#);
-    separated.push(r#""duration_second" = EXCLUDED."duration_second""#);
-    separated.push(r#""title" = EXCLUDED."title""#);
-    separated.push(r#""rate_change" = EXCLUDED."rate_change""#);
-    separated.push(r#""category" = EXCLUDED."category""#);
-    separated.push(r#""updated_at" = NOW()"#);
+    builder.push(r#" ON CONFLICT ("contest_id") DO UPDATE SET "contest_id" = EXCLUDED."contest_id", "start_epoch_second" = EXCLUDED."start_epoch_second", "duration_second" = EXCLUDED."duration_second", "title" = EXCLUDED."title", "rate_change" = EXCLUDED."rate_change", "category" = EXCLUDED."category", "updated_at" = NOW()"#);
 
     let mut conn = db.acquire().await.with_context(|| "acquire connection")?;
 
