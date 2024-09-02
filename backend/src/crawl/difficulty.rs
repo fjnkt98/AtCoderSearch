@@ -16,7 +16,10 @@ pub async fn crawl_difficulties(
         .await
         .with_context(|| "crawl difficulties")?;
 
-    let mut tx = pool.begin().await.with_context(|| "begin transaction")?;
+    let mut tx = pool
+        .begin()
+        .await
+        .with_context(|| "begin transaction to save difficulties")?;
 
     let mut count = 0;
     for difficulties in difficulties.into_iter().collect_vec().chunks(1000) {
@@ -25,7 +28,9 @@ pub async fn crawl_difficulties(
             .with_context(|| "insert difficulties")?;
     }
 
-    tx.commit().await.with_context(|| "commit transaction")?;
+    tx.commit()
+        .await
+        .with_context(|| "commit transaction to save difficulties")?;
 
     tracing::info!("saved {} difficulties successfully", count);
     Ok(())

@@ -26,10 +26,17 @@ pub async fn crawl_problems<'a>(
             .fetch_problem_html(&target.contest_id, &target.id)
             .await?;
 
-        let mut tx = pool.begin().await?;
-        insert_problem(&mut tx, target, &html).await?;
+        let mut tx = pool
+            .begin()
+            .await
+            .with_context(|| format!("begin transaction to save problem {}", target.id))?;
+        insert_problem(&mut tx, target, &html)
+            .await
+            .with_context(|| "insert problem")?;
 
-        tx.commit().await?;
+        tx.commit()
+            .await
+            .with_context(|| format!("commit transaction to save problem {}", target.id))?;
 
         tracing::info!("saved problem {} successfully", target.id);
         tokio::time::sleep(duration).await;

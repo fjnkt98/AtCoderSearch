@@ -13,9 +13,12 @@ pub async fn crawl_contests(
     let contests = client
         .fetch_contests()
         .await
-        .with_context(|| "crawl contest")?;
+        .with_context(|| "fetch contests")?;
 
-    let mut tx = pool.begin().await.with_context(|| "begin transaction")?;
+    let mut tx = pool
+        .begin()
+        .await
+        .with_context(|| "begin transaction to save contests")?;
 
     let mut count = 0;
     for chunk in contests.chunks(1000) {
@@ -24,7 +27,9 @@ pub async fn crawl_contests(
             .with_context(|| "insert contests")?;
     }
 
-    tx.commit().await.with_context(|| "commit transaction")?;
+    tx.commit()
+        .await
+        .with_context(|| "commit transaction to save contests")?;
 
     tracing::info!("saved {} contests successfully", count);
     Ok(())

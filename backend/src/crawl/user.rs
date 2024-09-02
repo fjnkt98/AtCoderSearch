@@ -12,7 +12,10 @@ pub async fn crawl_users(
 ) -> anyhow::Result<()> {
     tracing::info!("start to crawl users");
 
-    let mut tx = pool.begin().await.with_context(|| "begin transaction")?;
+    let mut tx = pool
+        .begin()
+        .await
+        .with_context(|| "begin transaction to save users")?;
 
     let mut page = 1;
     let mut count = 0;
@@ -38,7 +41,9 @@ pub async fn crawl_users(
         tokio::time::sleep(duration).await;
     }
 
-    tx.commit().await.with_context(|| "commit transaction")?;
+    tx.commit()
+        .await
+        .with_context(|| "commit transaction to save users")?;
 
     tracing::info!("saved {} users successfully", count);
     Ok(())
