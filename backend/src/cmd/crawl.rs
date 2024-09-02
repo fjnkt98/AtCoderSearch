@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use crate::{
     atcoder::{AtCoderClient, AtCoderProblemsClient},
-    crawl::{contest, difficulty, problem::ProblemCrawler, user},
+    crawl::{contest, difficulty, problem, user},
 };
 use clap::Subcommand;
 use sqlx::postgres::PgPoolOptions;
@@ -48,14 +48,14 @@ impl CrawlCommand {
             Self::Problem { duration, all } => {
                 contest::crawl_contests(&problems_client, &pool).await?;
                 difficulty::crawl_difficulties(&problems_client, &pool).await?;
-
-                let crawler = ProblemCrawler::new(
-                    &pool,
+                problem::crawl_problems(
                     &atcoder_client,
                     &problems_client,
+                    &pool,
+                    *all,
                     Duration::from_secs(*duration),
-                );
-                crawler.crawl(*all).await?;
+                )
+                .await?;
 
                 Ok(())
             }

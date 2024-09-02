@@ -6,71 +6,57 @@ use tracing::instrument;
 
 use crate::atcoder::{AtCoderClient, AtCoderProblemsClient, Problem};
 
-pub struct ProblemCrawler<'a> {
-    pool: &'a Pool<Postgres>,
-    problems_client: &'a AtCoderProblemsClient,
+#[instrument(skip(atcoder_client, problems_client, pool))]
+pub async fn crawl_problems<'a>(
     atcoder_client: &'a AtCoderClient,
+    problems_client: &'a AtCoderProblemsClient,
+    pool: &'a Pool<Postgres>,
+    all: bool,
     duration: Duration,
+) -> anyhow::Result<()> {
+    let mut targets = problems_client.fetch_problems().await?;
+    if !all {
+        targets = detect_diff(pool, &targets).await?;
+    }
+
+    tracing::info!("start to crawl {} problems", targets.len());
+
+    for target in targets.iter() {
+        let html = atcoder_client
+            .fetch_problem_html(&target.contest_id, &target.id)
+            .await?;
+
+        let mut tx = pool.begin().await?;
+        insert_problem(&mut tx, target, &html).await?;
+
+        tx.commit().await?;
+
+        tracing::info!("saved problem {} successfully", target.id);
+        tokio::time::sleep(duration).await;
+    }
+
+    Ok(())
 }
 
-impl<'a> ProblemCrawler<'a> {
-    pub fn new(
-        pool: &'a Pool<Postgres>,
-        atcoder_client: &'a AtCoderClient,
-        problems_client: &'a AtCoderProblemsClient,
-        duration: Duration,
-    ) -> Self {
-        Self {
-            pool,
-            atcoder_client,
-            problems_client,
-            duration,
-        }
-    }
+async fn detect_diff<'a, A>(db: A, problems: &[Problem]) -> anyhow::Result<Vec<Problem>>
+where
+    A: Acquire<'a, Database = Postgres>,
+{
+    let mut conn = db.acquire().await?;
 
-    #[instrument(skip(self))]
-    pub async fn crawl(&self, all: bool) -> anyhow::Result<()> {
-        let mut targets = self.problems_client.fetch_problems().await?;
-        if !all {
-            targets = self.detect_diff(&targets).await?;
-        }
+    let rows: Vec<(String,)> = sqlx::query_as(r#"SELECT "problem_id" FROM "problems";"#)
+        .fetch_all(&mut *conn)
+        .await
+        .with_context(|| "fetch problem ids from database")?;
+    let exists = BTreeSet::from_iter(rows.iter().map(|r| r.0.clone()));
 
-        tracing::info!("start to crawl {} problems", targets.len());
+    let result = problems
+        .iter()
+        .filter(|p| !exists.contains(&p.id))
+        .cloned()
+        .collect_vec();
 
-        for target in targets.iter() {
-            let html = self
-                .atcoder_client
-                .fetch_problem_html(&target.contest_id, &target.id)
-                .await?;
-
-            let mut tx = self.pool.begin().await?;
-            let _count = insert_problem(&mut tx, target, &html).await?;
-
-            tx.commit().await?;
-
-            tracing::info!("saved problem {} successfully", target.id);
-            tokio::time::sleep(self.duration).await;
-        }
-
-        Ok(())
-    }
-
-    #[instrument(skip(self, problems))]
-    async fn detect_diff(&self, problems: &[Problem]) -> anyhow::Result<Vec<Problem>> {
-        let rows: Vec<(String,)> = sqlx::query_as(r#"SELECT "problem_id" FROM "problems";"#)
-            .fetch_all(self.pool)
-            .await
-            .with_context(|| "fetch problem ids from database")?;
-        let exists = BTreeSet::from_iter(rows.iter().map(|r| r.0.clone()));
-
-        let result = problems
-            .iter()
-            .filter(|p| !exists.contains(&p.id))
-            .cloned()
-            .collect_vec();
-
-        Ok(result)
-    }
+    Ok(result)
 }
 
 #[instrument(skip(db, problem, html))]
@@ -175,15 +161,6 @@ mod test {
         let container = create_container().unwrap().start().await.unwrap();
         let pool = create_pool_from_container(&container).await.unwrap();
 
-        let atcoder_client = AtCoderClient::new().unwrap();
-        let problems_client = AtCoderProblemsClient::new().unwrap();
-        let crawler = ProblemCrawler::new(
-            &pool,
-            &atcoder_client,
-            &problems_client,
-            Duration::from_secs(1),
-        );
-
         let sql = r#"
 INSERT INTO "problems" ("problem_id", "contest_id", "problem_index", "name", "title", "url", "html")
 VALUES
@@ -209,7 +186,7 @@ VALUES
             },
         ];
 
-        let diff = crawler.detect_diff(&problems).await.unwrap();
+        let diff = detect_diff(&pool, &problems).await.unwrap();
         let want = vec![problems[1].clone()];
         assert_eq!(diff, want);
     }
