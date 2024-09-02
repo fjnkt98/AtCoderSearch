@@ -5,7 +5,10 @@ use std::{collections::BTreeSet, time::Duration};
 use tokio_util::sync::CancellationToken;
 use tracing::instrument;
 
-use crate::atcoder::{AtCoderClient, AtCoderProblemsClient, Problem};
+use crate::{
+    atcoder::{AtCoderClient, AtCoderProblemsClient, Problem},
+    errors::CanceledError,
+};
 
 pub struct ProblemCrawler<'a> {
     pool: &'a Pool<Postgres>,
@@ -40,7 +43,7 @@ impl<'a> ProblemCrawler<'a> {
 
         for target in targets.iter() {
             if token.is_cancelled() {
-                return Ok(());
+                return Err(CanceledError::default().into());
             }
 
             let html = self
