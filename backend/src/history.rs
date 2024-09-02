@@ -208,7 +208,10 @@ impl SubmissionCrawlHistory {
         Ok(())
     }
 
-    pub async fn fetch_last_crawled<'a, A>(db: A, contest_id: &str) -> anyhow::Result<i64>
+    pub async fn fetch_last_crawled<'a, A>(
+        db: A,
+        contest_id: &str,
+    ) -> anyhow::Result<Option<DateTime<FixedOffset>>>
     where
         A: Acquire<'a, Database = Postgres>,
     {
@@ -216,7 +219,7 @@ impl SubmissionCrawlHistory {
 
         let sql = r#"
         SELECT
-            CAST(EXTRACT(EPOCH FROM "started_at") AS BIGINT)
+            "started_at"
         FROM
             "submission_crawl_histories"
         WHERE
@@ -228,18 +231,18 @@ impl SubmissionCrawlHistory {
             1;
         "#;
 
-        let result: sqlx::Result<(i64,)> = sqlx::query_as(sql)
+        let result: sqlx::Result<(DateTime<FixedOffset>,)> = sqlx::query_as(sql)
             .bind(contest_id)
             .fetch_one(&mut *conn)
             .await;
 
         match result {
             Ok((latest,)) => {
-                return Ok(latest);
+                return Ok(Some(latest));
             }
             Err(e) => match e {
                 sqlx::Error::RowNotFound => {
-                    return Ok(0);
+                    return Ok(None);
                 }
                 _ => {
                     return Err(e).with_context(|| "fetch last crawled epoch");
@@ -361,7 +364,7 @@ mod tests {
             SubmissionCrawlHistory::fetch_last_crawled(&pool, "abc001")
                 .await
                 .unwrap(),
-            0
+            None
         );
 
         let mut history1 = SubmissionCrawlHistory::new(&pool, "abc001").await.unwrap();
@@ -372,8 +375,9 @@ mod tests {
 
         let latest = SubmissionCrawlHistory::fetch_last_crawled(&pool, "abc001")
             .await
+            .unwrap()
             .unwrap();
 
-        assert_eq!(history1.started_at.timestamp(), latest);
+        assert_eq!(history1.started_at, latest);
     }
 }
