@@ -1,14 +1,11 @@
 use crate::atcoder::{AtCoderClient, User};
-use crate::errors::CanceledError;
 use anyhow::Context;
 use sqlx::{self, postgres::Postgres, Acquire, Pool, QueryBuilder};
 use std::time::Duration;
-use tokio_util::sync::CancellationToken;
 use tracing::instrument;
 
-#[instrument(skip(token, client, pool))]
+#[instrument(skip(client, pool))]
 pub async fn crawl_users(
-    token: CancellationToken,
     client: &AtCoderClient,
     pool: &Pool<Postgres>,
     duration: Duration,
@@ -20,10 +17,6 @@ pub async fn crawl_users(
     let mut page = 1;
     let mut count = 0;
     'l: loop {
-        if token.is_cancelled() {
-            return Err(CanceledError::default().into());
-        }
-
         tracing::info!("fetch users at page {}", page);
 
         let users = client

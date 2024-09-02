@@ -1,7 +1,6 @@
 mod atcoder;
 mod cmd;
 mod crawl;
-mod errors;
 mod history;
 
 use clap::Parser;

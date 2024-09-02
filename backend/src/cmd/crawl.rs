@@ -6,7 +6,6 @@ use crate::{
 };
 use clap::Subcommand;
 use sqlx::postgres::PgPoolOptions;
-use tokio_util::sync::CancellationToken;
 
 use super::CommonArgs;
 
@@ -37,7 +36,7 @@ pub(crate) enum CrawlCommand {
 }
 
 impl CrawlCommand {
-    pub async fn exec(&self, token: CancellationToken, args: &CommonArgs) -> anyhow::Result<()> {
+    pub async fn exec(&self, args: &CommonArgs) -> anyhow::Result<()> {
         let problems_client = AtCoderProblemsClient::new()?;
         let atcoder_client = AtCoderClient::new()?;
         let pool = PgPoolOptions::new()
@@ -56,18 +55,12 @@ impl CrawlCommand {
                     &problems_client,
                     Duration::from_secs(*duration),
                 );
-                crawler.crawl(token.clone(), *all).await?;
+                crawler.crawl(*all).await?;
 
                 Ok(())
             }
             Self::User { duration } => {
-                user::crawl_users(
-                    token.clone(),
-                    &atcoder_client,
-                    &pool,
-                    Duration::from_secs(*duration),
-                )
-                .await
+                user::crawl_users(&atcoder_client, &pool, Duration::from_secs(*duration)).await
             }
             Self::Submission {
                 duration,

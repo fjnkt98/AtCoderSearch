@@ -2,13 +2,9 @@ use anyhow::Context;
 use itertools::Itertools;
 use sqlx::{Acquire, Pool, Postgres};
 use std::{collections::BTreeSet, time::Duration};
-use tokio_util::sync::CancellationToken;
 use tracing::instrument;
 
-use crate::{
-    atcoder::{AtCoderClient, AtCoderProblemsClient, Problem},
-    errors::CanceledError,
-};
+use crate::atcoder::{AtCoderClient, AtCoderProblemsClient, Problem};
 
 pub struct ProblemCrawler<'a> {
     pool: &'a Pool<Postgres>,
@@ -32,8 +28,8 @@ impl<'a> ProblemCrawler<'a> {
         }
     }
 
-    #[instrument(skip(self, token))]
-    pub async fn crawl(&self, token: CancellationToken, all: bool) -> anyhow::Result<()> {
+    #[instrument(skip(self))]
+    pub async fn crawl(&self, all: bool) -> anyhow::Result<()> {
         let mut targets = self.problems_client.fetch_problems().await?;
         if !all {
             targets = self.detect_diff(&targets).await?;
@@ -42,10 +38,6 @@ impl<'a> ProblemCrawler<'a> {
         tracing::info!("start to crawl {} problems", targets.len());
 
         for target in targets.iter() {
-            if token.is_cancelled() {
-                return Err(CanceledError::default().into());
-            }
-
             let html = self
                 .atcoder_client
                 .fetch_problem_html(&target.contest_id, &target.id)
