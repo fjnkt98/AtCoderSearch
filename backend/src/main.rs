@@ -21,7 +21,7 @@ fn main() -> anyhow::Result<()> {
         .with_level(true)
         .with_target(true)
         .with_ansi(false)
-        .with_thread_ids(true)
+        .with_thread_ids(false)
         .with_timer(OffsetTime::local_rfc_3339()?);
     let subscriber = tracing_subscriber::fmt()
         .with_env_filter(filter)
