@@ -354,7 +354,7 @@ impl UserScraper {
     pub fn scrape(&self, html: &str) -> anyhow::Result<Vec<User>> {
         let doc = Html::parse_document(html);
 
-        let mut users: Vec<User> = Vec::with_capacity(10);
+        let mut users: Vec<User> = Vec::with_capacity(100);
 
         if let Some(tbody) = doc.select(&self.table_tbody).next() {
             for (i, tr) in tbody.select(&self.tr).enumerate() {
