@@ -2,12 +2,15 @@ use crate::atcoder::{AtCoderProblemsClient, Difficulty};
 use anyhow::Context;
 use itertools::Itertools;
 use sqlx::{self, postgres::Postgres, Acquire, Pool, QueryBuilder};
-use std::collections::BTreeMap;
+use tracing::instrument;
 
+#[instrument(skip(client, pool))]
 pub async fn crawl_difficulties(
     client: &AtCoderProblemsClient,
     pool: &Pool<Postgres>,
 ) -> anyhow::Result<()> {
+    tracing::info!("start to crawl difficulties");
+
     let difficulties = client
         .fetch_difficulties()
         .await
@@ -15,18 +18,20 @@ pub async fn crawl_difficulties(
 
     let mut tx = pool.begin().await.with_context(|| "begin transaction")?;
 
-    let mut _count = 0;
+    let mut count = 0;
     for difficulties in difficulties.into_iter().collect_vec().chunks(1000) {
-        _count += insert_difficulties(&mut tx, difficulties)
+        count += insert_difficulties(&mut tx, difficulties)
             .await
             .with_context(|| "insert difficulties")?;
     }
 
     tx.commit().await.with_context(|| "commit transaction")?;
 
+    tracing::info!("saved {} difficulties successfully", count);
     Ok(())
 }
 
+#[instrument(skip(db, difficulties))]
 async fn insert_difficulties<'a, A>(
     db: A,
     difficulties: &[(String, Difficulty)],

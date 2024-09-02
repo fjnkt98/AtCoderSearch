@@ -1,7 +1,9 @@
 use anyhow::Context;
 use itertools::Itertools;
-use sqlx::{postgres::PgRow, Acquire, Pool, Postgres, QueryBuilder};
+use sqlx::{Acquire, Pool, Postgres};
 use std::{collections::BTreeSet, time::Duration};
+use tokio_util::sync::CancellationToken;
+use tracing::instrument;
 
 use crate::atcoder::{AtCoderClient, AtCoderProblemsClient, Problem};
 
@@ -27,13 +29,20 @@ impl<'a> ProblemCrawler<'a> {
         }
     }
 
-    pub async fn crawl(&self, all: bool) -> anyhow::Result<()> {
+    #[instrument(skip(self, token))]
+    pub async fn crawl(&self, token: CancellationToken, all: bool) -> anyhow::Result<()> {
+        tracing::info!("start to crawl problems");
+
         let mut targets = self.problems_client.fetch_problems().await?;
         if !all {
             targets = self.detect_diff(&targets).await?;
         }
 
         for target in targets.iter() {
+            if token.is_cancelled() {
+                return Ok(());
+            }
+
             let html = self
                 .atcoder_client
                 .fetch_problem_html(&target.contest_id, &target.id)
@@ -44,12 +53,14 @@ impl<'a> ProblemCrawler<'a> {
 
             tx.commit().await?;
 
+            tracing::info!("saved problem {} successfully", target.id);
             tokio::time::sleep(self.duration).await;
         }
 
         Ok(())
     }
 
+    #[instrument(skip(self, problems))]
     async fn detect_diff(&self, problems: &[Problem]) -> anyhow::Result<Vec<Problem>> {
         let rows: Vec<(String,)> = sqlx::query_as(r#"SELECT "problem_id" FROM "problems";"#)
             .fetch_all(self.pool)
@@ -67,6 +78,7 @@ impl<'a> ProblemCrawler<'a> {
     }
 }
 
+#[instrument(skip(db, problem, html))]
 async fn insert_problem<'a, A>(db: A, problem: &Problem, html: &str) -> anyhow::Result<u64>
 where
     A: Acquire<'a, Database = Postgres>,

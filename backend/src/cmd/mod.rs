@@ -42,12 +42,20 @@ enum Command {
 }
 
 impl App {
+    #[tokio::main]
     pub async fn run(&self) -> anyhow::Result<()> {
         let token = CancellationToken::new();
+        let token2 = token.clone();
+
+        tokio::spawn(async move {
+            tokio::signal::ctrl_c().await.unwrap();
+
+            token.cancel();
+        });
 
         match &self.command {
-            Command::Crawl { args, command } => command.exec(token, args).await,
-            Command::Update { args, command } => command.exec(token, args),
+            Command::Crawl { args, command } => command.exec(token2, args).await,
+            Command::Update { args, command } => command.exec(token2, args),
             Command::Serve { args, port } => {
                 todo!();
             }

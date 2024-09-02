@@ -5,14 +5,35 @@ mod history;
 
 use clap::Parser;
 use cmd::App;
+use std::{env, str::FromStr};
+use tracing::level_filters::LevelFilter;
+use tracing_subscriber::{
+    fmt::{self, time::OffsetTime},
+    EnvFilter,
+};
 
-#[tokio::main]
-async fn main() {
+fn main() -> anyhow::Result<()> {
+    let level = env::var("RUST_LOG").unwrap_or(String::from("info"));
+    let filter = EnvFilter::builder()
+        .with_default_directive(LevelFilter::from_str(&level)?.into())
+        .from_env_lossy();
+    let format = fmt::format()
+        .with_level(true)
+        .with_target(true)
+        .with_ansi(false)
+        .with_thread_ids(true)
+        .with_timer(OffsetTime::local_rfc_3339()?);
+    let subscriber = tracing_subscriber::fmt()
+        .with_env_filter(filter)
+        .event_format(format)
+        .json()
+        .finish();
+    tracing::subscriber::set_global_default(subscriber)?;
+
     let app = App::parse();
+    app.run()?;
 
-    if let Err(err) = app.run().await {
-        println!("command failed: {:#}", err)
-    }
+    Ok(())
 }
 
 #[cfg(test)]

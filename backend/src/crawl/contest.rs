@@ -1,11 +1,15 @@
 use crate::atcoder::{AtCoderProblemsClient, Contest};
 use anyhow::Context;
 use sqlx::{self, postgres::Postgres, Acquire, Pool, QueryBuilder};
+use tracing::instrument;
 
+#[instrument(skip(client, pool))]
 pub async fn crawl_contests(
     client: &AtCoderProblemsClient,
     pool: &Pool<Postgres>,
 ) -> anyhow::Result<()> {
+    tracing::info!("start to crawl contests");
+
     let contests = client
         .fetch_contests()
         .await
@@ -13,18 +17,20 @@ pub async fn crawl_contests(
 
     let mut tx = pool.begin().await.with_context(|| "begin transaction")?;
 
-    let mut _count = 0;
+    let mut count = 0;
     for chunk in contests.chunks(1000) {
-        _count += insert_contests(&mut tx, chunk)
+        count += insert_contests(&mut tx, chunk)
             .await
             .with_context(|| "insert contests")?;
     }
 
     tx.commit().await.with_context(|| "commit transaction")?;
 
+    tracing::info!("saved {} contests successfully", count);
     Ok(())
 }
 
+#[instrument(skip(db, contests))]
 async fn insert_contests<'a, A>(db: A, contests: &[Contest]) -> anyhow::Result<u64>
 where
     A: Acquire<'a, Database = Postgres>,
