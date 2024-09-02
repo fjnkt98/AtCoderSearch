@@ -1,121 +1,247 @@
 use anyhow::Context;
-use itertools::Itertools;
-use sqlx::{Acquire, Pool, Postgres};
-use std::{collections::BTreeSet, time::Duration};
+use sqlx::{Acquire, Pool, Postgres, QueryBuilder};
+use std::{collections::VecDeque, time::Duration};
 use tracing::instrument;
 
-use crate::atcoder::{AtCoderClient, AtCoderProblemsClient, Problem};
+use crate::{
+    atcoder::{AtCoderClient, Submission},
+    history::SubmissionCrawlHistory,
+};
 
-pub struct ProblemCrawler<'a> {
+pub struct SubmissionCrawler<'a> {
+    client: &'a AtCoderClient,
     pool: &'a Pool<Postgres>,
-    problems_client: &'a AtCoderProblemsClient,
-    atcoder_client: &'a AtCoderClient,
     duration: Duration,
+    retry: i64,
+    targets: Vec<String>,
 }
 
-impl<'a> ProblemCrawler<'a> {
+impl<'a> SubmissionCrawler<'a> {
     pub fn new(
+        client: &'a AtCoderClient,
         pool: &'a Pool<Postgres>,
-        atcoder_client: &'a AtCoderClient,
-        problems_client: &'a AtCoderProblemsClient,
         duration: Duration,
+        retry: i64,
+        targets: Vec<String>,
     ) -> Self {
         Self {
+            client,
             pool,
-            atcoder_client,
-            problems_client,
             duration,
+            retry,
+            targets,
         }
+    }
+
+    pub async fn crawl(&self) -> anyhow::Result<()> {
+        let targets = fetch_contest_id(self.pool, &self.targets).await?;
+
+        for contest_id in targets.iter() {
+            self.crawl_contest(contest_id).await?;
+
+            tokio::time::sleep(self.duration).await;
+        }
+        todo!();
     }
 
     #[instrument(skip(self))]
-    pub async fn crawl(&self, all: bool) -> anyhow::Result<()> {
-        let mut targets = self.problems_client.fetch_problems().await?;
-        if !all {
-            targets = self.detect_diff(&targets).await?;
-        }
+    async fn crawl_contest(&self, contest_id: &str) -> anyhow::Result<()> {
+        let last_crawled =
+            SubmissionCrawlHistory::fetch_last_crawled(self.pool, contest_id).await?;
+        tracing::info!(
+            "start to crawl submissions of {}. last crawled at {:?}",
+            contest_id,
+            last_crawled
+        );
+        let last_crawled = last_crawled.and_then(|t| Some(t.timestamp())).unwrap_or(0);
 
-        tracing::info!("start to crawl {} problems", targets.len());
+        let mut tx = self
+            .pool
+            .begin()
+            .await
+            .with_context(|| "begin transaction to create submission crawl history")?;
+        let mut history = SubmissionCrawlHistory::new(&mut tx, contest_id)
+            .await
+            .with_context(|| "create submission crawl history")?;
+        tx.commit()
+            .await
+            .with_context(|| "commit transaction to create submission crawl history")?;
 
-        for target in targets.iter() {
-            let html = self
-                .atcoder_client
-                .fetch_problem_html(&target.contest_id, &target.id)
-                .await?;
+        let mut submissions: Vec<Submission> = Vec::with_capacity(20);
 
-            let mut tx = self.pool.begin().await?;
-            let _count = insert_problem(&mut tx, target, &html).await?;
+        let mut queue = VecDeque::from([1]);
+        let mut remain = self.retry;
+        while let Some(page) = queue.pop_front() {
+            tracing::info!("fetch submissions at page {}", page);
 
-            tx.commit().await?;
+            match self.client.fetch_submissions(contest_id, page).await {
+                Ok(s) => {
+                    if s.is_empty() {
+                        tracing::info!("there is no submissions in {}", contest_id);
+                        break;
+                    }
 
-            tracing::info!("saved problem {} successfully", target.id);
+                    let head = s.get(0).unwrap().clone();
+                    submissions.extend(s);
+
+                    if head.epoch_second <= last_crawled {
+                        tracing::info!("break crawling since all submissions of {} after page {} have been crawled", contest_id, page);
+                        break;
+                    }
+
+                    queue.push_back(page + 1);
+                    remain = self.retry;
+                }
+                Err(e) => {
+                    if remain <= 0 {
+                        return Err(e).with_context(|| "fetch submissions");
+                    }
+
+                    tracing::error!("failed to crawl submissions of {} cause: {:#}. retry to crawl after 60 seconds...", contest_id, e);
+
+                    queue.push_back(page);
+                    remain -= 1;
+                    tokio::time::sleep(Duration::from_secs(60)).await;
+                }
+            }
+
             tokio::time::sleep(self.duration).await;
         }
 
-        Ok(())
-    }
-
-    #[instrument(skip(self, problems))]
-    async fn detect_diff(&self, problems: &[Problem]) -> anyhow::Result<Vec<Problem>> {
-        let rows: Vec<(String,)> = sqlx::query_as(r#"SELECT "problem_id" FROM "problems";"#)
-            .fetch_all(self.pool)
+        let mut tx = self
+            .pool
+            .begin()
             .await
-            .with_context(|| "fetch problem ids from database")?;
-        let exists = BTreeSet::from_iter(rows.iter().map(|r| r.0.clone()));
+            .with_context(|| "begin transaction to save submissions")?;
+        let mut count = 0;
+        for chunk in submissions.chunks(1000) {
+            count += insert_submissions(&mut tx, &chunk)
+                .await
+                .with_context(|| "insert submissions")?;
+        }
+        tx.commit()
+            .await
+            .with_context(|| "commit transaction to save submissions")?;
+        tracing::info!("saved {} submissions successfully", count);
 
-        let result = problems
-            .iter()
-            .filter(|p| !exists.contains(&p.id))
-            .cloned()
-            .collect_vec();
+        let mut tx = self
+            .pool
+            .begin()
+            .await
+            .with_context(|| "begin transaction to update submission crawl history")?;
+        history
+            .finish(&mut tx)
+            .await
+            .with_context(|| "finish submission crawl history")?;
+        tx.commit()
+            .await
+            .with_context(|| "commit transaction to update submission crawl history")?;
 
-        Ok(result)
+        Ok(())
     }
 }
 
-#[instrument(skip(db, problem, html))]
-async fn insert_problem<'a, A>(db: A, problem: &Problem, html: &str) -> anyhow::Result<u64>
+#[instrument(skip(db))]
+async fn fetch_contest_id<'a, A>(db: A, categories: &[String]) -> anyhow::Result<Vec<String>>
 where
     A: Acquire<'a, Database = Postgres>,
 {
-    let sql = r#"
-INSERT INTO
-    "problems" (
-        "problem_id",
-        "contest_id",
-        "problem_index",
-        "name",
-        "title",
-        "url",
-        "html",
-        "updated_at"
-    )
-VALUES
-    ($1, $2, $3, $4, $5, $6, $7, NOW())
-ON CONFLICT ("problem_id") DO
-UPDATE
-SET
-    "contest_id" = EXCLUDED."contest_id",
-    "problem_index" = EXCLUDED."problem_index",
-    "name" = EXCLUDED."name",
-    "title" = EXCLUDED."title",
-    "url" = EXCLUDED."url",
-    "html" = EXCLUDED."html",
-    "updated_at" = NOW();
-    "#;
+    let mut builder: QueryBuilder<Postgres> = sqlx::QueryBuilder::new(
+        r#"
+        SELECT
+            "contest_id"
+        FROM
+            "contests"
+"#,
+    );
+    if !categories.is_empty() {
+        builder.push(r#"WHERE "category" IN ("#);
+        let mut s = builder.separated(", ");
+        for c in categories.iter() {
+            s.push_bind(c);
+        }
+        s.push_unseparated(")");
+    }
+    builder.push(r#"ORDER BY "start_epoch_second" DESC"#);
 
     let mut conn = db.acquire().await?;
-    let res = sqlx::query(sql)
-        .bind(&problem.id)
-        .bind(&problem.contest_id)
-        .bind(&problem.problem_index)
-        .bind(&problem.name)
-        .bind(&problem.title)
-        .bind(&problem.url())
-        .bind(html)
+
+    let res: Vec<(String,)> = builder
+        .build_query_as()
+        .fetch_all(&mut *conn)
+        .await
+        .with_context(|| "execute select contest_id query")?;
+
+    Ok(res.into_iter().map(|(c,)| c).collect())
+}
+
+#[instrument(skip(db, submissions))]
+async fn insert_submissions<'a, A>(db: A, submissions: &[Submission]) -> anyhow::Result<u64>
+where
+    A: Acquire<'a, Database = Postgres>,
+{
+    if submissions.is_empty() {
+        return Ok(0);
+    }
+
+    let mut builder: QueryBuilder<Postgres> = sqlx::QueryBuilder::new(
+        r#"
+INSERT INTO
+    "submissions" (
+        "id",
+        "epoch_second",
+        "problem_id",
+        "contest_id",
+        "user_id",
+        "language",
+        "point",
+        "length",
+        "result",
+        "execution_time",
+        "updated_at"
+    )
+"#,
+    );
+    builder.push_values(submissions.iter(), |mut separated, s| {
+        separated
+            .push_bind(&s.id)
+            .push_bind(&s.epoch_second)
+            .push_bind(&s.problem_id)
+            .push_bind(&s.contest_id)
+            .push_bind(&s.user_id)
+            .push_bind(&s.language)
+            .push_bind(&s.point)
+            .push_bind(&s.length)
+            .push_bind(&s.result)
+            .push_bind(&s.execution_time)
+            .push("NOW()");
+    });
+    builder.push(
+        r#"
+ON CONFLICT ("id", "epoch_second") DO
+UPDATE
+SET
+    "id" = excluded."id",
+    "epoch_second" = excluded."epoch_second",
+    "problem_id" = excluded."problem_id",
+    "contest_id" = excluded."contest_id",
+    "user_id" = excluded."user_id",
+    "language" = excluded."language",
+    "point" = excluded."point",
+    "length" = excluded."length",
+    "result" = excluded."result",
+    "execution_time" = excluded."execution_time",
+    "updated_at" = NOW();
+"#,
+    );
+
+    let mut conn = db.acquire().await?;
+
+    let res = builder
+        .build()
         .execute(&mut *conn)
         .await
-        .with_context(|| "execute insert problem query")?;
+        .with_context(|| "execute insert submissions query")?;
 
     Ok(res.rows_affected())
 }
@@ -124,93 +250,112 @@ SET
 mod test {
     use super::*;
     use crate::testutil::{create_container, create_pool_from_container};
-    use sqlx::Row;
     use testcontainers::runners::AsyncRunner;
 
     #[tokio::test]
-    async fn test_insert_problem() {
+    async fn test_insert_submissions() {
         let container = create_container().unwrap().start().await.unwrap();
         let pool = create_pool_from_container(&container).await.unwrap();
 
-        let problem = Problem {
-            id: String::from("abc001_a"),
-            contest_id: String::from("abc001"),
-            problem_index: String::from("A"),
-            title: String::from("title"),
-            name: String::from("A. title"),
-        };
-        let html = "html";
+        // test insert empty
+        let submissions = vec![];
+        let count = insert_submissions(&pool, &submissions).await.unwrap();
+        assert_eq!(count, 0);
 
-        let count = insert_problem(&pool, &problem, &html).await.unwrap();
+        // test insert single submission
+        let submissions = vec![Submission {
+            id: 48852107,
+            epoch_second: 1703553569,
+            problem_id: String::from("abc300_a"),
+            user_id: String::from("Orkhon2010"),
+            contest_id: String::from("abc300"),
+            language: String::from("C++ 20 (gcc 12.2)"),
+            point: 100.0,
+            length: 259,
+            result: String::from("AC"),
+            execution_time: Some(1),
+        }];
+        let count = insert_submissions(&pool, &submissions).await.unwrap();
         assert_eq!(count, 1);
 
-        let sql = r#"SELECT * FROM "problems""#;
-        let rows = sqlx::query(sql).fetch_all(&pool).await.unwrap();
-        assert_eq!(rows.len(), 1);
-        let row = &rows[0];
+        let inserted: Vec<(i64, i64, String, Option<String>, Option<String>, Option<String>, Option<f64>, Option<i32>, Option<String>, Option<i32>,)> = sqlx::query_as(r#"SELECT "id", "epoch_second", "problem_id", "contest_id", "user_id", "language", "point", "length", "result", "execution_time" FROM "submissions""#).fetch_all(&pool).await.unwrap();
+        assert_eq!(
+            inserted,
+            vec![(
+                48852107,
+                1703553569,
+                String::from("abc300_a"),
+                Some(String::from("abc300")),
+                Some(String::from("Orkhon2010")),
+                Some(String::from("C++ 20 (gcc 12.2)")),
+                Some(100.0),
+                Some(259),
+                Some(String::from("AC")),
+                Some(1),
+            )]
+        );
 
-        assert_eq!(
-            problem.id,
-            row.try_get::<String, &str>("problem_id").unwrap()
-        );
-        assert_eq!(
-            problem.contest_id,
-            row.try_get::<String, &str>("contest_id").unwrap()
-        );
-        assert_eq!(
-            problem.problem_index,
-            row.try_get::<String, &str>("problem_index").unwrap()
-        );
-        assert_eq!(problem.name, row.try_get::<String, &str>("name").unwrap());
-        assert_eq!(problem.title, row.try_get::<String, &str>("title").unwrap());
-        assert_eq!("html", row.try_get::<String, &str>("html").unwrap());
-        assert_eq!(
-            "https://atcoder.jp/contests/abc001/tasks/abc001_a",
-            row.try_get::<String, &str>("url").unwrap()
-        );
+        // test insert multiple submissions
+        let submissions = vec![
+            Submission {
+                id: 48852107,
+                epoch_second: 1703553569,
+                problem_id: String::from("abc300_a"),
+                user_id: String::from("Orkhon2010"),
+                contest_id: String::from("abc300"),
+                language: String::from("C++ 20 (gcc 12.2)"),
+                point: 100.0,
+                length: 259,
+                result: String::from("AC"),
+                execution_time: Some(1),
+            },
+            Submission {
+                id: 48852073,
+                epoch_second: 1703553403,
+                problem_id: String::from("abc300_f"),
+                user_id: String::from("ecsmtlir"),
+                contest_id: String::from("abc300"),
+                language: String::from("C++ 20 (gcc 12.2)"),
+                point: 500.0,
+                length: 14721,
+                result: String::from("AC"),
+                execution_time: Some(11),
+            },
+        ];
+        let count = insert_submissions(&pool, &submissions).await.unwrap();
+        assert_eq!(count, 2);
     }
 
     #[tokio::test]
-    async fn test_detect_diff() {
+    async fn test_fetch_contest_id() {
         let container = create_container().unwrap().start().await.unwrap();
         let pool = create_pool_from_container(&container).await.unwrap();
 
-        let atcoder_client = AtCoderClient::new().unwrap();
-        let problems_client = AtCoderProblemsClient::new().unwrap();
-        let crawler = ProblemCrawler::new(
-            &pool,
-            &atcoder_client,
-            &problems_client,
-            Duration::from_secs(1),
-        );
+        // test data
+        sqlx::query(
+            r#"
+INSERT INTO "contests" ("contest_id", "start_epoch_second", "duration_second", "title", "rate_change", "category") VALUES
+('abc001', 0, 0, '', '-', 'ABC'),
+('abc002', 0, 0, '', '-', 'ABC'),
+('arc001', 0, 0, '', '-', 'ARC');
+"#,
+        )
+        .execute(&pool)
+        .await
+        .unwrap();
 
-        let sql = r#"
-INSERT INTO "problems" ("problem_id", "contest_id", "problem_index", "name", "title", "url", "html")
-VALUES
-    ('abc001_a', 'abc001', 'A', 'test problem 1', 'A. test problem 1', 'url', 'html');
-        "#;
-        let res = sqlx::query(sql).execute(&pool).await.unwrap();
-        assert_eq!(res.rows_affected(), 1);
+        // test fetch all contest
+        let categories = vec![];
+        let result = fetch_contest_id(&pool, &categories).await.unwrap();
+        assert_eq!(result.len(), 3);
 
-        let problems = vec![
-            Problem {
-                id: String::from("abc001_a"),
-                contest_id: String::from("abc001"),
-                problem_index: String::from("A"),
-                name: String::from("test problem 1"),
-                title: String::from("A. test problem 1"),
-            },
-            Problem {
-                id: String::from("abc001_b"),
-                contest_id: String::from("abc001"),
-                problem_index: String::from("B"),
-                name: String::from("test problem 2"),
-                title: String::from("B. test problem 2"),
-            },
-        ];
+        // test fetch specific category
+        let categories = vec![String::from("ABC")];
+        let result = fetch_contest_id(&pool, &categories).await.unwrap();
+        assert_eq!(result.len(), 2);
 
-        let diff = crawler.detect_diff(&problems).await.unwrap();
-        let want = vec![problems[1].clone()];
-        assert_eq!(diff, want);
+        let categories = vec![String::from("ABC"), String::from("ARC")];
+        let result = fetch_contest_id(&pool, &categories).await.unwrap();
+        assert_eq!(result.len(), 3);
     }
 }

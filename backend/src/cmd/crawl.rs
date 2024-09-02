@@ -2,9 +2,11 @@ use std::time::Duration;
 
 use crate::{
     atcoder::{AtCoderClient, AtCoderProblemsClient},
-    crawl::{contest, difficulty, problem, user},
+    crawl::{contest, difficulty, problem, submission, user},
 };
+use anyhow::Context;
 use clap::Subcommand;
+use itertools::Itertools;
 use sqlx::postgres::PgPoolOptions;
 
 use super::CommonArgs;
@@ -69,7 +71,22 @@ impl CrawlCommand {
                 atcoder_username,
                 atcoder_password,
             } => {
-                todo!();
+                atcoder_client
+                    .login(atcoder_username, atcoder_password)
+                    .await
+                    .with_context(|| "login to atcoder")?;
+
+                let targets = target.split(",").map(String::from).collect_vec();
+                let crawler = submission::SubmissionCrawler::new(
+                    &atcoder_client,
+                    &pool,
+                    Duration::from_secs(*duration),
+                    *retry,
+                    targets,
+                );
+
+                crawler.crawl().await?;
+                Ok(())
             }
         }
     }
