@@ -44,11 +44,24 @@ where
     }
 
     let mut builder: QueryBuilder<Postgres> = sqlx::QueryBuilder::new(
-        r#"INSERT INTO "difficulties" ("problem_id", "slope", "intercept", "variance", "difficulty", "discrimination", "irt_loglikelihood", "irt_users", "is_experimental", "updated_at") "#,
+        r#"
+INSERT INTO "difficulties"
+    (
+        "problem_id",
+        "slope",
+        "intercept",
+        "variance",
+        "difficulty",
+        "discrimination",
+        "irt_loglikelihood",
+        "irt_users",
+        "is_experimental",
+        "updated_at"
+    )
+"#,
     );
-    builder.push_values(difficulties.iter(), |mut separated, d| {
-        separated
-            .push_bind(&d.0)
+    builder.push_values(difficulties.iter(), |mut s, d| {
+        s.push_bind(&d.0)
             .push_bind(&d.1.slope)
             .push_bind(&d.1.intercept)
             .push_bind(&d.1.variance)
@@ -59,7 +72,23 @@ where
             .push_bind(&d.1.is_experimental)
             .push("NOW()");
     });
-    builder.push(r#" ON CONFLICT ("problem_id") DO UPDATE SET "problem_id" = EXCLUDED."problem_id", "slope" = EXCLUDED."slope", "intercept" = EXCLUDED."intercept", "variance" = EXCLUDED."variance", "difficulty" = EXCLUDED."difficulty", "discrimination" = EXCLUDED."discrimination", "irt_loglikelihood" = EXCLUDED."irt_loglikelihood", "irt_users" = EXCLUDED."irt_users", "is_experimental" = EXCLUDED."is_experimental", "updated_at" = NOW()"#);
+    builder.push(
+        r#"
+ON CONFLICT ("problem_id") DO
+UPDATE
+SET
+    "problem_id" = EXCLUDED."problem_id",
+    "slope" = EXCLUDED."slope",
+    "intercept" = EXCLUDED."intercept",
+    "variance" = EXCLUDED."variance",
+    "difficulty" = EXCLUDED."difficulty",
+    "discrimination" = EXCLUDED."discrimination",
+    "irt_loglikelihood" = EXCLUDED."irt_loglikelihood",
+    "irt_users" = EXCLUDED."irt_users",
+    "is_experimental" = EXCLUDED."is_experimental",
+    "updated_at" = NOW();
+"#,
+    );
 
     let mut conn = db.acquire().await.with_context(|| "acquire connection")?;
     let res = builder

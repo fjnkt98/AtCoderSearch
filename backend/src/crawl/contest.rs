@@ -40,11 +40,22 @@ where
     }
 
     let mut builder: QueryBuilder<Postgres> = sqlx::QueryBuilder::new(
-        r#"INSERT INTO "contests" ("contest_id", "start_epoch_second", "duration_second", "title", "rate_change", "category", "updated_at") "#,
+        r#"
+INSERT INTO
+    "contests"
+        (
+            "contest_id",
+            "start_epoch_second",
+            "duration_second",
+            "title",
+            "rate_change",
+            "category",
+            "updated_at"
+        )
+"#,
     );
-    builder.push_values(contests.iter(), |mut separated, c| {
-        separated
-            .push_bind(&c.id)
+    builder.push_values(contests.iter(), |mut s, c| {
+        s.push_bind(&c.id)
             .push_bind(&c.start_epoch_second)
             .push_bind(&c.duration_second)
             .push_bind(&c.title)
@@ -52,7 +63,20 @@ where
             .push_bind(c.categorize())
             .push("NOW()");
     });
-    builder.push(r#" ON CONFLICT ("contest_id") DO UPDATE SET "contest_id" = EXCLUDED."contest_id", "start_epoch_second" = EXCLUDED."start_epoch_second", "duration_second" = EXCLUDED."duration_second", "title" = EXCLUDED."title", "rate_change" = EXCLUDED."rate_change", "category" = EXCLUDED."category", "updated_at" = NOW()"#);
+    builder.push(
+        r#"
+ON CONFLICT ("contest_id") DO
+UPDATE
+SET
+    "contest_id" = EXCLUDED."contest_id",
+    "start_epoch_second" = EXCLUDED."start_epoch_second",
+    "duration_second" = EXCLUDED."duration_second",
+    "title" = EXCLUDED."title",
+    "rate_change" = EXCLUDED."rate_change",
+    "category" = EXCLUDED."category",
+    "updated_at" = NOW();
+"#,
+    );
 
     let mut conn = db.acquire().await.with_context(|| "acquire connection")?;
 
