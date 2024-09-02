@@ -31,12 +31,12 @@ impl<'a> ProblemCrawler<'a> {
 
     #[instrument(skip(self, token))]
     pub async fn crawl(&self, token: CancellationToken, all: bool) -> anyhow::Result<()> {
-        tracing::info!("start to crawl problems");
-
         let mut targets = self.problems_client.fetch_problems().await?;
         if !all {
             targets = self.detect_diff(&targets).await?;
         }
+
+        tracing::info!("start to crawl {} problems", targets.len());
 
         for target in targets.iter() {
             if token.is_cancelled() {
