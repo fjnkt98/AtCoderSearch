@@ -200,7 +200,7 @@ impl SubmissionCrawlHistory {
             .bind(self.id)
             .fetch_one(&mut *conn)
             .await
-            .with_context(|| "create submission crawl history")?;
+            .with_context(|| "update submission crawl history")?;
 
         self.status = history.status;
         self.finished_at = history.finished_at;
@@ -208,7 +208,7 @@ impl SubmissionCrawlHistory {
         Ok(())
     }
 
-    pub async fn fetch_latest<'a, A>(db: A, contest_id: &str) -> anyhow::Result<Self>
+    pub async fn fetch_last_crawled<'a, A>(db: A, contest_id: &str) -> anyhow::Result<i64>
     where
         A: Acquire<'a, Database = Postgres>,
     {
@@ -216,11 +216,7 @@ impl SubmissionCrawlHistory {
 
         let sql = r#"
         SELECT
-            "id",
-            "contest_id",
-            "started_at",
-            "finished_at",
-            "status"
+            CAST(EXTRACT(EPOCH FROM "started_at") AS BIGINT)
         FROM
             "submission_crawl_histories"
         WHERE
@@ -232,13 +228,24 @@ impl SubmissionCrawlHistory {
             1;
         "#;
 
-        let latest: SubmissionCrawlHistory = sqlx::query_as(sql)
+        let result: sqlx::Result<(i64,)> = sqlx::query_as(sql)
             .bind(contest_id)
             .fetch_one(&mut *conn)
-            .await
-            .with_context(|| "fetch latest submission crawl history")?;
+            .await;
 
-        Ok(latest)
+        match result {
+            Ok((latest,)) => {
+                return Ok(latest);
+            }
+            Err(e) => match e {
+                sqlx::Error::RowNotFound => {
+                    return Ok(0);
+                }
+                _ => {
+                    return Err(e).with_context(|| "fetch last crawled epoch");
+                }
+            },
+        };
     }
 }
 
@@ -275,6 +282,8 @@ impl SubmissionCrawlHistory {
 
 #[cfg(test)]
 mod tests {
+    use std::time::Duration;
+
     use super::*;
     use crate::testutil::{create_container, create_pool_from_container};
     use rstest::rstest;
@@ -347,15 +356,24 @@ mod tests {
         let container = create_container().unwrap().start().await.unwrap();
         let pool = create_pool_from_container(&container).await.unwrap();
 
+        // histories not found
+        assert_eq!(
+            SubmissionCrawlHistory::fetch_last_crawled(&pool, "abc001")
+                .await
+                .unwrap(),
+            0
+        );
+
         let mut history1 = SubmissionCrawlHistory::new(&pool, "abc001").await.unwrap();
+        tokio::time::sleep(Duration::from_secs(1)).await;
         let _history2 = SubmissionCrawlHistory::new(&pool, "abc001").await.unwrap();
 
         history1.finish(&pool).await.unwrap();
 
-        let latest = SubmissionCrawlHistory::fetch_latest(&pool, "abc001")
+        let latest = SubmissionCrawlHistory::fetch_last_crawled(&pool, "abc001")
             .await
             .unwrap();
 
-        assert_eq!(history1, latest);
+        assert_eq!(history1.started_at.timestamp(), latest);
     }
 }
