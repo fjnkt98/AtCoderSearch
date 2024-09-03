@@ -22,10 +22,10 @@ services:
     container_name: atcodersearch-meilisearch
     environment:
       - MEILI_MASTER_KEY=meili-master-key
-    volumes:
-      - type: volume
-        source: atcodersearch-meilisearch
-        target: /meili_data
+    # volumes:
+    #   - type: volume
+    #     source: atcodersearch-meilisearch
+    #     target: /meili_data
     ports:
       - 7700:7700
     networks:
