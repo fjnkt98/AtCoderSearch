@@ -1,15 +1,10 @@
-use std::{
-    borrow::Cow,
-    collections::HashMap,
-    sync::{Arc, LazyLock},
-    time::Duration,
-};
+use std::{collections::HashMap, sync::LazyLock, time::Duration};
 
 use anyhow::Context as _;
 use chrono::DateTime;
 use itertools::Itertools;
 use regex::Regex;
-use reqwest::{cookie::Jar, header::CONTENT_TYPE, Client, Url};
+use reqwest::{Client, Url};
 use scraper::{selectable::Selectable, Html, Selector};
 
 static CSRF_PATTERN: LazyLock<Regex> =
