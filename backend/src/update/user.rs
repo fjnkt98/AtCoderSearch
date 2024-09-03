@@ -1,16 +1,16 @@
+use futures::TryStreamExt;
 use serde::Serialize;
 use sqlx::{prelude::FromRow, Pool, Postgres};
-use std::pin::Pin;
-use tokio_stream::Stream;
+use tokio::sync::mpsc::Sender;
 
 use super::{ReadRows, ToDocument};
 
-pub struct UserRowReader<'a> {
-    pool: &'a Pool<Postgres>,
+pub struct UserRowReader {
+    pool: Pool<Postgres>,
 }
 
-impl<'a> UserRowReader<'a> {
-    pub fn new(pool: &'a Pool<Postgres>) -> Self {
+impl UserRowReader {
+    pub fn new(pool: Pool<Postgres>) -> Self {
         Self { pool }
     }
 }
@@ -33,7 +33,7 @@ pub struct User {
 impl ToDocument for User {
     type Document = UserDoc;
 
-    fn to_document(self) -> anyhow::Result<Self::Document> {
+    async fn to_document(self) -> anyhow::Result<Self::Document> {
         Ok(UserDoc {
             user_id: self.user_id,
             rating: self.rating,
@@ -86,13 +86,10 @@ fn rate_to_color(rate: i32) -> String {
     .to_string()
 }
 
-impl<'a> ReadRows<'a> for UserRowReader<'a> {
+impl ReadRows for UserRowReader {
     type Row = User;
 
-    async fn read_rows(
-        &'a self,
-    ) -> anyhow::Result<Pin<Box<dyn Stream<Item = Result<Self::Row, sqlx::Error>> + Send + 'a>>>
-    {
+    async fn read_rows(&self, tx: Sender<User>) -> anyhow::Result<()> {
         let sql = r#"
     SELECT
         user_id,
@@ -109,9 +106,13 @@ impl<'a> ReadRows<'a> for UserRowReader<'a> {
     FROM
         "users"
         "#;
-        let stream = sqlx::query_as(sql).fetch(self.pool);
 
-        Ok(stream)
+        let mut stream = sqlx::query_as(sql).fetch(&self.pool);
+        while let Some(row) = stream.try_next().await? {
+            tx.send(row).await?;
+        }
+
+        Ok(())
     }
 }
 
@@ -119,8 +120,9 @@ impl<'a> ReadRows<'a> for UserRowReader<'a> {
 mod test {
     use super::*;
     use crate::testutil::{create_container, create_pool_from_container};
-    use futures::TryStreamExt;
+    use futures::StreamExt;
     use testcontainers::runners::AsyncRunner;
+    use tokio_stream::wrappers::ReceiverStream;
 
     #[tokio::test]
     async fn test_read_user_rows() {
@@ -138,10 +140,13 @@ INSERT INTO "users" ("user_id", "rating", "highest_rating", "affiliation", "birt
         .await
         .unwrap();
 
-        let reader = UserRowReader { pool: &pool };
-        let stream = reader.read_rows().await.unwrap();
+        let reader = UserRowReader { pool };
+        let (tx, rx) = tokio::sync::mpsc::channel(100);
+        reader.read_rows(tx).await.unwrap();
 
-        let users: Vec<User> = stream.try_collect().await.unwrap();
+        let stream = ReceiverStream::new(rx);
+        let users: Vec<User> = stream.collect().await;
+
         let want = vec![
             User {
                 user_id: String::from("user01"),

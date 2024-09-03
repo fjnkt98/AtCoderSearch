@@ -23,9 +23,9 @@ impl UpdateCommands {
         match self {
             UpdateCommands::Problem => todo!(),
             UpdateCommands::User { chunk_size } => {
-                let reader = UserRowReader::new(&pool);
+                let reader = UserRowReader::new(pool.clone());
 
-                update_index(&reader, *chunk_size).await?;
+                update_index(reader, *chunk_size).await?;
                 Ok(())
             }
         }
