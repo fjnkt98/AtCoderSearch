@@ -7,6 +7,7 @@ version = "0.1.0"
 anyhow = "1.0.86"
 chrono = {version = "0.4.38", features = ["serde"]}
 clap = {version = "4.5.16", features = ["derive", "env"]}
+futures = "0.3.30"
 itertools = "0.13.0"
 regex = "1.10.6"
 reqwest = {version = "0.12.7", features = ["rustls-tls", "cookies", "gzip", "json", "stream"]}
@@ -17,7 +18,7 @@ serde_with = "3.9.0"
 sqlx = {version = "0.8.1", features = ["postgres", "chrono", "runtime-tokio-rustls"]}
 tokio = {version = "1.39.3", features = ["full"]}
 tokio-macros = "2.4.0"
-tokio-stream = "0.1.15"
+tokio-stream = { version = "0.1.15", features = ["time"] }
 tokio-util = "0.7.11"
 tracing = "0.1.40"
 tracing-subscriber = {version = "0.3.18", features = ["env-filter", "fmt", "std", "json", "local-time", "time"]}
