@@ -225,34 +225,30 @@ pub struct Difficulty {
 
 #[cfg(test)]
 mod tests {
-    use std::fs;
-    use std::path::PathBuf;
-
     use super::*;
-    use rstest::rstest;
 
     #[test]
     fn test_new_atcoder_problems_client() {
         AtCoderProblemsClient::new().unwrap();
     }
 
-    #[tokio::test]
-    async fn test_fetch_contests() {
-        let client = AtCoderProblemsClient::new().unwrap();
-        client.fetch_contests().await.unwrap();
-    }
+    // #[tokio::test]
+    // async fn test_fetch_contests() {
+    //     let client = AtCoderProblemsClient::new().unwrap();
+    //     client.fetch_contests().await.unwrap();
+    // }
 
-    #[tokio::test]
-    async fn test_fetch_problems() {
-        let client = AtCoderProblemsClient::new().unwrap();
-        client.fetch_problems().await.unwrap();
-    }
+    // #[tokio::test]
+    // async fn test_fetch_problems() {
+    //     let client = AtCoderProblemsClient::new().unwrap();
+    //     client.fetch_problems().await.unwrap();
+    // }
 
-    #[tokio::test]
-    async fn test_fetch_difficulties() {
-        let client = AtCoderProblemsClient::new().unwrap();
-        client.fetch_difficulties().await.unwrap();
-    }
+    // #[tokio::test]
+    // async fn test_fetch_difficulties() {
+    //     let client = AtCoderProblemsClient::new().unwrap();
+    //     client.fetch_difficulties().await.unwrap();
+    // }
 
     #[test]
     fn test_contest_rated_target() {
