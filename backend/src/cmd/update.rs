@@ -1,4 +1,5 @@
 use clap::Subcommand;
+use meilisearch_sdk::client::Client;
 use sqlx::postgres::PgPoolOptions;
 
 use super::CommonArgs;
@@ -19,13 +20,14 @@ impl UpdateCommands {
             .max_connections(8)
             .connect(&args.database_url)
             .await?;
+        let client = Client::new(&args.engine_url, Some(&args.engine_master_key))?;
 
         match self {
             UpdateCommands::Problem => todo!(),
             UpdateCommands::User { chunk_size } => {
                 let reader = UserRowReader::new(pool.clone());
 
-                update_index(reader, *chunk_size).await?;
+                update_index(reader, client, *chunk_size).await?;
                 Ok(())
             }
         }

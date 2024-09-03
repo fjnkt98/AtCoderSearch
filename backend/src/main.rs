@@ -2,6 +2,7 @@ mod atcoder;
 mod cmd;
 mod crawl;
 mod history;
+mod update;
 
 use clap::Parser;
 use cmd::App;

@@ -16,6 +16,8 @@ pub struct CommonArgs {
     database_url: String,
     #[arg(long, env, hide_env_values = true)]
     engine_url: String,
+    #[arg(long, env, hide_env_values = true)]
+    engine_master_key: String,
 }
 
 #[derive(Subcommand)]
@@ -45,7 +47,7 @@ impl App {
     pub async fn run(&self) -> anyhow::Result<()> {
         match &self.command {
             Command::Crawl { args, command } => command.exec(args).await,
-            Command::Update { args, command } => command.exec(args),
+            Command::Update { args, command } => command.exec(args).await,
             Command::Serve { args, port } => {
                 todo!();
             }

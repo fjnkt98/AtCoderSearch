@@ -2,7 +2,7 @@ pub mod user;
 
 use anyhow::Context;
 use futures::stream::FuturesUnordered;
-// use meilisearch_sdk::client::Client;
+use meilisearch_sdk::{client::Client, tasks::Task};
 use serde::Serialize;
 use std::{fmt::Debug, future::Future, mem, time::Duration};
 use tokio::sync::mpsc::Sender;
@@ -21,7 +21,7 @@ pub trait ToDocument {
     fn to_document(self) -> impl Future<Output = anyhow::Result<Self::Document>> + Send;
 }
 
-pub async fn update_index<'a, R>(reader: R, chunk_size: usize) -> anyhow::Result<()>
+pub async fn update_index<'a, R>(reader: R, client: Client, chunk_size: usize) -> anyhow::Result<()>
 where
     R: ReadRows + Send + 'static,
 {
@@ -35,11 +35,24 @@ where
     tasks.push(tokio::task::spawn(async move {
         let rx = ReceiverStream::new(doc_rx);
 
+        let index = client.index("users");
+
         let stream = rx.chunks_timeout(chunk_size, Duration::from_secs(1));
         tokio::pin!(stream);
         while let Some(docs) = stream.next().await {
-            if let Some(doc) = docs.get(0) {
-                println!("{:?}", doc);
+            let task = index
+                .add_documents(&docs, Some("userId"))
+                .await
+                .with_context(|| "post documents")?
+                .wait_for_completion(&client, None, None)
+                .await
+                .with_context(|| "wait for task completion")?;
+
+            if let Task::Failed { content } = task {
+                return Err(anyhow::anyhow!(
+                    "failed to add documents: {}",
+                    content.error
+                ));
             }
         }
         Ok(())
