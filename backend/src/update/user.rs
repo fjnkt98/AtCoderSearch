@@ -1,7 +1,7 @@
-use futures::TryStreamExt;
 use serde::Serialize;
 use sqlx::{prelude::FromRow, Pool, Postgres};
 use tokio::sync::mpsc::Sender;
+use tokio_stream::StreamExt;
 
 use super::{ReadRows, ToDocument};
 
