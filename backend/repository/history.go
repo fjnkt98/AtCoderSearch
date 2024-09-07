@@ -2,54 +2,84 @@ package repository
 
 import (
 	"context"
+	"errors"
+	"fmt"
 
-	"github.com/goark/errs"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 func NewBatchHistory(ctx context.Context, pool *pgxpool.Pool, name string, option []byte) (*BatchHistory, error) {
 	q := New(pool)
+
 	h, err := q.CreateBatchHistory(ctx, CreateBatchHistoryParams{Name: name, Options: option})
 	if err != nil {
-		return nil, errs.Wrap(err, errs.WithContext("name", name), errs.WithContext("option", option))
+		return nil, fmt.Errorf("create batch history: %w", err)
 	}
 	return &h, nil
 }
 
-func (h *BatchHistory) overwrite(r BatchHistory) {
-	h.ID = r.ID
-	h.Name = r.Name
-	h.StartedAt = r.StartedAt
-	h.FinishedAt = r.FinishedAt
-	h.Status = r.Status
-	h.Options = r.Options
-}
-
-func (h *BatchHistory) Finish(ctx context.Context, pool *pgxpool.Pool) error {
+func (h *BatchHistory) Complete(ctx context.Context, pool *pgxpool.Pool) error {
 	q := New(pool)
 
-	updated, err := q.UpdateBatchHistory(ctx, UpdateBatchHistoryParams{Status: "finished", ID: h.ID})
+	returned, err := q.CompleteBatchHistory(ctx, h.ID)
 	if err != nil {
-		return errs.Wrap(err, errs.WithContext("name", h.Name))
+		return fmt.Errorf("complete batch history: %w", err)
 	}
-	h.overwrite(updated)
+	*h = returned
 
 	return nil
 }
 
-var ErrHistoryConfirmed = errs.New("the batch history already confirmed")
+var ErrHistoryConfirmed = errors.New("the batch history already confirmed")
 
-func (h *BatchHistory) Fail(ctx context.Context, pool *pgxpool.Pool) error {
+func (h *BatchHistory) Abort(ctx context.Context, pool *pgxpool.Pool) error {
 	if h.Status != "working" {
 		return ErrHistoryConfirmed
 	}
 	q := New(pool)
 
-	updated, err := q.UpdateBatchHistory(ctx, UpdateBatchHistoryParams{Status: "failed", ID: h.ID})
+	returned, err := q.AbortBatchHistory(ctx, h.ID)
 	if err != nil {
-		return errs.Wrap(err, errs.WithContext("name", h.Name))
+		return fmt.Errorf("abort batch history: %w", err)
 	}
-	h.overwrite(updated)
+	*h = returned
+
+	return nil
+}
+
+func NewCrawlHistory(ctx context.Context, pool *pgxpool.Pool, contestID string) (*SubmissionCrawlHistory, error) {
+	q := New(pool)
+
+	h, err := q.CreateCrawlHistory(ctx, contestID)
+	if err != nil {
+		return nil, fmt.Errorf("create crawl history: %w", err)
+	}
+	return &h, nil
+}
+
+func (h *SubmissionCrawlHistory) Complete(ctx context.Context, pool *pgxpool.Pool) error {
+	q := New(pool)
+
+	returned, err := q.CompleteCrawlHistory(ctx, h.ID)
+	if err != nil {
+		return fmt.Errorf("complete crawl history: %w", err)
+	}
+	*h = returned
+
+	return nil
+}
+
+func (h *SubmissionCrawlHistory) Abort(ctx context.Context, pool *pgxpool.Pool) error {
+	if h.Status != "working" {
+		return ErrHistoryConfirmed
+	}
+	q := New(pool)
+
+	returned, err := q.AbortCrawlHistory(ctx, h.ID)
+	if err != nil {
+		return fmt.Errorf("abort crawl history: %w", err)
+	}
+	*h = returned
 
 	return nil
 }
