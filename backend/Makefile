@@ -1,5 +1,3 @@
-include .env
-
 .PHONY: test
 test:
 	@go test -cover ./... -coverprofile=cover.out
@@ -7,5 +5,4 @@ test:
 
 .PHONY: sqlc
 sqlc:
-	@atlas schema inspect -u ${DATABASE_URL} --format '{{ sql . }}' > schema.sql
 	@sqlc generate
