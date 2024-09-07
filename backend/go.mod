@@ -3,6 +3,7 @@ module fjnkt98/atcodersearch
 go 1.23.0
 
 require (
+	github.com/PuerkitoBio/goquery v1.10.0
 	github.com/jackc/pgx/v5 v5.5.5
 	github.com/testcontainers/testcontainers-go v0.33.0
 	github.com/urfave/cli/v2 v2.27.1
@@ -13,6 +14,7 @@ require (
 	github.com/AdaLogics/go-fuzz-headers v0.0.0-20230811130428-ced1acdcaa24 // indirect
 	github.com/Azure/go-ansiterm v0.0.0-20230124172434-306776ec8161 // indirect
 	github.com/Microsoft/go-winio v0.6.2 // indirect
+	github.com/andybalholm/cascadia v1.3.2 // indirect
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
 	github.com/containerd/log v0.1.0 // indirect
 	github.com/containerd/platforms v0.2.1 // indirect
@@ -62,7 +64,7 @@ require (
 	go.opentelemetry.io/otel/sdk v1.21.0 // indirect
 	go.opentelemetry.io/otel/trace v1.29.0 // indirect
 	golang.org/x/crypto v0.27.0 // indirect
-	golang.org/x/net v0.23.0 // indirect
+	golang.org/x/net v0.29.0 // indirect
 	golang.org/x/sync v0.8.0 // indirect
 	golang.org/x/sys v0.25.0 // indirect
 	golang.org/x/text v0.18.0 // indirect

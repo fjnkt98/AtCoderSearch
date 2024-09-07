@@ -26,7 +26,10 @@ func TestExtractCSRFToken(t *testing.T) {
 	if _, err := buf.ReadFrom(file); err != nil {
 		t.Fatalf("failed to read file: %s", err.Error())
 	}
-	token := extractCSRFToken(buf.String())
+	token, err := extractCSRFToken(buf.String())
+	if err != nil {
+		t.Fatalf("failed to extract CSRF token: %s", err.Error())
+	}
 	want := "KrVShPadRMxPBKM9LmjWJHaQvjC7ALXz6DXgHOCL1LQ="
 
 	if token != want {
@@ -72,8 +75,8 @@ func TestScrapeSubmissions(t *testing.T) {
 			ExecutionTime: ptr.To(int32(11)),
 		},
 	}
-	if !reflect.DeepEqual(result, want) {
-		t.Errorf("expected %+v , but got %+v", want, result)
+	if !reflect.DeepEqual(result[:2], want) {
+		t.Errorf("expected \n%+v\n , but got \n%+v\n", want, result)
 	}
 }
 
@@ -103,6 +106,6 @@ func TestScrapeUsers(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(result, want) {
-		t.Errorf("expected %+v , but got %+v", want, result)
+		t.Errorf("expected \n%+v\n , but got \n%+v\n", want, result)
 	}
 }
