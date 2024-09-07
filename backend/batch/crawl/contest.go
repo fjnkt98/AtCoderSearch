@@ -2,80 +2,56 @@ package crawl
 
 import (
 	"context"
+	"database/sql"
 	"fjnkt98/atcodersearch/pkg/atcoder"
+	"fjnkt98/atcodersearch/repository"
 	"fmt"
 	"slices"
+	"time"
 
-	"github.com/doug-martin/goqu/v9"
-	_ "github.com/doug-martin/goqu/v9/dialect/postgres"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jackc/pgx/v5/stdlib"
+	"github.com/uptrace/bun"
+	"github.com/uptrace/bun/dialect/pgdialect"
 )
 
-func SaveContests(ctx context.Context, pool *pgxpool.Pool, contests []atcoder.Contest) (int64, error) {
+func SaveContests(ctx context.Context, pool *pgxpool.Pool, contests []atcoder.Contest, timestamp time.Time) (int64, error) {
 	if len(contests) == 0 {
 		return 0, nil
 	}
 
-	tx, err := pool.Begin(ctx)
+	tx, err := bun.NewDB(stdlib.OpenDBFromPool(pool), pgdialect.New()).BeginTx(ctx, &sql.TxOptions{})
 	if err != nil {
 		return 0, fmt.Errorf("begin transaction: %w", err)
 	}
-	defer tx.Rollback(ctx)
-
-	dialect := goqu.Dialect("postgres")
+	defer tx.Rollback()
 
 	var count int64 = 0
-	for chunk := range slices.Chunk(contests, 1000) {
-		q := dialect.Insert("contests").Prepared(true).Cols(
-			"contest_id",
-			"start_epoch_second",
-			"duration_second",
-			"title",
-			"rate_change",
-			"category",
-			"updated_at",
-		)
-		for _, c := range chunk {
-			q = q.Vals(goqu.Vals{
-				c.ID,
-				c.StartEpochSecond,
-				c.DurationSecond,
-				c.Title,
-				c.RateChange,
-				c.Categorize(),
-				goqu.L("NOW()"),
-			})
-		}
 
-		q = q.OnConflict(
-			goqu.DoUpdate(
-				"contest_id",
-				goqu.Record{
-					"contest_id":         goqu.L("EXCLUDED.contest_id"),
-					"start_epoch_second": goqu.L("EXCLUDED.start_epoch_second"),
-					"duration_second":    goqu.L("EXCLUDED.duration_second"),
-					"title":              goqu.L("EXCLUDED.title"),
-					"rate_change":        goqu.L("EXCLUDED.rate_change"),
-					"category":           goqu.L("EXCLUDED.category"),
-					"updated_at":         goqu.L("NOW()"),
-				},
-			),
-		)
-
-		sql, args, err := q.ToSQL()
+	for chunk := range slices.Chunk(slices.Collect(repository.Map(repository.NewContest, slices.Values(contests), timestamp)), 1000) {
+		res, err := tx.NewInsert().
+			Model(&chunk).
+			On("CONFLICT (contest_id) DO UPDATE").
+			Set("contest_id = EXCLUDED.contest_id").
+			Set("start_epoch_second = EXCLUDED.start_epoch_second").
+			Set("duration_second = EXCLUDED.duration_second").
+			Set("title = EXCLUDED.title").
+			Set("rate_change = EXCLUDED.rate_change").
+			Set("category = EXCLUDED.category").
+			Set("updated_at = EXCLUDED.updated_at").
+			Exec(ctx)
 		if err != nil {
-			return 0, fmt.Errorf("to sql: %w", err)
+			return 0, fmt.Errorf("insert: %w", err)
 		}
 
-		result, err := tx.Exec(ctx, sql, args...)
-		if err != nil {
-			return 0, fmt.Errorf("exec: %w", err)
+		if c, err := res.RowsAffected(); err != nil {
+			return 0, fmt.Errorf("rows affected: %w", err)
+		} else {
+			count += c
 		}
-
-		count += result.RowsAffected()
 	}
 
-	if err := tx.Commit(ctx); err != nil {
+	if err := tx.Commit(); err != nil {
 		return 0, fmt.Errorf("commit transaction: %w", err)
 	}
 

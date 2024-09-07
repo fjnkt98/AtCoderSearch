@@ -6,6 +6,7 @@ import (
 	"fjnkt98/atcodersearch/pkg/atcoder"
 	"fjnkt98/atcodersearch/repository"
 	"testing"
+	"time"
 )
 
 func TestSaveContests(t *testing.T) {
@@ -22,9 +23,11 @@ func TestSaveContests(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	now := time.Now()
+
 	t.Run("empty", func(t *testing.T) {
 		contests := make([]atcoder.Contest, 0)
-		count, err := SaveContests(ctx, pool, contests)
+		count, err := SaveContests(ctx, pool, contests, now)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -45,7 +48,7 @@ func TestSaveContests(t *testing.T) {
 			},
 		}
 
-		count, err := SaveContests(ctx, pool, contests)
+		count, err := SaveContests(ctx, pool, contests, now)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -72,7 +75,7 @@ func TestSaveContests(t *testing.T) {
 			},
 		}
 
-		count, err := SaveContests(ctx, pool, contests)
+		count, err := SaveContests(ctx, pool, contests, now)
 		if err != nil {
 			t.Fatal(err)
 		}
