@@ -38,7 +38,7 @@ func NewDifficulties(d map[string]atcoder.Difficulty, updatedAt time.Time) []Dif
 			Variance:         difficulty.Variance,
 			Difficulty:       difficulty.Difficulty,
 			Discrimination:   difficulty.Discrimination,
-			IrtLoglikelihood: difficulty.IrtLogLikelihood,
+			IrtLoglikelihood: difficulty.IrtLoglikelihood,
 			IrtUsers:         difficulty.IrtUsers,
 			IsExperimental:   difficulty.IsExperimental,
 			UpdatedAt:        updatedAt,

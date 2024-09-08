@@ -1,6 +1,9 @@
 package main
 
 import (
+	"fjnkt98/atcodersearch/batch/crawl"
+	"fjnkt98/atcodersearch/pkg/atcoder"
+	"fjnkt98/atcodersearch/repository"
 	"log/slog"
 	"os"
 	"time"
@@ -27,10 +30,10 @@ func main() {
 		},
 	}
 	app.Commands = []*cli.Command{
-		&cli.Command{
+		{
 			Name: "crawl",
 			Subcommands: []*cli.Command{
-				&cli.Command{
+				{
 					Name: "problem",
 					Flags: []cli.Flag{
 						&cli.BoolFlag{
@@ -40,16 +43,38 @@ func main() {
 						},
 					},
 					Action: func(ctx *cli.Context) error {
-						panic("not implemented")
+						atcoderClient, err := atcoder.NewAtCoderClient()
+						if err != nil {
+							return err
+						}
+						problemsClient := atcoder.NewAtCoderProblemsClient()
+
+						pool, err := repository.NewPool(ctx.Context, ctx.String("database-url"))
+						if err != nil {
+							return err
+						}
+
+						crawler := crawl.NewProblemCrawler(atcoderClient, problemsClient, pool, ctx.Duration("duration"), ctx.Bool("all"))
+						if err := crawler.CrawlContests(ctx.Context); err != nil {
+							return err
+						}
+						if err := crawler.CrawlDifficulties(ctx.Context); err != nil {
+							return err
+						}
+						if err := crawler.CrawlProblems(ctx.Context); err != nil {
+							return err
+						}
+
+						return nil
 					},
 				},
-				&cli.Command{
+				{
 					Name: "user",
 					Action: func(ctx *cli.Context) error {
 						panic("not implemented")
 					},
 				},
-				&cli.Command{
+				{
 					Name: "submission",
 					Flags: []cli.Flag{
 						&cli.IntFlag{
@@ -84,24 +109,24 @@ func main() {
 				},
 			},
 		},
-		&cli.Command{
+		{
 			Name: "update",
 			Subcommands: []*cli.Command{
-				&cli.Command{
+				{
 					Name:  "problem",
 					Flags: []cli.Flag{},
 					Action: func(ctx *cli.Context) error {
 						panic("not implemented")
 					},
 				},
-				&cli.Command{
+				{
 					Name:  "user",
 					Flags: []cli.Flag{},
 					Action: func(ctx *cli.Context) error {
 						panic("not implemented")
 					},
 				},
-				&cli.Command{
+				{
 					Name:  "language",
 					Flags: []cli.Flag{},
 					Action: func(ctx *cli.Context) error {

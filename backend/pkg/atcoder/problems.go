@@ -221,7 +221,7 @@ type Difficulty struct {
 	Variance         *float64 `json:"variance"`
 	Difficulty       *int64   `json:"difficulty"`
 	Discrimination   *float64 `json:"discrimination"`
-	IrtLogLikelihood *float64 `json:"irt_loglikelihood"`
+	IrtLoglikelihood *float64 `json:"irt_loglikelihood"`
 	IrtUsers         *float64 `json:"irt_users"`
 	IsExperimental   *bool    `json:"is_experimental"`
 }

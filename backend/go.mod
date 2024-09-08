@@ -4,7 +4,9 @@ go 1.23.0
 
 require (
 	github.com/PuerkitoBio/goquery v1.10.0
+	github.com/deckarep/golang-set/v2 v2.6.0
 	github.com/jackc/pgx/v5 v5.5.5
+	github.com/tdewolff/minify v2.3.6+incompatible
 	github.com/testcontainers/testcontainers-go v0.33.0
 	github.com/uptrace/bun v1.2.3
 	github.com/uptrace/bun/dialect/pgdialect v1.2.3
@@ -57,6 +59,8 @@ require (
 	github.com/shirou/gopsutil/v3 v3.24.5 // indirect
 	github.com/shoenig/go-m1cpu v0.1.6 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
+	github.com/tdewolff/parse v2.3.4+incompatible // indirect
+	github.com/tdewolff/test v1.0.10 // indirect
 	github.com/tklauser/go-sysconf v0.3.14 // indirect
 	github.com/tklauser/numcpus v0.8.0 // indirect
 	github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc // indirect
