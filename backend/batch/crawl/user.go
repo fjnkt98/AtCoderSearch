@@ -17,13 +17,13 @@ import (
 )
 
 type UserCrawler struct {
-	client   *atcoder.AtCoderClient
+	client   atcoder.AtCoderClient
 	pool     *pgxpool.Pool
 	duration time.Duration
 }
 
 func NewUserCrawler(
-	client *atcoder.AtCoderClient,
+	client atcoder.AtCoderClient,
 	pool *pgxpool.Pool,
 	duration time.Duration,
 ) *UserCrawler {

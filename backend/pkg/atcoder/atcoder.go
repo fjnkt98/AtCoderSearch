@@ -19,11 +19,20 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-type AtCoderClient struct {
+type AtCoderClient interface {
+	Login(ctx context.Context, username, password string) error
+	FetchProblemHTML(ctx context.Context, contestID, problemID string) (string, error)
+	FetchSubmissions(ctx context.Context, contestID string, page int) ([]Submission, error)
+	FetchUsers(ctx context.Context, page int) ([]User, error)
+}
+
+var _ AtCoderClient = new(atCoderClient)
+
+type atCoderClient struct {
 	client *http.Client
 }
 
-func NewAtCoderClient() (*AtCoderClient, error) {
+func NewAtCoderClient() (*atCoderClient, error) {
 	jar, err := cookiejar.New(&cookiejar.Options{})
 	if err != nil {
 		return nil, fmt.Errorf("create cookie jar: %w", err)
@@ -34,12 +43,12 @@ func NewAtCoderClient() (*AtCoderClient, error) {
 		Timeout: time.Duration(30) * time.Second,
 	}
 
-	return &AtCoderClient{client}, nil
+	return &atCoderClient{client}, nil
 }
 
 var ErrLoginAuth = errors.New("login authentication failed")
 
-func (c *AtCoderClient) Login(ctx context.Context, username, password string) error {
+func (c *atCoderClient) Login(ctx context.Context, username, password string) error {
 	uri := "https://atcoder.jp/login"
 
 	token, err := func() (string, error) {
@@ -96,7 +105,7 @@ func (c *AtCoderClient) Login(ctx context.Context, username, password string) er
 	return nil
 }
 
-func (c *AtCoderClient) FetchProblemHTML(ctx context.Context, contestID, problemID string) (string, error) {
+func (c *atCoderClient) FetchProblemHTML(ctx context.Context, contestID, problemID string) (string, error) {
 	u, err := url.Parse(fmt.Sprintf("https://atcoder.jp/contests/%s/tasks/%s", contestID, problemID))
 	if err != nil {
 		return "", fmt.Errorf("parse url: %w", err)
@@ -121,7 +130,7 @@ func (c *AtCoderClient) FetchProblemHTML(ctx context.Context, contestID, problem
 	return buf.String(), nil
 }
 
-func (c *AtCoderClient) FetchUsers(ctx context.Context, page int) ([]User, error) {
+func (c *atCoderClient) FetchUsers(ctx context.Context, page int) ([]User, error) {
 	u, err := url.Parse(fmt.Sprintf("https://atcoder.jp/ranking/all?contestType=algo&page=%d", page))
 	if err != nil {
 		return nil, fmt.Errorf("parse url: %w", err)
@@ -146,7 +155,7 @@ func (c *AtCoderClient) FetchUsers(ctx context.Context, page int) ([]User, error
 	return users, nil
 }
 
-func (c *AtCoderClient) FetchSubmissions(ctx context.Context, contestID string, page int) ([]Submission, error) {
+func (c *atCoderClient) FetchSubmissions(ctx context.Context, contestID string, page int) ([]Submission, error) {
 	u, err := url.Parse(fmt.Sprintf("https://atcoder.jp/contests/%s/submissions?page=%d", contestID, page))
 	if err != nil {
 		return nil, fmt.Errorf("parse url: %w", err)

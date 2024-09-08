@@ -18,7 +18,7 @@ import (
 )
 
 type SubmissionCrawler struct {
-	client   *atcoder.AtCoderClient
+	client   atcoder.AtCoderClient
 	pool     *pgxpool.Pool
 	duration time.Duration
 	retry    int
@@ -26,7 +26,7 @@ type SubmissionCrawler struct {
 }
 
 func NewSubmissionCrawler(
-	client *atcoder.AtCoderClient,
+	client atcoder.AtCoderClient,
 	pool *pgxpool.Pool,
 	duration time.Duration,
 	retry int,

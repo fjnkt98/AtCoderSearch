@@ -34,19 +34,27 @@ type RatedTarget struct {
 	To   *int
 }
 
-type AtCoderProblemsClient struct {
+type AtCoderProblemsClient interface {
+	FetchContests(ctx context.Context) ([]Contest, error)
+	FetchProblems(ctx context.Context) ([]Problem, error)
+	FetchDifficulties(ctx context.Context) (map[string]Difficulty, error)
+}
+
+var _ AtCoderProblemsClient = (*atCoderProblemsClient)(nil)
+
+type atCoderProblemsClient struct {
 	client *http.Client
 }
 
-func NewAtCoderProblemsClient() *AtCoderProblemsClient {
+func NewAtCoderProblemsClient() *atCoderProblemsClient {
 	client := &http.Client{
 		Timeout: time.Duration(30) * time.Second,
 	}
 
-	return &AtCoderProblemsClient{client}
+	return &atCoderProblemsClient{client}
 }
 
-func (c *AtCoderProblemsClient) FetchContests(ctx context.Context) ([]Contest, error) {
+func (c *atCoderProblemsClient) FetchContests(ctx context.Context) ([]Contest, error) {
 	uri := "https://kenkoooo.com/atcoder/resources/contests.json"
 	req, err := http.NewRequestWithContext(ctx, "GET", uri, nil)
 	if err != nil {
@@ -68,7 +76,7 @@ func (c *AtCoderProblemsClient) FetchContests(ctx context.Context) ([]Contest, e
 	return contests, nil
 }
 
-func (c *AtCoderProblemsClient) FetchProblems(ctx context.Context) ([]Problem, error) {
+func (c *atCoderProblemsClient) FetchProblems(ctx context.Context) ([]Problem, error) {
 	uri := "https://kenkoooo.com/atcoder/resources/problems.json"
 	req, err := http.NewRequestWithContext(ctx, "GET", uri, nil)
 	if err != nil {
@@ -90,7 +98,7 @@ func (c *AtCoderProblemsClient) FetchProblems(ctx context.Context) ([]Problem, e
 	return problems, nil
 }
 
-func (c *AtCoderProblemsClient) FetchDifficulties(ctx context.Context) (map[string]Difficulty, error) {
+func (c *atCoderProblemsClient) FetchDifficulties(ctx context.Context) (map[string]Difficulty, error) {
 	uri := "https://kenkoooo.com/atcoder/resources/problem-models.json"
 	req, err := http.NewRequestWithContext(ctx, "GET", uri, nil)
 	if err != nil {

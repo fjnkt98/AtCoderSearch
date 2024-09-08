@@ -22,8 +22,8 @@ import (
 )
 
 type ProblemCrawler struct {
-	atcoderClient  *atcoder.AtCoderClient
-	problemsClient *atcoder.AtCoderProblemsClient
+	atcoderClient  atcoder.AtCoderClient
+	problemsClient atcoder.AtCoderProblemsClient
 	pool           *pgxpool.Pool
 	duration       time.Duration
 	all            bool
@@ -31,8 +31,8 @@ type ProblemCrawler struct {
 }
 
 func NewProblemCrawler(
-	atcoderClient *atcoder.AtCoderClient,
-	problemsClient *atcoder.AtCoderProblemsClient,
+	atcoderClient atcoder.AtCoderClient,
+	problemsClient atcoder.AtCoderProblemsClient,
 	pool *pgxpool.Pool,
 	duration time.Duration,
 	all bool,
