@@ -12,7 +12,7 @@ import (
 
 func TestSaveUsers(t *testing.T) {
 	_, dsn, stop, err := testutil.CreateDBContainer()
-	defer stop()
+	t.Cleanup(func() { stop() })
 
 	if err != nil {
 		t.Fatal(err)

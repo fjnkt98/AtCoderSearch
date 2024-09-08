@@ -4,7 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -82,4 +84,25 @@ func (h *SubmissionCrawlHistory) Abort(ctx context.Context, pool *pgxpool.Pool) 
 	*h = returned
 
 	return nil
+}
+
+func FetchLatestCrawlHistory(ctx context.Context, pool *pgxpool.Pool, contestID string) (*SubmissionCrawlHistory, error) {
+	q := New(pool)
+
+	h, err := q.FetchLatestCrawlHistory(ctx, contestID)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			d := time.Date(1970, 1, 1, 0, 0, 0, 0, time.UTC)
+			h = SubmissionCrawlHistory{
+				ID:         -1,
+				ContestID:  contestID,
+				StartedAt:  d,
+				Status:     "completed",
+				FinishedAt: &d,
+			}
+		} else {
+			return nil, err
+		}
+	}
+	return &h, nil
 }

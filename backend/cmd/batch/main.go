@@ -1,15 +1,20 @@
 package main
 
 import (
+	"errors"
 	"fjnkt98/atcodersearch/batch/crawl"
 	"fjnkt98/atcodersearch/pkg/atcoder"
 	"fjnkt98/atcodersearch/repository"
+	"fmt"
 	"log/slog"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/urfave/cli/v2"
 )
+
+var ErrNoAuthInfo = errors.New("no auth info")
 
 func main() {
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
@@ -119,7 +124,40 @@ func main() {
 						},
 					},
 					Action: func(ctx *cli.Context) error {
-						panic("not implemented")
+						atcoderClient, err := atcoder.NewAtCoderClient()
+						if err != nil {
+							return err
+						}
+						username := ctx.String("atcoder-username")
+						password := ctx.String("atcoder-password")
+						if username == "" || password == "" {
+							return ErrNoAuthInfo
+						}
+						if err := atcoderClient.Login(ctx.Context, username, password); err != nil {
+							return fmt.Errorf("login: %w", err)
+						}
+						pool, err := repository.NewPool(ctx.Context, ctx.String("database-url"))
+						if err != nil {
+							return err
+						}
+
+						var targets []string
+						if target := ctx.String("target"); target != "" {
+							targets = strings.Split(target, ",")
+						}
+
+						crawler := crawl.NewSubmissionCrawler(
+							atcoderClient,
+							pool,
+							ctx.Duration("duration"),
+							ctx.Int("retry"),
+							targets,
+						)
+
+						if err := crawler.Crawl(ctx.Context); err != nil {
+							return err
+						}
+						return nil
 					},
 				},
 			},

@@ -13,7 +13,7 @@ import (
 
 func TestSaveContests(t *testing.T) {
 	_, dsn, stop, err := testutil.CreateDBContainer()
-	defer stop()
+	t.Cleanup(func() { stop() })
 
 	if err != nil {
 		t.Fatal(err)
@@ -89,7 +89,7 @@ func TestSaveContests(t *testing.T) {
 
 func TestSaveDifficulties(t *testing.T) {
 	_, dsn, stop, err := testutil.CreateDBContainer()
-	defer stop()
+	t.Cleanup(func() { stop() })
 
 	if err != nil {
 		t.Fatal(err)
@@ -174,7 +174,7 @@ func TestSaveDifficulties(t *testing.T) {
 
 func TestDetectDiff(t *testing.T) {
 	_, dsn, stop, err := testutil.CreateDBContainer()
-	defer stop()
+	t.Cleanup(func() { stop() })
 
 	if err != nil {
 		t.Fatal(err)
