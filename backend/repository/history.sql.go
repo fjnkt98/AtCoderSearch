@@ -164,7 +164,7 @@ FROM
     "batch_histories"
 WHERE
     "name" = $1
-    AND "status" = 'finished'
+    AND "status" = 'completed'
 ORDER BY
     "started_at" DESC
 LIMIT
@@ -192,7 +192,7 @@ FROM
     "submission_crawl_histories"
 WHERE
     "contest_id" = $1
-    AND "status" = 'finished'
+    AND "status" = 'completed'
 ORDER BY
     "started_at" DESC
 LIMIT
