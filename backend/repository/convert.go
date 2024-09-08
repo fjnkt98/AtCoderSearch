@@ -28,6 +28,26 @@ func NewContest(c atcoder.Contest, updatedAt time.Time) Contest {
 	}
 }
 
+func NewDifficulties(d map[string]atcoder.Difficulty, updatedAt time.Time) []Difficulty {
+	difficulties := make([]Difficulty, 0, len(d))
+	for problemID, difficulty := range d {
+		difficulties = append(difficulties, Difficulty{
+			ProblemID:        problemID,
+			Slope:            difficulty.Slope,
+			Intercept:        difficulty.Intercept,
+			Variance:         difficulty.Variance,
+			Difficulty:       difficulty.Difficulty,
+			Discrimination:   difficulty.Discrimination,
+			IrtLoglikelihood: difficulty.IrtLogLikelihood,
+			IrtUsers:         difficulty.IrtUsers,
+			IsExperimental:   difficulty.IsExperimental,
+			UpdatedAt:        updatedAt,
+		})
+	}
+
+	return difficulties
+}
+
 func NewSubmission(s atcoder.Submission, updatedAt time.Time) Submission {
 	return Submission{
 		ID:            s.ID,
