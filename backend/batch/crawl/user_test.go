@@ -11,9 +11,7 @@ import (
 	"time"
 )
 
-func TestSaveUsers(t *testing.T) {
-	t.Parallel()
-
+func TestUser(t *testing.T) {
 	_, dsn, stop, err := testutil.CreateDBContainer()
 	t.Cleanup(func() { stop() })
 
@@ -29,7 +27,7 @@ func TestSaveUsers(t *testing.T) {
 
 	now := time.Now()
 
-	t.Run("empty", func(t *testing.T) {
+	t.Run("save empty users", func(t *testing.T) {
 		t.Parallel()
 
 		users := make([]atcoder.User, 0)
@@ -43,7 +41,7 @@ func TestSaveUsers(t *testing.T) {
 		}
 	})
 
-	t.Run("single", func(t *testing.T) {
+	t.Run("save single user", func(t *testing.T) {
 		t.Parallel()
 
 		users := []atcoder.User{
@@ -71,7 +69,7 @@ func TestSaveUsers(t *testing.T) {
 		}
 	})
 
-	t.Run("multiple", func(t *testing.T) {
+	t.Run("save multiple user", func(t *testing.T) {
 		t.Parallel()
 
 		users := []atcoder.User{
@@ -111,25 +109,8 @@ func TestSaveUsers(t *testing.T) {
 			t.Errorf("count = %d, want 2", count)
 		}
 	})
-}
 
-func TestUserCrawler(t *testing.T) {
-	t.Parallel()
-
-	_, dsn, stop, err := testutil.CreateDBContainer()
-	t.Cleanup(func() { stop() })
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	ctx := context.Background()
-	pool, err := repository.NewPool(ctx, dsn)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	t.Run("success", func(t *testing.T) {
+	t.Run("crawl users(success)", func(t *testing.T) {
 		t.Parallel()
 
 		crawler := NewUserCrawler(
@@ -142,7 +123,7 @@ func TestUserCrawler(t *testing.T) {
 		}
 	})
 
-	t.Run("fail", func(t *testing.T) {
+	t.Run("crawl users(fail)", func(t *testing.T) {
 		t.Parallel()
 
 		crawler := NewUserCrawler(

@@ -12,9 +12,7 @@ import (
 	"time"
 )
 
-func TestSaveContests(t *testing.T) {
-	t.Parallel()
-
+func TestProblem(t *testing.T) {
 	_, dsn, stop, err := testutil.CreateDBContainer()
 	t.Cleanup(func() { stop() })
 
@@ -30,9 +28,8 @@ func TestSaveContests(t *testing.T) {
 
 	now := time.Now()
 
-	t.Run("empty", func(t *testing.T) {
+	t.Run("save empty problems", func(t *testing.T) {
 		t.Parallel()
-
 		contests := make([]atcoder.Contest, 0)
 		count, err := SaveContests(ctx, pool, contests, now)
 		if err != nil {
@@ -44,9 +41,8 @@ func TestSaveContests(t *testing.T) {
 		}
 	})
 
-	t.Run("single", func(t *testing.T) {
+	t.Run("save single problem", func(t *testing.T) {
 		t.Parallel()
-
 		contests := []atcoder.Contest{
 			{
 				ID:               "abc001",
@@ -66,9 +62,8 @@ func TestSaveContests(t *testing.T) {
 		}
 	})
 
-	t.Run("multiple", func(t *testing.T) {
+	t.Run("save multiple problems", func(t *testing.T) {
 		t.Parallel()
-
 		contests := []atcoder.Contest{
 			{
 				ID:               "abc001",
@@ -94,29 +89,9 @@ func TestSaveContests(t *testing.T) {
 			t.Errorf("count = %d, want 2", count)
 		}
 	})
-}
 
-func TestSaveDifficulties(t *testing.T) {
-	t.Parallel()
-
-	_, dsn, stop, err := testutil.CreateDBContainer()
-	t.Cleanup(func() { stop() })
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	ctx := context.Background()
-	pool, err := repository.NewPool(ctx, dsn)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	now := time.Now()
-
-	t.Run("empty", func(t *testing.T) {
+	t.Run("save empty difficulties", func(t *testing.T) {
 		t.Parallel()
-
 		difficulties := make(map[string]atcoder.Difficulty)
 		count, err := SaveDifficulties(ctx, pool, difficulties, now)
 		if err != nil {
@@ -128,9 +103,8 @@ func TestSaveDifficulties(t *testing.T) {
 		}
 	})
 
-	t.Run("single", func(t *testing.T) {
+	t.Run("save single difficulty", func(t *testing.T) {
 		t.Parallel()
-
 		difficulties := map[string]atcoder.Difficulty{
 			"abc118_d": {
 				Slope:            ptr.To(-0.0006619775680720775),
@@ -153,9 +127,8 @@ func TestSaveDifficulties(t *testing.T) {
 		}
 	})
 
-	t.Run("multiple", func(t *testing.T) {
+	t.Run("save multiple difficulties", func(t *testing.T) {
 		t.Parallel()
-
 		difficulties := map[string]atcoder.Difficulty{
 			"abc118_d": {
 				Slope:            ptr.To(-0.0006619775680720775),
@@ -187,58 +160,142 @@ func TestSaveDifficulties(t *testing.T) {
 			t.Errorf("count = %d, want 2", count)
 		}
 	})
-}
 
-func TestDetectDiff(t *testing.T) {
-	t.Parallel()
-
-	_, dsn, stop, err := testutil.CreateDBContainer()
-	t.Cleanup(func() { stop() })
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	ctx := context.Background()
-	pool, err := repository.NewPool(ctx, dsn)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	sql := `
+	t.Run("detect diff", func(t *testing.T) {
+		t.Parallel()
+		sql := `
 INSERT INTO "problems" ("problem_id", "contest_id", "problem_index", "name", "title", "url", "html")
 VALUES
-    ('abc001_a', 'abc001', 'A', 'test problem 1', 'A. test problem 1', 'url', 'html');`
+    ('diff_1', 'diff', 'A', 'detect diff 1', 'A. detect diff 1', 'url', 'html');`
 
-	if _, err := pool.Exec(ctx, sql); err != nil {
-		t.Fatal(err)
-	}
+		if _, err := pool.Exec(ctx, sql); err != nil {
+			t.Fatal(err)
+		}
 
-	problems := []atcoder.Problem{
-		{
-			ID:           "abc001_a",
-			ContestID:    "abc001",
-			ProblemIndex: "A",
-			Name:         "test problem 1",
-			Title:        "A. test problem 1",
-		},
-		{
-			ID:           "abc001_b",
-			ContestID:    "abc001",
-			ProblemIndex: "B",
-			Name:         "test problem 2",
-			Title:        "B. test problem 2",
-		},
-	}
+		problems := []atcoder.Problem{
+			{
+				ID:           "diff_1",
+				ContestID:    "diff",
+				ProblemIndex: "A",
+				Name:         "detect diff 1",
+				Title:        "A. detect diff 1",
+			},
+			{
+				ID:           "diff_2",
+				ContestID:    "diff",
+				ProblemIndex: "A",
+				Name:         "detect diff 2",
+				Title:        "A. detect diff 2",
+			},
+		}
 
-	diff, err := DetectDiff(ctx, pool, problems)
-	if err != nil {
-		t.Fatal(err)
-	}
+		diff, err := DetectDiff(ctx, pool, problems)
+		if err != nil {
+			t.Fatal(err)
+		}
 
-	if !reflect.DeepEqual(problems[1:], diff) {
-		t.Errorf("diff = %v, want %v", diff, problems[1:])
-	}
+		if !reflect.DeepEqual(problems[1:], diff) {
+			t.Errorf("diff = %v, want %v", diff, problems[1:])
+		}
+	})
+
+	t.Run("crawl problem(success, diff)", func(t *testing.T) {
+		t.Parallel()
+		crawler := NewProblemCrawler(
+			&DummyAtCoderClientS{},
+			&DummyAtCoderProblemsClientS{},
+			pool,
+			time.Second,
+			false,
+		)
+
+		if err := crawler.CrawlContests(ctx); err != nil {
+			t.Errorf("expected no error, but got %v", err)
+		}
+
+		if err := crawler.CrawlDifficulties(ctx); err != nil {
+			t.Errorf("expected no error, but got %v", err)
+		}
+
+		if err := crawler.CrawlProblems(ctx); err != nil {
+			t.Errorf("expected no error, but got %v", err)
+		}
+	})
+
+	t.Run("crawl problem(success, all)", func(t *testing.T) {
+		t.Parallel()
+		crawler := NewProblemCrawler(
+			&DummyAtCoderClientS{},
+			&DummyAtCoderProblemsClientS{},
+			pool,
+			time.Second,
+			true,
+		)
+		if err := crawler.CrawlProblems(ctx); err != nil {
+			t.Errorf("expected no error, but got %v", err)
+		}
+	})
+
+	t.Run("crawl problem(fail atcoder)", func(t *testing.T) {
+		t.Parallel()
+		crawler := NewProblemCrawler(
+			&DummyAtCoderClientF{},
+			&DummyAtCoderProblemsClientS{},
+			pool,
+			time.Second,
+			true,
+		)
+
+		if err := crawler.CrawlProblems(ctx); !errors.Is(err, ErrDummy) {
+			t.Errorf("expected ErrDummy, but got %#v", err)
+		}
+	})
+
+	t.Run("crawl problem(fail atcoder problems)", func(t *testing.T) {
+		t.Parallel()
+		crawler := NewProblemCrawler(
+			&DummyAtCoderClientS{},
+			&DummyAtCoderProblemsClientF{},
+			pool,
+			time.Second,
+			false,
+		)
+
+		if err := crawler.CrawlContests(ctx); !errors.Is(err, ErrDummy) {
+			t.Errorf("expected ErrDummy, but got %#v", err)
+		}
+
+		if err := crawler.CrawlDifficulties(ctx); !errors.Is(err, ErrDummy) {
+			t.Errorf("expected ErrDummy, but got %#v", err)
+		}
+
+		if err := crawler.CrawlProblems(ctx); !errors.Is(err, ErrDummy) {
+			t.Errorf("expected ErrDummy, but got %#v", err)
+		}
+	})
+
+	t.Run("crawl problem(fail)", func(t *testing.T) {
+		t.Parallel()
+		crawler := NewProblemCrawler(
+			&DummyAtCoderClientF{},
+			&DummyAtCoderProblemsClientF{},
+			pool,
+			time.Second,
+			false,
+		)
+
+		if err := crawler.CrawlContests(ctx); !errors.Is(err, ErrDummy) {
+			t.Errorf("expected ErrDummy, but got %#v", err)
+		}
+
+		if err := crawler.CrawlDifficulties(ctx); !errors.Is(err, ErrDummy) {
+			t.Errorf("expected ErrDummy, but got %#v", err)
+		}
+
+		if err := crawler.CrawlProblems(ctx); !errors.Is(err, ErrDummy) {
+			t.Errorf("expected ErrDummy, but got %#v", err)
+		}
+	})
 }
 
 type DummyAtCoderClientS struct{}
@@ -386,112 +443,4 @@ func (c *DummyAtCoderProblemsClientF) FetchDifficulties(ctx context.Context) (ma
 }
 func (c *DummyAtCoderProblemsClientF) FetchContests(ctx context.Context) ([]atcoder.Contest, error) {
 	return nil, ErrDummy
-}
-
-func TestProblemCrawler(t *testing.T) {
-	t.Parallel()
-
-	_, dsn, stop, err := testutil.CreateDBContainer()
-	t.Cleanup(func() { stop() })
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	ctx := context.Background()
-	pool, err := repository.NewPool(ctx, dsn)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	t.Run("success", func(t *testing.T) {
-		t.Parallel()
-
-		crawler := NewProblemCrawler(
-			&DummyAtCoderClientS{},
-			&DummyAtCoderProblemsClientS{},
-			pool,
-			time.Second,
-			false,
-		)
-
-		if err := crawler.CrawlContests(ctx); err != nil {
-			t.Errorf("expected no error, but got %v", err)
-		}
-
-		if err := crawler.CrawlDifficulties(ctx); err != nil {
-			t.Errorf("expected no error, but got %v", err)
-		}
-
-		if err := crawler.CrawlProblems(ctx); err != nil {
-			t.Errorf("expected no error, but got %v", err)
-		}
-
-		crawler = NewProblemCrawler(
-			&DummyAtCoderClientS{},
-			&DummyAtCoderProblemsClientS{},
-			pool,
-			time.Second,
-			true,
-		)
-		if err := crawler.CrawlProblems(ctx); err != nil {
-			t.Errorf("expected no error, but got %v", err)
-		}
-	})
-
-	t.Run("fail", func(t *testing.T) {
-		t.Parallel()
-
-		crawler := NewProblemCrawler(
-			&DummyAtCoderClientF{},
-			&DummyAtCoderProblemsClientS{},
-			pool,
-			time.Second,
-			true,
-		)
-
-		if err := crawler.CrawlProblems(ctx); !errors.Is(err, ErrDummy) {
-			t.Errorf("expected ErrDummy, but got %#v", err)
-		}
-
-		crawler = NewProblemCrawler(
-			&DummyAtCoderClientS{},
-			&DummyAtCoderProblemsClientF{},
-			pool,
-			time.Second,
-			false,
-		)
-
-		if err := crawler.CrawlContests(ctx); !errors.Is(err, ErrDummy) {
-			t.Errorf("expected ErrDummy, but got %#v", err)
-		}
-
-		if err := crawler.CrawlDifficulties(ctx); !errors.Is(err, ErrDummy) {
-			t.Errorf("expected ErrDummy, but got %#v", err)
-		}
-
-		if err := crawler.CrawlProblems(ctx); !errors.Is(err, ErrDummy) {
-			t.Errorf("expected ErrDummy, but got %#v", err)
-		}
-
-		crawler = NewProblemCrawler(
-			&DummyAtCoderClientF{},
-			&DummyAtCoderProblemsClientF{},
-			pool,
-			time.Second,
-			false,
-		)
-
-		if err := crawler.CrawlContests(ctx); !errors.Is(err, ErrDummy) {
-			t.Errorf("expected ErrDummy, but got %#v", err)
-		}
-
-		if err := crawler.CrawlDifficulties(ctx); !errors.Is(err, ErrDummy) {
-			t.Errorf("expected ErrDummy, but got %#v", err)
-		}
-
-		if err := crawler.CrawlProblems(ctx); !errors.Is(err, ErrDummy) {
-			t.Errorf("expected ErrDummy, but got %#v", err)
-		}
-	})
 }

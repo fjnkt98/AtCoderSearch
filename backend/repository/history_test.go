@@ -8,9 +8,7 @@ import (
 	"time"
 )
 
-func TestCreateAndUpdateBatchHistory(t *testing.T) {
-	t.Parallel()
-
+func TestHistory(t *testing.T) {
 	_, dsn, stop, err := testutil.CreateDBContainer()
 	t.Cleanup(func() { stop() })
 
@@ -97,23 +95,6 @@ func TestCreateAndUpdateBatchHistory(t *testing.T) {
 			t.Errorf("err = %v, want ErrHistoryConfirmed", err)
 		}
 	})
-}
-
-func TestCrawlHistory(t *testing.T) {
-	t.Parallel()
-
-	_, dsn, stop, err := testutil.CreateDBContainer()
-	t.Cleanup(func() { stop() })
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	ctx := context.Background()
-	pool, err := NewPool(ctx, dsn)
-	if err != nil {
-		t.Fatal(err)
-	}
 
 	t.Run("create crawl history", func(t *testing.T) {
 		t.Parallel()
