@@ -3,6 +3,8 @@ package repository
 import (
 	"fjnkt98/atcodersearch/pkg/atcoder"
 	"iter"
+	"maps"
+	"slices"
 	"time"
 )
 
@@ -30,7 +32,9 @@ func NewContest(c atcoder.Contest, updatedAt time.Time) Contest {
 
 func NewDifficulties(d map[string]atcoder.Difficulty, updatedAt time.Time) []Difficulty {
 	difficulties := make([]Difficulty, 0, len(d))
-	for problemID, difficulty := range d {
+	for _, problemID := range slices.Sorted(maps.Keys(d)) {
+		difficulty := d[problemID]
+
 		difficulties = append(difficulties, Difficulty{
 			ProblemID:        problemID,
 			Slope:            difficulty.Slope,
