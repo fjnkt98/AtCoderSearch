@@ -2,6 +2,7 @@ package crawl
 
 import (
 	"context"
+	"errors"
 	"fjnkt98/atcodersearch/internal/testutil"
 	"fjnkt98/atcodersearch/pkg/atcoder"
 	"fjnkt98/atcodersearch/pkg/ptr"
@@ -12,6 +13,8 @@ import (
 )
 
 func TestFetchContestIDs(t *testing.T) {
+	t.Parallel()
+
 	_, dsn, stop, err := testutil.CreateDBContainer()
 	t.Cleanup(func() { stop() })
 
@@ -35,6 +38,8 @@ INSERT INTO "contests" ("contest_id", "start_epoch_second", "duration_second", "
 	}
 
 	t.Run("all", func(t *testing.T) {
+		t.Parallel()
+
 		result, err := FetchContestIDs(ctx, pool, []string{})
 		if err != nil {
 			t.Fatal(err)
@@ -47,6 +52,8 @@ INSERT INTO "contests" ("contest_id", "start_epoch_second", "duration_second", "
 	})
 
 	t.Run("ABC", func(t *testing.T) {
+		t.Parallel()
+
 		result, err := FetchContestIDs(ctx, pool, []string{"ABC"})
 		if err != nil {
 			t.Fatal(err)
@@ -59,6 +66,8 @@ INSERT INTO "contests" ("contest_id", "start_epoch_second", "duration_second", "
 	})
 
 	t.Run("ARC", func(t *testing.T) {
+		t.Parallel()
+
 		result, err := FetchContestIDs(ctx, pool, []string{"ARC"})
 		if err != nil {
 			t.Fatal(err)
@@ -72,6 +81,8 @@ INSERT INTO "contests" ("contest_id", "start_epoch_second", "duration_second", "
 }
 
 func TestSaveSubmissions(t *testing.T) {
+	t.Parallel()
+
 	_, dsn, stop, err := testutil.CreateDBContainer()
 	t.Cleanup(func() { stop() })
 
@@ -88,6 +99,8 @@ func TestSaveSubmissions(t *testing.T) {
 	now := time.Now()
 
 	t.Run("empty", func(t *testing.T) {
+		t.Parallel()
+
 		submissions := make([]atcoder.Submission, 0)
 		count, err := SaveSubmissions(ctx, pool, submissions, now)
 		if err != nil {
@@ -100,6 +113,8 @@ func TestSaveSubmissions(t *testing.T) {
 	})
 
 	t.Run("signle", func(t *testing.T) {
+		t.Parallel()
+
 		submissions := []atcoder.Submission{
 			{
 				ID:            48852107,
@@ -125,6 +140,8 @@ func TestSaveSubmissions(t *testing.T) {
 	})
 
 	t.Run("multiple", func(t *testing.T) {
+		t.Parallel()
+
 		submissions := []atcoder.Submission{
 			{
 				ID:            48852107,
@@ -158,6 +175,168 @@ func TestSaveSubmissions(t *testing.T) {
 
 		if count != 2 {
 			t.Errorf("count = %d, want 2", count)
+		}
+	})
+}
+
+type RecoverableDummyAtCoderClient struct {
+	count    int
+	errCount int
+}
+
+var _ atcoder.AtCoderClient = new(RecoverableDummyAtCoderClient)
+
+func (c *RecoverableDummyAtCoderClient) Login(ctx context.Context, username, password string) error {
+	return nil
+}
+func (c *RecoverableDummyAtCoderClient) FetchProblemHTML(ctx context.Context, contestID, problemID string) (string, error) {
+	return "", nil
+}
+func (c *RecoverableDummyAtCoderClient) FetchSubmissions(ctx context.Context, contestID string, page int) ([]atcoder.Submission, error) {
+	if page >= 2 {
+		return []atcoder.Submission{}, nil
+	}
+
+	if c.count < c.errCount {
+		c.count += 1
+		return nil, ErrDummy
+	} else {
+		return []atcoder.Submission{
+			{
+				ID:            48852107,
+				EpochSecond:   1703553569,
+				ProblemID:     "abc300_a",
+				UserID:        "Orkhon2010",
+				ContestID:     "abc300",
+				Language:      "C++ 20 (gcc 12.2)",
+				Point:         100.0,
+				Length:        259,
+				Result:        "AC",
+				ExecutionTime: ptr.To(int32(1)),
+			},
+			{
+				ID:            48852073,
+				EpochSecond:   1703553403,
+				ProblemID:     "abc300_f",
+				UserID:        "ecsmtlir",
+				ContestID:     "abc300",
+				Language:      "C++ 20 (gcc 12.2)",
+				Point:         500.0,
+				Length:        14721,
+				Result:        "AC",
+				ExecutionTime: ptr.To(int32(11)),
+			},
+		}, nil
+	}
+}
+func (c *RecoverableDummyAtCoderClient) FetchUsers(ctx context.Context, page int) ([]atcoder.User, error) {
+	return nil, nil
+}
+
+func TestSubmissionCrawler(t *testing.T) {
+	t.Parallel()
+
+	_, dsn, stop, err := testutil.CreateDBContainer()
+	t.Cleanup(func() { stop() })
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	ctx := context.Background()
+	pool, err := repository.NewPool(ctx, dsn)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	sql := `
+INSERT INTO "contests" ("contest_id", "start_epoch_second", "duration_second", "title", "rate_change", "category") VALUES
+('abc001', 0, 0, '', '-', 'ABC'),
+('abc002', 0, 0, '', '-', 'ABC'),
+('arc001', 0, 0, '', '-', 'ARC');`
+	if _, err := pool.Exec(ctx, sql); err != nil {
+		t.Fatal(err)
+	}
+
+	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
+		crawler := NewSubmissionCrawler(
+			&DummyAtCoderClientS{},
+			pool,
+			time.Second,
+			0,
+			0,
+			nil,
+		)
+		if err := crawler.Crawl(ctx); err != nil {
+			t.Errorf("expected no error, but got %v", err)
+		}
+
+		crawler = NewSubmissionCrawler(
+			&DummyAtCoderClientS{},
+			pool,
+			time.Second,
+			0,
+			0,
+			[]string{"ABC", "ARC"},
+		)
+		if err := crawler.Crawl(ctx); err != nil {
+			t.Errorf("expected no error, but got %v", err)
+		}
+	})
+
+	t.Run("fail", func(t *testing.T) {
+		t.Parallel()
+
+		crawler := NewSubmissionCrawler(
+			&DummyAtCoderClientF{},
+			pool,
+			time.Second,
+			0,
+			0,
+			nil,
+		)
+		if err := crawler.Crawl(ctx); !errors.Is(err, ErrDummy) {
+			t.Errorf("expected ErrDummy, but got %#v", err)
+		}
+	})
+
+	t.Run("retry success", func(t *testing.T) {
+		t.Parallel()
+
+		crawler := NewSubmissionCrawler(
+			&RecoverableDummyAtCoderClient{
+				errCount: 1,
+			},
+			pool,
+			time.Second,
+			1,
+			100*time.Millisecond,
+			nil,
+		)
+
+		if err := crawler.Crawl(ctx); err != nil {
+			t.Errorf("expected no error, but got %v", err)
+		}
+	})
+
+	t.Run("retry fail", func(t *testing.T) {
+		t.Parallel()
+
+		crawler := NewSubmissionCrawler(
+			&RecoverableDummyAtCoderClient{
+				errCount: 2,
+			},
+			pool,
+			time.Second,
+			1,
+			100*time.Millisecond,
+			nil,
+		)
+
+		if err := crawler.Crawl(ctx); !errors.Is(err, ErrDummy) {
+			t.Errorf("expected ErrDummy, but got %#v", err)
 		}
 	})
 }

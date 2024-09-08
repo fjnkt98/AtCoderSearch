@@ -2,6 +2,7 @@ package crawl
 
 import (
 	"context"
+	"errors"
 	"fjnkt98/atcodersearch/internal/testutil"
 	"fjnkt98/atcodersearch/pkg/atcoder"
 	"fjnkt98/atcodersearch/pkg/ptr"
@@ -11,6 +12,8 @@ import (
 )
 
 func TestSaveUsers(t *testing.T) {
+	t.Parallel()
+
 	_, dsn, stop, err := testutil.CreateDBContainer()
 	t.Cleanup(func() { stop() })
 
@@ -27,6 +30,8 @@ func TestSaveUsers(t *testing.T) {
 	now := time.Now()
 
 	t.Run("empty", func(t *testing.T) {
+		t.Parallel()
+
 		users := make([]atcoder.User, 0)
 		count, err := SaveUsers(ctx, pool, users, now)
 		if err != nil {
@@ -39,6 +44,8 @@ func TestSaveUsers(t *testing.T) {
 	})
 
 	t.Run("single", func(t *testing.T) {
+		t.Parallel()
+
 		users := []atcoder.User{
 			{
 				UserID:        "tourist",
@@ -65,6 +72,8 @@ func TestSaveUsers(t *testing.T) {
 	})
 
 	t.Run("multiple", func(t *testing.T) {
+		t.Parallel()
+
 		users := []atcoder.User{
 			{
 				UserID:        "tourist",
@@ -100,6 +109,49 @@ func TestSaveUsers(t *testing.T) {
 		}
 		if count != 2 {
 			t.Errorf("count = %d, want 2", count)
+		}
+	})
+}
+
+func TestUserCrawler(t *testing.T) {
+	t.Parallel()
+
+	_, dsn, stop, err := testutil.CreateDBContainer()
+	t.Cleanup(func() { stop() })
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	ctx := context.Background()
+	pool, err := repository.NewPool(ctx, dsn)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Run("success", func(t *testing.T) {
+		t.Parallel()
+
+		crawler := NewUserCrawler(
+			&DummyAtCoderClientS{},
+			pool,
+			time.Second,
+		)
+		if err := crawler.Crawl(ctx); err != nil {
+			t.Errorf("expected no error, but got %v", err)
+		}
+	})
+
+	t.Run("fail", func(t *testing.T) {
+		t.Parallel()
+
+		crawler := NewUserCrawler(
+			&DummyAtCoderClientF{},
+			pool,
+			time.Second,
+		)
+		if err := crawler.Crawl(ctx); !errors.Is(err, ErrDummy) {
+			t.Errorf("expected ErrDummy, but got %#v", err)
 		}
 	})
 }

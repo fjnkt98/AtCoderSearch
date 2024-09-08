@@ -18,11 +18,12 @@ import (
 )
 
 type SubmissionCrawler struct {
-	client   atcoder.AtCoderClient
-	pool     *pgxpool.Pool
-	duration time.Duration
-	retry    int
-	targets  []string
+	client        atcoder.AtCoderClient
+	pool          *pgxpool.Pool
+	duration      time.Duration
+	retry         int
+	retryInterval time.Duration
+	targets       []string
 }
 
 func NewSubmissionCrawler(
@@ -30,14 +31,16 @@ func NewSubmissionCrawler(
 	pool *pgxpool.Pool,
 	duration time.Duration,
 	retry int,
+	retryInterval time.Duration,
 	targets []string,
 ) *SubmissionCrawler {
 	return &SubmissionCrawler{
-		client:   client,
-		pool:     pool,
-		duration: duration,
-		retry:    retry,
-		targets:  targets,
+		client:        client,
+		pool:          pool,
+		duration:      duration,
+		retry:         retry,
+		retryInterval: retryInterval,
+		targets:       targets,
 	}
 }
 
@@ -97,10 +100,10 @@ loop:
 				return fmt.Errorf("fetch submissions: %w", err)
 			}
 
-			slog.LogAttrs(ctx, slog.LevelWarn, "failed to crawl submissions. retry to crawl after 60 seconds...", slog.String("contestID", contestID), slog.Int("page", page), slog.Any("error", err))
+			slog.LogAttrs(ctx, slog.LevelWarn, "failed to crawl submissions. retry to crawl...", slog.String("contestID", contestID), slog.Int("page", page), slog.Any("error", err))
 			queue = append(queue, page)
 			remain -= 1
-			time.Sleep(1 * time.Minute)
+			time.Sleep(c.retryInterval)
 			continue loop
 		}
 

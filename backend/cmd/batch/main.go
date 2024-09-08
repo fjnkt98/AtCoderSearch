@@ -151,6 +151,7 @@ func main() {
 							pool,
 							ctx.Duration("duration"),
 							ctx.Int("retry"),
+							1*time.Minute,
 							targets,
 						)
 
