@@ -32,6 +32,13 @@ func main() {
 	app.Commands = []*cli.Command{
 		{
 			Name: "crawl",
+			Flags: []cli.Flag{
+				&cli.DurationFlag{
+					Name:    "duration",
+					Aliases: []string{"d"},
+					Value:   1000 * time.Millisecond,
+				},
+			},
 			Subcommands: []*cli.Command{
 				{
 					Name: "problem",
@@ -71,7 +78,22 @@ func main() {
 				{
 					Name: "user",
 					Action: func(ctx *cli.Context) error {
-						panic("not implemented")
+						atcoderClient, err := atcoder.NewAtCoderClient()
+						if err != nil {
+							return err
+						}
+
+						pool, err := repository.NewPool(ctx.Context, ctx.String("database-url"))
+						if err != nil {
+							return err
+						}
+
+						crawler := crawl.NewUserCrawler(atcoderClient, pool, ctx.Duration("duration"))
+						if err := crawler.Crawl(ctx.Context); err != nil {
+							return err
+						}
+
+						return nil
 					},
 				},
 				{
@@ -99,13 +121,6 @@ func main() {
 					Action: func(ctx *cli.Context) error {
 						panic("not implemented")
 					},
-				},
-			},
-			Flags: []cli.Flag{
-				&cli.DurationFlag{
-					Name:    "duration",
-					Aliases: []string{"d"},
-					Value:   1000 * time.Millisecond,
 				},
 			},
 		},

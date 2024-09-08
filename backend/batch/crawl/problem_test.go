@@ -82,7 +82,7 @@ func TestSaveContests(t *testing.T) {
 			t.Fatal(err)
 		}
 		if count != 2 {
-			t.Errorf("count = %d, want 1", count)
+			t.Errorf("count = %d, want 2", count)
 		}
 	})
 }
