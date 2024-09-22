@@ -34,12 +34,6 @@ enum Command {
         #[command(subcommand)]
         command: UpdateCommands,
     },
-    Serve {
-        #[command(flatten)]
-        args: CommonArgs,
-        #[arg(long, env)]
-        port: i64,
-    },
 }
 
 impl App {
@@ -48,9 +42,6 @@ impl App {
         match &self.command {
             Command::Crawl { args, command } => command.exec(args).await,
             Command::Update { args, command } => command.exec(args).await,
-            Command::Serve { args, port } => {
-                todo!();
-            }
         }
     }
 }
