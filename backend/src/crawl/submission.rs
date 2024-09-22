@@ -41,7 +41,8 @@ impl<'a> SubmissionCrawler<'a> {
 
             tokio::time::sleep(self.duration).await;
         }
-        todo!();
+
+        return Ok(());
     }
 
     #[instrument(skip(self))]
@@ -130,7 +131,7 @@ impl<'a> SubmissionCrawler<'a> {
             .await
             .with_context(|| "begin transaction to update submission crawl history")?;
         history
-            .finish(&mut tx)
+            .complete(&mut tx)
             .await
             .with_context(|| "finish submission crawl history")?;
         tx.commit()
@@ -146,14 +147,8 @@ async fn fetch_contest_id<'a, A>(db: A, categories: &[String]) -> anyhow::Result
 where
     A: Acquire<'a, Database = Postgres>,
 {
-    let mut builder: QueryBuilder<Postgres> = sqlx::QueryBuilder::new(
-        r#"
-        SELECT
-            "contest_id"
-        FROM
-            "contests"
-"#,
-    );
+    let mut builder: QueryBuilder<Postgres> =
+        sqlx::QueryBuilder::new(r#"SELECT "contest_id" FROM "contests""#);
     if !categories.is_empty() {
         builder.push(r#"WHERE "category" IN ("#);
         let mut s = builder.separated(", ");
