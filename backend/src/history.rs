@@ -30,15 +30,15 @@ impl BatchHistory {
         "#;
         let history: BatchHistory = sqlx::query_as(sql)
             .bind(name)
-            .bind(options)
+            .bind(&options)
             .fetch_one(&mut *conn)
             .await
-            .with_context(|| "create batch history")?;
+            .with_context(|| "exec query")?;
 
         Ok(history)
     }
 
-    pub async fn finish<'a, A>(&mut self, db: A) -> anyhow::Result<()>
+    pub async fn complete<'a, A>(&mut self, db: A) -> anyhow::Result<()>
     where
         A: Acquire<'a, Database = Postgres>,
     {
@@ -47,7 +47,7 @@ impl BatchHistory {
         let sql = r#"
         UPDATE "batch_histories"
         SET
-            "status" = 'finished',
+            "status" = 'completed',
             "finished_at" = NOW()
         WHERE
             "id" = $1
@@ -59,7 +59,7 @@ impl BatchHistory {
             .bind(self.id)
             .fetch_one(&mut *conn)
             .await
-            .with_context(|| "update batch history")?;
+            .with_context(|| "exec query")?;
 
         self.status = history.status;
         self.finished_at = history.finished_at;
@@ -67,7 +67,40 @@ impl BatchHistory {
         Ok(())
     }
 
-    pub async fn fetch_latest<'a, A>(db: A, name: &'a str) -> anyhow::Result<Self>
+    pub async fn abort<'a, A>(&mut self, db: A) -> anyhow::Result<()>
+    where
+        A: Acquire<'a, Database = Postgres>,
+    {
+        if self.status != "working" {
+            return Ok(());
+        }
+
+        let mut conn = db.acquire().await.with_context(|| "acquire connection")?;
+
+        let sql = r#"
+        UPDATE "batch_histories"
+        SET
+            "status" = 'aborted',
+            "finished_at" = NOW()
+        WHERE
+            "id" = $1
+        RETURNING
+            *;
+        "#;
+
+        let history: BatchHistory = sqlx::query_as(sql)
+            .bind(self.id)
+            .fetch_one(&mut *conn)
+            .await
+            .with_context(|| "exec query")?;
+
+        self.status = history.status;
+        self.finished_at = history.finished_at;
+
+        Ok(())
+    }
+
+    pub async fn fetch_latest<'a, A>(db: A, name: &'a str) -> anyhow::Result<Option<Self>>
     where
         A: Acquire<'a, Database = Postgres>,
     {
@@ -85,65 +118,24 @@ impl BatchHistory {
             "batch_histories"
         WHERE
             "name" = $1
-            AND "status" = 'finished'
+            AND "status" = 'completed'
         ORDER BY
             "started_at" DESC
         LIMIT
             1;
         "#;
 
-        let history: BatchHistory = sqlx::query_as(sql)
+        sqlx::query_as(sql)
             .bind(name)
             .fetch_one(&mut *conn)
             .await
-            .with_context(|| "fetch latest batch history")?;
-
-        Ok(history)
+            .and_then(|h| Ok(Some(h)))
+            .or_else(|err| match err {
+                sqlx::Error::RowNotFound => Ok(None),
+                _ => Err(err).with_context(|| "exec query")?,
+            })
     }
 }
-
-// #[derive(Debug, FromRow, PartialEq, PartialOrd)]
-// pub struct Contest {
-//     pub contest_id: String,
-//     pub start_epoch_second: i64,
-//     pub duration_second: i64,
-//     pub title: String,
-//     pub rate_change: String,
-//     pub category: String,
-//     pub updated_at: DateTime<FixedOffset>,
-// }
-
-// #[derive(Debug, FromRow, PartialEq, PartialOrd)]
-// pub struct Difficulty {
-//     pub problem_id: String,
-//     pub slope: Option<f64>,
-//     pub intercept: Option<f64>,
-//     pub variance: Option<f64>,
-//     pub difficulty: Option<i64>,
-//     pub discrimination: Option<f64>,
-//     pub irt_loglikelihood: Option<f64>,
-//     pub irt_users: Option<f64>,
-//     pub is_experimental: Option<bool>,
-//     pub updated_at: DateTime<FixedOffset>,
-// }
-
-// #[derive(Debug, FromRow, PartialEq, PartialOrd)]
-// pub struct Language {
-//     pub language: String,
-//     pub group: Option<String>,
-// }
-
-// #[derive(Debug, FromRow, PartialEq, PartialOrd)]
-// pub struct Problem {
-//     pub problem_id: String,
-//     pub contest_id: String,
-//     pub problem_index: String,
-//     pub name: String,
-//     pub title: String,
-//     pub url: String,
-//     pub html: String,
-//     pub updated_at: DateTime<FixedOffset>,
-// }
 
 #[derive(Debug, FromRow, PartialEq, PartialOrd)]
 pub struct SubmissionCrawlHistory {
@@ -174,12 +166,12 @@ impl SubmissionCrawlHistory {
             .bind(contest_id)
             .fetch_one(&mut *conn)
             .await
-            .with_context(|| "create submission crawl history")?;
+            .with_context(|| "exec query")?;
 
         Ok(history)
     }
 
-    pub async fn finish<'a, A>(&mut self, db: A) -> anyhow::Result<()>
+    pub async fn complete<'a, A>(&mut self, db: A) -> anyhow::Result<()>
     where
         A: Acquire<'a, Database = Postgres>,
     {
@@ -188,7 +180,7 @@ impl SubmissionCrawlHistory {
         let sql = r#"
         UPDATE "submission_crawl_histories"
         SET
-            "status" = 'finished',
+            "status" = 'completed',
             "finished_at" = NOW()
         WHERE
             "id" = $1
@@ -200,7 +192,40 @@ impl SubmissionCrawlHistory {
             .bind(self.id)
             .fetch_one(&mut *conn)
             .await
-            .with_context(|| "update submission crawl history")?;
+            .with_context(|| "exec query")?;
+
+        self.status = history.status;
+        self.finished_at = history.finished_at;
+
+        Ok(())
+    }
+
+    pub async fn abort<'a, A>(&mut self, db: A) -> anyhow::Result<()>
+    where
+        A: Acquire<'a, Database = Postgres>,
+    {
+        if self.status != "working" {
+            return Ok(());
+        }
+
+        let mut conn = db.acquire().await.with_context(|| "acquire connection")?;
+
+        let sql = r#"
+        UPDATE "submission_crawl_histories"
+        SET
+            "status" = 'aborted',
+            "finished_at" = NOW()
+        WHERE
+            "id" = $1
+        RETURNING
+            *;
+        "#;
+
+        let history: SubmissionCrawlHistory = sqlx::query_as(sql)
+            .bind(self.id)
+            .fetch_one(&mut *conn)
+            .await
+            .with_context(|| "exec query")?;
 
         self.status = history.status;
         self.finished_at = history.finished_at;
@@ -224,7 +249,7 @@ impl SubmissionCrawlHistory {
             "submission_crawl_histories"
         WHERE
             "contest_id" = $1
-            AND "status" = 'finished'
+            AND "status" = 'completed'
         ORDER BY
             "started_at" DESC
         LIMIT
@@ -245,43 +270,12 @@ impl SubmissionCrawlHistory {
                     return Ok(None);
                 }
                 _ => {
-                    return Err(e).with_context(|| "fetch last crawled epoch");
+                    return Err(e).with_context(|| "exec query");
                 }
             },
         };
     }
 }
-
-// #[derive(Debug, FromRow, PartialEq, PartialOrd)]
-// pub struct Submission {
-//     pub id: i64,
-//     pub epoch_second: i64,
-//     pub problem_id: String,
-//     pub contest_id: Option<String>,
-//     pub user_id: Option<String>,
-//     pub language: Option<String>,
-//     pub point: Option<f64>,
-//     pub length: Option<i64>,
-//     pub result: Option<String>,
-//     pub execution_time: Option<i64>,
-//     pub updated_at: DateTime<FixedOffset>,
-// }
-
-// #[derive(Debug, FromRow, PartialEq, PartialOrd)]
-// pub struct User {
-//     pub user_id: String,
-//     pub rating: i64,
-//     pub highest_rating: i64,
-//     pub affiliation: Option<String>,
-//     pub birth_year: Option<i64>,
-//     pub country: Option<String>,
-//     pub crown: Option<String>,
-//     pub join_count: i64,
-//     pub rank: i64,
-//     pub active_rank: Option<i64>,
-//     pub wins: i64,
-//     pub updated_at: DateTime<FixedOffset>,
-// }
 
 #[cfg(test)]
 mod tests {
@@ -289,95 +283,163 @@ mod tests {
 
     use super::*;
     use crate::testutil::{create_container, create_pool_from_container};
-    use rstest::rstest;
     use testcontainers::runners::AsyncRunner;
 
-    #[rstest]
     #[tokio::test]
-    async fn test_create_and_update_batch_history() {
-        let container = create_container().unwrap().start().await.unwrap();
-        let pool = create_pool_from_container(&container).await.unwrap();
+    async fn test_create_and_complete_batch_history() -> anyhow::Result<()> {
+        let container = create_container()?.start().await?;
+        let pool = create_pool_from_container(&container).await?;
 
-        let mut history = BatchHistory::new(&pool, "TestBatch", Value::Null)
-            .await
-            .expect("create new batch history");
+        let mut history = BatchHistory::new(&pool, "TestBatch", Value::Null).await?;
 
         assert_eq!(history.id, 1);
         assert_eq!(history.name, "TestBatch");
         assert_eq!(history.finished_at, None);
         assert_eq!(history.status, "working");
 
-        history.finish(&pool).await.expect("update batch history");
+        history.complete(&pool).await?;
 
         assert!(history.finished_at.is_some());
-        assert_eq!(history.status, "finished");
+        assert_eq!(history.status, "completed");
+
+        Ok(())
     }
 
-    #[rstest]
     #[tokio::test]
-    async fn test_fetch_latest_batch_history() {
-        let container = create_container().unwrap().start().await.unwrap();
-        let pool = create_pool_from_container(&container).await.unwrap();
+    async fn test_create_and_abort_batch_history() -> anyhow::Result<()> {
+        let container = create_container()?.start().await?;
+        let pool = create_pool_from_container(&container).await?;
 
-        let mut history1 = BatchHistory::new(&pool, "TestBatch", Value::Null)
-            .await
-            .unwrap();
+        let mut history = BatchHistory::new(&pool, "TestBatch", Value::Null).await?;
 
-        history1.finish(&pool).await.unwrap();
+        assert_eq!(history.id, 1);
+        assert_eq!(history.name, "TestBatch");
+        assert_eq!(history.finished_at, None);
+        assert_eq!(history.status, "working");
 
-        let _history2 = BatchHistory::new(&pool, "TestBatch", Value::Null)
-            .await
-            .unwrap();
+        history.abort(&pool).await?;
 
-        let latest = BatchHistory::fetch_latest(&pool, "TestBatch")
-            .await
-            .unwrap();
+        assert!(history.finished_at.is_some());
+        assert_eq!(history.status, "aborted");
 
-        assert_eq!(latest, history1);
+        Ok(())
     }
 
-    #[rstest]
     #[tokio::test]
-    async fn test_create_and_update_submission_crawl_history() {
-        let container = create_container().unwrap().start().await.unwrap();
-        let pool = create_pool_from_container(&container).await.unwrap();
+    async fn test_abort_completed_batch_history() -> anyhow::Result<()> {
+        let container = create_container()?.start().await?;
+        let pool = create_pool_from_container(&container).await?;
 
-        let mut history = SubmissionCrawlHistory::new(&pool, "abc001").await.unwrap();
+        let mut history = BatchHistory::new(&pool, "TestBatch", Value::Null).await?;
+        history.complete(&pool).await?;
+
+        history.abort(&pool).await?;
+        assert_eq!(history.status, "completed");
+
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_fetch_latest_batch_history() -> anyhow::Result<()> {
+        let container = create_container()?.start().await?;
+        let pool = create_pool_from_container(&container).await?;
+
+        let latest = BatchHistory::fetch_latest(&pool, "TestBatch").await?;
+        assert_eq!(latest, None);
+
+        let mut history1 = BatchHistory::new(&pool, "TestBatch", Value::Null).await?;
+        history1.complete(&pool).await?;
+
+        let _history2 = BatchHistory::new(&pool, "TestBatch", Value::Null).await?;
+
+        let mut history3 = BatchHistory::new(&pool, "TestBatch", Value::Null).await?;
+        history3.abort(&pool).await?;
+
+        let latest = BatchHistory::fetch_latest(&pool, "TestBatch").await?;
+
+        assert_eq!(latest, Some(history1));
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_create_and_update_submission_crawl_history() -> anyhow::Result<()> {
+        let container = create_container()?.start().await?;
+        let pool = create_pool_from_container(&container).await?;
+
+        let mut history = SubmissionCrawlHistory::new(&pool, "abc001").await?;
 
         assert_eq!(history.id, 1);
         assert_eq!(history.contest_id, "abc001");
         assert_eq!(history.status, "working");
 
-        history.finish(&pool).await.unwrap();
+        history.complete(&pool).await?;
 
-        assert_eq!(history.status, "finished");
+        assert_eq!(history.status, "completed");
+
+        Ok(())
     }
 
-    #[rstest]
     #[tokio::test]
-    async fn test_fetch_latest_submission_crawl_history() {
-        let container = create_container().unwrap().start().await.unwrap();
-        let pool = create_pool_from_container(&container).await.unwrap();
+    async fn test_abort_crawl_history() -> anyhow::Result<()> {
+        let container = create_container()?.start().await?;
+        let pool = create_pool_from_container(&container).await?;
 
-        // histories not found
-        assert_eq!(
-            SubmissionCrawlHistory::fetch_last_crawled(&pool, "abc001")
-                .await
-                .unwrap(),
-            None
-        );
+        let mut history = SubmissionCrawlHistory::new(&pool, "abc001").await?;
 
-        let mut history1 = SubmissionCrawlHistory::new(&pool, "abc001").await.unwrap();
+        assert_eq!(history.id, 1);
+        assert_eq!(history.contest_id, "abc001");
+        assert_eq!(history.status, "working");
+
+        history.abort(&pool).await?;
+
+        assert_eq!(history.status, "aborted");
+
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_abort_completed_crawl_history() -> anyhow::Result<()> {
+        let container = create_container()?.start().await?;
+        let pool = create_pool_from_container(&container).await?;
+
+        let mut history = SubmissionCrawlHistory::new(&pool, "abc001").await?;
+
+        assert_eq!(history.id, 1);
+        assert_eq!(history.contest_id, "abc001");
+        assert_eq!(history.status, "working");
+
+        history.complete(&pool).await?;
+
+        history.abort(&pool).await?;
+
+        assert_eq!(history.status, "completed");
+
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_fetch_latest_submission_crawl_history() -> anyhow::Result<()> {
+        let container = create_container()?.start().await?;
+        let pool = create_pool_from_container(&container).await?;
+
+        // history not found
+        let latest = SubmissionCrawlHistory::fetch_last_crawled(&pool, "abc001").await?;
+        assert_eq!(latest, None);
+
+        let mut history1 = SubmissionCrawlHistory::new(&pool, "abc001").await?;
         tokio::time::sleep(Duration::from_secs(1)).await;
-        let _history2 = SubmissionCrawlHistory::new(&pool, "abc001").await.unwrap();
+        history1.complete(&pool).await.unwrap();
 
-        history1.finish(&pool).await.unwrap();
+        let _history2 = SubmissionCrawlHistory::new(&pool, "abc001").await?;
 
-        let latest = SubmissionCrawlHistory::fetch_last_crawled(&pool, "abc001")
-            .await
-            .unwrap()
-            .unwrap();
+        let mut history3 = SubmissionCrawlHistory::new(&pool, "abc001").await?;
+        tokio::time::sleep(Duration::from_secs(1)).await;
+        history3.abort(&pool).await.unwrap();
 
-        assert_eq!(history1.started_at, latest);
+        let latest = SubmissionCrawlHistory::fetch_last_crawled(&pool, "abc001").await?;
+
+        assert_eq!(latest, Some(history1.started_at));
+
+        Ok(())
     }
 }
