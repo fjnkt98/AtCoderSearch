@@ -1,6 +1,6 @@
 [package]
 edition = "2021"
-name = "atcodersearch"
+name = "atcodersearch-batch"
 version = "0.1.0"
 
 [dependencies]
@@ -19,7 +19,7 @@ serde_with = "3.9.0"
 sqlx = {version = "0.8.1", features = ["postgres", "chrono", "runtime-tokio-rustls"]}
 tokio = {version = "1.39.3", features = ["full"]}
 tokio-macros = "2.4.0"
-tokio-stream = { version = "0.1.15", features = ["time"] }
+tokio-stream = {version = "0.1.15", features = ["time"]}
 tokio-util = "0.7.11"
 tracing = "0.1.40"
 tracing-subscriber = {version = "0.3.18", features = ["env-filter", "fmt", "std", "json", "local-time", "time"]}
