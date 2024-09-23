@@ -14,8 +14,8 @@ use super::CommonArgs;
 #[derive(Subcommand)]
 pub(crate) enum CrawlCommand {
     Problem {
-        #[arg(long, default_value_t = 1, help = "crawl duration in sec.")]
-        duration: u64,
+        #[arg(long, default_value = "1s")]
+        duration: humantime::Duration,
         #[arg(short, long, help = "if true, crawl all problems.")]
         all: bool,
     },
@@ -24,11 +24,19 @@ pub(crate) enum CrawlCommand {
         duration: u64,
     },
     Submission {
-        #[arg(long, default_value_t = 1)]
-        duration: u64,
-        #[arg(long, default_value_t = 0)]
+        #[arg(long, default_value = "1s")]
+        duration: humantime::Duration,
+        #[arg(
+            long,
+            default_value_t = 0,
+            help = "number of retries allowed when crawling failed. zero means no retry."
+        )]
         retry: i64,
-        #[arg(long)]
+        #[arg(
+            long,
+            default_value = "",
+            help = "comma separated list of target contest id. if not specified, crawl all contests."
+        )]
         target: String,
         #[arg(long, env, hide_env_values = true)]
         atcoder_username: String,
@@ -42,27 +50,38 @@ impl CrawlCommand {
         let problems_client = AtCoderProblemsClient::new()?;
         let atcoder_client = AtCoderClient::new()?;
         let pool = PgPoolOptions::new()
-            .max_connections(8)
             .connect(&args.database_url)
-            .await?;
+            .await
+            .with_context(|| "connect to database")?;
 
         match self {
             Self::Problem { duration, all } => {
-                contest::crawl_contests(&problems_client, &pool).await?;
-                difficulty::crawl_difficulties(&problems_client, &pool).await?;
+                contest::crawl_contests(&problems_client, &pool)
+                    .await
+                    .with_context(|| "crawl contests")?;
+
+                difficulty::crawl_difficulties(&problems_client, &pool)
+                    .await
+                    .with_context(|| "crawl difficulties")?;
+
                 problem::crawl_problems(
                     &atcoder_client,
                     &problems_client,
                     &pool,
                     *all,
-                    Duration::from_secs(*duration),
+                    (*duration).into(),
                 )
-                .await?;
+                .await
+                .with_context(|| "crawl problems")?;
 
                 Ok(())
             }
             Self::User { duration } => {
-                user::crawl_users(&atcoder_client, &pool, Duration::from_secs(*duration)).await
+                user::crawl_users(&atcoder_client, &pool, Duration::from_secs(*duration))
+                    .await
+                    .with_context(|| "crawl users")?;
+
+                Ok(())
             }
             Self::Submission {
                 duration,
@@ -78,9 +97,9 @@ impl CrawlCommand {
 
                 let targets = target.split(",").map(String::from).collect_vec();
                 let crawler = submission::SubmissionCrawler::new(
-                    &atcoder_client,
-                    &pool,
-                    Duration::from_secs(*duration),
+                    atcoder_client,
+                    pool,
+                    (*duration).into(),
                     *retry,
                     targets,
                 );
