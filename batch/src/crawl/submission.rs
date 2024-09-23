@@ -8,18 +8,18 @@ use crate::{
     history::SubmissionCrawlHistory,
 };
 
-pub struct SubmissionCrawler<'a> {
-    client: &'a AtCoderClient,
-    pool: &'a Pool<Postgres>,
+pub struct SubmissionCrawler {
+    client: AtCoderClient,
+    pool: Pool<Postgres>,
     duration: Duration,
     retry: i64,
     targets: Vec<String>,
 }
 
-impl<'a> SubmissionCrawler<'a> {
+impl SubmissionCrawler {
     pub fn new(
-        client: &'a AtCoderClient,
-        pool: &'a Pool<Postgres>,
+        client: AtCoderClient,
+        pool: Pool<Postgres>,
         duration: Duration,
         retry: i64,
         targets: Vec<String>,
@@ -34,7 +34,7 @@ impl<'a> SubmissionCrawler<'a> {
     }
 
     pub async fn crawl(&self) -> anyhow::Result<()> {
-        let targets = fetch_contest_id(self.pool, &self.targets).await?;
+        let targets = fetch_contest_id(&self.pool, &self.targets).await?;
 
         for contest_id in targets.iter() {
             self.crawl_contest(contest_id).await?;
@@ -47,26 +47,19 @@ impl<'a> SubmissionCrawler<'a> {
 
     #[instrument(skip(self))]
     async fn crawl_contest(&self, contest_id: &str) -> anyhow::Result<()> {
-        let last_crawled =
-            SubmissionCrawlHistory::fetch_last_crawled(self.pool, contest_id).await?;
+        let latest = SubmissionCrawlHistory::fetch_latest(&self.pool, contest_id).await?;
         tracing::info!(
             "start to crawl submissions of {}. last crawled at {:?}",
             contest_id,
-            last_crawled
+            latest.as_ref().and_then(|h| Some(h.started_at)),
         );
-        let last_crawled = last_crawled.and_then(|t| Some(t.timestamp())).unwrap_or(0);
+        let last_crawled = latest
+            .and_then(|h| Some(h.started_at.timestamp()))
+            .unwrap_or(0);
 
-        let mut tx = self
-            .pool
-            .begin()
-            .await
-            .with_context(|| "begin transaction to create submission crawl history")?;
-        let mut history = SubmissionCrawlHistory::new(&mut tx, contest_id)
+        let mut history = SubmissionCrawlHistory::with_transaction(self.pool.clone(), contest_id)
             .await
             .with_context(|| "create submission crawl history")?;
-        tx.commit()
-            .await
-            .with_context(|| "commit transaction to create submission crawl history")?;
 
         let mut submissions: Vec<Submission> = Vec::with_capacity(20);
 
@@ -125,18 +118,10 @@ impl<'a> SubmissionCrawler<'a> {
             .with_context(|| "commit transaction to save submissions")?;
         tracing::info!("saved {} submissions successfully", count);
 
-        let mut tx = self
-            .pool
-            .begin()
-            .await
-            .with_context(|| "begin transaction to update submission crawl history")?;
         history
-            .complete(&mut tx)
+            .complete()
             .await
-            .with_context(|| "finish submission crawl history")?;
-        tx.commit()
-            .await
-            .with_context(|| "commit transaction to update submission crawl history")?;
+            .with_context(|| "complete submission crawl history")?;
 
         Ok(())
     }
@@ -148,7 +133,7 @@ where
     A: Acquire<'a, Database = Postgres>,
 {
     let mut builder: QueryBuilder<Postgres> =
-        sqlx::QueryBuilder::new(r#"SELECT "contest_id" FROM "contests""#);
+        sqlx::QueryBuilder::new(r#"SELECT "contest_id" FROM "contests" "#);
     if !categories.is_empty() {
         builder.push(r#"WHERE "category" IN ("#);
         let mut s = builder.separated(", ");
@@ -157,7 +142,7 @@ where
         }
         s.push_unseparated(")");
     }
-    builder.push(r#"ORDER BY "start_epoch_second" DESC"#);
+    builder.push(r#" ORDER BY "start_epoch_second" DESC"#);
 
     let mut conn = db.acquire().await?;
 
@@ -243,6 +228,8 @@ SET
 
 #[cfg(test)]
 mod test {
+    use std::vec;
+
     use super::*;
     use crate::testutil::{create_container, create_pool_from_container};
     use testcontainers::runners::AsyncRunner;
@@ -331,8 +318,8 @@ mod test {
             r#"
 INSERT INTO "contests" ("contest_id", "start_epoch_second", "duration_second", "title", "rate_change", "category") VALUES
 ('abc001', 0, 0, '', '-', 'ABC'),
-('abc002', 0, 0, '', '-', 'ABC'),
-('arc001', 0, 0, '', '-', 'ARC');
+('abc002', 1, 0, '', '-', 'ABC'),
+('arc001', 2, 0, '', '-', 'ARC');
 "#,
         )
         .execute(&pool)
@@ -342,15 +329,15 @@ INSERT INTO "contests" ("contest_id", "start_epoch_second", "duration_second", "
         // test fetch all contest
         let categories = vec![];
         let result = fetch_contest_id(&pool, &categories).await.unwrap();
-        assert_eq!(result.len(), 3);
+        assert_eq!(result, vec!["arc001", "abc002", "abc001"]);
 
         // test fetch specific category
         let categories = vec![String::from("ABC")];
         let result = fetch_contest_id(&pool, &categories).await.unwrap();
-        assert_eq!(result.len(), 2);
+        assert_eq!(result, vec!["abc002", "abc001"]);
 
         let categories = vec![String::from("ABC"), String::from("ARC")];
         let result = fetch_contest_id(&pool, &categories).await.unwrap();
-        assert_eq!(result.len(), 3);
+        assert_eq!(result, vec!["arc001", "abc002", "abc001"]);
     }
 }
