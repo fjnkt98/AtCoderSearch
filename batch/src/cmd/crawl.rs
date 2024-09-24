@@ -95,7 +95,11 @@ impl CrawlCommand {
                     .await
                     .with_context(|| "login to atcoder")?;
 
-                let targets = target.split(",").map(String::from).collect_vec();
+                let targets = target
+                    .split(",")
+                    .map(String::from)
+                    .filter(|s| !s.is_empty())
+                    .collect_vec();
                 let crawler = submission::SubmissionCrawler::new(
                     atcoder_client,
                     pool,

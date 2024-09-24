@@ -1,7 +1,7 @@
 use anyhow::Context;
+use itertools::Itertools;
 use sqlx::{Acquire, Pool, Postgres, QueryBuilder};
 use std::{collections::VecDeque, time::Duration};
-use tracing::instrument;
 
 use crate::{
     atcoder::{AtCoderClient, Submission},
@@ -33,11 +33,29 @@ impl SubmissionCrawler {
         }
     }
 
+    #[tracing::instrument(skip(self), fields(duration = format!("{:?}", self.duration), retry = self.retry, targets = format!("{:?}", self.targets)))]
     pub async fn crawl(&self) -> anyhow::Result<()> {
         let targets = fetch_contest_id(&self.pool, &self.targets).await?;
 
         for contest_id in targets.iter() {
-            self.crawl_contest(contest_id).await?;
+            let mut history =
+                SubmissionCrawlHistory::with_transaction(self.pool.clone(), contest_id)
+                    .await
+                    .with_context(|| {
+                        format!("create submission crawl history for {}", contest_id)
+                    })?;
+
+            if let Err(e) = self.crawl_contest(contest_id).await {
+                return Err(match history.abort().await {
+                    Ok(()) => e,
+                    Err(e2) => e2.context(e),
+                });
+            };
+
+            history
+                .complete()
+                .await
+                .with_context(|| "complete submission crawl history")?;
 
             tokio::time::sleep(self.duration).await;
         }
@@ -45,7 +63,7 @@ impl SubmissionCrawler {
         return Ok(());
     }
 
-    #[instrument(skip(self))]
+    #[tracing::instrument(skip(self))]
     async fn crawl_contest(&self, contest_id: &str) -> anyhow::Result<()> {
         let latest = SubmissionCrawlHistory::fetch_latest(&self.pool, contest_id).await?;
         tracing::info!(
@@ -56,10 +74,6 @@ impl SubmissionCrawler {
         let last_crawled = latest
             .and_then(|h| Some(h.started_at.timestamp()))
             .unwrap_or(0);
-
-        let mut history = SubmissionCrawlHistory::with_transaction(self.pool.clone(), contest_id)
-            .await
-            .with_context(|| "create submission crawl history")?;
 
         let mut submissions: Vec<Submission> = Vec::with_capacity(20);
 
@@ -118,16 +132,11 @@ impl SubmissionCrawler {
             .with_context(|| "commit transaction to save submissions")?;
         tracing::info!("saved {} submissions successfully", count);
 
-        history
-            .complete()
-            .await
-            .with_context(|| "complete submission crawl history")?;
-
         Ok(())
     }
 }
 
-#[instrument(skip(db))]
+#[tracing::instrument(skip(db))]
 async fn fetch_contest_id<'a, A>(db: A, categories: &[String]) -> anyhow::Result<Vec<String>>
 where
     A: Acquire<'a, Database = Postgres>,
@@ -155,7 +164,7 @@ where
     Ok(res.into_iter().map(|(c,)| c).collect())
 }
 
-#[instrument(skip(db, submissions))]
+#[tracing::instrument(skip(db, submissions))]
 async fn insert_submissions<'a, A>(db: A, submissions: &[Submission]) -> anyhow::Result<u64>
 where
     A: Acquire<'a, Database = Postgres>,
@@ -163,6 +172,9 @@ where
     if submissions.is_empty() {
         return Ok(0);
     }
+
+    let mut submissions = submissions.iter().sorted_by_key(|s| s.id).collect_vec();
+    submissions.dedup();
 
     let mut builder: QueryBuilder<Postgres> = sqlx::QueryBuilder::new(
         r#"
@@ -306,6 +318,36 @@ mod test {
         ];
         let count = insert_submissions(&pool, &submissions).await.unwrap();
         assert_eq!(count, 2);
+
+        // test insert duplicated submissions
+        let submissions = vec![
+            Submission {
+                id: 48852107,
+                epoch_second: 1703553569,
+                problem_id: String::from("abc300_a"),
+                user_id: String::from("Orkhon2010"),
+                contest_id: String::from("abc300"),
+                language: String::from("C++ 20 (gcc 12.2)"),
+                point: 100.0,
+                length: 259,
+                result: String::from("AC"),
+                execution_time: Some(1),
+            },
+            Submission {
+                id: 48852107,
+                epoch_second: 1703553569,
+                problem_id: String::from("abc300_a"),
+                user_id: String::from("Orkhon2010"),
+                contest_id: String::from("abc300"),
+                language: String::from("C++ 20 (gcc 12.2)"),
+                point: 100.0,
+                length: 259,
+                result: String::from("AC"),
+                execution_time: Some(1),
+            },
+        ];
+        let count = insert_submissions(&pool, &submissions).await.unwrap();
+        assert_eq!(count, 1);
     }
 
     #[tokio::test]
