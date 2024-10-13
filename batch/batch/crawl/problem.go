@@ -8,6 +8,7 @@ import (
 	"fjnkt98/atcodersearch/repository"
 	"fmt"
 	"log/slog"
+	"maps"
 	"slices"
 	"strings"
 	"time"
@@ -58,7 +59,7 @@ func (c *ProblemCrawler) CrawlContests(ctx context.Context) error {
 		return fmt.Errorf("fetch contests: %w", err)
 	}
 
-	count, err := SaveContests(ctx, c.pool, contests, time.Now())
+	count, err := SaveContests(ctx, c.pool, contests)
 	if err != nil {
 		return fmt.Errorf("save contests: %w", err)
 	}
@@ -75,7 +76,7 @@ func (c *ProblemCrawler) CrawlDifficulties(ctx context.Context) error {
 		return fmt.Errorf("fetch difficulties: %w", err)
 	}
 
-	count, err := SaveDifficulties(ctx, c.pool, difficulties, time.Now())
+	count, err := SaveDifficulties(ctx, c.pool, difficulties)
 	if err != nil {
 		return fmt.Errorf("save difficulties: %w", err)
 	}
@@ -172,7 +173,34 @@ func DetectDiff(ctx context.Context, pool *pgxpool.Pool, problems []atcoder.Prob
 	return diff, nil
 }
 
-func SaveContests(ctx context.Context, pool *pgxpool.Pool, contests []atcoder.Contest, timestamp time.Time) (int64, error) {
+type Contest struct {
+	bun.BaseModel    `bun:"table:contests,alias:c"`
+	ContestID        string `bun:"contest_id"`
+	StartEpochSecond int64  `bun:"start_epoch_second"`
+	DurationSecond   int64  `bun:"duration_second"`
+	Title            string `bun:"title"`
+	RateChange       string `bun:"rate_change"`
+	Category         string `bun:"category"`
+}
+
+func NewContests(contests []atcoder.Contest) []Contest {
+	result := make([]Contest, len(contests))
+
+	for i, c := range contests {
+		result[i] = Contest{
+			ContestID:        c.ID,
+			StartEpochSecond: c.StartEpochSecond,
+			DurationSecond:   c.DurationSecond,
+			Title:            c.Title,
+			RateChange:       c.RateChange,
+			Category:         c.Categorize(),
+		}
+	}
+
+	return result
+}
+
+func SaveContests(ctx context.Context, pool *pgxpool.Pool, contests []atcoder.Contest) (int64, error) {
 	if len(contests) == 0 {
 		return 0, nil
 	}
@@ -185,7 +213,7 @@ func SaveContests(ctx context.Context, pool *pgxpool.Pool, contests []atcoder.Co
 
 	var count int64 = 0
 
-	for chunk := range slices.Chunk(slices.Collect(repository.Map(repository.NewContest, slices.Values(contests), timestamp)), 1000) {
+	for chunk := range slices.Chunk(NewContests(contests), 1000) {
 		res, err := tx.NewInsert().
 			Model(&chunk).
 			On("CONFLICT (contest_id) DO UPDATE").
@@ -195,7 +223,7 @@ func SaveContests(ctx context.Context, pool *pgxpool.Pool, contests []atcoder.Co
 			Set("title = EXCLUDED.title").
 			Set("rate_change = EXCLUDED.rate_change").
 			Set("category = EXCLUDED.category").
-			Set("updated_at = EXCLUDED.updated_at").
+			Set("updated_at = NOW()").
 			Exec(ctx)
 		if err != nil {
 			return 0, fmt.Errorf("insert: %w", err)
@@ -215,7 +243,42 @@ func SaveContests(ctx context.Context, pool *pgxpool.Pool, contests []atcoder.Co
 	return count, nil
 }
 
-func SaveDifficulties(ctx context.Context, pool *pgxpool.Pool, difficulties map[string]atcoder.Difficulty, timestamp time.Time) (int64, error) {
+type Difficulty struct {
+	bun.BaseModel    `bun:"table:difficulties,alias:d"`
+	ProblemID        string   `bun:"problem_id"`
+	Slope            *float64 `bun:"slope"`
+	Intercept        *float64 `bun:"intercept"`
+	Variance         *float64 `bun:"variance"`
+	Difficulty       *int64   `bun:"difficulty"`
+	Discrimination   *float64 `bun:"discrimination"`
+	IrtLoglikelihood *float64 `bun:"irt_loglikelihood"`
+	IrtUsers         *float64 `bun:"irt_users"`
+	IsExperimental   *bool    `bun:"is_experimental"`
+}
+
+func NewDifficulties(difficulties map[string]atcoder.Difficulty) []Difficulty {
+	result := make([]Difficulty, len(difficulties))
+
+	for i, problemID := range slices.Sorted(maps.Keys(difficulties)) {
+		d := difficulties[problemID]
+
+		result[i] = Difficulty{
+			ProblemID:        problemID,
+			Slope:            d.Slope,
+			Intercept:        d.Intercept,
+			Variance:         d.Variance,
+			Difficulty:       d.Difficulty,
+			Discrimination:   d.Discrimination,
+			IrtLoglikelihood: d.IrtLoglikelihood,
+			IrtUsers:         d.IrtUsers,
+			IsExperimental:   d.IsExperimental,
+		}
+	}
+
+	return result
+}
+
+func SaveDifficulties(ctx context.Context, pool *pgxpool.Pool, difficulties map[string]atcoder.Difficulty) (int64, error) {
 	if len(difficulties) == 0 {
 		return 0, nil
 	}
@@ -228,7 +291,7 @@ func SaveDifficulties(ctx context.Context, pool *pgxpool.Pool, difficulties map[
 
 	var count int64 = 0
 
-	for chunk := range slices.Chunk(repository.NewDifficulties(difficulties, timestamp), 1000) {
+	for chunk := range slices.Chunk(NewDifficulties(difficulties), 1000) {
 		res, err := tx.NewInsert().
 			Model(&chunk).
 			On("CONFLICT (problem_id) DO UPDATE").
@@ -241,7 +304,7 @@ func SaveDifficulties(ctx context.Context, pool *pgxpool.Pool, difficulties map[
 			Set("irt_loglikelihood = EXCLUDED.irt_loglikelihood").
 			Set("irt_users = EXCLUDED.irt_users").
 			Set("is_experimental = EXCLUDED.is_experimental").
-			Set("updated_at = EXCLUDED.updated_at").
+			Set("updated_at = NOW()").
 			Exec(ctx)
 		if err != nil {
 			return 0, fmt.Errorf("insert: %w", err)

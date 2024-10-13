@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fjnkt98/atcodersearch/pkg/atcoder"
-	"fjnkt98/atcodersearch/repository"
 	"fmt"
 	"log/slog"
 	"slices"
@@ -57,7 +56,7 @@ loop:
 		time.Sleep(c.duration)
 	}
 
-	count, err := SaveUsers(ctx, c.pool, users, time.Now())
+	count, err := SaveUsers(ctx, c.pool, users)
 	if err != nil {
 		return fmt.Errorf("save users: %w", err)
 	}
@@ -66,7 +65,44 @@ loop:
 	return nil
 }
 
-func SaveUsers(ctx context.Context, pool *pgxpool.Pool, users []atcoder.User, timestamp time.Time) (int64, error) {
+type User struct {
+	bun.BaseModel `bun:"table:users,alias:u"`
+	UserID        string  `bun:"user_id"`
+	Rating        int32   `bun:"rating"`
+	HighestRating int32   `bun:"highest_rating"`
+	Affiliation   *string `bun:"affiliation"`
+	BirthYear     *int32  `bun:"birth_year"`
+	Country       *string `bun:"country"`
+	Crown         *string `bun:"crown"`
+	JoinCount     int32   `bun:"join_count"`
+	Rank          int32   `bun:"rank"`
+	ActiveRank    *int32  `bun:"active_rank"`
+	Wins          int32   `bun:"wins"`
+}
+
+func NewUsers(users []atcoder.User) []User {
+	result := make([]User, len(users))
+
+	for i, u := range users {
+		result[i] = User{
+			UserID:        u.UserID,
+			Rating:        u.Rating,
+			HighestRating: u.HighestRating,
+			Affiliation:   u.Affiliation,
+			BirthYear:     u.BirthYear,
+			Country:       u.Country,
+			Crown:         u.Crown,
+			JoinCount:     u.JoinCount,
+			Rank:          u.Rank,
+			ActiveRank:    u.ActiveRank,
+			Wins:          u.Wins,
+		}
+	}
+
+	return result
+}
+
+func SaveUsers(ctx context.Context, pool *pgxpool.Pool, users []atcoder.User) (int64, error) {
 	if len(users) == 0 {
 		return 0, nil
 	}
@@ -79,7 +115,7 @@ func SaveUsers(ctx context.Context, pool *pgxpool.Pool, users []atcoder.User, ti
 
 	var count int64 = 0
 
-	for chunk := range slices.Chunk(slices.Collect(repository.Map(repository.NewUser, slices.Values(users), timestamp)), 1000) {
+	for chunk := range slices.Chunk(NewUsers(users), 1000) {
 		res, err := tx.NewInsert().
 			Model(&chunk).
 			On("CONFLICT (user_id) DO UPDATE").
@@ -94,7 +130,7 @@ func SaveUsers(ctx context.Context, pool *pgxpool.Pool, users []atcoder.User, ti
 			Set("rank = EXCLUDED.rank").
 			Set("active_rank = EXCLUDED.active_rank").
 			Set("wins = EXCLUDED.wins").
-			Set("updated_at = EXCLUDED.updated_at").
+			Set("updated_at = NOW()").
 			Exec(ctx)
 		if err != nil {
 			return 0, fmt.Errorf("insert: %w", err)

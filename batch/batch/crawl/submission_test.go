@@ -26,8 +26,6 @@ func TestSubmission(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	now := time.Now()
-
 	sql := `
 INSERT INTO "contests" ("contest_id", "start_epoch_second", "duration_second", "title", "rate_change", "category") VALUES
 ('abc001', 0, 0, '', '-', 'ABC'),
@@ -83,7 +81,7 @@ INSERT INTO "contests" ("contest_id", "start_epoch_second", "duration_second", "
 		t.Parallel()
 
 		submissions := make([]atcoder.Submission, 0)
-		count, err := SaveSubmissions(ctx, pool, submissions, now)
+		count, err := SaveSubmissions(ctx, pool, submissions)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -110,7 +108,7 @@ INSERT INTO "contests" ("contest_id", "start_epoch_second", "duration_second", "
 				ExecutionTime: ptr.To(int32(1)),
 			},
 		}
-		count, err := SaveSubmissions(ctx, pool, submissions, now)
+		count, err := SaveSubmissions(ctx, pool, submissions)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -149,7 +147,7 @@ INSERT INTO "contests" ("contest_id", "start_epoch_second", "duration_second", "
 				ExecutionTime: ptr.To(int32(11)),
 			},
 		}
-		count, err := SaveSubmissions(ctx, pool, submissions, now)
+		count, err := SaveSubmissions(ctx, pool, submissions)
 		if err != nil {
 			t.Fatal(err)
 		}

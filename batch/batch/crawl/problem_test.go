@@ -26,12 +26,10 @@ func TestProblem(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	now := time.Now()
-
 	t.Run("save empty problems", func(t *testing.T) {
 		t.Parallel()
 		contests := make([]atcoder.Contest, 0)
-		count, err := SaveContests(ctx, pool, contests, now)
+		count, err := SaveContests(ctx, pool, contests)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -53,7 +51,7 @@ func TestProblem(t *testing.T) {
 			},
 		}
 
-		count, err := SaveContests(ctx, pool, contests, now)
+		count, err := SaveContests(ctx, pool, contests)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -81,7 +79,7 @@ func TestProblem(t *testing.T) {
 			},
 		}
 
-		count, err := SaveContests(ctx, pool, contests, now)
+		count, err := SaveContests(ctx, pool, contests)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -93,7 +91,7 @@ func TestProblem(t *testing.T) {
 	t.Run("save empty difficulties", func(t *testing.T) {
 		t.Parallel()
 		difficulties := make(map[string]atcoder.Difficulty)
-		count, err := SaveDifficulties(ctx, pool, difficulties, now)
+		count, err := SaveDifficulties(ctx, pool, difficulties)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -118,7 +116,7 @@ func TestProblem(t *testing.T) {
 			},
 		}
 
-		count, err := SaveDifficulties(ctx, pool, difficulties, now)
+		count, err := SaveDifficulties(ctx, pool, difficulties)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -152,7 +150,7 @@ func TestProblem(t *testing.T) {
 			},
 		}
 
-		count, err := SaveDifficulties(ctx, pool, difficulties, now)
+		count, err := SaveDifficulties(ctx, pool, difficulties)
 		if err != nil {
 			t.Fatal(err)
 		}

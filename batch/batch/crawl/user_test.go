@@ -25,13 +25,11 @@ func TestUser(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	now := time.Now()
-
 	t.Run("save empty users", func(t *testing.T) {
 		t.Parallel()
 
 		users := make([]atcoder.User, 0)
-		count, err := SaveUsers(ctx, pool, users, now)
+		count, err := SaveUsers(ctx, pool, users)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -60,7 +58,7 @@ func TestUser(t *testing.T) {
 			},
 		}
 
-		count, err := SaveUsers(ctx, pool, users, now)
+		count, err := SaveUsers(ctx, pool, users)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -101,7 +99,7 @@ func TestUser(t *testing.T) {
 			},
 		}
 
-		count, err := SaveUsers(ctx, pool, users, now)
+		count, err := SaveUsers(ctx, pool, users)
 		if err != nil {
 			t.Fatal(err)
 		}

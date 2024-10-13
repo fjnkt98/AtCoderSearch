@@ -124,7 +124,7 @@ loop:
 		time.Sleep(c.duration)
 	}
 
-	count, err := SaveSubmissions(ctx, c.pool, submissions, time.Now())
+	count, err := SaveSubmissions(ctx, c.pool, submissions)
 	if err != nil {
 		return fmt.Errorf("save submissions: %w", err)
 	}
@@ -154,7 +154,43 @@ func FetchContestIDs(ctx context.Context, pool *pgxpool.Pool, category []string)
 	return result, nil
 }
 
-func SaveSubmissions(ctx context.Context, pool *pgxpool.Pool, submissions []atcoder.Submission, timestamp time.Time) (int64, error) {
+type Submission struct {
+	bun.BaseModel `bun:"table:submissions,alias:s"`
+	ID            int64    `bun:"id"`
+	EpochSecond   int64    `bun:"epoch_second"`
+	ProblemID     string   `bun:"problem_id"`
+	ContestID     *string  `bun:"contest_id"`
+	UserID        *string  `bun:"user_id"`
+	Language      *string  `bun:"language"`
+	Point         *float64 `bun:"point"`
+	Length        *int32   `bun:"length"`
+	Result        *string  `bun:"result"`
+	ExecutionTime *int32   `bun:"execution_time"`
+}
+
+func NewSubmissions(submissions []atcoder.Submission) []Submission {
+	result := make([]Submission, len(submissions))
+
+	for i, s := range submissions {
+		s := s
+		result[i] = Submission{
+			ID:            s.ID,
+			EpochSecond:   s.EpochSecond,
+			ProblemID:     s.ProblemID,
+			ContestID:     &s.ContestID,
+			UserID:        &s.UserID,
+			Language:      &s.Language,
+			Point:         &s.Point,
+			Length:        &s.Length,
+			Result:        &s.Result,
+			ExecutionTime: s.ExecutionTime,
+		}
+	}
+
+	return result
+}
+
+func SaveSubmissions(ctx context.Context, pool *pgxpool.Pool, submissions []atcoder.Submission) (int64, error) {
 	if len(submissions) == 0 {
 		return 0, nil
 	}
@@ -167,7 +203,7 @@ func SaveSubmissions(ctx context.Context, pool *pgxpool.Pool, submissions []atco
 
 	var count int64 = 0
 
-	for chunk := range slices.Chunk(slices.Collect(repository.Map(repository.NewSubmission, slices.Values(submissions), timestamp)), 1000) {
+	for chunk := range slices.Chunk(NewSubmissions(submissions), 1000) {
 		res, err := tx.NewInsert().
 			Model(&chunk).
 			On("CONFLICT (id, epoch_second) DO UPDATE").
@@ -181,7 +217,7 @@ func SaveSubmissions(ctx context.Context, pool *pgxpool.Pool, submissions []atco
 			Set("length = EXCLUDED.length").
 			Set("result = EXCLUDED.result").
 			Set("execution_time = EXCLUDED.execution_time").
-			Set("updated_at = EXCLUDED.updated_at").
+			Set("updated_at = NOW()").
 			Exec(ctx)
 		if err != nil {
 			return 0, fmt.Errorf("insert: %w", err)
