@@ -6,6 +6,7 @@ require (
 	github.com/PuerkitoBio/goquery v1.10.0
 	github.com/deckarep/golang-set/v2 v2.6.0
 	github.com/jackc/pgx/v5 v5.5.5
+	github.com/meilisearch/meilisearch-go v0.28.0
 	github.com/tdewolff/minify v2.3.6+incompatible
 	github.com/testcontainers/testcontainers-go v0.33.0
 	github.com/uptrace/bun v1.2.3
@@ -46,7 +47,6 @@ require (
 	github.com/lufia/plan9stats v0.0.0-20240819163618-b1d8f4d146e7 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
-	github.com/meilisearch/meilisearch-go v0.28.0 // indirect
 	github.com/moby/docker-image-spec v1.3.1 // indirect
 	github.com/moby/patternmatcher v0.6.0 // indirect
 	github.com/moby/sys/sequential v0.6.0 // indirect
