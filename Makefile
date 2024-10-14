@@ -21,3 +21,7 @@ test-backend:
 .PHONY: sqlc
 sqlc:
 	$(MAKE) -C backend sqlc
+
+.PHONY: build-image
+build-image:
+	$(MAKE) -C batch build-image
