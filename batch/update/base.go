@@ -148,7 +148,15 @@ func UpdateIndex[D any, R Documenter[D]](
 		}
 
 		// スタンバイインデックスsettings更新
-		info, err := standbyIndex.UpdateSettingsWithContext(ctx, indexer.Settings())
+		info, err := standbyIndex.UpdateIndexWithContext(ctx, indexer.PrimaryKey())
+		if err != nil {
+			return fmt.Errorf("update standby index primary key: %w", err)
+		}
+		if _, err := client.WaitForTaskWithContext(ctx, info.TaskUID, 1*time.Second); err != nil {
+			return fmt.Errorf("task updating standby index failed: %w", err)
+		}
+
+		info, err = standbyIndex.UpdateSettingsWithContext(ctx, indexer.Settings())
 		if err != nil {
 			return fmt.Errorf("update standby index settings: %w", err)
 		}
