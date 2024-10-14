@@ -209,10 +209,38 @@ func main() {
 					},
 				},
 				{
-					Name:  "user",
-					Flags: []cli.Flag{},
+					Name: "user",
+					Flags: []cli.Flag{
+						&cli.IntFlag{
+							Name:  "chunk-size",
+							Value: 10000,
+						},
+						&cli.IntFlag{
+							Name:  "concurrent",
+							Value: 4,
+						},
+					},
 					Action: func(ctx *cli.Context) error {
-						panic("not implemented")
+						pool, err := repository.NewPool(ctx.Context, ctx.String("database-url"))
+						if err != nil {
+							return fmt.Errorf("new pool: %w", err)
+						}
+						client := meilisearch.New(ctx.String("engine-url"), meilisearch.WithAPIKey(ctx.String("engine-master-key")))
+						indexer := update.NewUserIndexer(client)
+
+						reader := update.NewUserRowReader(pool)
+
+						if err := update.UpdateIndex(
+							ctx.Context,
+							reader,
+							indexer,
+							ctx.Int("chunk-size"),
+							ctx.Int("concurrent"),
+						); err != nil {
+							return fmt.Errorf("update index: %w", err)
+						}
+
+						return nil
 					},
 				},
 				{
