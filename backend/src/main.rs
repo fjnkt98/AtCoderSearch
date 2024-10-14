@@ -135,12 +135,30 @@ pub mod testutil {
     }
 
     pub fn create_engine_container() -> anyhow::Result<ContainerRequest<GenericImage>> {
-        todo!();
+        let request = GenericImage::new("getmeili/meilisearch", "prototype-japanese-184")
+            .with_exposed_port(7700.tcp())
+            .with_wait_for(WaitFor::message_on_stdout(
+                "Actix runtime found; starting in Actix runtime",
+            ))
+            .with_wait_for(WaitFor::message_on_stderr(
+                "Actix runtime found; starting in Actix runtime",
+            ))
+            .with_env_var("MEILI_MASTER_KEY", "meili-master-key");
+
+        Ok(request)
     }
 
     pub async fn create_client_from_container(
         container: &ContainerAsync<GenericImage>,
     ) -> anyhow::Result<Client> {
-        todo!();
+        let host = container.get_host().await?;
+        let port = container.get_host_port_ipv4(5432).await?;
+
+        let client = Client::new(
+            format!("http://{}:{}", host, port),
+            Some("meili-master-key"),
+        )?;
+
+        Ok(client)
     }
 }

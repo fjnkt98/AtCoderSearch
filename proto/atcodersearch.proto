@@ -12,14 +12,16 @@ service ProblemService {
 }
 
 message SearchProblemByKeywordRequest {
-  string q = 1;
-  repeated string sorts = 2;
-  repeated string facets = 3;
-  repeated string categories = 4;
-  optional int64 difficulty_from = 5;
-  optional int64 difficulty_to = 6;
-  repeated string colors = 7;
-  optional bool experimental = 8;
+  optional int64 limit = 1;
+  optional int64 page = 2;
+  string q = 3;
+  repeated string sorts = 4;
+  repeated string facets = 5;
+  repeated string categories = 6;
+  optional int64 difficulty_from = 7;
+  optional int64 difficulty_to = 8;
+  repeated string colors = 9;
+  optional bool experimental = 10;
 }
 
 message SearchProblemResult {
@@ -50,5 +52,4 @@ message Problem {
   int64 duration = 10;
   string rate_change = 11;
   string category = 12;
-  double score = 13;
 }
