@@ -1,0 +1,54 @@
+syntax = "proto3";
+package atcodersearch;
+
+message Count {
+  string label = 1;
+  int64 count = 2;
+}
+
+service ProblemService {
+  rpc SearchByKeyword(SearchProblemByKeywordRequest)
+      returns (SearchProblemResult);
+}
+
+message SearchProblemByKeywordRequest {
+  string q = 1;
+  repeated string sorts = 2;
+  repeated string facets = 3;
+  repeated string categories = 4;
+  int64 difficulty_from = 5;
+  int64 difficulty_to = 6;
+  repeated string colors = 7;
+  bool experimental = 8;
+}
+
+message SearchProblemResult {
+  int64 time = 1;
+  int64 total = 2;
+  int64 index = 3;
+  int64 count = 4;
+  int64 pages = 5;
+  repeated Problem items = 6;
+  ProblemFacet facet = 7;
+}
+
+message ProblemFacet {
+  repeated Count categories = 1;
+  repeated Count difficulties = 2;
+}
+
+message Problem {
+  string problem_id = 1;
+  string problem_title = 2;
+  string problem_url = 3;
+  string contest_id = 4;
+  string contest_title = 5;
+  string contest_url = 6;
+  optional int64 difficulty = 7;
+  optional string color = 8;
+  int64 start_at = 9;
+  int64 duration = 10;
+  string rate_change = 11;
+  string category = 12;
+  double score = 13;
+}
