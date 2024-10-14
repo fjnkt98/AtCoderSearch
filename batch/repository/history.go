@@ -10,6 +10,12 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+const (
+	HistoryStatusWorking   = "working"
+	HistoryStatusCompleted = "completed"
+	HistoryStatusAborted   = "aborted"
+)
+
 func NewBatchHistory(ctx context.Context, pool *pgxpool.Pool, name string, option []byte) (*BatchHistory, error) {
 	q := New(pool)
 
@@ -35,7 +41,7 @@ func (h *BatchHistory) Complete(ctx context.Context, pool *pgxpool.Pool) error {
 var ErrHistoryConfirmed = errors.New("the batch history already confirmed")
 
 func (h *BatchHistory) Abort(ctx context.Context, pool *pgxpool.Pool) error {
-	if h.Status != "working" {
+	if h.Status != HistoryStatusWorking {
 		return ErrHistoryConfirmed
 	}
 	q := New(pool)
@@ -72,7 +78,7 @@ func (h *SubmissionCrawlHistory) Complete(ctx context.Context, pool *pgxpool.Poo
 }
 
 func (h *SubmissionCrawlHistory) Abort(ctx context.Context, pool *pgxpool.Pool) error {
-	if h.Status != "working" {
+	if h.Status != HistoryStatusWorking {
 		return ErrHistoryConfirmed
 	}
 	q := New(pool)
@@ -97,7 +103,7 @@ func FetchLatestCrawlHistory(ctx context.Context, pool *pgxpool.Pool, contestID 
 				ID:         -1,
 				ContestID:  contestID,
 				StartedAt:  d,
-				Status:     "completed",
+				Status:     HistoryStatusCompleted,
 				FinishedAt: &d,
 			}
 		} else {

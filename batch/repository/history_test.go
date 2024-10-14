@@ -33,8 +33,8 @@ func TestHistory(t *testing.T) {
 		if history.Name != "test" {
 			t.Errorf("history.Name = %s, want test", history.Name)
 		}
-		if history.Status != "working" {
-			t.Errorf("history.Status = %s, want working", history.Status)
+		if history.Status != HistoryStatusWorking {
+			t.Errorf("history.Status = %s, want %s", history.Status, HistoryStatusWorking)
 		}
 		if history.FinishedAt != nil {
 			t.Errorf("history.FinishedAt = %v, want nil", history.FinishedAt)
@@ -52,8 +52,8 @@ func TestHistory(t *testing.T) {
 		if err := history.Complete(ctx, pool); err != nil {
 			t.Error(err)
 		}
-		if history.Status != "completed" {
-			t.Errorf("history.Status = %s, want completed", history.Status)
+		if history.Status != HistoryStatusCompleted {
+			t.Errorf("history.Status = %s, want %s", history.Status, HistoryStatusCompleted)
 		}
 		if history.FinishedAt == nil {
 			t.Errorf("history.FinishedAt must be registered")
@@ -71,8 +71,8 @@ func TestHistory(t *testing.T) {
 		if err := history.Abort(ctx, pool); err != nil {
 			t.Error(err)
 		}
-		if history.Status != "aborted" {
-			t.Errorf("history.Status = %s, want aborted", history.Status)
+		if history.Status != HistoryStatusAborted {
+			t.Errorf("history.Status = %s, want %s", history.Status, HistoryStatusAborted)
 		}
 		if history.FinishedAt == nil {
 			t.Errorf("history.FinishedAt must be registered")
@@ -107,8 +107,8 @@ func TestHistory(t *testing.T) {
 		if history.ContestID != "test001" {
 			t.Errorf("history.ContestID = %s, want test001", history.ContestID)
 		}
-		if history.Status != "working" {
-			t.Errorf("history.Status = %s, want working", history.Status)
+		if history.Status != HistoryStatusWorking {
+			t.Errorf("history.Status = %s, want %s", history.Status, HistoryStatusWorking)
 		}
 		if history.FinishedAt != nil {
 			t.Errorf("history.FinishedAt = %v, want nil", history.FinishedAt)
@@ -126,8 +126,8 @@ func TestHistory(t *testing.T) {
 		if err := history.Complete(ctx, pool); err != nil {
 			t.Error(err)
 		}
-		if history.Status != "completed" {
-			t.Errorf("history.Status = %s, want completed", history.Status)
+		if history.Status != HistoryStatusCompleted {
+			t.Errorf("history.Status = %s, want %s", history.Status, HistoryStatusCompleted)
 		}
 		if history.FinishedAt == nil {
 			t.Errorf("history.FinishedAt must be registered")
@@ -145,8 +145,8 @@ func TestHistory(t *testing.T) {
 		if err := history.Abort(ctx, pool); err != nil {
 			t.Error(err)
 		}
-		if history.Status != "aborted" {
-			t.Errorf("history.Status = %s, want aborted", history.Status)
+		if history.Status != HistoryStatusAborted {
+			t.Errorf("history.Status = %s, want %s", history.Status, HistoryStatusAborted)
 		}
 		if history.FinishedAt == nil {
 			t.Errorf("history.FinishedAt must be registered")
