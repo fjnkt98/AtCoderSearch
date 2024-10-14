@@ -16,10 +16,10 @@ message SearchProblemByKeywordRequest {
   repeated string sorts = 2;
   repeated string facets = 3;
   repeated string categories = 4;
-  int64 difficulty_from = 5;
-  int64 difficulty_to = 6;
+  optional int64 difficulty_from = 5;
+  optional int64 difficulty_to = 6;
   repeated string colors = 7;
-  bool experimental = 8;
+  optional bool experimental = 8;
 }
 
 message SearchProblemResult {

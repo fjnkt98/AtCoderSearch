@@ -1,18 +1,17 @@
 pub mod atcodersearch {
     tonic::include_proto!("atcodersearch");
 }
+mod problem;
 
 use anyhow::Context;
-use atcodersearch::{SearchProblemByKeywordRequest, SearchProblemResult};
+use problem::ProblemSearcher;
 use sqlx::postgres::PgPoolOptions;
-use tonic::{transport::Server, Request, Response, Status};
+use tonic::transport::Server;
 
-use atcodersearch::problem_service_server::{ProblemService, ProblemServiceServer};
+use atcodersearch::problem_service_server::ProblemServiceServer;
 use clap::Parser;
-use meilisearch_sdk::{client::Client, indexes::Index};
-use sqlx::{Pool, Postgres};
+use meilisearch_sdk::client::Client;
 use std::net::{IpAddr, Ipv4Addr, SocketAddr};
-use std::sync::Arc;
 use std::{env, str::FromStr};
 use tracing::level_filters::LevelFilter;
 use tracing_subscriber::{
@@ -56,43 +55,6 @@ impl App {
     }
 }
 
-#[derive(Debug)]
-pub struct ProblemSearcher {
-    pool: Pool<Postgres>,
-    index: Arc<Index>,
-}
-
-impl ProblemSearcher {
-    pub fn new(pool: Pool<Postgres>, index: Index) -> Self {
-        Self {
-            pool,
-            index: Arc::new(index),
-        }
-    }
-}
-
-#[tonic::async_trait]
-impl ProblemService for ProblemSearcher {
-    async fn search_by_keyword(
-        &self,
-        request: Request<SearchProblemByKeywordRequest>,
-    ) -> Result<Response<SearchProblemResult>, Status> {
-        let req = request.into_inner();
-
-        let res = SearchProblemResult {
-            time: 0,
-            total: 0,
-            index: 0,
-            count: 0,
-            pages: 0,
-            items: vec![],
-            facet: None,
-        };
-
-        Ok(Response::new(res))
-    }
-}
-
 fn main() -> anyhow::Result<()> {
     let level = env::var("RUST_LOG").unwrap_or(String::from("info"));
     let filter = EnvFilter::builder()
@@ -112,4 +74,73 @@ fn main() -> anyhow::Result<()> {
     tracing::subscriber::set_global_default(subscriber)?;
 
     App::parse().run()
+}
+
+#[cfg(test)]
+pub mod testutil {
+    use meilisearch_sdk::client::Client;
+    use sqlx::{Pool, Postgres};
+    use std::env;
+    use testcontainers::{
+        core::{IntoContainerPort, Mount, WaitFor},
+        ContainerAsync, ContainerRequest, GenericImage, ImageExt,
+    };
+
+    pub fn create_db_container() -> anyhow::Result<ContainerRequest<GenericImage>> {
+        let schema = env::current_dir()?
+            .join("../db/schema.sql")
+            .canonicalize()?;
+
+        let request = GenericImage::new("postgres", "16-bullseye")
+            .with_exposed_port(5432.tcp())
+            .with_wait_for(WaitFor::message_on_stdout(
+                "database system is ready to accept connections",
+            ))
+            .with_wait_for(WaitFor::message_on_stderr(
+                "database system is ready to accept connections",
+            ))
+            // .with_wait_for(WaitFor::millis(1000))
+            .with_mount(
+                Mount::bind_mount(
+                    schema
+                        .into_os_string()
+                        .into_string()
+                        .map_err(|e| anyhow::anyhow!("{:?}", e))?,
+                    "/docker-entrypoint-initdb.d/schema.sql",
+                )
+                .with_access_mode(testcontainers::core::AccessMode::ReadOnly),
+            )
+            .with_env_var("POSTGRES_PASSWORD", "atcodersearch")
+            .with_env_var("POSTGRES_USER", "atcodersearch")
+            .with_env_var("POSTGRES_DB", "atcodersearch")
+            .with_env_var("POSTGRES_HOST_AUTH_METHOD", "password")
+            .with_env_var("TZ", "Asia/Tokyo");
+
+        Ok(request)
+    }
+
+    pub async fn create_pool_from_container(
+        container: &ContainerAsync<GenericImage>,
+    ) -> anyhow::Result<Pool<Postgres>> {
+        let host = container.get_host().await?;
+        let port = container.get_host_port_ipv4(5432).await?;
+
+        let url = format!(
+            "postgres://atcodersearch:atcodersearch@{}:{}/atcodersearch",
+            host, port
+        );
+        let pool = Pool::connect(&url).await?;
+
+        Ok(pool)
+    }
+
+    pub fn create_engine_container() -> anyhow::Result<ContainerRequest<GenericImage>> {
+        todo!();
+    }
+
+    pub async fn create_client_from_container(
+        container: &ContainerAsync<GenericImage>,
+    ) -> anyhow::Result<Client> {
+        todo!();
+    }
 }
