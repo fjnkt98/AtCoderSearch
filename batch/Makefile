@@ -6,3 +6,7 @@ test:
 .PHONY: sqlc
 sqlc:
 	@sqlc generate
+
+.PHONY: build-image
+build-image:
+	docker build -t atcodersearch-batch:latest .
