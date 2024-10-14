@@ -22,6 +22,7 @@ services:
     container_name: atcodersearch-meilisearch
     environment:
       - MEILI_MASTER_KEY=meili-master-key
+      - MEILI_LOG_LEVEL=DEBUG
     # volumes:
     #   - type: volume
     #     source: atcodersearch-meilisearch
