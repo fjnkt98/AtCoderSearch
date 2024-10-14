@@ -40,8 +40,8 @@ func (ix *ProblemIndexer) Settings() *meilisearch.Settings {
 			"*",
 		},
 		FilterableAttributes: []string{
-			"problemID",
-			"contestID",
+			"problemId",
+			"contestId",
 			"color",
 			"difficulty",
 			"isExperimental",
@@ -63,7 +63,7 @@ func (ix *ProblemIndexer) Settings() *meilisearch.Settings {
 }
 
 func (ix *ProblemIndexer) PrimaryKey() string {
-	return "problemID"
+	return "problemId"
 }
 
 func (ix *ProblemIndexer) IndexName() string {
@@ -171,12 +171,12 @@ func (r ProblemRow) Document(ctx context.Context) (ProblemDocument, error) {
 }
 
 type ProblemDocument struct {
-	ProblemID      string   `json:"problemID"`
+	ProblemID      string   `json:"problemId"`
 	ProblemTitle   string   `json:"problemTitle"`
-	ProblemURL     string   `json:"problemURL"`
-	ContestID      string   `json:"contestID"`
+	ProblemURL     string   `json:"problemUrl"`
+	ContestID      string   `json:"contestId"`
 	ContestTitle   string   `json:"contestTitle"`
-	ContestURL     string   `json:"contestURL"`
+	ContestURL     string   `json:"contestUrl"`
 	Color          string   `json:"color"`
 	StartAt        int64    `json:"startAt"`
 	Duration       int64    `json:"duration"`
