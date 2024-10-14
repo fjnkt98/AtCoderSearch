@@ -222,7 +222,7 @@ func UpdateIndex[D any, R Documenter[D]](
 		if err != nil {
 			return fmt.Errorf("task swapping indexes failed: %w", err)
 		}
-		slog.LogAttrs(ctx, slog.LevelInfo, "index successfully updated", slog.Int64("uid", task.UID), slog.String("indexUID", task.IndexUID))
+		slog.LogAttrs(ctx, slog.LevelInfo, "index successfully updated", slog.Int64("uid", task.UID), slog.String("indexUID", indexer.IndexName()))
 
 		return nil
 	})
