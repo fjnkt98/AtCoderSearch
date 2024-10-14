@@ -9,9 +9,66 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jackc/pgx/v5/stdlib"
+	"github.com/meilisearch/meilisearch-go"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
 )
+
+type ProblemIndexer struct {
+	client meilisearch.ServiceManager
+}
+
+func NewProblemIndexer(client meilisearch.ServiceManager) *ProblemIndexer {
+	return &ProblemIndexer{
+		client: client,
+	}
+}
+
+func (ix *ProblemIndexer) Manager() meilisearch.ServiceManager {
+	return ix.client
+}
+
+func (ix *ProblemIndexer) Settings() *meilisearch.Settings {
+	return &meilisearch.Settings{
+		Dictionary: []string{
+			"ABC",
+			"AGC",
+			"AHC",
+			"ARC",
+		},
+		DisplayedAttributes: []string{
+			"*",
+		},
+		FilterableAttributes: []string{
+			"problemID",
+			"contestID",
+			"color",
+			"difficulty",
+			"isExperimental",
+		},
+		SearchableAttributes: []string{
+			"problemTitle",
+			"contestTitle",
+			"color",
+			"category",
+			"statementJa",
+			"statementEn",
+		},
+		SortableAttributes: []string{
+			"startAt",
+			"difficulty",
+		},
+		Synonyms: map[string][]string{},
+	}
+}
+
+func (ix *ProblemIndexer) PrimaryKey() string {
+	return "problemID"
+}
+
+func (ix *ProblemIndexer) IndexName() string {
+	return "problems"
+}
 
 type ProblemRowReader struct {
 	pool *pgxpool.Pool
@@ -114,12 +171,12 @@ func (r ProblemRow) Document(ctx context.Context) (ProblemDocument, error) {
 }
 
 type ProblemDocument struct {
-	ProblemID      string   `json:"problemId"`
+	ProblemID      string   `json:"problemID"`
 	ProblemTitle   string   `json:"problemTitle"`
-	ProblemURL     string   `json:"problemUrl"`
-	ContestID      string   `json:"contestId"`
+	ProblemURL     string   `json:"problemURL"`
+	ContestID      string   `json:"contestID"`
 	ContestTitle   string   `json:"contestTitle"`
-	ContestURL     string   `json:"contestUrl"`
+	ContestURL     string   `json:"contestURL"`
 	Color          string   `json:"color"`
 	StartAt        int64    `json:"startAt"`
 	Duration       int64    `json:"duration"`

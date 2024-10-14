@@ -12,6 +12,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/meilisearch/meilisearch-go"
 	"github.com/urfave/cli/v2"
 )
 
@@ -33,6 +34,11 @@ func main() {
 			Name:    "engine-url",
 			Hidden:  true,
 			EnvVars: []string{"ENGINE_URL"},
+		},
+		&cli.StringFlag{
+			Name:    "engine-master-key",
+			Hidden:  true,
+			EnvVars: []string{"ENGINE_MASTER_KEY"},
 		},
 	}
 	app.Commands = []*cli.Command{
@@ -184,13 +190,15 @@ func main() {
 						if err != nil {
 							return fmt.Errorf("new pool: %w", err)
 						}
+						client := meilisearch.New(ctx.String("engine-url"), meilisearch.WithAPIKey(ctx.String("engine-master-key")))
+						indexer := update.NewProblemIndexer(client)
 
 						reader := update.NewProblemRowReader(pool)
 
 						if err := update.UpdateIndex(
 							ctx.Context,
 							reader,
-							nil,
+							indexer,
 							ctx.Int("chunk-size"),
 							ctx.Int("concurrent"),
 						); err != nil {
