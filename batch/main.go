@@ -247,7 +247,15 @@ func main() {
 					Name:  "language",
 					Flags: []cli.Flag{},
 					Action: func(ctx *cli.Context) error {
-						panic("not implemented")
+						pool, err := repository.NewPool(ctx.Context, ctx.String("database-url"))
+						if err != nil {
+							return fmt.Errorf("new pool: %w", err)
+						}
+
+						if err := update.UpdateLanguage(ctx.Context, pool); err != nil {
+							return fmt.Errorf("update language: %w", err)
+						}
+						return nil
 					},
 				},
 			},
