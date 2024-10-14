@@ -32,23 +32,23 @@ func ProjectRoot() string {
 	return currentDir
 }
 
-func CreateDBContainer() (testcontainers.Container, string, func() error, error) {
+func CreateDBContainer() (container testcontainers.Container, dsn string, stop func() error, err error) {
 	ctx := context.Background()
 
-	stop := func() error {
+	stop = func() error {
 		return nil
 	}
 
 	schema, err := filepath.Abs(filepath.Join(ProjectRoot(), "..", "db", "schema.sql"))
 	if err != nil {
-		return nil, "", stop, err
+		return
 	}
 	r, err := os.Open(schema)
 	if err != nil {
-		return nil, "", stop, err
+		return
 	}
 
-	container, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
+	container, err = testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
 		ContainerRequest: testcontainers.ContainerRequest{
 			Image: "postgres:16-bullseye",
 			Env: map[string]string{
@@ -71,7 +71,7 @@ func CreateDBContainer() (testcontainers.Container, string, func() error, error)
 		Started: true,
 	})
 	if err != nil {
-		return nil, "", stop, err
+		return
 	}
 	stop = func() error {
 		return container.Terminate(ctx)
@@ -79,17 +79,58 @@ func CreateDBContainer() (testcontainers.Container, string, func() error, error)
 
 	host, err := container.Host(ctx)
 	if err != nil {
-		return nil, "", stop, err
+		return
 	}
 	port, err := container.MappedPort(ctx, "5432/tcp")
 	if err != nil {
-		return nil, "", stop, err
+		return
 	}
 
-	dsn := fmt.Sprintf(
+	dsn = fmt.Sprintf(
 		"postgres://atcodersearch:atcodersearch@%s:%d/atcodersearch?sslmode=disable",
 		host,
 		port.Int(),
 	)
-	return container, dsn, stop, nil
+	return
+}
+
+func CreateEngineContainer() (container testcontainers.Container, url string, key string, stop func() error, err error) {
+	ctx := context.Background()
+
+	stop = func() error {
+		return nil
+	}
+
+	key = "meili-master-key"
+
+	container, err = testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
+		ContainerRequest: testcontainers.ContainerRequest{
+			Image: "getmeili/meilisearch:prototype-japanese-184",
+			Env: map[string]string{
+				"MEILI_MASTER_KEY": key,
+			},
+			ExposedPorts: []string{"7700/tcp"},
+			WaitingFor:   wait.ForListeningPort("7700/tcp"),
+		},
+		Started: true,
+	})
+	if err != nil {
+		return
+	}
+	stop = func() error {
+		return container.Terminate(ctx)
+	}
+
+	host, err := container.Host(ctx)
+	if err != nil {
+		return
+	}
+	port, err := container.MappedPort(ctx, "7700/tcp")
+	if err != nil {
+		return
+	}
+
+	url = fmt.Sprintf("http://%s:%d", host, port.Int())
+
+	return
 }
