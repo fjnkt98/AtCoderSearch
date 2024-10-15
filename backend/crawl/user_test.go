@@ -3,12 +3,13 @@ package crawl
 import (
 	"context"
 	"errors"
+	"fjnkt98/atcodersearch/atcoder"
 	"fjnkt98/atcodersearch/internal/testutil"
-	"fjnkt98/atcodersearch/pkg/atcoder"
-	"fjnkt98/atcodersearch/pkg/ptr"
 	"fjnkt98/atcodersearch/repository"
 	"testing"
 	"time"
+
+	"k8s.io/utils/ptr"
 )
 
 func TestUser(t *testing.T) {

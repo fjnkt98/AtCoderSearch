@@ -2,8 +2,8 @@ package main
 
 import (
 	"errors"
+	"fjnkt98/atcodersearch/atcoder"
 	"fjnkt98/atcodersearch/crawl"
-	"fjnkt98/atcodersearch/pkg/atcoder"
 	"fjnkt98/atcodersearch/repository"
 	"fjnkt98/atcodersearch/update"
 	"fmt"

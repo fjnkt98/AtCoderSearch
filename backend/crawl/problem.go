@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"context"
 	"database/sql"
-	"fjnkt98/atcodersearch/pkg/atcoder"
+	"fjnkt98/atcodersearch/atcoder"
 	"fjnkt98/atcodersearch/repository"
 	"fmt"
 	"log/slog"

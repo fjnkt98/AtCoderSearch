@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"errors"
-	"fjnkt98/atcodersearch/pkg/ptr"
 	"fmt"
 	"io"
 	"net/http"
@@ -17,6 +16,7 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
+	"k8s.io/utils/ptr"
 )
 
 type AtCoderClient interface {

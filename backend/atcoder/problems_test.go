@@ -1,9 +1,10 @@
 package atcoder
 
 import (
-	"fjnkt98/atcodersearch/pkg/ptr"
 	"reflect"
 	"testing"
+
+	"k8s.io/utils/ptr"
 )
 
 // func TestFetchContests(t *testing.T) {

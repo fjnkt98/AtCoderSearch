@@ -2,10 +2,11 @@ package atcoder
 
 import (
 	"bytes"
-	"fjnkt98/atcodersearch/pkg/ptr"
 	"os"
 	"reflect"
 	"testing"
+
+	"k8s.io/utils/ptr"
 )
 
 func TestNewAtCoderClient(t *testing.T) {

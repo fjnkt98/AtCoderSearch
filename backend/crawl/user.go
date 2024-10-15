@@ -3,7 +3,7 @@ package crawl
 import (
 	"context"
 	"database/sql"
-	"fjnkt98/atcodersearch/pkg/atcoder"
+	"fjnkt98/atcodersearch/atcoder"
 	"fmt"
 	"log/slog"
 	"slices"
