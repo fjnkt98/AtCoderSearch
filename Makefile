@@ -25,3 +25,7 @@ sqlc:
 .PHONY: build-image
 build-image:
 	$(MAKE) -C batch build-image
+
+.PHONY: gen-grpc
+gen-grpc:
+	$(MAKE) -C proto gen-grpc-backend

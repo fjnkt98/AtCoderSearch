@@ -1,5 +1,6 @@
 syntax = "proto3";
 package atcodersearch;
+option go_package = "pkg/grpc";
 
 message Count {
   string label = 1;
