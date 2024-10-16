@@ -10,8 +10,8 @@ import (
 	"github.com/urfave/cli/v2"
 	"google.golang.org/grpc"
 
-	pb "fjnkt98/atcodersearch/grpc"
-	"fjnkt98/atcodersearch/server"
+	pb "fjnkt98/atcodersearch/grpc/atcodersearch/v1"
+	"fjnkt98/atcodersearch/searchers"
 )
 
 func NewServeCmd() *cli.Command {
@@ -36,7 +36,7 @@ func NewServeCmd() *cli.Command {
 
 			s := grpc.NewServer()
 
-			pb.RegisterProblemServiceServer(s, server.NewProblemSearcher())
+			pb.RegisterProblemServiceServer(s, searchers.NewProblemSearcher())
 
 			go func() {
 				slog.LogAttrs(ctx, slog.LevelInfo, "start grpc server", slog.Int("port", port))

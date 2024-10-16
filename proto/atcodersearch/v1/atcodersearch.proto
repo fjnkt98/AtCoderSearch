@@ -1,6 +1,6 @@
 syntax = "proto3";
-package atcodersearch;
-option go_package = "pkg/grpc";
+package atcodersearch.v1;
+option go_package = "fjnkt98.com/atcodersearch/grpc";
 
 message Count {
   string label = 1;
@@ -8,11 +8,10 @@ message Count {
 }
 
 service ProblemService {
-  rpc SearchByKeyword(SearchProblemByKeywordRequest)
-      returns (SearchProblemResult);
+  rpc SearchByKeyword(SearchByKeywordRequest) returns (SearchByKeywordResponse);
 }
 
-message SearchProblemByKeywordRequest {
+message SearchByKeywordRequest {
   optional int64 limit = 1;
   optional int64 page = 2;
   string q = 3;
@@ -25,7 +24,7 @@ message SearchProblemByKeywordRequest {
   optional bool experimental = 10;
 }
 
-message SearchProblemResult {
+message SearchByKeywordResponse {
   int64 time = 1;
   int64 total = 2;
   int64 index = 3;

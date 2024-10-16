@@ -26,6 +26,10 @@ sqlc:
 build-image:
 	$(MAKE) -C batch build-image
 
-.PHONY: gen-grpc
-gen-grpc:
-	$(MAKE) -C proto gen-grpc-backend
+.PHONY: buf-generate
+buf-generate:
+	$(MAKE) -C proto buf-generate
+
+.PHONY: buf-lint
+buf-lint:
+	$(MAKE) -C proto buf-lint
