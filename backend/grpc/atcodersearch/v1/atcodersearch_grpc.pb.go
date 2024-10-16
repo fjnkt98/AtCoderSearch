@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -19,101 +20,329 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ProblemService_SearchByKeyword_FullMethodName = "/atcodersearch.v1.ProblemService/SearchByKeyword"
+	SearchService_SearchProblem_FullMethodName    = "/atcodersearch.v1.SearchService/SearchProblem"
+	SearchService_SearchUser_FullMethodName       = "/atcodersearch.v1.SearchService/SearchUser"
+	SearchService_SearchSubmission_FullMethodName = "/atcodersearch.v1.SearchService/SearchSubmission"
+	SearchService_GetCategory_FullMethodName      = "/atcodersearch.v1.SearchService/GetCategory"
+	SearchService_GetContest_FullMethodName       = "/atcodersearch.v1.SearchService/GetContest"
+	SearchService_GetLanguage_FullMethodName      = "/atcodersearch.v1.SearchService/GetLanguage"
+	SearchService_GetProblem_FullMethodName       = "/atcodersearch.v1.SearchService/GetProblem"
 )
 
-// ProblemServiceClient is the client API for ProblemService service.
+// SearchServiceClient is the client API for SearchService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type ProblemServiceClient interface {
-	SearchByKeyword(ctx context.Context, in *SearchByKeywordRequest, opts ...grpc.CallOption) (*SearchByKeywordResponse, error)
+type SearchServiceClient interface {
+	SearchProblem(ctx context.Context, in *SearchProblemRequest, opts ...grpc.CallOption) (*SearchProblemResponse, error)
+	SearchUser(ctx context.Context, in *SearchUserRequest, opts ...grpc.CallOption) (*SearchUserResponse, error)
+	SearchSubmission(ctx context.Context, in *SearchSubmissionRequest, opts ...grpc.CallOption) (*SearchSubmissionResponse, error)
+	GetCategory(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetCategoryResponse, error)
+	GetContest(ctx context.Context, in *GetContestRequest, opts ...grpc.CallOption) (*GetContestResponse, error)
+	GetLanguage(ctx context.Context, in *GetLanguageRequest, opts ...grpc.CallOption) (*GetLanguageResponse, error)
+	GetProblem(ctx context.Context, in *GetProblemRequest, opts ...grpc.CallOption) (*GetProblemResponse, error)
 }
 
-type problemServiceClient struct {
+type searchServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewProblemServiceClient(cc grpc.ClientConnInterface) ProblemServiceClient {
-	return &problemServiceClient{cc}
+func NewSearchServiceClient(cc grpc.ClientConnInterface) SearchServiceClient {
+	return &searchServiceClient{cc}
 }
 
-func (c *problemServiceClient) SearchByKeyword(ctx context.Context, in *SearchByKeywordRequest, opts ...grpc.CallOption) (*SearchByKeywordResponse, error) {
+func (c *searchServiceClient) SearchProblem(ctx context.Context, in *SearchProblemRequest, opts ...grpc.CallOption) (*SearchProblemResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(SearchByKeywordResponse)
-	err := c.cc.Invoke(ctx, ProblemService_SearchByKeyword_FullMethodName, in, out, cOpts...)
+	out := new(SearchProblemResponse)
+	err := c.cc.Invoke(ctx, SearchService_SearchProblem_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// ProblemServiceServer is the server API for ProblemService service.
-// All implementations must embed UnimplementedProblemServiceServer
-// for forward compatibility.
-type ProblemServiceServer interface {
-	SearchByKeyword(context.Context, *SearchByKeywordRequest) (*SearchByKeywordResponse, error)
-	mustEmbedUnimplementedProblemServiceServer()
+func (c *searchServiceClient) SearchUser(ctx context.Context, in *SearchUserRequest, opts ...grpc.CallOption) (*SearchUserResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SearchUserResponse)
+	err := c.cc.Invoke(ctx, SearchService_SearchUser_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
-// UnimplementedProblemServiceServer must be embedded to have
+func (c *searchServiceClient) SearchSubmission(ctx context.Context, in *SearchSubmissionRequest, opts ...grpc.CallOption) (*SearchSubmissionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SearchSubmissionResponse)
+	err := c.cc.Invoke(ctx, SearchService_SearchSubmission_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *searchServiceClient) GetCategory(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetCategoryResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetCategoryResponse)
+	err := c.cc.Invoke(ctx, SearchService_GetCategory_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *searchServiceClient) GetContest(ctx context.Context, in *GetContestRequest, opts ...grpc.CallOption) (*GetContestResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetContestResponse)
+	err := c.cc.Invoke(ctx, SearchService_GetContest_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *searchServiceClient) GetLanguage(ctx context.Context, in *GetLanguageRequest, opts ...grpc.CallOption) (*GetLanguageResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetLanguageResponse)
+	err := c.cc.Invoke(ctx, SearchService_GetLanguage_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *searchServiceClient) GetProblem(ctx context.Context, in *GetProblemRequest, opts ...grpc.CallOption) (*GetProblemResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetProblemResponse)
+	err := c.cc.Invoke(ctx, SearchService_GetProblem_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// SearchServiceServer is the server API for SearchService service.
+// All implementations must embed UnimplementedSearchServiceServer
+// for forward compatibility.
+type SearchServiceServer interface {
+	SearchProblem(context.Context, *SearchProblemRequest) (*SearchProblemResponse, error)
+	SearchUser(context.Context, *SearchUserRequest) (*SearchUserResponse, error)
+	SearchSubmission(context.Context, *SearchSubmissionRequest) (*SearchSubmissionResponse, error)
+	GetCategory(context.Context, *emptypb.Empty) (*GetCategoryResponse, error)
+	GetContest(context.Context, *GetContestRequest) (*GetContestResponse, error)
+	GetLanguage(context.Context, *GetLanguageRequest) (*GetLanguageResponse, error)
+	GetProblem(context.Context, *GetProblemRequest) (*GetProblemResponse, error)
+	mustEmbedUnimplementedSearchServiceServer()
+}
+
+// UnimplementedSearchServiceServer must be embedded to have
 // forward compatible implementations.
 //
 // NOTE: this should be embedded by value instead of pointer to avoid a nil
 // pointer dereference when methods are called.
-type UnimplementedProblemServiceServer struct{}
+type UnimplementedSearchServiceServer struct{}
 
-func (UnimplementedProblemServiceServer) SearchByKeyword(context.Context, *SearchByKeywordRequest) (*SearchByKeywordResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SearchByKeyword not implemented")
+func (UnimplementedSearchServiceServer) SearchProblem(context.Context, *SearchProblemRequest) (*SearchProblemResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SearchProblem not implemented")
 }
-func (UnimplementedProblemServiceServer) mustEmbedUnimplementedProblemServiceServer() {}
-func (UnimplementedProblemServiceServer) testEmbeddedByValue()                        {}
+func (UnimplementedSearchServiceServer) SearchUser(context.Context, *SearchUserRequest) (*SearchUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SearchUser not implemented")
+}
+func (UnimplementedSearchServiceServer) SearchSubmission(context.Context, *SearchSubmissionRequest) (*SearchSubmissionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SearchSubmission not implemented")
+}
+func (UnimplementedSearchServiceServer) GetCategory(context.Context, *emptypb.Empty) (*GetCategoryResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetCategory not implemented")
+}
+func (UnimplementedSearchServiceServer) GetContest(context.Context, *GetContestRequest) (*GetContestResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetContest not implemented")
+}
+func (UnimplementedSearchServiceServer) GetLanguage(context.Context, *GetLanguageRequest) (*GetLanguageResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetLanguage not implemented")
+}
+func (UnimplementedSearchServiceServer) GetProblem(context.Context, *GetProblemRequest) (*GetProblemResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetProblem not implemented")
+}
+func (UnimplementedSearchServiceServer) mustEmbedUnimplementedSearchServiceServer() {}
+func (UnimplementedSearchServiceServer) testEmbeddedByValue()                       {}
 
-// UnsafeProblemServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to ProblemServiceServer will
+// UnsafeSearchServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to SearchServiceServer will
 // result in compilation errors.
-type UnsafeProblemServiceServer interface {
-	mustEmbedUnimplementedProblemServiceServer()
+type UnsafeSearchServiceServer interface {
+	mustEmbedUnimplementedSearchServiceServer()
 }
 
-func RegisterProblemServiceServer(s grpc.ServiceRegistrar, srv ProblemServiceServer) {
-	// If the following call pancis, it indicates UnimplementedProblemServiceServer was
+func RegisterSearchServiceServer(s grpc.ServiceRegistrar, srv SearchServiceServer) {
+	// If the following call pancis, it indicates UnimplementedSearchServiceServer was
 	// embedded by pointer and is nil.  This will cause panics if an
 	// unimplemented method is ever invoked, so we test this at initialization
 	// time to prevent it from happening at runtime later due to I/O.
 	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
 		t.testEmbeddedByValue()
 	}
-	s.RegisterService(&ProblemService_ServiceDesc, srv)
+	s.RegisterService(&SearchService_ServiceDesc, srv)
 }
 
-func _ProblemService_SearchByKeyword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SearchByKeywordRequest)
+func _SearchService_SearchProblem_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchProblemRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ProblemServiceServer).SearchByKeyword(ctx, in)
+		return srv.(SearchServiceServer).SearchProblem(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: ProblemService_SearchByKeyword_FullMethodName,
+		FullMethod: SearchService_SearchProblem_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProblemServiceServer).SearchByKeyword(ctx, req.(*SearchByKeywordRequest))
+		return srv.(SearchServiceServer).SearchProblem(ctx, req.(*SearchProblemRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// ProblemService_ServiceDesc is the grpc.ServiceDesc for ProblemService service.
+func _SearchService_SearchUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SearchServiceServer).SearchUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SearchService_SearchUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SearchServiceServer).SearchUser(ctx, req.(*SearchUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SearchService_SearchSubmission_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchSubmissionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SearchServiceServer).SearchSubmission(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SearchService_SearchSubmission_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SearchServiceServer).SearchSubmission(ctx, req.(*SearchSubmissionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SearchService_GetCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SearchServiceServer).GetCategory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SearchService_GetCategory_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SearchServiceServer).GetCategory(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SearchService_GetContest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetContestRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SearchServiceServer).GetContest(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SearchService_GetContest_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SearchServiceServer).GetContest(ctx, req.(*GetContestRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SearchService_GetLanguage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetLanguageRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SearchServiceServer).GetLanguage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SearchService_GetLanguage_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SearchServiceServer).GetLanguage(ctx, req.(*GetLanguageRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SearchService_GetProblem_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetProblemRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SearchServiceServer).GetProblem(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SearchService_GetProblem_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SearchServiceServer).GetProblem(ctx, req.(*GetProblemRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// SearchService_ServiceDesc is the grpc.ServiceDesc for SearchService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var ProblemService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "atcodersearch.v1.ProblemService",
-	HandlerType: (*ProblemServiceServer)(nil),
+var SearchService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "atcodersearch.v1.SearchService",
+	HandlerType: (*SearchServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "SearchByKeyword",
-			Handler:    _ProblemService_SearchByKeyword_Handler,
+			MethodName: "SearchProblem",
+			Handler:    _SearchService_SearchProblem_Handler,
+		},
+		{
+			MethodName: "SearchUser",
+			Handler:    _SearchService_SearchUser_Handler,
+		},
+		{
+			MethodName: "SearchSubmission",
+			Handler:    _SearchService_SearchSubmission_Handler,
+		},
+		{
+			MethodName: "GetCategory",
+			Handler:    _SearchService_GetCategory_Handler,
+		},
+		{
+			MethodName: "GetContest",
+			Handler:    _SearchService_GetContest_Handler,
+		},
+		{
+			MethodName: "GetLanguage",
+			Handler:    _SearchService_GetLanguage_Handler,
+		},
+		{
+			MethodName: "GetProblem",
+			Handler:    _SearchService_GetProblem_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

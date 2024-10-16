@@ -2,29 +2,42 @@ syntax = "proto3";
 package atcodersearch.v1;
 option go_package = "fjnkt98.com/atcodersearch/grpc";
 
+import "google/protobuf/empty.proto";
+
 message Count {
   string label = 1;
   int64 count = 2;
 }
 
-service ProblemService {
-  rpc SearchByKeyword(SearchByKeywordRequest) returns (SearchByKeywordResponse);
+message Range {
+  optional int64 from = 1;
+  optional int64 to = 2;
 }
 
-message SearchByKeywordRequest {
+service SearchService {
+  rpc SearchProblem(SearchProblemRequest) returns (SearchProblemResponse);
+  rpc SearchUser(SearchUserRequest) returns (SearchUserResponse);
+  rpc SearchSubmission(SearchSubmissionRequest)
+      returns (SearchSubmissionResponse);
+  rpc GetCategory(google.protobuf.Empty) returns (GetCategoryResponse);
+  rpc GetContest(GetContestRequest) returns (GetContestResponse);
+  rpc GetLanguage(GetLanguageRequest) returns (GetLanguageResponse);
+  rpc GetProblem(GetProblemRequest) returns (GetProblemResponse);
+}
+
+message SearchProblemRequest {
   optional int64 limit = 1;
   optional int64 page = 2;
-  string q = 3;
-  repeated string sorts = 4;
+  repeated string sorts = 3;
+  string q = 4;
   repeated string facets = 5;
   repeated string categories = 6;
-  optional int64 difficulty_from = 7;
-  optional int64 difficulty_to = 8;
-  repeated string colors = 9;
-  optional bool experimental = 10;
+  Range difficulty = 7;
+  repeated string colors = 8;
+  optional bool experimental = 9;
 }
 
-message SearchByKeywordResponse {
+message SearchProblemResponse {
   int64 time = 1;
   int64 total = 2;
   int64 index = 3;
@@ -53,3 +66,69 @@ message Problem {
   string rate_change = 11;
   string category = 12;
 }
+
+message SearchUserRequest {
+  optional int64 limit = 1;
+  optional int64 page = 2;
+  repeated string sorts = 3;
+  string q = 4;
+  repeated string facets = 5;
+  repeated string user_ids = 6;
+  Range rating = 7;
+  Range birth_year = 8;
+  Range join_count = 9;
+  repeated string countries = 10;
+  repeated string colors = 11;
+}
+
+message SearchUserResponse {
+  int64 time = 1;
+  int64 total = 2;
+  int64 index = 3;
+  int64 count = 4;
+  int64 pages = 5;
+  repeated User items = 6;
+  UserFacet facet = 7;
+}
+
+message UserFacet {
+  repeated Count countries = 1;
+  repeated Count ratings = 2;
+  repeated Count birth_years = 3;
+  repeated Count join_counts = 4;
+}
+
+message User {
+  string user_id = 1;
+  int64 rating = 2;
+  int64 highest_rating = 3;
+  optional int64 affiliation = 4;
+  optional int64 birth_year = 5;
+  optional string country = 6;
+  optional string crown = 7;
+  int64 join_count = 8;
+  int64 rank = 9;
+  optional int64 active_rank = 10;
+  int64 wins = 11;
+  string color = 12;
+  string user_url = 13;
+}
+
+message SearchSubmissionRequest {}
+
+message SearchSubmissionResponse {}
+
+message GetCategoryResponse { repeated string categories = 1; }
+
+message GetContestRequest { repeated string categories = 1; }
+message GetContestResponse { repeated string contests = 1; }
+
+message GetLanguageRequest { repeated string groups = 1; }
+message GetLanguageResponse { repeated string languages = 1; }
+
+message GetProblemRequest {
+  repeated string contests = 1;
+  repeated string categories = 2;
+}
+
+message GetProblemResponse { repeated string problems = 1; }
