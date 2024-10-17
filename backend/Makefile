@@ -1,3 +1,7 @@
+.PHONY: build
+build:
+	@go build -o build/atcodersearch
+
 .PHONY: test
 test:
 	@go test -cover ./... -coverprofile=cover.out
