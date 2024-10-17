@@ -9,9 +9,14 @@ message Count {
   int64 count = 2;
 }
 
-message Range {
+message IntRange {
   optional int64 from = 1;
   optional int64 to = 2;
+}
+
+message FloatRange {
+  optional double from = 1;
+  optional double to = 2;
 }
 
 service SearchService {
@@ -26,25 +31,24 @@ service SearchService {
 }
 
 message SearchProblemRequest {
-  optional int64 limit = 1;
-  optional int64 page = 2;
+  optional uint64 limit = 1;
+  optional uint64 page = 2;
   repeated string sorts = 3;
   string q = 4;
   repeated string facets = 5;
   repeated string categories = 6;
-  Range difficulty = 7;
+  IntRange difficulty = 7;
   repeated string colors = 8;
   optional bool experimental = 9;
 }
 
 message SearchProblemResponse {
-  int64 time = 1;
-  int64 total = 2;
-  int64 index = 3;
-  int64 count = 4;
-  int64 pages = 5;
-  repeated Problem items = 6;
-  ProblemFacet facet = 7;
+  repeated Problem items = 1;
+  int64 time = 2;
+  int64 total = 3;
+  int64 pages = 4;
+  int64 index = 5;
+  ProblemFacet facet = 6;
 }
 
 message ProblemFacet {
@@ -74,21 +78,20 @@ message SearchUserRequest {
   string q = 4;
   repeated string facets = 5;
   repeated string user_ids = 6;
-  Range rating = 7;
-  Range birth_year = 8;
-  Range join_count = 9;
+  IntRange rating = 7;
+  IntRange birth_year = 8;
+  IntRange join_count = 9;
   repeated string countries = 10;
   repeated string colors = 11;
 }
 
 message SearchUserResponse {
-  int64 time = 1;
-  int64 total = 2;
-  int64 index = 3;
-  int64 count = 4;
-  int64 pages = 5;
-  repeated User items = 6;
-  UserFacet facet = 7;
+  repeated User items = 1;
+  int64 time = 2;
+  int64 total = 3;
+  int64 pages = 4;
+  int64 index = 5;
+  UserFacet facet = 6;
 }
 
 message UserFacet {
@@ -114,9 +117,50 @@ message User {
   string user_url = 13;
 }
 
-message SearchSubmissionRequest {}
+message SearchSubmissionRequest {
+  optional int64 limit = 1;
+  optional int64 page = 2;
+  repeated string sorts = 3;
+  IntRange epoch_second = 4;
+  repeated string problem_id = 5;
+  repeated string contest_id = 6;
+  repeated string category = 7;
+  repeated string user_id = 8;
+  repeated string language = 9;
+  repeated string language_group = 10;
+  FloatRange point = 11;
+  IntRange length = 12;
+  repeated string result = 13;
+  IntRange execution_time = 14;
+}
 
-message SearchSubmissionResponse {}
+message SearchSubmissionResponse {
+  repeated Submission items = 1;
+  int64 time = 2;
+  int64 index = 3;
+}
+
+message Submission {
+  int64 submission_id = 1;
+  int64 submitted_at = 2;
+  string submission_url = 3;
+  string problem_id = 4;
+  string problem_title = 5;
+  string problem_url = 6;
+  string contest_id = 7;
+  string contest_title = 8;
+  string contest_url = 9;
+  string category = 10;
+  optional int64 difficulty = 11;
+  optional string color = 12;
+  string user_id = 13;
+  string language = 14;
+  string language_group = 15;
+  double point = 16;
+  int64 length = 17;
+  string result = 18;
+  optional int64 execution_time = 19;
+}
 
 message GetCategoryResponse { repeated string categories = 1; }
 
