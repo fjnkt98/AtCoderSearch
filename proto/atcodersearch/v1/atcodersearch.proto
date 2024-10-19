@@ -83,12 +83,11 @@ message Problem {
   string contest_title = 5;
   string contest_url = 6;
   optional int64 difficulty = 7;
-  optional string color = 8;
-  int64 start_at = 9;
-  int64 duration = 10;
-  string rate_change = 11;
-  string category = 12;
-  bool is_experimental = 13;
+  int64 start_at = 8;
+  int64 duration = 9;
+  string rate_change = 10;
+  string category = 11;
+  bool is_experimental = 12;
 }
 
 message SearchUserRequest {
@@ -102,7 +101,6 @@ message SearchUserRequest {
   IntRange birth_year = 8;
   IntRange join_count = 9;
   repeated string countries = 10;
-  repeated string colors = 11;
 }
 
 message SearchUserResponse {
@@ -133,8 +131,7 @@ message User {
   int64 rank = 9;
   optional int64 active_rank = 10;
   int64 wins = 11;
-  string color = 12;
-  string user_url = 13;
+  string user_url = 12;
 }
 
 message SearchSubmissionRequest {
@@ -172,14 +169,13 @@ message Submission {
   string contest_url = 9;
   string category = 10;
   optional int64 difficulty = 11;
-  optional string color = 12;
-  string user_id = 13;
-  string language = 14;
-  string language_group = 15;
-  double point = 16;
-  int64 length = 17;
-  string result = 18;
-  optional int64 execution_time = 19;
+  string user_id = 12;
+  string language = 13;
+  string language_group = 14;
+  double point = 15;
+  int64 length = 16;
+  string result = 17;
+  optional int64 execution_time = 18;
 }
 
 message GetCategoryRequest {}

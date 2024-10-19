@@ -139,8 +139,8 @@ func (r UserRow) Document(ctx context.Context) (UserDocument, error) {
 		Rank:          r.Rank,
 		ActiveRank:    r.ActiveRank,
 		Wins:          r.Wins,
-		Color:         RateToColor(r.Rating),
-		HighestColor:  RateToColor(r.HighestRating),
+		Color:         RateToRangeLabel(&r.Rating),
+		HighestColor:  RateToRangeLabel(&r.HighestRating),
 		UserURL:       fmt.Sprintf("https://atcoder.jp/users/%s", r.UserID),
 	}, nil
 }

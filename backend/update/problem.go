@@ -44,6 +44,7 @@ func (ix *ProblemIndexer) Settings() *meilisearch.Settings {
 			"contestId",
 			"color",
 			"difficulty",
+			"difficultyFacet",
 			"isExperimental",
 			"category",
 		},
@@ -143,50 +144,41 @@ func (r ProblemRow) Document(ctx context.Context) (ProblemDocument, error) {
 		return ProblemDocument{}, fmt.Errorf("extract statement of the problem `%s`: %w", r.ProblemID, err)
 	}
 
-	contestURL := fmt.Sprintf("https://atcoder.jp/contests/%s", r.ContestID)
-
-	var color string
-	if r.Difficulty == nil {
-		color = "black"
-	} else {
-		color = RateToColor(*r.Difficulty)
-	}
-
 	return ProblemDocument{
-		ProblemID:      r.ProblemID,
-		ProblemURL:     r.ProblemURL,
-		ProblemTitle:   r.ProblemTitle,
-		ContestID:      r.ContestID,
-		ContestURL:     contestURL,
-		ContestTitle:   r.ContestTitle,
-		Color:          color,
-		StartAt:        r.StartAt,
-		Duration:       r.Duration,
-		RateChange:     r.RateChange,
-		Category:       r.Category,
-		Difficulty:     r.Difficulty,
-		IsExperimental: r.IsExperimental,
-		StatementJa:    statementJa,
-		StatementEn:    statementEn,
+		ProblemID:       r.ProblemID,
+		ProblemURL:      r.ProblemURL,
+		ProblemTitle:    r.ProblemTitle,
+		ContestID:       r.ContestID,
+		ContestURL:      fmt.Sprintf("https://atcoder.jp/contests/%s", r.ContestID),
+		ContestTitle:    r.ContestTitle,
+		StartAt:         r.StartAt,
+		Duration:        r.Duration,
+		RateChange:      r.RateChange,
+		Category:        r.Category,
+		Difficulty:      r.Difficulty,
+		DifficultyFacet: RateToRangeLabel(r.Difficulty),
+		IsExperimental:  r.IsExperimental,
+		StatementJa:     statementJa,
+		StatementEn:     statementEn,
 	}, nil
 }
 
 type ProblemDocument struct {
-	ProblemID      string   `json:"problemId"`
-	ProblemTitle   string   `json:"problemTitle"`
-	ProblemURL     string   `json:"problemUrl"`
-	ContestID      string   `json:"contestId"`
-	ContestTitle   string   `json:"contestTitle"`
-	ContestURL     string   `json:"contestUrl"`
-	Color          string   `json:"color"`
-	StartAt        int64    `json:"startAt"`
-	Duration       int64    `json:"duration"`
-	RateChange     string   `json:"rateChange"`
-	Category       string   `json:"category"`
-	Difficulty     *int     `json:"difficulty"`
-	IsExperimental bool     `json:"isExperimental"`
-	StatementJa    []string `json:"statementJa"`
-	StatementEn    []string `json:"statementEn"`
+	ProblemID       string   `json:"problemId"`
+	ProblemTitle    string   `json:"problemTitle"`
+	ProblemURL      string   `json:"problemUrl"`
+	ContestID       string   `json:"contestId"`
+	ContestTitle    string   `json:"contestTitle"`
+	ContestURL      string   `json:"contestUrl"`
+	StartAt         int64    `json:"startAt"`
+	Duration        int64    `json:"duration"`
+	RateChange      string   `json:"rateChange"`
+	Category        string   `json:"category"`
+	Difficulty      *int     `json:"difficulty"`
+	DifficultyFacet string   `json:"difficultyFacet,omitempty"`
+	IsExperimental  bool     `json:"isExperimental"`
+	StatementJa     []string `json:"statementJa"`
+	StatementEn     []string `json:"statementEn"`
 }
 
 func ExtractStatements(html io.Reader) ([]string, []string, error) {
@@ -220,28 +212,28 @@ func ExtractStatements(html io.Reader) ([]string, []string, error) {
 	return textJa, textEn, nil
 }
 
-func RateToColor(rate int) string {
-	if rate < 0 {
-		return "black"
-	} else if rate < 400 {
-		return "gray"
-	} else if rate < 800 {
-		return "brown"
-	} else if rate < 1200 {
-		return "green"
-	} else if rate < 1600 {
-		return "cyan"
-	} else if rate < 2000 {
-		return "blue"
-	} else if rate < 2400 {
-		return "yellow"
-	} else if rate < 2800 {
-		return "orange"
-	} else if rate < 3200 {
-		return "red"
-	} else if rate < 3600 {
-		return "silver"
+func RateToRangeLabel(rate *int) string {
+	if rate == nil || *rate < 0 {
+		return "     ~    0"
+	} else if *rate < 400 {
+		return "   0 ~  400"
+	} else if *rate < 800 {
+		return " 400 ~  800"
+	} else if *rate < 1200 {
+		return " 800 ~ 1200"
+	} else if *rate < 1600 {
+		return "1200 ~ 1600"
+	} else if *rate < 2000 {
+		return "1600 ~ 2000"
+	} else if *rate < 2400 {
+		return "2000 ~ 2400"
+	} else if *rate < 2800 {
+		return "2400 ~ 2800"
+	} else if *rate < 3200 {
+		return "2800 ~ 3200"
+	} else if *rate < 3600 {
+		return "3200 ~ 3600"
 	} else {
-		return "gold"
+		return "3600 ~     "
 	}
 }
