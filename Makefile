@@ -2,6 +2,7 @@ include .env
 
 .PHONY: build-backend
 build-backend:
+	$(MAKE) -C proto buf-generate
 	$(MAKE) -C backend sqlc
 	$(MAKE) -C backend build
 
