@@ -2,8 +2,6 @@ syntax = "proto3";
 package atcodersearch.v1;
 option go_package = "fjnkt98.com/atcodersearch/grpc";
 
-import "google/protobuf/empty.proto";
-
 message Count {
   string label = 1;
   int64 count = 2;
@@ -21,10 +19,12 @@ message FloatRange {
 
 service SearchService {
   rpc SearchProblem(SearchProblemRequest) returns (SearchProblemResponse);
+  rpc SearchProblemByKeyword(SearchProblemByKeywordRequest)
+      returns (SearchProblemByKeywordResponse);
   rpc SearchUser(SearchUserRequest) returns (SearchUserResponse);
   rpc SearchSubmission(SearchSubmissionRequest)
       returns (SearchSubmissionResponse);
-  rpc GetCategory(google.protobuf.Empty) returns (GetCategoryResponse);
+  rpc GetCategory(GetCategoryRequest) returns (GetCategoryResponse);
   rpc GetContest(GetContestRequest) returns (GetContestResponse);
   rpc GetLanguage(GetLanguageRequest) returns (GetLanguageResponse);
   rpc GetProblem(GetProblemRequest) returns (GetProblemResponse);
@@ -34,15 +34,34 @@ message SearchProblemRequest {
   optional uint64 limit = 1;
   optional uint64 page = 2;
   repeated string sorts = 3;
+  repeated string categories = 6;
+  optional int64 rating = 7;
+  IntRange difficulty = 8;
+  optional bool experimental = 9;
+  optional string user_id = 10;
+}
+
+message SearchProblemByKeywordRequest {
+  optional uint64 limit = 1;
+  optional uint64 page = 2;
+  repeated string sorts = 3;
   string q = 4;
   repeated string facets = 5;
   repeated string categories = 6;
   IntRange difficulty = 7;
-  repeated string colors = 8;
-  optional bool experimental = 9;
+  optional bool experimental = 8;
 }
 
 message SearchProblemResponse {
+  repeated Problem items = 1;
+  int64 time = 2;
+  int64 total = 3;
+  int64 pages = 4;
+  int64 index = 5;
+  ProblemFacet facet = 6;
+}
+
+message SearchProblemByKeywordResponse {
   repeated Problem items = 1;
   int64 time = 2;
   int64 total = 3;
@@ -69,6 +88,7 @@ message Problem {
   int64 duration = 10;
   string rate_change = 11;
   string category = 12;
+  bool is_experimental = 13;
 }
 
 message SearchUserRequest {
@@ -162,6 +182,7 @@ message Submission {
   optional int64 execution_time = 19;
 }
 
+message GetCategoryRequest {}
 message GetCategoryResponse { repeated string categories = 1; }
 
 message GetContestRequest { repeated string categories = 1; }

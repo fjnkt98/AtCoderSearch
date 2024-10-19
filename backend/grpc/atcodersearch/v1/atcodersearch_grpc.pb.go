@@ -11,7 +11,6 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
-	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -20,13 +19,14 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	SearchService_SearchProblem_FullMethodName    = "/atcodersearch.v1.SearchService/SearchProblem"
-	SearchService_SearchUser_FullMethodName       = "/atcodersearch.v1.SearchService/SearchUser"
-	SearchService_SearchSubmission_FullMethodName = "/atcodersearch.v1.SearchService/SearchSubmission"
-	SearchService_GetCategory_FullMethodName      = "/atcodersearch.v1.SearchService/GetCategory"
-	SearchService_GetContest_FullMethodName       = "/atcodersearch.v1.SearchService/GetContest"
-	SearchService_GetLanguage_FullMethodName      = "/atcodersearch.v1.SearchService/GetLanguage"
-	SearchService_GetProblem_FullMethodName       = "/atcodersearch.v1.SearchService/GetProblem"
+	SearchService_SearchProblem_FullMethodName          = "/atcodersearch.v1.SearchService/SearchProblem"
+	SearchService_SearchProblemByKeyword_FullMethodName = "/atcodersearch.v1.SearchService/SearchProblemByKeyword"
+	SearchService_SearchUser_FullMethodName             = "/atcodersearch.v1.SearchService/SearchUser"
+	SearchService_SearchSubmission_FullMethodName       = "/atcodersearch.v1.SearchService/SearchSubmission"
+	SearchService_GetCategory_FullMethodName            = "/atcodersearch.v1.SearchService/GetCategory"
+	SearchService_GetContest_FullMethodName             = "/atcodersearch.v1.SearchService/GetContest"
+	SearchService_GetLanguage_FullMethodName            = "/atcodersearch.v1.SearchService/GetLanguage"
+	SearchService_GetProblem_FullMethodName             = "/atcodersearch.v1.SearchService/GetProblem"
 )
 
 // SearchServiceClient is the client API for SearchService service.
@@ -34,9 +34,10 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type SearchServiceClient interface {
 	SearchProblem(ctx context.Context, in *SearchProblemRequest, opts ...grpc.CallOption) (*SearchProblemResponse, error)
+	SearchProblemByKeyword(ctx context.Context, in *SearchProblemByKeywordRequest, opts ...grpc.CallOption) (*SearchProblemByKeywordResponse, error)
 	SearchUser(ctx context.Context, in *SearchUserRequest, opts ...grpc.CallOption) (*SearchUserResponse, error)
 	SearchSubmission(ctx context.Context, in *SearchSubmissionRequest, opts ...grpc.CallOption) (*SearchSubmissionResponse, error)
-	GetCategory(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetCategoryResponse, error)
+	GetCategory(ctx context.Context, in *GetCategoryRequest, opts ...grpc.CallOption) (*GetCategoryResponse, error)
 	GetContest(ctx context.Context, in *GetContestRequest, opts ...grpc.CallOption) (*GetContestResponse, error)
 	GetLanguage(ctx context.Context, in *GetLanguageRequest, opts ...grpc.CallOption) (*GetLanguageResponse, error)
 	GetProblem(ctx context.Context, in *GetProblemRequest, opts ...grpc.CallOption) (*GetProblemResponse, error)
@@ -54,6 +55,16 @@ func (c *searchServiceClient) SearchProblem(ctx context.Context, in *SearchProbl
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(SearchProblemResponse)
 	err := c.cc.Invoke(ctx, SearchService_SearchProblem_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *searchServiceClient) SearchProblemByKeyword(ctx context.Context, in *SearchProblemByKeywordRequest, opts ...grpc.CallOption) (*SearchProblemByKeywordResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SearchProblemByKeywordResponse)
+	err := c.cc.Invoke(ctx, SearchService_SearchProblemByKeyword_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -80,7 +91,7 @@ func (c *searchServiceClient) SearchSubmission(ctx context.Context, in *SearchSu
 	return out, nil
 }
 
-func (c *searchServiceClient) GetCategory(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetCategoryResponse, error) {
+func (c *searchServiceClient) GetCategory(ctx context.Context, in *GetCategoryRequest, opts ...grpc.CallOption) (*GetCategoryResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetCategoryResponse)
 	err := c.cc.Invoke(ctx, SearchService_GetCategory_FullMethodName, in, out, cOpts...)
@@ -125,9 +136,10 @@ func (c *searchServiceClient) GetProblem(ctx context.Context, in *GetProblemRequ
 // for forward compatibility.
 type SearchServiceServer interface {
 	SearchProblem(context.Context, *SearchProblemRequest) (*SearchProblemResponse, error)
+	SearchProblemByKeyword(context.Context, *SearchProblemByKeywordRequest) (*SearchProblemByKeywordResponse, error)
 	SearchUser(context.Context, *SearchUserRequest) (*SearchUserResponse, error)
 	SearchSubmission(context.Context, *SearchSubmissionRequest) (*SearchSubmissionResponse, error)
-	GetCategory(context.Context, *emptypb.Empty) (*GetCategoryResponse, error)
+	GetCategory(context.Context, *GetCategoryRequest) (*GetCategoryResponse, error)
 	GetContest(context.Context, *GetContestRequest) (*GetContestResponse, error)
 	GetLanguage(context.Context, *GetLanguageRequest) (*GetLanguageResponse, error)
 	GetProblem(context.Context, *GetProblemRequest) (*GetProblemResponse, error)
@@ -144,13 +156,16 @@ type UnimplementedSearchServiceServer struct{}
 func (UnimplementedSearchServiceServer) SearchProblem(context.Context, *SearchProblemRequest) (*SearchProblemResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchProblem not implemented")
 }
+func (UnimplementedSearchServiceServer) SearchProblemByKeyword(context.Context, *SearchProblemByKeywordRequest) (*SearchProblemByKeywordResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SearchProblemByKeyword not implemented")
+}
 func (UnimplementedSearchServiceServer) SearchUser(context.Context, *SearchUserRequest) (*SearchUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchUser not implemented")
 }
 func (UnimplementedSearchServiceServer) SearchSubmission(context.Context, *SearchSubmissionRequest) (*SearchSubmissionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchSubmission not implemented")
 }
-func (UnimplementedSearchServiceServer) GetCategory(context.Context, *emptypb.Empty) (*GetCategoryResponse, error) {
+func (UnimplementedSearchServiceServer) GetCategory(context.Context, *GetCategoryRequest) (*GetCategoryResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCategory not implemented")
 }
 func (UnimplementedSearchServiceServer) GetContest(context.Context, *GetContestRequest) (*GetContestResponse, error) {
@@ -201,6 +216,24 @@ func _SearchService_SearchProblem_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SearchService_SearchProblemByKeyword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchProblemByKeywordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SearchServiceServer).SearchProblemByKeyword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SearchService_SearchProblemByKeyword_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SearchServiceServer).SearchProblemByKeyword(ctx, req.(*SearchProblemByKeywordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _SearchService_SearchUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SearchUserRequest)
 	if err := dec(in); err != nil {
@@ -238,7 +271,7 @@ func _SearchService_SearchSubmission_Handler(srv interface{}, ctx context.Contex
 }
 
 func _SearchService_GetCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(emptypb.Empty)
+	in := new(GetCategoryRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -250,7 +283,7 @@ func _SearchService_GetCategory_Handler(srv interface{}, ctx context.Context, de
 		FullMethod: SearchService_GetCategory_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SearchServiceServer).GetCategory(ctx, req.(*emptypb.Empty))
+		return srv.(SearchServiceServer).GetCategory(ctx, req.(*GetCategoryRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -319,6 +352,10 @@ var SearchService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SearchProblem",
 			Handler:    _SearchService_SearchProblem_Handler,
+		},
+		{
+			MethodName: "SearchProblemByKeyword",
+			Handler:    _SearchService_SearchProblemByKeyword_Handler,
 		},
 		{
 			MethodName: "SearchUser",
