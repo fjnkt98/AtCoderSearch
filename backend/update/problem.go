@@ -45,6 +45,7 @@ func (ix *ProblemIndexer) Settings() *meilisearch.Settings {
 			"color",
 			"difficulty",
 			"isExperimental",
+			"category",
 		},
 		SearchableAttributes: []string{
 			"problemTitle",
