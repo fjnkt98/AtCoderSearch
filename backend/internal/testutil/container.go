@@ -10,7 +10,7 @@ import (
 	"github.com/testcontainers/testcontainers-go/wait"
 )
 
-func ProjectRoot() string {
+func GetProjectRoot() string {
 	currentDir, err := os.Getwd()
 	if err != nil {
 		return ""
@@ -32,20 +32,44 @@ func ProjectRoot() string {
 	return currentDir
 }
 
-func CreateDBContainer() (container testcontainers.Container, dsn string, stop func() error, err error) {
+func CreateDBContainer(files ...string) (container testcontainers.Container, dsn string, stop func() error, err error) {
 	ctx := context.Background()
 
 	stop = func() error {
 		return nil
 	}
 
-	schema, err := filepath.Abs(filepath.Join(ProjectRoot(), "..", "db", "schema.sql"))
+	root := GetProjectRoot()
+	schema, err := filepath.Abs(filepath.Join(root, "..", "db", "schema.sql"))
 	if err != nil {
 		return
 	}
 	r, err := os.Open(schema)
 	if err != nil {
 		return
+	}
+	defer r.Close()
+
+	mounts := []testcontainers.ContainerFile{
+		{
+			Reader:            r,
+			ContainerFilePath: "/docker-entrypoint-initdb.d/001_schema.sql",
+			FileMode:          0o644,
+		},
+	}
+
+	for i, file := range files {
+		r, err = os.Open(file)
+		if err != nil {
+			return
+		}
+		defer r.Close()
+
+		mounts = append(mounts, testcontainers.ContainerFile{
+			Reader:            r,
+			ContainerFilePath: fmt.Sprintf("/docker-entrypoint-initdb.d/%3d_%s.sql", i+2, filepath.Base(file)),
+			FileMode:          0o644,
+		})
 	}
 
 	container, err = testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
@@ -58,13 +82,7 @@ func CreateDBContainer() (container testcontainers.Container, dsn string, stop f
 				"POSTGRES_HOST_AUTH_METHOD": "password",
 				"TZ":                        "Asia/Tokyo",
 			},
-			Files: []testcontainers.ContainerFile{
-				{
-					Reader:            r,
-					ContainerFilePath: "/docker-entrypoint-initdb.d/schema.sql",
-					FileMode:          0o666,
-				},
-			},
+			Files:        mounts,
 			ExposedPorts: []string{"5432/tcp"},
 			WaitingFor:   wait.ForListeningPort("5432/tcp"),
 		},
