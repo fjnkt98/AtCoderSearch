@@ -10,10 +10,14 @@ import (
 	"reflect"
 	"slices"
 	"strings"
+	"time"
 
 	"github.com/go-viper/mapstructure/v2"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jackc/pgx/v5/stdlib"
 	"github.com/meilisearch/meilisearch-go"
+	"github.com/uptrace/bun"
+	"github.com/uptrace/bun/dialect/pgdialect"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -123,7 +127,123 @@ func (p *Problem) Into() *pb.Problem {
 }
 
 func (s *Searcher) SearchProblem(ctx context.Context, req *pb.SearchProblemRequest) (*pb.SearchProblemResponse, error) {
-	panic("")
+	start := time.Now()
+
+	q, err := createSearchProblemQuery(s.pool, req)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "%s", err)
+	}
+
+	items := make([]*pb.Problem, 0, req.GetLimit())
+	var rows []Problem
+	if err := q.Scan(ctx, &rows); err != nil {
+		return nil, status.Errorf(codes.Unknown, "scan rows: %s", err)
+	}
+	for _, r := range rows {
+		items = append(items, r.Into())
+	}
+
+	return &pb.SearchProblemResponse{
+		Time:  int64(time.Since(start) / time.Millisecond),
+		Total: 0,
+		Index: 0,
+		Pages: 0,
+		Items: items,
+	}, nil
+}
+
+func createSearchProblemQuery(pool *pgxpool.Pool, req *pb.SearchProblemRequest) (*bun.SelectQuery, error) {
+	db := bun.NewDB(stdlib.OpenDBFromPool(pool), pgdialect.New())
+
+	limit := int(req.GetLimit())
+	if limit > 200 {
+		return nil, fmt.Errorf("%w: too large limitation", ErrInvalidRequest)
+	}
+
+	var offset int
+	if page := int(req.GetPage()); page == 0 {
+		offset = 0
+	} else {
+		offset = (page - 1) * limit
+	}
+
+	q := db.NewSelect().
+		ColumnExpr("p.problem_id").
+		ColumnExpr("p.title AS problem_title").
+		ColumnExpr("p.url AS problem_url").
+		ColumnExpr("c.contest_id").
+		ColumnExpr("c.title AS contest_title").
+		ColumnExpr("CONCAT('https://atcoder.jp/contests/', c.contest_id) AS contest_url").
+		ColumnExpr("d.difficulty").
+		ColumnExpr("c.start_epoch_second AS start_at").
+		ColumnExpr("c.duration_second AS duration").
+		ColumnExpr("c.rate_change AS rate_change").
+		ColumnExpr("c.category AS category").
+		ColumnExpr("COALESCE(d.is_experimental, FALSE) AS is_experimental").
+		TableExpr("problems as p").
+		Join("INNER JOIN contests as c ON p.contest_id = c.contest_id").
+		Join("LEFT JOIN difficulties as d ON p.problem_id = d.problem_id").
+		Limit(limit).
+		Offset(offset)
+
+	fields := map[string]string{
+		"startAt":    "c.start_epoch_second",
+		"difficulty": "d.difficulty",
+		"problemId":  "p.problem_id",
+		"contestId":  "c.contest_id",
+	}
+
+	sort := make([]string, 0, 4)
+	if sorts := req.GetSorts(); len(sorts) > 0 {
+		for _, s := range sorts {
+			field, direction, ok := strings.Cut(s, ":")
+			if !ok {
+				return nil, fmt.Errorf("%w: sort direction needed", ErrInvalidRequest)
+			}
+			if !slices.Contains([]string{"asc", "desc"}, direction) {
+				return nil, fmt.Errorf("%w: invalid sort direction `%s`", ErrInvalidRequest, direction)
+			}
+
+			column, ok := fields[field]
+			if !ok {
+				return nil, fmt.Errorf("%w: invalid sort field `%s`", ErrInvalidRequest, field)
+			}
+
+			sort = append(sort, fmt.Sprintf("%s %s", column, direction))
+		}
+	}
+	sort = append(sort, "p.problem_id asc")
+	q = q.Order(sort...)
+
+	if categories := req.GetCategories(); len(categories) > 0 {
+		q = q.Where("c.category IN (?)", bun.In(categories))
+	}
+
+	if difficulty := req.GetDifficulty(); difficulty != nil {
+		if from := difficulty.From; from != nil {
+			q = q.Where("d.difficulty >= ?", *from)
+		}
+		if to := difficulty.To; to != nil {
+			q = q.Where("d.difficulty < ?", *to)
+		}
+	}
+
+	if experimental := req.Experimental; experimental != nil {
+		q = q.Where("COALESCE(d.is_experimental, FALSE) = ?", *experimental)
+	}
+
+	if userID := req.GetUserId(); userID != "" {
+		sub := db.NewSelect().
+			Distinct().
+			ColumnExpr("problem_id").
+			TableExpr("submissions").
+			Where("user_id = ?", userID)
+
+		q = q.With("s", sub).
+			Join("INNER JOIN s ON p.problem_id = s.problem_id")
+	}
+
+	return q, nil
 }
 
 func (s *Searcher) SearchProblemByKeyword(ctx context.Context, req *pb.SearchProblemByKeywordRequest) (*pb.SearchProblemByKeywordResponse, error) {
@@ -192,7 +312,12 @@ func createSearchProblemByKeywordQuery(req *pb.SearchProblemByKeywordRequest) (*
 		AttributesToRetrieve: FieldList(new(Problem)),
 	}
 
-	q.HitsPerPage = int64(req.GetLimit())
+	limit := req.GetLimit()
+	if limit > 200 {
+		return nil, fmt.Errorf("%w: too large limitation", ErrInvalidRequest)
+	}
+	q.HitsPerPage = int64(limit)
+
 	if page := req.GetPage(); page == 0 {
 		q.Page = 1
 	} else {

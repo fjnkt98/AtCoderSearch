@@ -132,7 +132,67 @@ func TestCreateSearchProblemByKeywordRequest(t *testing.T) {
 	}
 }
 
-func TestSearchProblemByKeyword(t *testing.T) {
+var ABC300A = &pb.Problem{
+	ProblemId:      "abc300_a",
+	ProblemTitle:   "A. N-choice question",
+	ProblemUrl:     "https://atcoder.jp/contests/abc300/tasks/abc300_a",
+	ContestId:      "abc300",
+	ContestTitle:   "ユニークビジョンプログラミングコンテスト2023 春 (AtCoder Beginner Contest 300)",
+	ContestUrl:     "https://atcoder.jp/contests/abc300",
+	Difficulty:     ptr.To[int64](-1147),
+	StartAt:        1682769600,
+	Duration:       6000,
+	RateChange:     " ~ 1999",
+	Category:       "ABC",
+	IsExperimental: false,
+}
+
+var ABC300B = &pb.Problem{
+	ProblemId:      "abc300_b",
+	ProblemTitle:   "B. Same Map in the RPG World",
+	ProblemUrl:     "https://atcoder.jp/contests/abc300/tasks/abc300_b",
+	ContestId:      "abc300",
+	ContestTitle:   "ユニークビジョンプログラミングコンテスト2023 春 (AtCoder Beginner Contest 300)",
+	ContestUrl:     "https://atcoder.jp/contests/abc300",
+	Difficulty:     ptr.To[int64](350),
+	StartAt:        1682769600,
+	Duration:       6000,
+	RateChange:     " ~ 1999",
+	Category:       "ABC",
+	IsExperimental: false,
+}
+
+var ARC184A = &pb.Problem{
+	ProblemId:      "arc184_a",
+	ProblemTitle:   "A. Appraiser",
+	ProblemUrl:     "https://atcoder.jp/contests/arc184/tasks/arc184_a",
+	ContestId:      "arc184",
+	ContestTitle:   "AtCoder Regular Contest 184",
+	ContestUrl:     "https://atcoder.jp/contests/arc184",
+	Difficulty:     ptr.To[int64](1383),
+	StartAt:        1727006400,
+	Duration:       7200,
+	RateChange:     "1200 ~ 2799",
+	Category:       "ARC",
+	IsExperimental: false,
+}
+
+var ARC184B = &pb.Problem{
+	ProblemId:      "arc184_b",
+	ProblemTitle:   "B. 123 Set",
+	ProblemUrl:     "https://atcoder.jp/contests/arc184/tasks/arc184_b",
+	ContestId:      "arc184",
+	ContestTitle:   "AtCoder Regular Contest 184",
+	ContestUrl:     "https://atcoder.jp/contests/arc184",
+	Difficulty:     ptr.To[int64](2867),
+	StartAt:        1727006400,
+	Duration:       7200,
+	RateChange:     "1200 ~ 2799",
+	Category:       "ARC",
+	IsExperimental: false,
+}
+
+func TestSearcher(t *testing.T) {
 	matches, err := filepath.Glob("./testdata/*.sql")
 	if err != nil {
 		t.Fatal(err)
@@ -181,7 +241,25 @@ func TestSearchProblemByKeyword(t *testing.T) {
 
 	searcher := NewSearcher(client, pool)
 
-	t.Run("keyword", func(t *testing.T) {
+	t.Run("SearchProblem: empty", func(t *testing.T) {
+		res, err := searcher.SearchProblem(ctx, &pb.SearchProblemRequest{})
+		if err != nil {
+			t.Error(err)
+		}
+
+		want := []*pb.Problem{
+			ABC300A,
+			ABC300B,
+			ARC184A,
+			ARC184B,
+		}
+
+		if !reflect.DeepEqual(want, res.Items) {
+			t.Errorf("expect %+v, but got %+v", want, res.Items)
+		}
+	})
+
+	t.Run("SearchProblemByKeyword: keyword", func(t *testing.T) {
 		res, err := searcher.SearchProblemByKeyword(ctx, &pb.SearchProblemByKeywordRequest{
 			Q: "ABC300",
 		})
@@ -195,7 +273,7 @@ func TestSearchProblemByKeyword(t *testing.T) {
 		}
 	})
 
-	t.Run("filter by category", func(t *testing.T) {
+	t.Run("SearchProblemByKeyword: filter by category", func(t *testing.T) {
 		res, err := searcher.SearchProblemByKeyword(ctx, &pb.SearchProblemByKeywordRequest{
 			Categories: []string{"ARC"},
 			Sorts:      []string{"startAt:desc"},
@@ -206,34 +284,8 @@ func TestSearchProblemByKeyword(t *testing.T) {
 		}
 
 		want := []*pb.Problem{
-			{
-				ProblemId:      "arc184_a",
-				ProblemTitle:   "A. Appraiser",
-				ProblemUrl:     "https://atcoder.jp/contests/arc184/tasks/arc184_a",
-				ContestId:      "arc184",
-				ContestTitle:   "AtCoder Regular Contest 184",
-				ContestUrl:     "https://atcoder.jp/contests/arc184",
-				Difficulty:     ptr.To[int64](1383),
-				StartAt:        1727006400,
-				Duration:       7200,
-				RateChange:     "1200 ~ 2799",
-				Category:       "ARC",
-				IsExperimental: false,
-			},
-			{
-				ProblemId:      "arc184_b",
-				ProblemTitle:   "B. 123 Set",
-				ProblemUrl:     "https://atcoder.jp/contests/arc184/tasks/arc184_b",
-				ContestId:      "arc184",
-				ContestTitle:   "AtCoder Regular Contest 184",
-				ContestUrl:     "https://atcoder.jp/contests/arc184",
-				Difficulty:     ptr.To[int64](2867),
-				StartAt:        1727006400,
-				Duration:       7200,
-				RateChange:     "1200 ~ 2799",
-				Category:       "ARC",
-				IsExperimental: false,
-			},
+			ARC184A,
+			ARC184B,
 		}
 
 		if !reflect.DeepEqual(want, res.Items) {
@@ -241,7 +293,7 @@ func TestSearchProblemByKeyword(t *testing.T) {
 		}
 	})
 
-	t.Run("facet", func(t *testing.T) {
+	t.Run("SearchProblemByKeyword: facet", func(t *testing.T) {
 		res, err := searcher.SearchProblemByKeyword(ctx, &pb.SearchProblemByKeywordRequest{
 			Facets: []string{"category", "difficulty"},
 		})
