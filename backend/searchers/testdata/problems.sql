@@ -20,29 +20,20 @@ VALUES
         '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>abc300_b</title></head><body></body></html>'
     ),
     (
-        'abc300_c',
-        'abc300',
-        'C',
-        'Cross',
-        'C. Cross',
-        'https://atcoder.jp/contests/abc300/tasks/abc300_c',
-        '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>abc300_c</title></head><body></body></html>'
+        'arc184_a',
+        'arc184',
+        'A',
+        'Appraiser',
+        'A. Appraiser',
+        'https://atcoder.jp/contests/arc184/tasks/arc184_a',
+        '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>arc184_a</title></head><body></body></html>'
     ),
     (
-        'abc300_d',
-        'abc300',
-        'D',
-        'AABCC',
-        'D. AABCC',
-        'https://atcoder.jp/contests/abc300/tasks/abc300_d',
-        '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>abc300_d</title></head><body></body></html>'
-    ),
-    (
-        'abc300_e',
-        'abc300',
-        'E',
-        'Dice Product 3',
-        'E. Dice Product 3',
-        'https://atcoder.jp/contests/abc300/tasks/abc300_e',
-        '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>abc300_e</title></head><body></body></html>'
+        'arc184_b',
+        'arc184',
+        'B',
+        '123 Set',
+        'B. 123 Set',
+        'https://atcoder.jp/contests/arc184/tasks/arc184_b',
+        '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>arc184_b</title></head><body></body></html>'
     );

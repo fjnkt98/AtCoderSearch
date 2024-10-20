@@ -59,6 +59,8 @@ func (ix *ProblemIndexer) Settings() *meilisearch.Settings {
 		SortableAttributes: []string{
 			"startAt",
 			"difficulty",
+			"problemId",
+			"contestId",
 		},
 		Synonyms: map[string][]string{},
 	}
