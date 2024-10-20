@@ -237,7 +237,8 @@ func createSearchProblemQuery(pool *pgxpool.Pool, req *pb.SearchProblemRequest) 
 			Distinct().
 			ColumnExpr("problem_id").
 			TableExpr("submissions").
-			Where("user_id = ?", userID)
+			Where("user_id = ?", userID).
+			Where("result = ?", "AC")
 
 		q = q.With("s", sub).
 			Join("INNER JOIN s ON p.problem_id = s.problem_id")

@@ -259,6 +259,82 @@ func TestSearcher(t *testing.T) {
 		}
 	})
 
+	cases := []struct {
+		name string
+		req  *pb.SearchProblemRequest
+		want []*pb.Problem
+	}{
+		{name: "SearchProblem: sort by start_at asc", req: &pb.SearchProblemRequest{Sorts: []string{"startAt:asc"}}, want: []*pb.Problem{ABC300A, ABC300B, ARC184A, ARC184B}},
+		{name: "SearchProblem: sort by start_at desc", req: &pb.SearchProblemRequest{Sorts: []string{"startAt:desc"}}, want: []*pb.Problem{ARC184A, ARC184B, ABC300A, ABC300B}},
+		{name: "SearchProblem: sort by difficulty asc", req: &pb.SearchProblemRequest{Sorts: []string{"difficulty:asc"}}, want: []*pb.Problem{ABC300A, ABC300B, ARC184A, ARC184B}},
+		{name: "SearchProblem: sort by difficulty desc", req: &pb.SearchProblemRequest{Sorts: []string{"difficulty:desc"}}, want: []*pb.Problem{ARC184B, ARC184A, ABC300B, ABC300A}},
+	}
+
+	for _, tt := range cases {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			res, err := searcher.SearchProblem(ctx, tt.req)
+			if err != nil {
+				t.Error(err)
+			}
+
+			if !reflect.DeepEqual(tt.want, res.Items) {
+				t.Errorf("expect %+v, but got %+v", tt.want, res.Items)
+			}
+		})
+	}
+
+	t.Run("SearchProblem: filter by category", func(t *testing.T) {
+		res, err := searcher.SearchProblem(ctx, &pb.SearchProblemRequest{
+			Categories: []string{"ABC"},
+		})
+
+		if err != nil {
+			t.Error(err)
+		}
+
+		want := []*pb.Problem{ABC300A, ABC300B}
+
+		if !reflect.DeepEqual(want, res.Items) {
+			t.Errorf("expect %+v, but got %+v", want, res.Items)
+		}
+	})
+
+	t.Run("SearchProblem: filter by difficulty", func(t *testing.T) {
+		res, err := searcher.SearchProblem(ctx, &pb.SearchProblemRequest{
+			Difficulty: &pb.IntRange{
+				From: ptr.To[int64](1000),
+				To:   ptr.To[int64](1400),
+			},
+		})
+
+		if err != nil {
+			t.Error(err)
+		}
+
+		want := []*pb.Problem{ARC184A}
+
+		if !reflect.DeepEqual(want, res.Items) {
+			t.Errorf("expect %+v, but got %+v", want, res.Items)
+		}
+	})
+
+	t.Run("SearchProblem: filter by user id", func(t *testing.T) {
+		res, err := searcher.SearchProblem(ctx, &pb.SearchProblemRequest{
+			UserId: ptr.To("fjnkt98"),
+		})
+
+		if err != nil {
+			t.Error(err)
+		}
+
+		want := []*pb.Problem{ABC300A}
+
+		if !reflect.DeepEqual(want, res.Items) {
+			t.Errorf("expect %+v, but got %+v", want, res.Items)
+		}
+	})
+
 	t.Run("SearchProblemByKeyword: keyword", func(t *testing.T) {
 		res, err := searcher.SearchProblemByKeyword(ctx, &pb.SearchProblemByKeywordRequest{
 			Q: "ABC300",
