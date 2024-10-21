@@ -132,6 +132,41 @@ func TestCreateSearchProblemByKeywordRequest(t *testing.T) {
 	}
 }
 
+func TestCreateSearchUserRequest(t *testing.T) {
+	fields := []string{"userId", "rating", "highestRating", "affiliation", "birthYear", "country", "crown", "joinCount", "rank", "activeRank", "wins", "userUrl"}
+
+	{
+		cases := []struct {
+			name string
+			req  *pb.SearchUserRequest
+			want *meilisearch.SearchRequest
+		}{
+			{name: "empty", req: &pb.SearchUserRequest{}, want: &meilisearch.SearchRequest{Page: 1, AttributesToRetrieve: fields}},
+			{name: "pagination", req: &pb.SearchUserRequest{Limit: ptr.To[int64](20)}, want: &meilisearch.SearchRequest{HitsPerPage: 20, Page: 1, AttributesToRetrieve: fields}},
+			{name: "sort(valid)", req: &pb.SearchUserRequest{Sorts: []string{"rating:desc", "birthYear:asc"}}, want: &meilisearch.SearchRequest{Sort: []string{"rating:desc", "birthYear:asc", "userId:asc"}, Page: 1, AttributesToRetrieve: fields}},
+			{name: "facet(valid)", req: &pb.SearchUserRequest{Facets: []string{"country", "rating", "birthYear", "joinCount"}}, want: &meilisearch.SearchRequest{Facets: []string{"country", "ratingFacet", "birthYearFacet", "joinCountFacet"}, Page: 1, AttributesToRetrieve: fields}},
+			{name: "filter by user id", req: &pb.SearchUserRequest{UserIds: []string{"user1", "user2"}}, want: &meilisearch.SearchRequest{Filter: [][]string{{"userId = 'user1'", "userId = 'user2'"}}, Page: 1, AttributesToRetrieve: fields}},
+			{name: "filter by rating", req: &pb.SearchUserRequest{Rating: &pb.IntRange{From: ptr.To[int64](800), To: ptr.To[int64](1200)}}, want: &meilisearch.SearchRequest{Filter: [][]string{{"rating >= 800"}, {"rating < 1200"}}, Page: 1, AttributesToRetrieve: fields}},
+			{name: "filter by birth year", req: &pb.SearchUserRequest{BirthYear: &pb.IntRange{From: ptr.To[int64](1998), To: ptr.To[int64](2000)}}, want: &meilisearch.SearchRequest{Filter: [][]string{{"birthYear >= 1998"}, {"birthYear < 2000"}}, Page: 1, AttributesToRetrieve: fields}},
+			{name: "filter by join count", req: &pb.SearchUserRequest{JoinCount: &pb.IntRange{From: ptr.To[int64](5), To: ptr.To[int64](10)}}, want: &meilisearch.SearchRequest{Filter: [][]string{{"joinCount >= 5"}, {"joinCount < 10"}}, Page: 1, AttributesToRetrieve: fields}},
+			{name: "filter by country", req: &pb.SearchUserRequest{Countries: []string{"JP"}}, want: &meilisearch.SearchRequest{Filter: [][]string{{"country = 'JP'"}}, Page: 1, AttributesToRetrieve: fields}},
+		}
+
+		for _, tt := range cases {
+			tt := tt
+			t.Run(tt.name, func(t *testing.T) {
+				actual, err := createSearchUserQuery(tt.req)
+				if err != nil {
+					t.Error(err)
+				}
+				if !reflect.DeepEqual(tt.want, actual) {
+					t.Errorf("expected %+v, but got %+v", tt.want, actual)
+				}
+			})
+		}
+	}
+}
+
 var ABC300A = &pb.Problem{
 	ProblemId:      "abc300_a",
 	ProblemTitle:   "A. N-choice question",
@@ -192,6 +227,66 @@ var ARC184B = &pb.Problem{
 	IsExperimental: false,
 }
 
+var User1 = &pb.User{
+	UserId:        "user1",
+	Rating:        2563,
+	HighestRating: 2563,
+	Affiliation:   nil,
+	BirthYear:     nil,
+	Country:       ptr.To("CN"),
+	Crown:         ptr.To("user-orange-2"),
+	JoinCount:     23,
+	Rank:          470,
+	ActiveRank:    nil,
+	Wins:          0,
+	UserUrl:       "https://atcoder.jp/users/user1",
+}
+
+var User2 = &pb.User{
+	UserId:        "user2",
+	Rating:        3710,
+	HighestRating: 3802,
+	Affiliation:   nil,
+	BirthYear:     nil,
+	Country:       ptr.To("CH"),
+	Crown:         nil,
+	JoinCount:     21,
+	Rank:          3,
+	ActiveRank:    nil,
+	Wins:          2,
+	UserUrl:       "https://atcoder.jp/users/user2",
+}
+
+var User3 = &pb.User{
+	UserId:        "user3",
+	Rating:        3658,
+	HighestRating: 3683,
+	Affiliation:   ptr.To("MIT"),
+	BirthYear:     ptr.To[int64](2001),
+	Country:       ptr.To("US"),
+	Crown:         nil,
+	JoinCount:     48,
+	Rank:          3,
+	ActiveRank:    nil,
+	Wins:          0,
+	UserUrl:       "https://atcoder.jp/users/user3",
+}
+
+var User4 = &pb.User{
+	UserId:        "user4",
+	Rating:        3604,
+	HighestRating: 3814,
+	Affiliation:   nil,
+	BirthYear:     ptr.To[int64](1997),
+	Country:       ptr.To("JP"),
+	Crown:         ptr.To("crown_gold"),
+	JoinCount:     38,
+	Rank:          8,
+	ActiveRank:    ptr.To[int64](5),
+	Wins:          2,
+	UserUrl:       "https://atcoder.jp/users/user4",
+}
+
 func TestSearcher(t *testing.T) {
 	matches, err := filepath.Glob("./testdata/*.sql")
 	if err != nil {
@@ -239,6 +334,16 @@ func TestSearcher(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	if err := update.UpdateIndex(
+		ctx,
+		update.NewUserRowReader(pool),
+		update.NewUserIndexer(client),
+		1000,
+		1,
+	); err != nil {
+		t.Fatal(err)
+	}
+
 	searcher := NewSearcher(client, pool)
 
 	t.Run("SearchProblem: empty", func(t *testing.T) {
@@ -259,29 +364,31 @@ func TestSearcher(t *testing.T) {
 		}
 	})
 
-	cases := []struct {
-		name string
-		req  *pb.SearchProblemRequest
-		want []*pb.Problem
-	}{
-		{name: "SearchProblem: sort by start_at asc", req: &pb.SearchProblemRequest{Sorts: []string{"startAt:asc"}}, want: []*pb.Problem{ABC300A, ABC300B, ARC184A, ARC184B}},
-		{name: "SearchProblem: sort by start_at desc", req: &pb.SearchProblemRequest{Sorts: []string{"startAt:desc"}}, want: []*pb.Problem{ARC184A, ARC184B, ABC300A, ABC300B}},
-		{name: "SearchProblem: sort by difficulty asc", req: &pb.SearchProblemRequest{Sorts: []string{"difficulty:asc"}}, want: []*pb.Problem{ABC300A, ABC300B, ARC184A, ARC184B}},
-		{name: "SearchProblem: sort by difficulty desc", req: &pb.SearchProblemRequest{Sorts: []string{"difficulty:desc"}}, want: []*pb.Problem{ARC184B, ARC184A, ABC300B, ABC300A}},
-	}
+	{
+		cases := []struct {
+			name string
+			req  *pb.SearchProblemRequest
+			want []*pb.Problem
+		}{
+			{name: "SearchProblem: sort by start_at asc", req: &pb.SearchProblemRequest{Sorts: []string{"startAt:asc"}}, want: []*pb.Problem{ABC300A, ABC300B, ARC184A, ARC184B}},
+			{name: "SearchProblem: sort by start_at desc", req: &pb.SearchProblemRequest{Sorts: []string{"startAt:desc"}}, want: []*pb.Problem{ARC184A, ARC184B, ABC300A, ABC300B}},
+			{name: "SearchProblem: sort by difficulty asc", req: &pb.SearchProblemRequest{Sorts: []string{"difficulty:asc"}}, want: []*pb.Problem{ABC300A, ABC300B, ARC184A, ARC184B}},
+			{name: "SearchProblem: sort by difficulty desc", req: &pb.SearchProblemRequest{Sorts: []string{"difficulty:desc"}}, want: []*pb.Problem{ARC184B, ARC184A, ABC300B, ABC300A}},
+		}
 
-	for _, tt := range cases {
-		tt := tt
-		t.Run(tt.name, func(t *testing.T) {
-			res, err := searcher.SearchProblem(ctx, tt.req)
-			if err != nil {
-				t.Error(err)
-			}
+		for _, tt := range cases {
+			tt := tt
+			t.Run(tt.name, func(t *testing.T) {
+				res, err := searcher.SearchProblem(ctx, tt.req)
+				if err != nil {
+					t.Error(err)
+				}
 
-			if !reflect.DeepEqual(tt.want, res.Items) {
-				t.Errorf("expect %+v, but got %+v", tt.want, res.Items)
-			}
-		})
+				if !reflect.DeepEqual(tt.want, res.Items) {
+					t.Errorf("expect %+v, but got %+v", tt.want, res.Items)
+				}
+			})
+		}
 	}
 
 	t.Run("SearchProblem: filter by category", func(t *testing.T) {
@@ -411,6 +518,144 @@ func TestSearcher(t *testing.T) {
 
 		if !reflect.DeepEqual(want, res.Facet) {
 			t.Errorf("expect %+v, but got %+v", want, res.Facet)
+		}
+	})
+
+	t.Run("SearchUser: empty", func(t *testing.T) {
+		res, err := searcher.SearchUser(ctx, &pb.SearchUserRequest{})
+
+		if err != nil {
+			t.Error(err)
+		}
+
+		want := []*pb.User{User1, User2, User3, User4}
+
+		if !reflect.DeepEqual(want, res.Items) {
+			t.Errorf("expect %+v, but got %+v", want, res.Items)
+		}
+	})
+
+	t.Run("SearchUser: keyword", func(t *testing.T) {
+		res, err := searcher.SearchUser(ctx, &pb.SearchUserRequest{
+			Q: "MIT",
+		})
+
+		if err != nil {
+			t.Error(err)
+		}
+
+		want := []*pb.User{User3}
+
+		if !reflect.DeepEqual(want, res.Items) {
+			t.Errorf("expect %+v, but got %+v", want, res.Items)
+		}
+	})
+
+	{
+		cases := []struct {
+			name string
+			req  *pb.SearchUserRequest
+			want []*pb.User
+		}{
+			{name: "SearchUser: sort by rating asc", req: &pb.SearchUserRequest{Sorts: []string{"rating:asc"}}, want: []*pb.User{User1, User4, User3, User2}},
+			{name: "SearchUser: sort by rating desc", req: &pb.SearchUserRequest{Sorts: []string{"rating:desc"}}, want: []*pb.User{User2, User3, User4, User1}},
+			{name: "SearchUser: sort by birthYear asc", req: &pb.SearchUserRequest{Sorts: []string{"birthYear:asc"}}, want: []*pb.User{User4, User3, User1, User2}},
+			{name: "SearchUser: sort by birthYear desc", req: &pb.SearchUserRequest{Sorts: []string{"birthYear:desc"}}, want: []*pb.User{User3, User4, User1, User2}},
+		}
+
+		for _, tt := range cases {
+			tt := tt
+			t.Run(tt.name, func(t *testing.T) {
+				res, err := searcher.SearchUser(ctx, tt.req)
+
+				if err != nil {
+					t.Error(err)
+				}
+
+				if !reflect.DeepEqual(tt.want, res.Items) {
+					t.Errorf("expect %+v, but got %+v", tt.want, res.Items)
+				}
+			})
+		}
+	}
+
+	t.Run("SearchUser: filter by user id", func(t *testing.T) {
+		res, err := searcher.SearchUser(ctx, &pb.SearchUserRequest{
+			UserIds: []string{"user1", "user4"},
+		})
+
+		if err != nil {
+			t.Error(err)
+		}
+
+		want := []*pb.User{User1, User4}
+
+		if !reflect.DeepEqual(want, res.Items) {
+			t.Errorf("expect %+v, but got %+v", want, res.Items)
+		}
+	})
+
+	t.Run("SearchUser: filter by rating", func(t *testing.T) {
+		res, err := searcher.SearchUser(ctx, &pb.SearchUserRequest{
+			Rating: &pb.IntRange{From: ptr.To[int64](2563), To: ptr.To[int64](2564)},
+		})
+
+		if err != nil {
+			t.Error(err)
+		}
+
+		want := []*pb.User{User1}
+
+		if !reflect.DeepEqual(want, res.Items) {
+			t.Errorf("expect %+v, but got %+v", want, res.Items)
+		}
+	})
+
+	t.Run("SearchUser: filter by birth year", func(t *testing.T) {
+		res, err := searcher.SearchUser(ctx, &pb.SearchUserRequest{
+			BirthYear: &pb.IntRange{From: ptr.To[int64](1997), To: ptr.To[int64](1998)},
+		})
+
+		if err != nil {
+			t.Error(err)
+		}
+
+		want := []*pb.User{User4}
+
+		if !reflect.DeepEqual(want, res.Items) {
+			t.Errorf("expect %+v, but got %+v", want, res.Items)
+		}
+	})
+
+	t.Run("SearchUser: filter by join count", func(t *testing.T) {
+		res, err := searcher.SearchUser(ctx, &pb.SearchUserRequest{
+			JoinCount: &pb.IntRange{From: ptr.To[int64](45), To: ptr.To[int64](50)},
+		})
+
+		if err != nil {
+			t.Error(err)
+		}
+
+		want := []*pb.User{User3}
+
+		if !reflect.DeepEqual(want, res.Items) {
+			t.Errorf("expect %+v, but got %+v", want, res.Items)
+		}
+	})
+
+	t.Run("SearchUser: filter by country", func(t *testing.T) {
+		res, err := searcher.SearchUser(ctx, &pb.SearchUserRequest{
+			Countries: []string{"JP"},
+		})
+
+		if err != nil {
+			t.Error(err)
+		}
+
+		want := []*pb.User{User4}
+
+		if !reflect.DeepEqual(want, res.Items) {
+			t.Errorf("expect %+v, but got %+v", want, res.Items)
 		}
 	})
 }

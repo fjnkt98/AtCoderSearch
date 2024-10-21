@@ -390,8 +390,211 @@ func createSearchProblemByKeywordQuery(req *pb.SearchProblemByKeywordRequest) (*
 	return q, nil
 }
 
+type User struct {
+	UserID        string  `mapstructure:"userId" bun:"user_id"`
+	Rating        int64   `mapstructure:"rating" bun:"rating"`
+	HighestRating int64   `mapstructure:"highestRating" bun:"highest_rating"`
+	Affiliation   *string `mapstructure:"affiliation" bun:"affiliation"`
+	BirthYear     *int64  `mapstructure:"birthYear" bun:"birth_year"`
+	Country       *string `mapstructure:"country" bun:"country"`
+	Crown         *string `mapstructure:"crown" bun:"crown"`
+	JoinCount     int64   `mapstructure:"joinCount" bun:"join_count"`
+	Rank          int64   `mapstructure:"rank" bun:"rank"`
+	ActiveRank    *int64  `mapstructure:"activeRank" bun:"active_rank"`
+	Wins          int64   `mapstructure:"wins" bun:"wins"`
+	UserURL       string  `mapstructure:"userUrl" bun:"user_url"`
+}
+
+func (u *User) Into() *pb.User {
+	return &pb.User{
+		UserId:        u.UserID,
+		Rating:        u.Rating,
+		HighestRating: u.HighestRating,
+		Affiliation:   u.Affiliation,
+		BirthYear:     u.BirthYear,
+		Country:       u.Country,
+		Crown:         u.Crown,
+		JoinCount:     u.JoinCount,
+		Rank:          u.Rank,
+		ActiveRank:    u.ActiveRank,
+		Wins:          u.Wins,
+		UserUrl:       u.UserURL,
+	}
+}
+
 func (s *Searcher) SearchUser(ctx context.Context, req *pb.SearchUserRequest) (*pb.SearchUserResponse, error) {
-	panic("")
+	index := s.client.Index("users")
+
+	q, err := createSearchUserQuery(req)
+	if err != nil {
+		if errors.Is(err, ErrInvalidRequest) {
+			return nil, status.Errorf(codes.InvalidArgument, "%s", err)
+		} else {
+			return nil, status.Errorf(codes.Unknown, "parse error: %s", err)
+		}
+	}
+
+	res, err := index.SearchWithContext(ctx, req.GetQ(), q)
+	if err != nil {
+		slog.LogAttrs(ctx, slog.LevelError, "search failed", slog.Any("error", err))
+		return nil, status.Errorf(codes.Unknown, "search: %s", err)
+	}
+
+	items := make([]*pb.User, len(res.Hits))
+	for i, hit := range res.Hits {
+		item, ok := hit.(map[string]any)
+		if !ok {
+			return nil, status.Errorf(codes.Unknown, "item conversion: item of res.Hits isn't an map[string]any")
+		}
+
+		var user User
+		if err := mapstructure.Decode(item, &user); err != nil {
+			return nil, status.Errorf(codes.Unknown, "item conversion: %s", err)
+		}
+
+		items[i] = user.Into()
+	}
+
+	countries := make([]*pb.Count, 0, 16)
+	ratings := make([]*pb.Count, 0, 16)
+	birthYears := make([]*pb.Count, 0, 16)
+	joinCounts := make([]*pb.Count, 0, 16)
+	for field, counts := range ParseFacetDistribution(res.FacetDistribution) {
+		switch field {
+		case "countries":
+			for _, k := range slices.Sorted(maps.Keys(counts)) {
+				countries = append(countries, &pb.Count{Label: k, Count: counts[k]})
+			}
+		case "ratingFacet":
+			for _, k := range slices.Sorted(maps.Keys(counts)) {
+				ratings = append(ratings, &pb.Count{Label: k, Count: counts[k]})
+			}
+		case "birthYearFacet":
+			for _, k := range slices.Sorted(maps.Keys(counts)) {
+				birthYears = append(birthYears, &pb.Count{Label: k, Count: counts[k]})
+			}
+		case "joinCountFacet":
+			for _, k := range slices.Sorted(maps.Keys(counts)) {
+				joinCounts = append(joinCounts, &pb.Count{Label: k, Count: counts[k]})
+			}
+		}
+	}
+
+	return &pb.SearchUserResponse{
+		Time:  res.ProcessingTimeMs,
+		Total: res.TotalHits,
+		Index: res.Page,
+		Pages: res.TotalPages,
+		Items: items,
+		Facet: &pb.UserFacet{
+			Countries:  countries,
+			Ratings:    ratings,
+			BirthYears: birthYears,
+			JoinCounts: joinCounts,
+		},
+	}, nil
+}
+
+func createSearchUserQuery(req *pb.SearchUserRequest) (*meilisearch.SearchRequest, error) {
+	q := &meilisearch.SearchRequest{
+		AttributesToRetrieve: FieldList(new(User)),
+	}
+
+	limit := int(req.GetLimit())
+	if limit > 200 {
+		return nil, fmt.Errorf("%w: too large limitation", ErrInvalidRequest)
+	}
+	q.HitsPerPage = int64(limit)
+
+	if page := req.GetPage(); page == 0 {
+		q.Page = 1
+	} else {
+		q.Page = int64(page)
+	}
+
+	if sorts := req.GetSorts(); len(sorts) > 0 {
+		sort := make([]string, 0, len(sorts))
+		for _, s := range sorts {
+			field, direction, ok := strings.Cut(s, ":")
+			if !ok {
+				return nil, fmt.Errorf("%w: sort direction needed", ErrInvalidRequest)
+			}
+			if !slices.Contains([]string{"asc", "desc"}, direction) {
+				return nil, fmt.Errorf("%w: invalid sort direction `%s`", ErrInvalidRequest, direction)
+			}
+			if !slices.Contains([]string{"rating", "birthYear", "userId"}, field) {
+				return nil, fmt.Errorf("%w: invalid sort field `%s`", ErrInvalidRequest, field)
+			}
+
+			sort = append(sort, fmt.Sprintf("%s:%s", field, direction))
+		}
+		sort = append(sort, "userId:asc")
+
+		q.Sort = sort
+	}
+
+	if facets := req.GetFacets(); len(facets) > 0 {
+		facet := make([]string, 0, len(facets))
+		for _, f := range facets {
+			if !slices.Contains([]string{"country", "rating", "birthYear", "joinCount"}, f) {
+				return nil, fmt.Errorf("%w: invalid facet field `%s`", ErrInvalidRequest, f)
+			}
+
+			switch f {
+			case "country":
+				facet = append(facet, f)
+			case "rating", "birthYear", "joinCount":
+				facet = append(facet, fmt.Sprintf("%sFacet", f))
+			}
+		}
+		q.Facets = facet
+	}
+
+	filters := make([][]string, 0, 5)
+	if userIDs := req.GetUserIds(); len(userIDs) > 0 {
+		userIDFilter := make([]string, 0, len(userIDs))
+		for _, u := range userIDs {
+			userIDFilter = append(userIDFilter, fmt.Sprintf("userId = '%s'", u))
+		}
+		filters = append(filters, userIDFilter)
+	}
+	if rating := req.GetRating(); rating != nil {
+		if from := rating.From; from != nil {
+			filters = append(filters, []string{fmt.Sprintf("rating >= %d", *from)})
+		}
+		if to := rating.To; to != nil {
+			filters = append(filters, []string{fmt.Sprintf("rating < %d", *to)})
+		}
+	}
+	if birthYear := req.GetBirthYear(); birthYear != nil {
+		if from := birthYear.From; from != nil {
+			filters = append(filters, []string{fmt.Sprintf("birthYear >= %d", *from)})
+		}
+		if to := birthYear.To; to != nil {
+			filters = append(filters, []string{fmt.Sprintf("birthYear < %d", *to)})
+		}
+	}
+	if joinCount := req.GetJoinCount(); joinCount != nil {
+		if from := joinCount.From; from != nil {
+			filters = append(filters, []string{fmt.Sprintf("joinCount >= %d", *from)})
+		}
+		if to := joinCount.To; to != nil {
+			filters = append(filters, []string{fmt.Sprintf("joinCount < %d", *to)})
+		}
+	}
+	if countries := req.GetCountries(); len(countries) > 0 {
+		countriesFilter := make([]string, 0, len(countries))
+		for _, u := range countries {
+			countriesFilter = append(countriesFilter, fmt.Sprintf("country = '%s'", u))
+		}
+		filters = append(filters, countriesFilter)
+	}
+
+	if len(filters) > 0 {
+		q.Filter = filters
+	}
+
+	return q, nil
 }
 
 func (s *Searcher) SearchSubmission(ctx context.Context, req *pb.SearchSubmissionRequest) (*pb.SearchSubmissionResponse, error) {
