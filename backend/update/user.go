@@ -32,7 +32,7 @@ func (ix *UserIndexer) Settings() *meilisearch.Settings {
 			"*",
 		},
 		FilterableAttributes: []string{
-			"userID",
+			"userId",
 			"rating",
 			"highestRating",
 			"affiliation",
@@ -51,13 +51,14 @@ func (ix *UserIndexer) Settings() *meilisearch.Settings {
 		SortableAttributes: []string{
 			"rating",
 			"birthYear",
+			"userId",
 		},
 		Synonyms: map[string][]string{},
 	}
 }
 
 func (ix *UserIndexer) PrimaryKey() string {
-	return "userID"
+	return "userId"
 }
 
 func (ix *UserIndexer) IndexName() string {
@@ -146,7 +147,7 @@ func (r UserRow) Document(ctx context.Context) (UserDocument, error) {
 }
 
 type UserDocument struct {
-	UserID        string  `json:"userID"`
+	UserID        string  `json:"userId"`
 	Rating        int     `json:"rating"`
 	HighestRating int     `json:"highestRating"`
 	Affiliation   *string `json:"affiliation"`
@@ -159,5 +160,5 @@ type UserDocument struct {
 	Wins          int     `json:"wins" `
 	Color         string  `json:"color"`
 	HighestColor  string  `json:"highestColor"`
-	UserURL       string  `json:"userURL"`
+	UserURL       string  `json:"userUrl"`
 }
