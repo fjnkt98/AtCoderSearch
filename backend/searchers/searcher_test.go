@@ -141,15 +141,15 @@ func TestCreateSearchUserRequest(t *testing.T) {
 			req  *pb.SearchUserRequest
 			want *meilisearch.SearchRequest
 		}{
-			{name: "empty", req: &pb.SearchUserRequest{}, want: &meilisearch.SearchRequest{Page: 1, AttributesToRetrieve: fields}},
-			{name: "pagination", req: &pb.SearchUserRequest{Limit: ptr.To[int64](20)}, want: &meilisearch.SearchRequest{HitsPerPage: 20, Page: 1, AttributesToRetrieve: fields}},
+			{name: "empty", req: &pb.SearchUserRequest{}, want: &meilisearch.SearchRequest{Sort: []string{"userId:asc"}, Page: 1, AttributesToRetrieve: fields}},
+			{name: "pagination", req: &pb.SearchUserRequest{Limit: ptr.To[int64](20)}, want: &meilisearch.SearchRequest{HitsPerPage: 20, Sort: []string{"userId:asc"}, Page: 1, AttributesToRetrieve: fields}},
 			{name: "sort(valid)", req: &pb.SearchUserRequest{Sorts: []string{"rating:desc", "birthYear:asc"}}, want: &meilisearch.SearchRequest{Sort: []string{"rating:desc", "birthYear:asc", "userId:asc"}, Page: 1, AttributesToRetrieve: fields}},
-			{name: "facet(valid)", req: &pb.SearchUserRequest{Facets: []string{"country", "rating", "birthYear", "joinCount"}}, want: &meilisearch.SearchRequest{Facets: []string{"country", "ratingFacet", "birthYearFacet", "joinCountFacet"}, Page: 1, AttributesToRetrieve: fields}},
-			{name: "filter by user id", req: &pb.SearchUserRequest{UserIds: []string{"user1", "user2"}}, want: &meilisearch.SearchRequest{Filter: [][]string{{"userId = 'user1'", "userId = 'user2'"}}, Page: 1, AttributesToRetrieve: fields}},
-			{name: "filter by rating", req: &pb.SearchUserRequest{Rating: &pb.IntRange{From: ptr.To[int64](800), To: ptr.To[int64](1200)}}, want: &meilisearch.SearchRequest{Filter: [][]string{{"rating >= 800"}, {"rating < 1200"}}, Page: 1, AttributesToRetrieve: fields}},
-			{name: "filter by birth year", req: &pb.SearchUserRequest{BirthYear: &pb.IntRange{From: ptr.To[int64](1998), To: ptr.To[int64](2000)}}, want: &meilisearch.SearchRequest{Filter: [][]string{{"birthYear >= 1998"}, {"birthYear < 2000"}}, Page: 1, AttributesToRetrieve: fields}},
-			{name: "filter by join count", req: &pb.SearchUserRequest{JoinCount: &pb.IntRange{From: ptr.To[int64](5), To: ptr.To[int64](10)}}, want: &meilisearch.SearchRequest{Filter: [][]string{{"joinCount >= 5"}, {"joinCount < 10"}}, Page: 1, AttributesToRetrieve: fields}},
-			{name: "filter by country", req: &pb.SearchUserRequest{Countries: []string{"JP"}}, want: &meilisearch.SearchRequest{Filter: [][]string{{"country = 'JP'"}}, Page: 1, AttributesToRetrieve: fields}},
+			{name: "facet(valid)", req: &pb.SearchUserRequest{Facets: []string{"country", "rating", "birthYear", "joinCount"}}, want: &meilisearch.SearchRequest{Facets: []string{"country", "ratingFacet", "birthYearFacet", "joinCountFacet"}, Sort: []string{"userId:asc"}, Page: 1, AttributesToRetrieve: fields}},
+			{name: "filter by user id", req: &pb.SearchUserRequest{UserIds: []string{"user1", "user2"}}, want: &meilisearch.SearchRequest{Filter: [][]string{{"userId = 'user1'", "userId = 'user2'"}}, Sort: []string{"userId:asc"}, Page: 1, AttributesToRetrieve: fields}},
+			{name: "filter by rating", req: &pb.SearchUserRequest{Rating: &pb.IntRange{From: ptr.To[int64](800), To: ptr.To[int64](1200)}}, want: &meilisearch.SearchRequest{Filter: [][]string{{"rating >= 800"}, {"rating < 1200"}}, Sort: []string{"userId:asc"}, Page: 1, AttributesToRetrieve: fields}},
+			{name: "filter by birth year", req: &pb.SearchUserRequest{BirthYear: &pb.IntRange{From: ptr.To[int64](1998), To: ptr.To[int64](2000)}}, want: &meilisearch.SearchRequest{Filter: [][]string{{"birthYear >= 1998"}, {"birthYear < 2000"}}, Sort: []string{"userId:asc"}, Page: 1, AttributesToRetrieve: fields}},
+			{name: "filter by join count", req: &pb.SearchUserRequest{JoinCount: &pb.IntRange{From: ptr.To[int64](5), To: ptr.To[int64](10)}}, want: &meilisearch.SearchRequest{Filter: [][]string{{"joinCount >= 5"}, {"joinCount < 10"}}, Sort: []string{"userId:asc"}, Page: 1, AttributesToRetrieve: fields}},
+			{name: "filter by country", req: &pb.SearchUserRequest{Countries: []string{"JP"}}, want: &meilisearch.SearchRequest{Filter: [][]string{{"country = 'JP'"}}, Sort: []string{"userId:asc"}, Page: 1, AttributesToRetrieve: fields}},
 		}
 
 		for _, tt := range cases {

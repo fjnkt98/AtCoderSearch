@@ -79,6 +79,109 @@ func ParseFacetDistribution(facetDistribution any) map[string]map[string]int64 {
 	return result
 }
 
+type Into[T any] interface {
+	Into() T
+}
+
+func ScanItems[S any, T Into[S]](hits []any) ([]S, error) {
+	items := make([]S, len(hits))
+	for i, hit := range hits {
+		hit, ok := hit.(map[string]any)
+		if !ok {
+			return nil, status.Errorf(codes.Unknown, "item conversion: item of res.Hits isn't an map[string]any")
+		}
+
+		var item T
+		if err := mapstructure.Decode(hit, &item); err != nil {
+			return nil, status.Errorf(codes.Unknown, "item conversion: %s", err)
+		}
+
+		items[i] = item.Into()
+	}
+
+	return items, nil
+}
+
+func GenSort(sorts []string, sep rune, allowed []string, defaultKey ...string) ([]string, error) {
+	sort := make([]string, 0, len(sorts)+len(defaultKey))
+
+	for _, s := range sorts {
+		field, direction, ok := strings.Cut(s, ":")
+		if !ok {
+			return nil, fmt.Errorf("%w: sort direction needed", ErrInvalidRequest)
+		}
+		if !slices.Contains([]string{"asc", "desc"}, direction) {
+			return nil, fmt.Errorf("%w: invalid sort direction `%s`", ErrInvalidRequest, direction)
+		}
+		if len(allowed) > 0 && !slices.Contains(allowed, field) {
+			return nil, fmt.Errorf("%w: invalid sort field `%s`", ErrInvalidRequest, field)
+		}
+
+		sort = append(sort, fmt.Sprintf("%s%c%s", field, sep, direction))
+	}
+	sort = append(sort, defaultKey...)
+
+	return sort, nil
+}
+
+func GenFacet(facets []string, mapping map[string]string) ([]string, error) {
+	if len(facets) == 0 {
+		return nil, nil
+	}
+
+	facet := make([]string, 0, len(facets))
+	for _, f := range facets {
+		if field, ok := mapping[f]; ok {
+			facet = append(facet, field)
+		} else {
+			return nil, fmt.Errorf("%w: invalid facet field `%s`", ErrInvalidRequest, f)
+		}
+	}
+
+	return facet, nil
+}
+
+func StringSliceFilter(field string, values []string) []string {
+	if len(values) == 0 {
+		return nil
+	}
+
+	result := make([]string, 0, len(values))
+	for _, v := range values {
+		result = append(result, fmt.Sprintf("%s = '%s'", field, v))
+	}
+
+	return result
+}
+
+func IntRangeFilter(field string, value *pb.IntRange) [][]string {
+	if value == nil {
+		return nil
+	}
+
+	result := make([][]string, 0, 2)
+	if from := value.From; from != nil {
+		result = append(result, []string{fmt.Sprintf("%s >= %d", field, *from)})
+	}
+	if to := value.To; to != nil {
+		result = append(result, []string{fmt.Sprintf("%s < %d", field, *to)})
+	}
+
+	if len(result) == 0 {
+		return nil
+	}
+
+	return result
+}
+
+func NullableBoolFilter(field string, value *bool) []string {
+	if value == nil {
+		return nil
+	}
+
+	return []string{fmt.Sprintf("%s = %t", field, *value)}
+}
+
 type Searcher struct {
 	pb.UnimplementedSearchServiceServer
 
@@ -109,7 +212,7 @@ type Problem struct {
 	IsExperimental bool    `mapstructure:"isExperimental" bun:"is_experimental"`
 }
 
-func (p *Problem) Into() *pb.Problem {
+func (p Problem) Into() *pb.Problem {
 	return &pb.Problem{
 		ProblemId:      p.ProblemID,
 		ProblemTitle:   p.ProblemTitle,
@@ -265,19 +368,9 @@ func (s *Searcher) SearchProblemByKeyword(ctx context.Context, req *pb.SearchPro
 		return nil, status.Errorf(codes.Unknown, "search: %s", err)
 	}
 
-	items := make([]*pb.Problem, len(res.Hits))
-	for i, hit := range res.Hits {
-		item, ok := hit.(map[string]any)
-		if !ok {
-			return nil, status.Errorf(codes.Unknown, "item conversion: item of res.Hits isn't an map[string]any")
-		}
-
-		var problem Problem
-		if err := mapstructure.Decode(item, &problem); err != nil {
-			return nil, status.Errorf(codes.Unknown, "item conversion: %s", err)
-		}
-
-		items[i] = problem.Into()
+	items, err := ScanItems[*pb.Problem, Problem](res.Hits)
+	if err != nil {
+		return nil, err
 	}
 
 	categories := make([]*pb.Count, 0, 16)
@@ -325,62 +418,27 @@ func createSearchProblemByKeywordQuery(req *pb.SearchProblemByKeywordRequest) (*
 		q.Page = int64(page)
 	}
 
-	if sorts := req.GetSorts(); len(sorts) > 0 {
-		sort := make([]string, 0, len(sorts))
-		for _, s := range sorts {
-			field, direction, ok := strings.Cut(s, ":")
-			if !ok {
-				return nil, fmt.Errorf("%w: sort direction needed", ErrInvalidRequest)
-			}
-			if !slices.Contains([]string{"asc", "desc"}, direction) {
-				return nil, fmt.Errorf("%w: invalid sort direction `%s`", ErrInvalidRequest, direction)
-			}
-			if !slices.Contains([]string{"startAt", "difficulty", "problemId", "contestId"}, field) {
-				return nil, fmt.Errorf("%w: invalid sort field `%s`", ErrInvalidRequest, field)
-			}
-
-			sort = append(sort, fmt.Sprintf("%s:%s", field, direction))
-		}
-		sort = append(sort, "problemId:asc")
-
+	if sort, err := GenSort(req.GetSorts(), ':', []string{"startAt", "difficulty", "problemId", "contestId"}, "problemId:asc"); err != nil {
+		return nil, err
+	} else {
 		q.Sort = sort
 	}
 
-	if facets := req.GetFacets(); len(facets) > 0 {
-		facet := make([]string, 0, len(facets))
-		for _, f := range facets {
-			if !slices.Contains([]string{"category", "difficulty"}, f) {
-				return nil, fmt.Errorf("%w: invalid facet field `%s`", ErrInvalidRequest, f)
-			}
-
-			switch f {
-			case "category":
-				facet = append(facet, f)
-			case "difficulty":
-				facet = append(facet, "difficultyFacet")
-			}
-		}
+	if facet, err := GenFacet(req.GetFacets(), map[string]string{"category": "category", "difficulty": "difficultyFacet"}); err != nil {
+		return nil, err
+	} else {
 		q.Facets = facet
 	}
 
 	filters := make([][]string, 0, 3)
-	if categories := req.GetCategories(); len(categories) != 0 {
-		categoryFilter := make([]string, 0, len(categories))
-		for _, c := range categories {
-			categoryFilter = append(categoryFilter, fmt.Sprintf("category = '%s'", c))
-		}
-		filters = append(filters, categoryFilter)
+	if categories := StringSliceFilter("category", req.GetCategories()); categories != nil {
+		filters = append(filters, categories)
 	}
-	if difficulty := req.GetDifficulty(); difficulty != nil {
-		if from := difficulty.From; from != nil {
-			filters = append(filters, []string{fmt.Sprintf("difficulty >= %d", *from)})
-		}
-		if to := difficulty.To; to != nil {
-			filters = append(filters, []string{fmt.Sprintf("difficulty < %d", *to)})
-		}
+	if difficulty := IntRangeFilter("difficulty", req.GetDifficulty()); difficulty != nil {
+		filters = append(filters, difficulty...)
 	}
-	if experimental := req.Experimental; experimental != nil {
-		filters = append(filters, []string{fmt.Sprintf("isExperimental = %t", *experimental)})
+	if experimental := NullableBoolFilter("isExperimental", req.Experimental); experimental != nil {
+		filters = append(filters, experimental)
 	}
 
 	if len(filters) > 0 {
@@ -405,7 +463,7 @@ type User struct {
 	UserURL       string  `mapstructure:"userUrl" bun:"user_url"`
 }
 
-func (u *User) Into() *pb.User {
+func (u User) Into() *pb.User {
 	return &pb.User{
 		UserId:        u.UserID,
 		Rating:        u.Rating,
@@ -440,19 +498,9 @@ func (s *Searcher) SearchUser(ctx context.Context, req *pb.SearchUserRequest) (*
 		return nil, status.Errorf(codes.Unknown, "search: %s", err)
 	}
 
-	items := make([]*pb.User, len(res.Hits))
-	for i, hit := range res.Hits {
-		item, ok := hit.(map[string]any)
-		if !ok {
-			return nil, status.Errorf(codes.Unknown, "item conversion: item of res.Hits isn't an map[string]any")
-		}
-
-		var user User
-		if err := mapstructure.Decode(item, &user); err != nil {
-			return nil, status.Errorf(codes.Unknown, "item conversion: %s", err)
-		}
-
-		items[i] = user.Into()
+	items, err := ScanItems[*pb.User, User](res.Hits)
+	if err != nil {
+		return nil, err
 	}
 
 	countries := make([]*pb.Count, 0, 16)
@@ -512,82 +560,38 @@ func createSearchUserQuery(req *pb.SearchUserRequest) (*meilisearch.SearchReques
 		q.Page = int64(page)
 	}
 
-	if sorts := req.GetSorts(); len(sorts) > 0 {
-		sort := make([]string, 0, len(sorts))
-		for _, s := range sorts {
-			field, direction, ok := strings.Cut(s, ":")
-			if !ok {
-				return nil, fmt.Errorf("%w: sort direction needed", ErrInvalidRequest)
-			}
-			if !slices.Contains([]string{"asc", "desc"}, direction) {
-				return nil, fmt.Errorf("%w: invalid sort direction `%s`", ErrInvalidRequest, direction)
-			}
-			if !slices.Contains([]string{"rating", "birthYear", "userId"}, field) {
-				return nil, fmt.Errorf("%w: invalid sort field `%s`", ErrInvalidRequest, field)
-			}
-
-			sort = append(sort, fmt.Sprintf("%s:%s", field, direction))
-		}
-		sort = append(sort, "userId:asc")
-
+	if sort, err := GenSort(req.GetSorts(), ':', []string{"rating", "birthYear", "userId"}, "userId:asc"); err != nil {
+		return nil, err
+	} else {
 		q.Sort = sort
 	}
 
-	if facets := req.GetFacets(); len(facets) > 0 {
-		facet := make([]string, 0, len(facets))
-		for _, f := range facets {
-			if !slices.Contains([]string{"country", "rating", "birthYear", "joinCount"}, f) {
-				return nil, fmt.Errorf("%w: invalid facet field `%s`", ErrInvalidRequest, f)
-			}
-
-			switch f {
-			case "country":
-				facet = append(facet, f)
-			case "rating", "birthYear", "joinCount":
-				facet = append(facet, fmt.Sprintf("%sFacet", f))
-			}
-		}
+	if facet, err := GenFacet(req.GetFacets(), map[string]string{
+		"country":   "country",
+		"rating":    "ratingFacet",
+		"birthYear": "birthYearFacet",
+		"joinCount": "joinCountFacet",
+	}); err != nil {
+		return nil, err
+	} else {
 		q.Facets = facet
 	}
 
 	filters := make([][]string, 0, 5)
-	if userIDs := req.GetUserIds(); len(userIDs) > 0 {
-		userIDFilter := make([]string, 0, len(userIDs))
-		for _, u := range userIDs {
-			userIDFilter = append(userIDFilter, fmt.Sprintf("userId = '%s'", u))
-		}
-		filters = append(filters, userIDFilter)
+	if users := StringSliceFilter("userId", req.GetUserIds()); users != nil {
+		filters = append(filters, users)
 	}
-	if rating := req.GetRating(); rating != nil {
-		if from := rating.From; from != nil {
-			filters = append(filters, []string{fmt.Sprintf("rating >= %d", *from)})
-		}
-		if to := rating.To; to != nil {
-			filters = append(filters, []string{fmt.Sprintf("rating < %d", *to)})
-		}
+	if rating := IntRangeFilter("rating", req.GetRating()); rating != nil {
+		filters = append(filters, rating...)
 	}
-	if birthYear := req.GetBirthYear(); birthYear != nil {
-		if from := birthYear.From; from != nil {
-			filters = append(filters, []string{fmt.Sprintf("birthYear >= %d", *from)})
-		}
-		if to := birthYear.To; to != nil {
-			filters = append(filters, []string{fmt.Sprintf("birthYear < %d", *to)})
-		}
+	if birthYear := IntRangeFilter("birthYear", req.GetBirthYear()); birthYear != nil {
+		filters = append(filters, birthYear...)
 	}
-	if joinCount := req.GetJoinCount(); joinCount != nil {
-		if from := joinCount.From; from != nil {
-			filters = append(filters, []string{fmt.Sprintf("joinCount >= %d", *from)})
-		}
-		if to := joinCount.To; to != nil {
-			filters = append(filters, []string{fmt.Sprintf("joinCount < %d", *to)})
-		}
+	if joinCount := IntRangeFilter("joinCount", req.GetJoinCount()); joinCount != nil {
+		filters = append(filters, joinCount...)
 	}
-	if countries := req.GetCountries(); len(countries) > 0 {
-		countriesFilter := make([]string, 0, len(countries))
-		for _, u := range countries {
-			countriesFilter = append(countriesFilter, fmt.Sprintf("country = '%s'", u))
-		}
-		filters = append(filters, countriesFilter)
+	if countries := StringSliceFilter("country", req.GetCountries()); countries != nil {
+		filters = append(filters, countries)
 	}
 
 	if len(filters) > 0 {
