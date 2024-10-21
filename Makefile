@@ -8,6 +8,8 @@ build-backend:
 
 .PHONY: test-backend
 test-backend:
+	$(MAKE) -C proto buf-generate
+	$(MAKE) -C backend sqlc
 	$(MAKE) -C backend test
 
 .PHONY: build-image
