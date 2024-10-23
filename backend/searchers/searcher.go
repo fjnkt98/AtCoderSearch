@@ -259,7 +259,7 @@ func createSearchProblemQuery(pool *pgxpool.Pool, req *pb.SearchProblemRequest) 
 	db := bun.NewDB(stdlib.OpenDBFromPool(pool), pgdialect.New())
 
 	limit := int(req.GetLimit())
-	if limit > 200 {
+	if limit > 1000 {
 		return nil, fmt.Errorf("%w: too large limitation", ErrInvalidRequest)
 	}
 
@@ -407,7 +407,7 @@ func createSearchProblemByKeywordQuery(req *pb.SearchProblemByKeywordRequest) (*
 	}
 
 	limit := req.GetLimit()
-	if limit > 200 {
+	if limit > 1000 {
 		return nil, fmt.Errorf("%w: too large limitation", ErrInvalidRequest)
 	}
 	q.HitsPerPage = int64(limit)
@@ -509,7 +509,7 @@ func (s *Searcher) SearchUser(ctx context.Context, req *pb.SearchUserRequest) (*
 	joinCounts := make([]*pb.Count, 0, 16)
 	for field, counts := range ParseFacetDistribution(res.FacetDistribution) {
 		switch field {
-		case "countries":
+		case "country":
 			for _, k := range slices.Sorted(maps.Keys(counts)) {
 				countries = append(countries, &pb.Count{Label: k, Count: counts[k]})
 			}
@@ -549,7 +549,7 @@ func createSearchUserQuery(req *pb.SearchUserRequest) (*meilisearch.SearchReques
 	}
 
 	limit := int(req.GetLimit())
-	if limit > 200 {
+	if limit > 1000 {
 		return nil, fmt.Errorf("%w: too large limitation", ErrInvalidRequest)
 	}
 	q.HitsPerPage = int64(limit)
@@ -601,8 +601,200 @@ func createSearchUserQuery(req *pb.SearchUserRequest) (*meilisearch.SearchReques
 	return q, nil
 }
 
+type Submission struct {
+	SubmissionID  int64   `bun:"submission_id"`
+	SubmittedAt   int64   `bun:"submitted_at"`
+	SubmissionURL string  `bun:"submission_url"`
+	ProblemID     string  `bun:"problem_id"`
+	ProblemTitle  string  `bun:"problem_title"`
+	ProblemURL    string  `bun:"problem_url"`
+	ContestID     string  `bun:"contest_id"`
+	ContestTitle  string  `bun:"contest_title"`
+	ContestURL    string  `bun:"contest_url"`
+	Category      string  `bun:"category"`
+	Difficulty    *int64  `bun:"difficulty"`
+	UserID        string  `bun:"user_id"`
+	Language      string  `bun:"language"`
+	LanguageGroup string  `bun:"language_group"`
+	Point         float64 `bun:"point"`
+	Length        int64   `bun:"length"`
+	Result        string  `bun:"result"`
+	ExecutionTime *int64  `bun:"execution_time"`
+}
+
+func (s Submission) Into() *pb.Submission {
+	return &pb.Submission{
+		SubmissionId:  s.SubmissionID,
+		SubmittedAt:   s.SubmittedAt,
+		SubmissionUrl: s.SubmissionURL,
+		ProblemId:     s.ProblemID,
+		ProblemTitle:  s.ProblemTitle,
+		ProblemUrl:    s.ProblemURL,
+		ContestId:     s.ContestID,
+		ContestTitle:  s.ContestTitle,
+		ContestUrl:    s.ContestURL,
+		Category:      s.Category,
+		Difficulty:    s.Difficulty,
+		UserId:        s.UserID,
+		Language:      s.Language,
+		LanguageGroup: s.LanguageGroup,
+		Point:         s.Point,
+		Length:        s.Length,
+		Result:        s.Result,
+		ExecutionTime: s.ExecutionTime,
+	}
+}
+
 func (s *Searcher) SearchSubmission(ctx context.Context, req *pb.SearchSubmissionRequest) (*pb.SearchSubmissionResponse, error) {
-	panic("")
+	start := time.Now()
+
+	q, err := createSearchSubmissionQuery(s.pool, req)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "%s", err)
+	}
+
+	items := make([]*pb.Submission, 0, req.GetLimit())
+	var rows []Submission
+	if err := q.Scan(ctx, &rows); err != nil {
+		return nil, status.Errorf(codes.Unknown, "scan rows: %s", err)
+	}
+	for _, r := range rows {
+		items = append(items, r.Into())
+	}
+
+	return &pb.SearchSubmissionResponse{
+		Time:  int64(time.Since(start) / time.Millisecond),
+		Index: 0,
+		Items: items,
+	}, nil
+}
+
+func createSearchSubmissionQuery(pool *pgxpool.Pool, req *pb.SearchSubmissionRequest) (*bun.SelectQuery, error) {
+	db := bun.NewDB(stdlib.OpenDBFromPool(pool), pgdialect.New())
+
+	limit := int(req.GetLimit())
+	if limit > 1000 {
+		return nil, fmt.Errorf("%w: too large limitation", ErrInvalidRequest)
+	}
+
+	var offset int
+	if page := int(req.GetPage()); page == 0 {
+		offset = 0
+	} else {
+		offset = (page - 1) * limit
+	}
+
+	q := db.NewSelect().
+		ColumnExpr("s.id AS submission_id").
+		ColumnExpr("s.epoch_second AS submitted_at").
+		ColumnExpr("FORMAT('https://atcoder.jp/contests/%s/submissions/%s', s.contest_id, s.id) AS submission_url").
+		ColumnExpr("s.problem_id").
+		ColumnExpr("p.title AS problem_title").
+		ColumnExpr("p.url AS problem_url").
+		ColumnExpr("s.contest_id").
+		ColumnExpr("c.title AS contest_title").
+		ColumnExpr("CONCAT('https://atcoder.jp/contests/', c.contest_id) AS contest_url").
+		ColumnExpr("c.category").
+		ColumnExpr("d.difficulty").
+		ColumnExpr("s.user_id").
+		ColumnExpr("s.language").
+		ColumnExpr("l.group AS language_group").
+		ColumnExpr("s.point").
+		ColumnExpr("s.length").
+		ColumnExpr("s.result").
+		ColumnExpr("s.execution_time").
+		TableExpr("submissions AS s").
+		Join("LEFT JOIN contests AS c ON s.contest_id = c.contest_id").
+		Join("LEFT JOIN problems AS p ON s.problem_id = p.problem_id").
+		Join("LEFT JOIN difficulties AS d ON s.problem_id = d.problem_id").
+		Join("LEFT JOIN languages AS l ON s.language = l.language").
+		Limit(limit).
+		Offset(offset)
+
+	fields := map[string]string{
+		"executionTime": "execution_time",
+		"epochSecond":   "epoch_second",
+		"point":         "point",
+		"length":        "length",
+	}
+
+	sort := make([]string, 0, 4)
+	if sorts := req.GetSorts(); len(sorts) > 0 {
+		for _, s := range sorts {
+			field, direction, ok := strings.Cut(s, ":")
+			if !ok {
+				return nil, fmt.Errorf("%w: sort direction needed", ErrInvalidRequest)
+			}
+			if !slices.Contains([]string{"asc", "desc"}, direction) {
+				return nil, fmt.Errorf("%w: invalid sort direction `%s`", ErrInvalidRequest, direction)
+			}
+
+			column, ok := fields[field]
+			if !ok {
+				return nil, fmt.Errorf("%w: invalid sort field `%s`", ErrInvalidRequest, field)
+			}
+
+			sort = append(sort, fmt.Sprintf("%s %s", column, direction))
+		}
+	}
+	sort = append(sort, "id desc")
+	q = q.Order(sort...)
+
+	if epochSecond := req.GetEpochSecond(); epochSecond != nil {
+		if from := epochSecond.From; from != nil {
+			q = q.Where("s.epoch_second >= ?", *from)
+		}
+		if to := epochSecond.To; to != nil {
+			q = q.Where("s.epoch_second < ?", *to)
+		}
+	}
+	if problems := req.GetProblemIds(); len(problems) > 0 {
+		q = q.Where("s.problem_id IN (?)", bun.In(problems))
+	}
+	if contests := req.GetContestIds(); len(contests) > 0 {
+		q = q.Where("s.contest_id IN (?)", bun.In(contests))
+	}
+	if categories := req.GetCategories(); len(categories) > 0 {
+		q = q.Where("c.category IN (?)", bun.In(categories))
+	}
+	if users := req.GetUserIds(); len(users) > 0 {
+		q = q.Where("s.user_id IN (?)", bun.In(users))
+	}
+	if languages := req.GetLanguages(); len(languages) > 0 {
+		q = q.Where("s.language IN (?)", bun.In(languages))
+	}
+	if groups := req.GetLanguageGroups(); len(groups) > 0 {
+		q = q.Where("l.group IN (?)", bun.In(groups))
+	}
+	if point := req.GetPoint(); point != nil {
+		if from := point.From; from != nil {
+			q = q.Where("s.point >= ?", *from)
+		}
+		if to := point.To; to != nil {
+			q = q.Where("s.point < ?", *to)
+		}
+	}
+	if length := req.GetLength(); length != nil {
+		if from := length.From; from != nil {
+			q = q.Where("s.length >= ?", *from)
+		}
+		if to := length.To; to != nil {
+			q = q.Where("s.length < ?", *to)
+		}
+	}
+	if results := req.GetResults(); len(results) > 0 {
+		q = q.Where("s.result IN (?)", bun.In(results))
+	}
+	if exec := req.GetExecutionTime(); exec != nil {
+		if from := exec.From; from != nil {
+			q = q.Where("s.execution_time >= ?", *from)
+		}
+		if to := exec.To; to != nil {
+			q = q.Where("s.execution_time < ?", *to)
+		}
+	}
+
+	return q, nil
 }
 
 func (s *Searcher) GetCategory(ctx context.Context, req *pb.GetCategoryRequest) (*pb.GetCategoryResponse, error) {

@@ -80,16 +80,16 @@ func TestCreateSearchProblemByKeywordRequest(t *testing.T) {
 			req  *pb.SearchProblemByKeywordRequest
 			want *meilisearch.SearchRequest
 		}{
-			{name: "empty", req: &pb.SearchProblemByKeywordRequest{}, want: &meilisearch.SearchRequest{HitsPerPage: 0, Page: 1, AttributesToRetrieve: fields}},
-			{name: "pagination", req: &pb.SearchProblemByKeywordRequest{Limit: ptr.To[uint64](20), Page: ptr.To[uint64](2)}, want: &meilisearch.SearchRequest{HitsPerPage: 20, Page: 2, AttributesToRetrieve: fields}},
+			{name: "empty", req: &pb.SearchProblemByKeywordRequest{}, want: &meilisearch.SearchRequest{Sort: []string{"problemId:asc"}, HitsPerPage: 0, Page: 1, AttributesToRetrieve: fields}},
+			{name: "pagination", req: &pb.SearchProblemByKeywordRequest{Limit: ptr.To[uint64](20), Page: ptr.To[uint64](2)}, want: &meilisearch.SearchRequest{Sort: []string{"problemId:asc"}, HitsPerPage: 20, Page: 2, AttributesToRetrieve: fields}},
 			{name: "sort(valid)", req: &pb.SearchProblemByKeywordRequest{Sorts: []string{"startAt:desc", "difficulty:asc"}}, want: &meilisearch.SearchRequest{Sort: []string{"startAt:desc", "difficulty:asc", "problemId:asc"}, Page: 1, AttributesToRetrieve: fields}},
-			{name: "facet(valid)", req: &pb.SearchProblemByKeywordRequest{Facets: []string{"category", "difficulty"}}, want: &meilisearch.SearchRequest{Facets: []string{"category", "difficultyFacet"}, Page: 1, AttributesToRetrieve: fields}},
-			{name: "filter by category", req: &pb.SearchProblemByKeywordRequest{Categories: []string{"ABC", "ARC"}}, want: &meilisearch.SearchRequest{Filter: [][]string{{"category = 'ABC'", "category = 'ARC'"}}, Page: 1, AttributesToRetrieve: fields}},
-			{name: "filter by difficulty(from only)", req: &pb.SearchProblemByKeywordRequest{Difficulty: &pb.IntRange{From: ptr.To[int64](800)}}, want: &meilisearch.SearchRequest{Filter: [][]string{{"difficulty >= 800"}}, Page: 1, AttributesToRetrieve: fields}},
-			{name: "filter by difficulty(to only)", req: &pb.SearchProblemByKeywordRequest{Difficulty: &pb.IntRange{To: ptr.To[int64](1200)}}, want: &meilisearch.SearchRequest{Filter: [][]string{{"difficulty < 1200"}}, Page: 1, AttributesToRetrieve: fields}},
-			{name: "filter by difficulty(both)", req: &pb.SearchProblemByKeywordRequest{Difficulty: &pb.IntRange{From: ptr.To[int64](800), To: ptr.To[int64](1200)}}, want: &meilisearch.SearchRequest{Filter: [][]string{{"difficulty >= 800"}, {"difficulty < 1200"}}, Page: 1, AttributesToRetrieve: fields}},
-			{name: "filter for experimental", req: &pb.SearchProblemByKeywordRequest{Experimental: ptr.To(true)}, want: &meilisearch.SearchRequest{Filter: [][]string{{"isExperimental = true"}}, Page: 1, AttributesToRetrieve: fields}},
-			{name: "filter for not experimental", req: &pb.SearchProblemByKeywordRequest{Experimental: ptr.To(false)}, want: &meilisearch.SearchRequest{Filter: [][]string{{"isExperimental = false"}}, Page: 1, AttributesToRetrieve: fields}},
+			{name: "facet(valid)", req: &pb.SearchProblemByKeywordRequest{Facets: []string{"category", "difficulty"}}, want: &meilisearch.SearchRequest{Facets: []string{"category", "difficultyFacet"}, Sort: []string{"problemId:asc"}, Page: 1, AttributesToRetrieve: fields}},
+			{name: "filter by category", req: &pb.SearchProblemByKeywordRequest{Categories: []string{"ABC", "ARC"}}, want: &meilisearch.SearchRequest{Filter: [][]string{{"category = 'ABC'", "category = 'ARC'"}}, Sort: []string{"problemId:asc"}, Page: 1, AttributesToRetrieve: fields}},
+			{name: "filter by difficulty(from only)", req: &pb.SearchProblemByKeywordRequest{Difficulty: &pb.IntRange{From: ptr.To[int64](800)}}, want: &meilisearch.SearchRequest{Filter: [][]string{{"difficulty >= 800"}}, Sort: []string{"problemId:asc"}, Page: 1, AttributesToRetrieve: fields}},
+			{name: "filter by difficulty(to only)", req: &pb.SearchProblemByKeywordRequest{Difficulty: &pb.IntRange{To: ptr.To[int64](1200)}}, want: &meilisearch.SearchRequest{Filter: [][]string{{"difficulty < 1200"}}, Sort: []string{"problemId:asc"}, Page: 1, AttributesToRetrieve: fields}},
+			{name: "filter by difficulty(both)", req: &pb.SearchProblemByKeywordRequest{Difficulty: &pb.IntRange{From: ptr.To[int64](800), To: ptr.To[int64](1200)}}, want: &meilisearch.SearchRequest{Filter: [][]string{{"difficulty >= 800"}, {"difficulty < 1200"}}, Sort: []string{"problemId:asc"}, Page: 1, AttributesToRetrieve: fields}},
+			{name: "filter for experimental", req: &pb.SearchProblemByKeywordRequest{Experimental: ptr.To(true)}, want: &meilisearch.SearchRequest{Filter: [][]string{{"isExperimental = true"}}, Sort: []string{"problemId:asc"}, Page: 1, AttributesToRetrieve: fields}},
+			{name: "filter for not experimental", req: &pb.SearchProblemByKeywordRequest{Experimental: ptr.To(false)}, want: &meilisearch.SearchRequest{Filter: [][]string{{"isExperimental = false"}}, Sort: []string{"problemId:asc"}, Page: 1, AttributesToRetrieve: fields}},
 		}
 
 		for _, tt := range cases {
@@ -287,6 +287,48 @@ var User4 = &pb.User{
 	UserUrl:       "https://atcoder.jp/users/user4",
 }
 
+var Submission1 = &pb.Submission{
+	SubmissionId:  1,
+	SubmittedAt:   1729434074,
+	SubmissionUrl: "https://atcoder.jp/contests/abc300/submissions/1",
+	ProblemId:     "abc300_a",
+	ProblemTitle:  "A. N-choice question",
+	ProblemUrl:    "https://atcoder.jp/contests/abc300/tasks/abc300_a",
+	ContestId:     "abc300",
+	ContestTitle:  "ユニークビジョンプログラミングコンテスト2023 春 (AtCoder Beginner Contest 300)",
+	ContestUrl:    "https://atcoder.jp/contests/abc300",
+	Category:      "ABC",
+	Difficulty:    ptr.To[int64](-1147),
+	UserId:        "fjnkt98",
+	Language:      "Python (CPython 3.11.4)",
+	LanguageGroup: "Python",
+	Point:         100.0,
+	Length:        1024,
+	Result:        "AC",
+	ExecutionTime: ptr.To[int64](22),
+}
+
+var Submission2 = &pb.Submission{
+	SubmissionId:  2,
+	SubmittedAt:   1729434074,
+	SubmissionUrl: "https://atcoder.jp/contests/abc300/submissions/2",
+	ProblemId:     "abc300_b",
+	ProblemTitle:  "B. Same Map in the RPG World",
+	ProblemUrl:    "https://atcoder.jp/contests/abc300/tasks/abc300_b",
+	ContestId:     "abc300",
+	ContestTitle:  "ユニークビジョンプログラミングコンテスト2023 春 (AtCoder Beginner Contest 300)",
+	ContestUrl:    "https://atcoder.jp/contests/abc300",
+	Category:      "ABC",
+	Difficulty:    ptr.To[int64](350),
+	UserId:        "fjnkt98",
+	Language:      "Python (CPython 3.11.4)",
+	LanguageGroup: "Python",
+	Point:         200.0,
+	Length:        1024,
+	Result:        "WA",
+	ExecutionTime: nil,
+}
+
 func TestSearcher(t *testing.T) {
 	matches, err := filepath.Glob("./testdata/*.sql")
 	if err != nil {
@@ -459,7 +501,6 @@ func TestSearcher(t *testing.T) {
 	t.Run("SearchProblemByKeyword: filter by category", func(t *testing.T) {
 		res, err := searcher.SearchProblemByKeyword(ctx, &pb.SearchProblemByKeywordRequest{
 			Categories: []string{"ARC"},
-			Sorts:      []string{"startAt:desc"},
 		})
 
 		if err != nil {
@@ -658,4 +699,89 @@ func TestSearcher(t *testing.T) {
 			t.Errorf("expect %+v, but got %+v", want, res.Items)
 		}
 	})
+
+	t.Run("SearchUser: facet", func(t *testing.T) {
+		res, err := searcher.SearchUser(ctx, &pb.SearchUserRequest{
+			Facets: []string{"country", "rating", "birthYear", "joinCount"},
+		})
+
+		if err != nil {
+			t.Error(err)
+		}
+
+		want := &pb.UserFacet{
+			BirthYears: []*pb.Count{
+				{
+					Label: "1990 ~ 2000",
+					Count: 1,
+				},
+				{
+					Label: "2000 ~ 2010",
+					Count: 1,
+				},
+			},
+			Countries: []*pb.Count{
+				{
+					Label: "CH",
+					Count: 1,
+				},
+				{
+					Label: "CN",
+					Count: 1,
+				},
+				{
+					Label: "JP",
+					Count: 1,
+				},
+				{
+					Label: "US",
+					Count: 1,
+				},
+			},
+			JoinCounts: []*pb.Count{
+				{
+					Label: "  20 ~   40",
+					Count: 3,
+				},
+				{
+					Label: "  40 ~   60",
+					Count: 1,
+				},
+			},
+			Ratings: []*pb.Count{
+				{
+					Label: "2400 ~ 2800",
+					Count: 1,
+				},
+				{
+					Label: "3600 ~ 4000",
+					Count: 3,
+				},
+			},
+		}
+
+		if !reflect.DeepEqual(want, res.Facet) {
+			t.Errorf("expect %+v, but got %+v", want, res.Facet)
+		}
+	})
+
+	t.Run("SearchSubmission: empty", func(t *testing.T) {
+		res, err := searcher.SearchSubmission(ctx, &pb.SearchSubmissionRequest{})
+		if err != nil {
+			t.Error(err)
+		}
+
+		want := []*pb.Submission{Submission2, Submission1}
+		if !reflect.DeepEqual(want, res.Items) {
+			t.Errorf("expect %+v, but got %+v", want, res.Items)
+		}
+	})
+
+	// cases := []struct{
+	// 	name string
+	// 	req *pb.SearchSubmissionRequest
+	// 	want []*pb.Submission
+	// }{
+	// 	{name: "SearchSubmission: sort by ", req: &pb.SearchSubmissionRequest{}, want: []*pb.Submission{}}
+	// }
 }

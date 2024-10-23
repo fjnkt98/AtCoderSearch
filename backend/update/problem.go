@@ -42,7 +42,6 @@ func (ix *ProblemIndexer) Settings() *meilisearch.Settings {
 		FilterableAttributes: []string{
 			"problemId",
 			"contestId",
-			"color",
 			"difficulty",
 			"difficultyFacet",
 			"isExperimental",
@@ -51,7 +50,6 @@ func (ix *ProblemIndexer) Settings() *meilisearch.Settings {
 		SearchableAttributes: []string{
 			"problemTitle",
 			"contestTitle",
-			"color",
 			"category",
 			"statementJa",
 			"statementEn",
@@ -215,7 +213,9 @@ func ExtractStatements(html io.Reader) ([]string, []string, error) {
 }
 
 func RateToRangeLabel(rate *int) string {
-	if rate == nil || *rate < 0 {
+	if rate == nil {
+		return ""
+	} else if *rate < 0 {
 		return "     ~    0"
 	} else if *rate < 400 {
 		return "   0 ~  400"

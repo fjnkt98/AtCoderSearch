@@ -34,12 +34,15 @@ func (ix *UserIndexer) Settings() *meilisearch.Settings {
 		FilterableAttributes: []string{
 			"userId",
 			"rating",
+			"ratingFacet",
 			"highestRating",
 			"affiliation",
 			"birthYear",
+			"birthYearFacet",
 			"country",
 			"crown",
 			"joinCount",
+			"joinCountFacet",
 			"rank",
 			"activeRank",
 			"wins",
@@ -128,37 +131,65 @@ type UserRow struct {
 }
 
 func (r UserRow) Document(ctx context.Context) (UserDocument, error) {
+	var ratingFacet string
+	var birthYearFacet string
+	var joinCountFacet string
+
+	if rating := (r.Rating / 400) * 400; rating < 4000 {
+		ratingFacet = fmt.Sprintf("%4d ~ %4d", rating, rating+400)
+	} else {
+		ratingFacet = "4000 ~     "
+	}
+
+	if r.BirthYear != nil {
+		if birth := (*r.BirthYear / 10) * 10; birth < 1970 {
+			birthYearFacet = "     ~ 1970"
+		} else if birth >= 2020 {
+			birthYearFacet = "2020 ~     "
+		} else {
+			birthYearFacet = fmt.Sprintf("%4d ~ %4d", birth, birth+10)
+		}
+	}
+
+	if join := (r.JoinCount / 20) * 20; join < 100 {
+		joinCountFacet = fmt.Sprintf("%4d ~ %4d", join, join+20)
+	} else {
+		joinCountFacet = " 100 ~     "
+	}
+
 	return UserDocument{
-		UserID:        r.UserID,
-		Rating:        r.Rating,
-		HighestRating: r.HighestRating,
-		Affiliation:   r.Affiliation,
-		BirthYear:     r.BirthYear,
-		Country:       r.Country,
-		Crown:         r.Crown,
-		JoinCount:     r.JoinCount,
-		Rank:          r.Rank,
-		ActiveRank:    r.ActiveRank,
-		Wins:          r.Wins,
-		Color:         RateToRangeLabel(&r.Rating),
-		HighestColor:  RateToRangeLabel(&r.HighestRating),
-		UserURL:       fmt.Sprintf("https://atcoder.jp/users/%s", r.UserID),
+		UserID:         r.UserID,
+		Rating:         r.Rating,
+		RatingFacet:    ratingFacet,
+		HighestRating:  r.HighestRating,
+		Affiliation:    r.Affiliation,
+		BirthYear:      r.BirthYear,
+		BirthYearFacet: birthYearFacet,
+		Country:        r.Country,
+		Crown:          r.Crown,
+		JoinCount:      r.JoinCount,
+		JoinCountFacet: joinCountFacet,
+		Rank:           r.Rank,
+		ActiveRank:     r.ActiveRank,
+		Wins:           r.Wins,
+		UserURL:        fmt.Sprintf("https://atcoder.jp/users/%s", r.UserID),
 	}, nil
 }
 
 type UserDocument struct {
-	UserID        string  `json:"userId"`
-	Rating        int     `json:"rating"`
-	HighestRating int     `json:"highestRating"`
-	Affiliation   *string `json:"affiliation"`
-	BirthYear     *int    `json:"birthYear"`
-	Country       *string `json:"country"`
-	Crown         *string `json:"crown"`
-	JoinCount     int     `json:"joinCount"`
-	Rank          int     `json:"rank"`
-	ActiveRank    *int    `json:"activeRank"`
-	Wins          int     `json:"wins" `
-	Color         string  `json:"color"`
-	HighestColor  string  `json:"highestColor"`
-	UserURL       string  `json:"userUrl"`
+	UserID         string  `json:"userId"`
+	Rating         int     `json:"rating"`
+	RatingFacet    string  `json:"ratingFacet,omitempty"`
+	HighestRating  int     `json:"highestRating"`
+	Affiliation    *string `json:"affiliation"`
+	BirthYear      *int    `json:"birthYear"`
+	BirthYearFacet string  `json:"birthYearFacet,omitempty"`
+	Country        *string `json:"country"`
+	Crown          *string `json:"crown"`
+	JoinCount      int     `json:"joinCount"`
+	JoinCountFacet string  `json:"joinCountFacet,omitempty"`
+	Rank           int     `json:"rank"`
+	ActiveRank     *int    `json:"activeRank"`
+	Wins           int     `json:"wins" `
+	UserURL        string  `json:"userUrl"`
 }

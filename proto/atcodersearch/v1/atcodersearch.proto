@@ -138,15 +138,15 @@ message SearchSubmissionRequest {
   optional int64 page = 2;
   repeated string sorts = 3;
   IntRange epoch_second = 4;
-  repeated string problem_id = 5;
-  repeated string contest_id = 6;
-  repeated string category = 7;
-  repeated string user_id = 8;
-  repeated string language = 9;
-  repeated string language_group = 10;
+  repeated string problem_ids = 5;
+  repeated string contest_ids = 6;
+  repeated string categories = 7;
+  repeated string user_ids = 8;
+  repeated string languages = 9;
+  repeated string language_groups = 10;
   FloatRange point = 11;
   IntRange length = 12;
-  repeated string result = 13;
+  repeated string results = 13;
   IntRange execution_time = 14;
 }
 
