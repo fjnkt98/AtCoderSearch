@@ -184,7 +184,12 @@ message GetContestRequest { repeated string categories = 1; }
 message GetContestResponse { repeated string contests = 1; }
 
 message GetLanguageRequest { repeated string groups = 1; }
-message GetLanguageResponse { repeated string languages = 1; }
+message GetLanguageResponse { repeated Language languages = 1; }
+
+message Language {
+  string group = 1;
+  repeated string languages = 2;
+}
 
 message GetProblemRequest {
   repeated string contests = 1;

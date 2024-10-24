@@ -991,4 +991,134 @@ func TestSearcher(t *testing.T) {
 			t.Errorf("expect %+v, but got %+v", want, res.Items)
 		}
 	})
+
+	t.Run("GetCategory", func(t *testing.T) {
+		res, err := searcher.GetCategory(ctx, &pb.GetCategoryRequest{})
+
+		if err != nil {
+			t.Error(err)
+		}
+
+		want := []string{"ABC", "ARC"}
+
+		if !reflect.DeepEqual(want, res.Categories) {
+			t.Errorf("expect %+v, but got %+v", want, res.Categories)
+		}
+	})
+
+	t.Run("GetContest: empty", func(t *testing.T) {
+		res, err := searcher.GetContest(ctx, &pb.GetContestRequest{})
+
+		if err != nil {
+			t.Error(err)
+		}
+
+		want := []string{"arc184", "abc300"}
+
+		if !reflect.DeepEqual(want, res.Contests) {
+			t.Errorf("expect %+v, but got %+v", want, res.Contests)
+		}
+	})
+
+	t.Run("GetContest: with category", func(t *testing.T) {
+		res, err := searcher.GetContest(ctx, &pb.GetContestRequest{
+			Categories: []string{"ABC"},
+		})
+
+		if err != nil {
+			t.Error(err)
+		}
+
+		want := []string{"abc300"}
+
+		if !reflect.DeepEqual(want, res.Contests) {
+			t.Errorf("expect %+v, but got %+v", want, res.Contests)
+		}
+	})
+
+	t.Run("GetLanguage: empty", func(t *testing.T) {
+		res, err := searcher.GetLanguage(ctx, &pb.GetLanguageRequest{})
+
+		if err != nil {
+			t.Error(err)
+		}
+
+		want := []*pb.Language{
+			{
+				Group:     "Python",
+				Languages: []string{"Python (CPython 3.11.4)"},
+			},
+		}
+
+		if !reflect.DeepEqual(want, res.Languages) {
+			t.Errorf("expect %+v, but got %+v", want, res.Languages)
+		}
+	})
+
+	t.Run("GetLanguage: with group", func(t *testing.T) {
+		res, err := searcher.GetLanguage(ctx, &pb.GetLanguageRequest{
+			Groups: []string{"Python"},
+		})
+
+		if err != nil {
+			t.Error(err)
+		}
+
+		want := []*pb.Language{
+			{
+				Group:     "Python",
+				Languages: []string{"Python (CPython 3.11.4)"},
+			},
+		}
+
+		if !reflect.DeepEqual(want, res.Languages) {
+			t.Errorf("expect %+v, but got %+v", want, res.Languages)
+		}
+	})
+
+	t.Run("GetProblem: empty", func(t *testing.T) {
+		res, err := searcher.GetProblem(ctx, &pb.GetProblemRequest{})
+
+		if err != nil {
+			t.Error(err)
+		}
+
+		want := []string{"abc300_a", "abc300_b", "arc184_a", "arc184_b"}
+
+		if !reflect.DeepEqual(want, res.Problems) {
+			t.Errorf("expect %+v, but got %+v", want, res.Problems)
+		}
+	})
+
+	t.Run("GetProblem: category", func(t *testing.T) {
+		res, err := searcher.GetProblem(ctx, &pb.GetProblemRequest{
+			Categories: []string{"ABC"},
+		})
+
+		if err != nil {
+			t.Error(err)
+		}
+
+		want := []string{"abc300_a", "abc300_b"}
+
+		if !reflect.DeepEqual(want, res.Problems) {
+			t.Errorf("expect %+v, but got %+v", want, res.Problems)
+		}
+	})
+
+	t.Run("GetProblem: contest", func(t *testing.T) {
+		res, err := searcher.GetProblem(ctx, &pb.GetProblemRequest{
+			Contests: []string{"arc184"},
+		})
+
+		if err != nil {
+			t.Error(err)
+		}
+
+		want := []string{"arc184_a", "arc184_b"}
+
+		if !reflect.DeepEqual(want, res.Problems) {
+			t.Errorf("expect %+v, but got %+v", want, res.Problems)
+		}
+	})
 }

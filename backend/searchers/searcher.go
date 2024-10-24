@@ -2,6 +2,7 @@ package searchers
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	pb "fjnkt98/atcodersearch/grpc/atcodersearch/v1"
 	"fmt"
@@ -13,6 +14,7 @@ import (
 	"time"
 
 	"github.com/go-viper/mapstructure/v2"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jackc/pgx/v5/stdlib"
 	"github.com/meilisearch/meilisearch-go"
@@ -240,7 +242,9 @@ func (s *Searcher) SearchProblem(ctx context.Context, req *pb.SearchProblemReque
 	items := make([]*pb.Problem, 0, req.GetLimit())
 	var rows []Problem
 	if err := q.Scan(ctx, &rows); err != nil {
-		return nil, status.Errorf(codes.Unknown, "scan rows: %s", err)
+		if !errors.Is(err, pgx.ErrNoRows) {
+			return nil, status.Errorf(codes.Unknown, "scan rows: %s", err)
+		}
 	}
 	for _, r := range rows {
 		items = append(items, r.Into())
@@ -656,7 +660,9 @@ func (s *Searcher) SearchSubmission(ctx context.Context, req *pb.SearchSubmissio
 	items := make([]*pb.Submission, 0, req.GetLimit())
 	var rows []Submission
 	if err := q.Scan(ctx, &rows); err != nil {
-		return nil, status.Errorf(codes.Unknown, "scan rows: %s", err)
+		if !errors.Is(err, pgx.ErrNoRows) {
+			return nil, status.Errorf(codes.Unknown, "scan rows: %s", err)
+		}
 	}
 	for _, r := range rows {
 		items = append(items, r.Into())
@@ -798,17 +804,114 @@ func createSearchSubmissionQuery(pool *pgxpool.Pool, req *pb.SearchSubmissionReq
 }
 
 func (s *Searcher) GetCategory(ctx context.Context, req *pb.GetCategoryRequest) (*pb.GetCategoryResponse, error) {
-	panic("")
+	db := bun.NewDB(stdlib.OpenDBFromPool(s.pool), pgdialect.New())
+
+	q := db.NewSelect().Distinct().
+		Column("category").
+		Table("contests").
+		Order("category ASC")
+
+	var categories []string
+	if err := q.Scan(ctx, &categories); err != nil {
+		if !errors.Is(err, pgx.ErrNoRows) {
+			return nil, status.Errorf(codes.Unknown, "scan rows: %s", err)
+		}
+	}
+
+	return &pb.GetCategoryResponse{
+		Categories: categories,
+	}, nil
 }
 
 func (s *Searcher) GetContest(ctx context.Context, req *pb.GetContestRequest) (*pb.GetContestResponse, error) {
-	panic("")
+	db := bun.NewDB(stdlib.OpenDBFromPool(s.pool), pgdialect.New())
+
+	q := db.NewSelect().
+		Column("contest_id").
+		Table("contests").
+		Order("start_epoch_second DESC")
+
+	if c := req.GetCategories(); len(c) > 0 {
+		q = q.Where("category IN (?)", bun.In(c))
+	}
+
+	var contests []string
+	if err := q.Scan(ctx, &contests); err != nil {
+		if !errors.Is(err, pgx.ErrNoRows) {
+			return nil, status.Errorf(codes.Unknown, "scan rows: %s", err)
+		}
+	}
+
+	return &pb.GetContestResponse{
+		Contests: contests,
+	}, nil
 }
 
 func (s *Searcher) GetLanguage(ctx context.Context, req *pb.GetLanguageRequest) (*pb.GetLanguageResponse, error) {
-	panic("")
+	db := bun.NewDB(stdlib.OpenDBFromPool(s.pool), pgdialect.New())
+
+	cte := db.NewSelect().
+		ColumnExpr("?", bun.Ident("group")).
+		ColumnExpr("ARRAY_AGG(language ORDER BY language ASC) AS languages").
+		Table("languages").
+		GroupExpr("?", bun.Ident("group")).
+		OrderExpr("? ASC", bun.Ident("group"))
+
+	if g := req.GetGroups(); len(g) > 0 {
+		cte = cte.Where("? IN (?)", bun.Ident("group"), bun.In(g))
+	}
+
+	q := db.NewSelect().
+		With("l", cte).
+		ColumnExpr("JSON_AGG(l)").
+		Table("l")
+
+	var body []byte
+	if err := q.Scan(ctx, &body); err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return &pb.GetLanguageResponse{}, nil
+		} else {
+			return nil, status.Errorf(codes.Unknown, "scan rows: %s", err)
+		}
+	}
+
+	languages := make([]*pb.Language, 0)
+	if len(body) > 0 {
+		if err := json.Unmarshal(body, &languages); err != nil {
+			return nil, status.Errorf(codes.Unknown, "unmarshal body: %s", err)
+		}
+	}
+
+	return &pb.GetLanguageResponse{
+		Languages: languages,
+	}, nil
 }
 
 func (s *Searcher) GetProblem(ctx context.Context, req *pb.GetProblemRequest) (*pb.GetProblemResponse, error) {
-	panic("")
+	db := bun.NewDB(stdlib.OpenDBFromPool(s.pool), pgdialect.New())
+
+	q := db.NewSelect().
+		Column("problem_id").
+		Table("problems").
+		Join("LEFT JOIN contests USING(contest_id)").
+		Order("problem_id ASC")
+
+	if c := req.GetCategories(); len(c) > 0 {
+		q = q.Where("category IN (?)", bun.In(c))
+	}
+
+	if c := req.GetContests(); len(c) > 0 {
+		q = q.Where("contest_id IN (?)", bun.In(c))
+	}
+
+	var problems []string
+	if err := q.Scan(ctx, &problems); err != nil {
+		if !errors.Is(err, pgx.ErrNoRows) {
+			return nil, status.Errorf(codes.Unknown, "scan rows: %s", err)
+		}
+	}
+
+	return &pb.GetProblemResponse{
+		Problems: problems,
+	}, nil
 }
