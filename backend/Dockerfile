@@ -9,11 +9,14 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
+COPY ./atcoder /app/atcoder
+COPY ./cmd /app/cmd
 COPY ./crawl /app/crawl
+COPY ./grpc /app/grpc
 COPY ./internal /app/internal
-COPY ./pkg /app/pkg
 COPY ./queries /app/queries
 COPY ./repository /app/repository
+COPY ./searchers /app/searchers
 COPY ./update /app/update
 COPY ./go.mod /app/go.mod
 COPY ./go.sum /app/go.sum
