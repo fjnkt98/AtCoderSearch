@@ -777,11 +777,218 @@ func TestSearcher(t *testing.T) {
 		}
 	})
 
-	// cases := []struct{
-	// 	name string
-	// 	req *pb.SearchSubmissionRequest
-	// 	want []*pb.Submission
-	// }{
-	// 	{name: "SearchSubmission: sort by ", req: &pb.SearchSubmissionRequest{}, want: []*pb.Submission{}}
-	// }
+	{
+		cases := []struct {
+			name string
+			req  *pb.SearchSubmissionRequest
+			want []*pb.Submission
+		}{
+			{name: "SearchSubmission: sort by execution time", req: &pb.SearchSubmissionRequest{Sorts: []string{"executionTime:asc"}}, want: []*pb.Submission{Submission1, Submission2}},
+			{name: "SearchSubmission: sort by epoch second", req: &pb.SearchSubmissionRequest{Sorts: []string{"epochSecond:asc"}}, want: []*pb.Submission{Submission2, Submission1}},
+			{name: "SearchSubmission: sort by point", req: &pb.SearchSubmissionRequest{Sorts: []string{"point:asc"}}, want: []*pb.Submission{Submission1, Submission2}},
+			{name: "SearchSubmission: sort by length", req: &pb.SearchSubmissionRequest{Sorts: []string{"length:asc"}}, want: []*pb.Submission{Submission2, Submission1}},
+		}
+
+		for _, tt := range cases {
+			tt := tt
+			t.Run(tt.name, func(t *testing.T) {
+				res, err := searcher.SearchSubmission(ctx, tt.req)
+				if err != nil {
+					t.Error(err)
+				}
+
+				if !reflect.DeepEqual(tt.want, res.Items) {
+					t.Errorf("expect %+v, but got %+v", tt.want, res.Items)
+				}
+			})
+		}
+	}
+
+	t.Run("SearchSubmission: filter by epoch second", func(t *testing.T) {
+		res, err := searcher.SearchSubmission(ctx, &pb.SearchSubmissionRequest{
+			EpochSecond: &pb.IntRange{
+				From: ptr.To[int64](1729434073),
+				To:   ptr.To[int64](1729434075),
+			},
+		})
+
+		if err != nil {
+			t.Error(err)
+		}
+
+		want := []*pb.Submission{Submission2, Submission1}
+
+		if !reflect.DeepEqual(want, res.Items) {
+			t.Errorf("expect %+v, but got %+v", want, res.Items)
+		}
+	})
+
+	t.Run("SearchSubmission: filter by problem id", func(t *testing.T) {
+		res, err := searcher.SearchSubmission(ctx, &pb.SearchSubmissionRequest{
+			ProblemIds: []string{"abc300_a"},
+		})
+
+		if err != nil {
+			t.Error(err)
+		}
+
+		want := []*pb.Submission{Submission1}
+
+		if !reflect.DeepEqual(want, res.Items) {
+			t.Errorf("expect %+v, but got %+v", want, res.Items)
+		}
+	})
+
+	t.Run("SearchSubmission: filter by contest id", func(t *testing.T) {
+		res, err := searcher.SearchSubmission(ctx, &pb.SearchSubmissionRequest{
+			ContestIds: []string{"abc300"},
+		})
+
+		if err != nil {
+			t.Error(err)
+		}
+
+		want := []*pb.Submission{Submission2, Submission1}
+
+		if !reflect.DeepEqual(want, res.Items) {
+			t.Errorf("expect %+v, but got %+v", want, res.Items)
+		}
+	})
+
+	t.Run("SearchSubmission: filter by category", func(t *testing.T) {
+		res, err := searcher.SearchSubmission(ctx, &pb.SearchSubmissionRequest{
+			Categories: []string{"ABC"},
+		})
+
+		if err != nil {
+			t.Error(err)
+		}
+
+		want := []*pb.Submission{Submission2, Submission1}
+
+		if !reflect.DeepEqual(want, res.Items) {
+			t.Errorf("expect %+v, but got %+v", want, res.Items)
+		}
+	})
+
+	t.Run("SearchSubmission: filter by user id", func(t *testing.T) {
+		res, err := searcher.SearchSubmission(ctx, &pb.SearchSubmissionRequest{
+			UserIds: []string{"fjnkt98"},
+		})
+
+		if err != nil {
+			t.Error(err)
+		}
+
+		want := []*pb.Submission{Submission2, Submission1}
+
+		if !reflect.DeepEqual(want, res.Items) {
+			t.Errorf("expect %+v, but got %+v", want, res.Items)
+		}
+	})
+
+	t.Run("SearchSubmission: filter by language", func(t *testing.T) {
+		res, err := searcher.SearchSubmission(ctx, &pb.SearchSubmissionRequest{
+			Languages: []string{"Python (CPython 3.11.4)"},
+		})
+
+		if err != nil {
+			t.Error(err)
+		}
+
+		want := []*pb.Submission{Submission2, Submission1}
+
+		if !reflect.DeepEqual(want, res.Items) {
+			t.Errorf("expect %+v, but got %+v", want, res.Items)
+		}
+	})
+
+	t.Run("SearchSubmission: filter by language group", func(t *testing.T) {
+		res, err := searcher.SearchSubmission(ctx, &pb.SearchSubmissionRequest{
+			LanguageGroups: []string{"Python"},
+		})
+
+		if err != nil {
+			t.Error(err)
+		}
+
+		want := []*pb.Submission{Submission2, Submission1}
+
+		if !reflect.DeepEqual(want, res.Items) {
+			t.Errorf("expect %+v, but got %+v", want, res.Items)
+		}
+	})
+
+	t.Run("SearchSubmission: filter by point", func(t *testing.T) {
+		res, err := searcher.SearchSubmission(ctx, &pb.SearchSubmissionRequest{
+			Point: &pb.FloatRange{
+				From: ptr.To(100.0),
+				To:   ptr.To(150.0),
+			},
+		})
+
+		if err != nil {
+			t.Error(err)
+		}
+
+		want := []*pb.Submission{Submission1}
+
+		if !reflect.DeepEqual(want, res.Items) {
+			t.Errorf("expect %+v, but got %+v", want, res.Items)
+		}
+	})
+
+	t.Run("SearchSubmission: filter by length", func(t *testing.T) {
+		res, err := searcher.SearchSubmission(ctx, &pb.SearchSubmissionRequest{
+			Length: &pb.IntRange{
+				From: ptr.To[int64](1024),
+				To:   ptr.To[int64](2048),
+			},
+		})
+
+		if err != nil {
+			t.Error(err)
+		}
+
+		want := []*pb.Submission{Submission2, Submission1}
+
+		if !reflect.DeepEqual(want, res.Items) {
+			t.Errorf("expect %+v, but got %+v", want, res.Items)
+		}
+	})
+
+	t.Run("SearchSubmission: filter by result", func(t *testing.T) {
+		res, err := searcher.SearchSubmission(ctx, &pb.SearchSubmissionRequest{
+			Results: []string{"WA"},
+		})
+
+		if err != nil {
+			t.Error(err)
+		}
+
+		want := []*pb.Submission{Submission2}
+
+		if !reflect.DeepEqual(want, res.Items) {
+			t.Errorf("expect %+v, but got %+v", want, res.Items)
+		}
+	})
+
+	t.Run("SearchSubmission: filter by execution time", func(t *testing.T) {
+		res, err := searcher.SearchSubmission(ctx, &pb.SearchSubmissionRequest{
+			ExecutionTime: &pb.IntRange{
+				From: ptr.To[int64](20),
+				To:   ptr.To[int64](1000),
+			},
+		})
+
+		if err != nil {
+			t.Error(err)
+		}
+
+		want := []*pb.Submission{Submission1}
+
+		if !reflect.DeepEqual(want, res.Items) {
+			t.Errorf("expect %+v, but got %+v", want, res.Items)
+		}
+	})
 }
