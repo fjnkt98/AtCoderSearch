@@ -1,19 +1,18 @@
 package cmd
 
 import (
-	pb "fjnkt98/atcodersearch/grpc/atcodersearch/v1"
+	"fjnkt98/atcodersearch/api"
 	"fjnkt98/atcodersearch/repository"
 	"fjnkt98/atcodersearch/searchers"
 	"fmt"
 	"log/slog"
-	"net"
+	"net/http"
 	"os"
 	"os/signal"
+	"time"
 
-	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/recovery"
 	"github.com/meilisearch/meilisearch-go"
 	"github.com/urfave/cli/v2"
-	"google.golang.org/grpc"
 )
 
 type Problem struct {
@@ -31,10 +30,6 @@ func NewServeCmd() *cli.Command {
 		},
 		Action: func(c *cli.Context) error {
 			port := c.Int("port")
-			listener, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
-			if err != nil {
-				return fmt.Errorf("listen tcp at port %d: %w", port, err)
-			}
 
 			pool, err := repository.NewPool(c.Context, c.String("database-url"))
 			if err != nil {
@@ -49,22 +44,30 @@ func NewServeCmd() *cli.Command {
 			ctx, stop := signal.NotifyContext(c.Context, os.Interrupt)
 			defer stop()
 
-			s := grpc.NewServer(
-				grpc.UnaryInterceptor(
-					recovery.UnaryServerInterceptor(),
-				),
-			)
+			searcher := searchers.NewSearcher(client, pool)
 
-			pb.RegisterSearchServiceServer(s, searchers.NewSearcher(client, pool))
+			s, err := api.NewServer(searcher)
+			if err != nil {
+				return fmt.Errorf("create server: %w", err)
+			}
+
+			srv := &http.Server{
+				Addr:              fmt.Sprintf(":%d", port),
+				Handler:           s,
+				ReadHeaderTimeout: 30 * time.Second,
+			}
 
 			go func() {
-				slog.LogAttrs(ctx, slog.LevelInfo, "start grpc server", slog.Int("port", port))
-				s.Serve(listener)
+				slog.LogAttrs(ctx, slog.LevelInfo, "start server", slog.Int("port", port))
+				srv.ListenAndServe()
 			}()
 
 			<-ctx.Done()
-			slog.LogAttrs(ctx, slog.LevelInfo, "stop grpc server")
-			s.GracefulStop()
+			if err := srv.Shutdown(ctx); err != nil {
+				return fmt.Errorf("shutdown server: %w", err)
+			} else {
+				slog.LogAttrs(ctx, slog.LevelInfo, "shutdown server")
+			}
 
 			return nil
 		},

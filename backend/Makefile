@@ -14,3 +14,7 @@ sqlc:
 .PHONY: build-image
 build-image:
 	docker build -t atcodersearch-batch:latest .
+
+.PHONY: ogen
+ogen:
+	ogen -package api -target api -clean api/openapi.yaml
