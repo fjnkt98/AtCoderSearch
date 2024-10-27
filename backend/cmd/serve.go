@@ -12,10 +12,48 @@ import (
 	"time"
 
 	"github.com/meilisearch/meilisearch-go"
+	"github.com/ogen-go/ogen/middleware"
 	"github.com/urfave/cli/v2"
 )
 
-type Problem struct {
+func LoggerMiddleware() middleware.Middleware {
+	return func(
+		req middleware.Request,
+		next func(req middleware.Request) (middleware.Response, error),
+	) (middleware.Response, error) {
+		start := time.Now()
+
+		res, err := next(req)
+		if err != nil {
+			r := req.Raw
+			slog.LogAttrs(
+				req.Context,
+				slog.LevelInfo,
+				"request failed",
+				slog.String("method", r.Method),
+				slog.String("path", r.URL.String()),
+				slog.String("remoteAddr", r.RemoteAddr),
+				slog.String("userAgent", r.UserAgent()),
+				slog.Duration("duration", time.Since(start)/time.Microsecond),
+				slog.Any("error", err),
+			)
+		} else {
+			r := req.Raw
+			slog.LogAttrs(
+				req.Context,
+				slog.LevelInfo,
+				"request succeed",
+				slog.String("method", r.Method),
+				slog.String("path", r.URL.String()),
+				slog.String("remoteAddr", r.RemoteAddr),
+				slog.String("userAgent", r.UserAgent()),
+				slog.Duration("duration", time.Since(start)/time.Microsecond),
+				slog.Any("requestBody", req.Body),
+			)
+		}
+
+		return res, err
+	}
 }
 
 func NewServeCmd() *cli.Command {
@@ -46,7 +84,7 @@ func NewServeCmd() *cli.Command {
 
 			searcher := searchers.NewSearcher(client, pool)
 
-			s, err := api.NewServer(searcher)
+			s, err := api.NewServer(searcher, api.WithMiddleware(LoggerMiddleware()))
 			if err != nil {
 				return fmt.Errorf("create server: %w", err)
 			}
