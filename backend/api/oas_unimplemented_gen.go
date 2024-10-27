@@ -61,3 +61,11 @@ func (UnimplementedHandler) APISubmissionPost(ctx context.Context, req *APISubmi
 func (UnimplementedHandler) APIUserPost(ctx context.Context, req *APIUserPostReq) (r *APIUserPostOK, _ error) {
 	return r, ht.ErrNotImplemented
 }
+
+// NewError creates *ErrorResponseStatusCode from error returned by handler.
+//
+// Used for common default response.
+func (UnimplementedHandler) NewError(ctx context.Context, err error) (r *ErrorResponseStatusCode) {
+	r = new(ErrorResponseStatusCode)
+	return r
+}

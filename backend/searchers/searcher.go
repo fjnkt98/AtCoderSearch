@@ -7,6 +7,7 @@ import (
 	"fjnkt98/atcodersearch/api"
 	"fmt"
 	"maps"
+	"net/http"
 	"reflect"
 	"slices"
 	"strings"
@@ -320,6 +321,7 @@ func (s *Searcher) APIProblemGet(ctx context.Context, params api.APIProblemGetPa
 }
 
 func (s *Searcher) APIProblemPost(ctx context.Context, req *api.APIProblemPostReq) (*api.APIProblemPostOK, error) {
+	start := time.Now()
 	index := s.client.Index("problems")
 
 	q, err := s.createSearchProblemQuery(ctx, req)
@@ -353,7 +355,7 @@ func (s *Searcher) APIProblemPost(ctx context.Context, req *api.APIProblemPostRe
 	}
 
 	return &api.APIProblemPostOK{
-		Time:  int(res.ProcessingTimeMs),
+		Time:  int(time.Since(start) / time.Millisecond),
 		Total: int(res.TotalHits),
 		Index: int(res.Page),
 		Pages: int(res.TotalPages),
@@ -496,6 +498,7 @@ func (u User) Into() api.User {
 }
 
 func (s *Searcher) APIUserPost(ctx context.Context, req *api.APIUserPostReq) (*api.APIUserPostOK, error) {
+	start := time.Now()
 	index := s.client.Index("users")
 
 	q, err := createSearchUserQuery(req)
@@ -531,7 +534,7 @@ func (s *Searcher) APIUserPost(ctx context.Context, req *api.APIUserPostReq) (*a
 	}
 
 	return &api.APIUserPostOK{
-		Time:  int(res.ProcessingTimeMs),
+		Time:  int(time.Since(start) / time.Millisecond),
 		Total: int(res.TotalHits),
 		Index: int(res.Page),
 		Pages: int(res.TotalPages),
@@ -808,4 +811,23 @@ func createSearchSubmissionQuery(pool *pgxpool.Pool, req *api.APISubmissionPostR
 	}
 
 	return q, nil
+}
+
+func (s *Searcher) NewError(ctx context.Context, err error) *api.ErrorResponseStatusCode {
+	switch {
+	case errors.Is(err, ErrInvalidRequest):
+		return &api.ErrorResponseStatusCode{
+			StatusCode: http.StatusBadRequest,
+			Response: api.ErrorResponse{
+				Message: err.Error(),
+			},
+		}
+	default:
+		return &api.ErrorResponseStatusCode{
+			StatusCode: http.StatusInternalServerError,
+			Response: api.ErrorResponse{
+				Message: err.Error(),
+			},
+		}
+	}
 }

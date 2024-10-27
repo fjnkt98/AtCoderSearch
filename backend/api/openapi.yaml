@@ -31,6 +31,13 @@ paths:
                     type: array
                     items:
                       type: string
+        default:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/ErrorResponse"
     post:
       requestBody:
         required: true
@@ -111,6 +118,13 @@ paths:
                   - index
                   - items
                   - facet
+        default:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/ErrorResponse"
   /api/user:
     post:
       requestBody:
@@ -202,6 +216,13 @@ paths:
                   - index
                   - items
                   - facet
+        default:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/ErrorResponse"
   /api/submission:
     post:
       requestBody:
@@ -289,6 +310,13 @@ paths:
                   - time
                   - index
                   - items
+        default:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/ErrorResponse"
   /api/category:
     get:
       responses:
@@ -303,6 +331,13 @@ paths:
                     type: array
                     items:
                       type: string
+        default:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/ErrorResponse"
   /api/contest:
     get:
       parameters:
@@ -324,6 +359,13 @@ paths:
                     type: array
                     items:
                       type: string
+        default:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/ErrorResponse"
   /api/language:
     get:
       parameters:
@@ -346,6 +388,13 @@ paths:
                     items:
                       type: object
                       $ref: "#/components/schemas/Language"
+        default:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/ErrorResponse"
 components:
   schemas:
     Count:
@@ -514,3 +563,10 @@ components:
       required:
         - group
         - language
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - message

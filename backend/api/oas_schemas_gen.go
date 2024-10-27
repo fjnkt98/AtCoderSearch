@@ -3,8 +3,14 @@
 package api
 
 import (
+	"fmt"
+
 	"github.com/go-faster/errors"
 )
+
+func (s *ErrorResponseStatusCode) Error() string {
+	return fmt.Sprintf("code %d: %+v", s.StatusCode, s.Response)
+}
 
 type APICategoryGetOK struct {
 	Categories []string `json:"categories"`
@@ -974,6 +980,47 @@ func (s *Count) SetLabel(val string) {
 // SetCount sets the value of Count.
 func (s *Count) SetCount(val int) {
 	s.Count = val
+}
+
+// Ref: #/components/schemas/ErrorResponse
+type ErrorResponse struct {
+	Message string `json:"message"`
+}
+
+// GetMessage returns the value of Message.
+func (s *ErrorResponse) GetMessage() string {
+	return s.Message
+}
+
+// SetMessage sets the value of Message.
+func (s *ErrorResponse) SetMessage(val string) {
+	s.Message = val
+}
+
+// ErrorResponseStatusCode wraps ErrorResponse with StatusCode.
+type ErrorResponseStatusCode struct {
+	StatusCode int
+	Response   ErrorResponse
+}
+
+// GetStatusCode returns the value of StatusCode.
+func (s *ErrorResponseStatusCode) GetStatusCode() int {
+	return s.StatusCode
+}
+
+// GetResponse returns the value of Response.
+func (s *ErrorResponseStatusCode) GetResponse() ErrorResponse {
+	return s.Response
+}
+
+// SetStatusCode sets the value of StatusCode.
+func (s *ErrorResponseStatusCode) SetStatusCode(val int) {
+	s.StatusCode = val
+}
+
+// SetResponse sets the value of Response.
+func (s *ErrorResponseStatusCode) SetResponse(val ErrorResponse) {
+	s.Response = val
 }
 
 // Ref: #/components/schemas/FloatRange
