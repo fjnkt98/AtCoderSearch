@@ -2,7 +2,7 @@ import { Link } from "@remix-run/react";
 
 export default function Header() {
   return (
-    <div className="flex flex-row w-full items-center gap-2 px-2 py-1 justify-start">
+    <div className="flex flex-row w-full items-center gap-2 px-3 py-2 justify-start min-w-60">
       <img
         alt="AtCoder Search Logo"
         src="/logo.svg"
