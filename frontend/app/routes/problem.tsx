@@ -1,11 +1,78 @@
 import { useLoaderData, json, Form } from "@remix-run/react";
 import { useState } from "react";
 import { client } from "~/client";
+import { z } from "zod";
+import { zx } from "zodix";
+import type { LoaderFunctionArgs } from "@remix-run/node";
 
-export const loader = async () => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const { q, page, category, difficulty, userId, experimental } = zx.parseQuery(
+    request,
+    {
+      q: z.string().optional(),
+      page: zx.IntAsString.optional(),
+      category: z
+        .union([z.string().array(), z.string()])
+        .transform((v) => (Array.isArray(v) ? v : [v]))
+        .optional()
+        .default([]),
+      difficulty: z.string().optional(),
+      userId: z.string().optional(),
+      experimental: z.string().optional(),
+    }
+  );
+
+  const parseDifficulty = (
+    label: string | undefined
+  ): { from?: number; to?: number } => {
+    if (label == null || label === "") {
+      return {};
+    }
+
+    if (!label.includes("-")) {
+      return {};
+    }
+
+    let from = undefined;
+    let to = undefined;
+
+    const [fromStr, toStr] = label.split("-");
+    if (fromStr !== "") {
+      from = Number(fromStr);
+    }
+    if (toStr !== "") {
+      to = Number(toStr);
+    }
+
+    return {
+      from,
+      to,
+    };
+  };
+
+  const parseExperimental = (
+    value: string | undefined
+  ): boolean | undefined => {
+    switch (value) {
+      case null:
+        return undefined;
+      case "true":
+        return true;
+      case "false":
+        return false;
+    }
+  };
+
   const { data, error } = await client.POST("/api/problem", {
     body: {
+      q: q,
+      limit: 50,
+      page: page ?? 1,
       facet: ["category", "difficulty"],
+      category: category,
+      difficulty: parseDifficulty(difficulty),
+      experimental: parseExperimental(experimental),
+      userId,
     },
   });
 
@@ -22,7 +89,8 @@ export const loader = async () => {
 export default function ProblemPage() {
   const data = useLoaderData<typeof loader>();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [lastSelected, setLastSelected] = useState("");
+  const [difficultyLastSelected, setDifficultyLastSelected] = useState("");
+  const [experimentalLastSelected, setExperimentalLastSelected] = useState("");
 
   const categories = data.facet.category ?? [];
   const difficulties = data.facet.difficulty ?? [];
@@ -103,11 +171,11 @@ export default function ProblemPage() {
                         className="mr-1"
                         value={c.label.replaceAll(" ", "").replaceAll("~", "-")}
                         onClick={(e) => {
-                          if (e.currentTarget.id === lastSelected) {
+                          if (e.currentTarget.id === difficultyLastSelected) {
                             e.currentTarget.checked = !e.currentTarget.checked;
-                            setLastSelected("");
+                            setDifficultyLastSelected("");
                           } else {
-                            setLastSelected(e.currentTarget.id);
+                            setDifficultyLastSelected(e.currentTarget.id);
                           }
                         }}
                       />
@@ -133,14 +201,45 @@ export default function ProblemPage() {
                     />
                   </label>
 
-                  <label className="block">
-                    <input
-                      type="checkbox"
-                      name="isExperimental"
-                      className="mr-1"
-                    />
-                    <span>試験管問題を除外</span>
-                  </label>
+                  <div className="flex flex-row gap-2">
+                    <label>
+                      <input
+                        id="experimentalFalse"
+                        type="radio"
+                        name="experimental"
+                        className="mr-1"
+                        value="false"
+                        onClick={(e) => {
+                          if (e.currentTarget.id === experimentalLastSelected) {
+                            e.currentTarget.checked = !e.currentTarget.checked;
+                            setExperimentalLastSelected("");
+                          } else {
+                            setExperimentalLastSelected(e.currentTarget.id);
+                          }
+                        }}
+                      />
+                      <span>試験管問題を除く</span>
+                    </label>
+
+                    <label>
+                      <input
+                        id="experimentalTrue"
+                        type="radio"
+                        name="experimental"
+                        className="mr-1"
+                        value="true"
+                        onClick={(e) => {
+                          if (e.currentTarget.id === experimentalLastSelected) {
+                            e.currentTarget.checked = !e.currentTarget.checked;
+                            setExperimentalLastSelected("");
+                          } else {
+                            setExperimentalLastSelected(e.currentTarget.id);
+                          }
+                        }}
+                      />
+                      <span>試験管問題のみ</span>
+                    </label>
+                  </div>
                 </div>
               </div>
             </div>
@@ -162,10 +261,20 @@ export default function ProblemPage() {
               key={item.problemId}
               className="border rounded-md min-w-60 max-w-xl w-full py-2 flex flex-row items-center justify-between gap-2 px-2"
             >
-              <a href={item.contestUrl} className="text-center">
+              <a
+                href={item.contestUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="text-center"
+              >
                 {item.contestId}
               </a>
-              <a href={item.problemUrl} className="text-balance text-center">
+              <a
+                href={item.problemUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="text-balance text-center"
+              >
                 {item.problemTitle}
               </a>
               <span className="min-w-8">{item.difficulty}</span>
