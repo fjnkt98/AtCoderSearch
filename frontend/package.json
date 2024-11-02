@@ -18,7 +18,9 @@
     "isbot": "^4.1.0",
     "openapi-fetch": "^0.13.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "zod": "^3.23.8",
+    "zodix": "^0.4.4"
   },
   "devDependencies": {
     "@remix-run/dev": "^2.13.1",
