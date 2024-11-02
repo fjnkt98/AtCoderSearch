@@ -4,6 +4,7 @@ import { client } from "~/client";
 import { z } from "zod";
 import { zx } from "zodix";
 import type { LoaderFunctionArgs } from "@remix-run/node";
+import { categoryToTextColor, difficultyToTextColor } from "~/colors";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { q, page, sort, category, difficulty, userId, experimental } =
@@ -144,7 +145,7 @@ export default function ProblemPage() {
         <div
           className={`${
             menuOpen ? "block" : "hidden"
-          } lg:block absolute lg:static w-5/6 lg:w-1/4 bg-white dark:bg-gray-950 px-4 py-2 shadow-md shadow-gray-500 rounded-xl`}
+          } lg:block absolute lg:static w-5/6 lg:w-1/4 bg-white dark:bg-gray-950 px-4 py-2 border border-gray-700 dark:border-gray-300 rounded-xl`}
         >
           <Form method="GET">
             <div className="flex flex-row items-center justify-between text-lg">
@@ -290,13 +291,13 @@ export default function ProblemPage() {
           {data.items.map((item) => (
             <div
               key={item.problemId}
-              className="border rounded-md min-w-60 max-w-xl w-full py-2 flex flex-row items-center justify-between gap-2 px-2"
+              className="border border-gray-500 dark:border-gray-400 rounded-md min-w-60 max-w-xl w-full py-2 flex flex-row items-center justify-between gap-2 px-2"
             >
               <a
                 href={item.contestUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="text-center"
+                className={`text-center ${categoryToTextColor(item.category)}`}
               >
                 {item.contestId}
               </a>
@@ -304,7 +305,9 @@ export default function ProblemPage() {
                 href={item.problemUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="text-balance text-center"
+                className={`text-balance text-center ${difficultyToTextColor(
+                  item.difficulty
+                )}`}
               >
                 {item.problemTitle}
               </a>
