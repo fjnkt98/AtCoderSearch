@@ -6,11 +6,11 @@ import { zx } from "zodix";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const { q, page, category, difficulty, userId, experimental } = zx.parseQuery(
-    request,
-    {
+  const { q, page, sort, category, difficulty, userId, experimental } =
+    zx.parseQuery(request, {
       q: z.string().optional(),
       page: zx.IntAsString.optional(),
+      sort: z.string().optional(),
       category: z
         .union([z.string().array(), z.string()])
         .transform((v) => (Array.isArray(v) ? v : [v]))
@@ -19,8 +19,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       difficulty: z.string().optional(),
       userId: z.string().optional(),
       experimental: z.string().optional(),
-    }
-  );
+    });
 
   const parseDifficulty = (
     label: string | undefined
@@ -63,11 +62,36 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     }
   };
 
+  const parseSort = (
+    sort: string | undefined
+  ): (
+    | "startAt:asc"
+    | "startAt:desc"
+    | "difficulty:asc"
+    | "difficulty:desc"
+    | "problemId:asc"
+    | "problemId:desc"
+  )[] => {
+    switch (sort) {
+      case "-startAt":
+        return ["startAt:desc"];
+      case "startAt":
+        return ["startAt:asc"];
+      case "-difficulty":
+        return ["difficulty:desc"];
+      case "difficulty":
+        return ["difficulty:asc"];
+      default:
+        return [];
+    }
+  };
+
   const { data, error } = await client.POST("/api/problem", {
     body: {
       q: q,
       limit: 50,
       page: page ?? 1,
+      sort: parseSort(sort),
       facet: ["category", "difficulty"],
       category: category,
       difficulty: parseDifficulty(difficulty),
@@ -129,6 +153,13 @@ export default function ProblemPage() {
                 ✗
               </button>
             </div>
+
+            <select name="sort">
+              <option value="-startAt">新しい順</option>
+              <option value="startAt">古い順</option>
+              <option value="-difficulty">難易度高い順</option>
+              <option value="difficulty">難易度低い順</option>
+            </select>
 
             <div className="flex flex-col gap-3">
               <label className="block">
