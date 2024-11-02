@@ -1,10 +1,11 @@
-import { useLoaderData, json, Form } from "@remix-run/react";
+import { useLoaderData, json, Form, useSearchParams } from "@remix-run/react";
 import { useState } from "react";
 import { client } from "~/client";
 import { z } from "zod";
 import { zx } from "zodix";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { categoryToTextColor, difficultyToTextColor } from "~/colors";
+import Pagination from "~/components/Pagination";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { q, page, sort, category, difficulty, userId, experimental } =
@@ -113,6 +114,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
 export default function ProblemPage() {
   const data = useLoaderData<typeof loader>();
+  const [searchParams] = useSearchParams();
   const [menuOpen, setMenuOpen] = useState(false);
   const [difficultyLastSelected, setDifficultyLastSelected] = useState("");
   const [experimentalLastSelected, setExperimentalLastSelected] = useState("");
@@ -276,6 +278,8 @@ export default function ProblemPage() {
               </div>
             </div>
 
+            <input type="hidden" name="page" value="1" />
+
             <div className="flex flex-row items-center justify-end">
               <button
                 type="submit"
@@ -316,6 +320,12 @@ export default function ProblemPage() {
           ))}
         </div>
       </div>
+      <Pagination
+        to="/problem"
+        params={searchParams}
+        current={data.index}
+        // end={data.pages}
+      />
     </>
   );
 }
