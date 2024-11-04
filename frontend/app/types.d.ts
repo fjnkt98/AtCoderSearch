@@ -126,7 +126,7 @@ export interface paths {
                         q?: string;
                         limit?: number;
                         page?: number;
-                        sort?: ("rating:asc" | "rating:desc" | "birthYear:asc" | "birthYear:desc" | "joinCount:asc" | "joinCount:desc" | "userId:asc" | "userId:desc")[];
+                        sort?: ("rating:asc" | "rating:desc" | "birthYear:asc" | "birthYear:desc" | "joinCount:asc" | "joinCount:desc" | "userId:asc" | "userId:desc" | "rank:asc" | "rank:desc" | "accepted:asc" | "accepted:desc" | "submissionCount:asc" | "submissionCount:desc")[];
                         facet?: ("country" | "rating" | "birthYear" | "joinCount")[];
                         userId?: string[];
                         rating?: components["schemas"]["IntRange"];
@@ -423,6 +423,8 @@ export interface components {
             activeRank?: number;
             wins: number;
             userUrl: string;
+            accepted: number;
+            submissionCount: number;
         };
         Submission: {
             submissionId: number;

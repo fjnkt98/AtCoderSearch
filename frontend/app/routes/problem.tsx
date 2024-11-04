@@ -6,6 +6,7 @@ import { zx } from "zodix";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { categoryToTextColor, difficultyToTextColor } from "~/colors";
 import Pagination from "~/components/Pagination";
+import { parseBoolean, parseRange } from "~/utils";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { q, page, sort, category, difficulty, userId, experimental } =
@@ -22,47 +23,6 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       userId: z.string().optional(),
       experimental: z.string().optional(),
     });
-
-  const parseDifficulty = (
-    label: string | undefined
-  ): { from?: number; to?: number } => {
-    if (label == null || label === "") {
-      return {};
-    }
-
-    if (!label.includes("-")) {
-      return {};
-    }
-
-    let from = undefined;
-    let to = undefined;
-
-    const [fromStr, toStr] = label.split("-");
-    if (fromStr !== "") {
-      from = Number(fromStr);
-    }
-    if (toStr !== "") {
-      to = Number(toStr);
-    }
-
-    return {
-      from,
-      to,
-    };
-  };
-
-  const parseExperimental = (
-    value: string | undefined
-  ): boolean | undefined => {
-    switch (value) {
-      case null:
-        return undefined;
-      case "true":
-        return true;
-      case "false":
-        return false;
-    }
-  };
 
   const parseSort = (
     sort: string | undefined
@@ -96,8 +56,8 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       sort: parseSort(sort),
       facet: ["category", "difficulty"],
       category: category,
-      difficulty: parseDifficulty(difficulty),
-      experimental: parseExperimental(experimental),
+      difficulty: parseRange(difficulty),
+      experimental: parseBoolean(experimental),
       userId,
     },
   });
@@ -324,7 +284,7 @@ export default function ProblemPage() {
         to="/problem"
         params={searchParams}
         current={data.index}
-        // end={data.pages}
+        end={data.pages}
       />
     </>
   );
