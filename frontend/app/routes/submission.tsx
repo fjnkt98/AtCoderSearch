@@ -215,7 +215,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
   if (errors.length > 0) {
     console.error(errors);
-    throw new Response("request failed", {
+    throw new Response(errors.map((e) => e.message).join(": "), {
       status: 500,
       statusText: "INTERNAL SERVER ERROR",
     });
@@ -232,19 +232,29 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
 export function ErrorBoundary() {
   const error = useRouteError();
-  console.log(error);
 
   if (isRouteErrorResponse(error)) {
     return (
       <div>
-        <h1>{JSON.stringify(error)}</h1>
+        <h1>
+          {error.status} {error.statusText}
+        </h1>
       </div>
     );
   }
 
+  if (error instanceof Error) {
+    <div>
+      <h1>Error</h1>
+      <p>{error.message}</p>
+      <p>The stack trace is:</p>
+      <pre>{error.stack}</pre>
+    </div>;
+  }
+
   return (
     <div>
-      <h1>{JSON.stringify(error)}</h1>
+      <h1>Unknown error</h1>
     </div>
   );
 }
@@ -423,8 +433,14 @@ export default function SubmissionPage() {
 
               <div>
                 <p className="text-lg">提出日時(JST)</p>
-                <input type="datetime-local" name="epochSecondFrom" />
-                <input type="datetime-local" name="epochSecondTo" />
+                <label className="block m-1">
+                  <span className="mr-2">開始</span>
+                  <input type="datetime-local" name="epochSecondFrom" />
+                </label>
+                <label className="block m-1">
+                  <span className="mr-2">終了</span>
+                  <input type="datetime-local" name="epochSecondTo" />
+                </label>
               </div>
             </div>
 
