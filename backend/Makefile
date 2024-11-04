@@ -15,6 +15,8 @@ ogen:
 build: sqlc ogen
 	go build -o build/atcodersearch
 
+VERSION:=$(shell cat VERSION)
+
 .PHONY: build-image
 build-image:
-	docker build -t atcodersearch-batch:latest .
+	docker build -t atcodersearch-backend:$(VERSION) .
