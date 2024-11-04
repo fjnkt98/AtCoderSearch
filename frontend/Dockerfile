@@ -14,17 +14,8 @@ COPY ./vite.config.ts /app/vite.config.ts
 
 RUN npm install && npm run build
 
-FROM node:22.11-bullseye-slim
-
-WORKDIR /app
-
-COPY --from=stage /app/package.json .
-COPY --from=stage /app/build /app/build
-
 RUN ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
 ENV TZ="Asia/Tokyo"
-
-RUN npm install --omit=dev
 
 USER node
 
