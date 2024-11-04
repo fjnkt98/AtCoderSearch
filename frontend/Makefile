@@ -5,3 +5,9 @@ codegen:
 .PHONY: build
 build: codegen
 	npm run build
+
+VERSION:=$(shell cat package.json | jq -r '.version')
+
+.PHONY: build-image
+build-image:
+	docker build -t atcodersearch-frontend:$(VERSION) .
