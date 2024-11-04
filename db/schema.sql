@@ -167,10 +167,10 @@ PARTITION BY RANGE (epoch_second);
 
 
 --
--- Name: submissions_0_1304175600; Type: TABLE; Schema: public; Owner: -
+-- Name: submissions_2010; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.submissions_0_1304175600 (
+CREATE TABLE public.submissions_2010 (
     id bigint NOT NULL,
     epoch_second bigint NOT NULL,
     problem_id text NOT NULL,
@@ -186,10 +186,10 @@ CREATE TABLE public.submissions_0_1304175600 (
 
 
 --
--- Name: submissions_1304175600_1321455600; Type: TABLE; Schema: public; Owner: -
+-- Name: submissions_2011; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.submissions_1304175600_1321455600 (
+CREATE TABLE public.submissions_2011 (
     id bigint NOT NULL,
     epoch_second bigint NOT NULL,
     problem_id text NOT NULL,
@@ -205,10 +205,10 @@ CREATE TABLE public.submissions_1304175600_1321455600 (
 
 
 --
--- Name: submissions_1321455600_1338735600; Type: TABLE; Schema: public; Owner: -
+-- Name: submissions_2012; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.submissions_1321455600_1338735600 (
+CREATE TABLE public.submissions_2012 (
     id bigint NOT NULL,
     epoch_second bigint NOT NULL,
     problem_id text NOT NULL,
@@ -224,10 +224,10 @@ CREATE TABLE public.submissions_1321455600_1338735600 (
 
 
 --
--- Name: submissions_1338735600_1356015600; Type: TABLE; Schema: public; Owner: -
+-- Name: submissions_2013; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.submissions_1338735600_1356015600 (
+CREATE TABLE public.submissions_2013 (
     id bigint NOT NULL,
     epoch_second bigint NOT NULL,
     problem_id text NOT NULL,
@@ -243,10 +243,10 @@ CREATE TABLE public.submissions_1338735600_1356015600 (
 
 
 --
--- Name: submissions_1356015600_1373295600; Type: TABLE; Schema: public; Owner: -
+-- Name: submissions_2014; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.submissions_1356015600_1373295600 (
+CREATE TABLE public.submissions_2014 (
     id bigint NOT NULL,
     epoch_second bigint NOT NULL,
     problem_id text NOT NULL,
@@ -262,10 +262,10 @@ CREATE TABLE public.submissions_1356015600_1373295600 (
 
 
 --
--- Name: submissions_1373295600_1390575600; Type: TABLE; Schema: public; Owner: -
+-- Name: submissions_2015; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.submissions_1373295600_1390575600 (
+CREATE TABLE public.submissions_2015 (
     id bigint NOT NULL,
     epoch_second bigint NOT NULL,
     problem_id text NOT NULL,
@@ -281,10 +281,10 @@ CREATE TABLE public.submissions_1373295600_1390575600 (
 
 
 --
--- Name: submissions_1390575600_1407855600; Type: TABLE; Schema: public; Owner: -
+-- Name: submissions_2016; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.submissions_1390575600_1407855600 (
+CREATE TABLE public.submissions_2016 (
     id bigint NOT NULL,
     epoch_second bigint NOT NULL,
     problem_id text NOT NULL,
@@ -300,10 +300,10 @@ CREATE TABLE public.submissions_1390575600_1407855600 (
 
 
 --
--- Name: submissions_1407855600_1425135600; Type: TABLE; Schema: public; Owner: -
+-- Name: submissions_2017; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.submissions_1407855600_1425135600 (
+CREATE TABLE public.submissions_2017 (
     id bigint NOT NULL,
     epoch_second bigint NOT NULL,
     problem_id text NOT NULL,
@@ -319,10 +319,10 @@ CREATE TABLE public.submissions_1407855600_1425135600 (
 
 
 --
--- Name: submissions_1425135600_1442415600; Type: TABLE; Schema: public; Owner: -
+-- Name: submissions_2018; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.submissions_1425135600_1442415600 (
+CREATE TABLE public.submissions_2018 (
     id bigint NOT NULL,
     epoch_second bigint NOT NULL,
     problem_id text NOT NULL,
@@ -338,10 +338,10 @@ CREATE TABLE public.submissions_1425135600_1442415600 (
 
 
 --
--- Name: submissions_1442415600_1459695600; Type: TABLE; Schema: public; Owner: -
+-- Name: submissions_2019; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.submissions_1442415600_1459695600 (
+CREATE TABLE public.submissions_2019 (
     id bigint NOT NULL,
     epoch_second bigint NOT NULL,
     problem_id text NOT NULL,
@@ -357,10 +357,10 @@ CREATE TABLE public.submissions_1442415600_1459695600 (
 
 
 --
--- Name: submissions_1459695600_1476975600; Type: TABLE; Schema: public; Owner: -
+-- Name: submissions_2020; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.submissions_1459695600_1476975600 (
+CREATE TABLE public.submissions_2020 (
     id bigint NOT NULL,
     epoch_second bigint NOT NULL,
     problem_id text NOT NULL,
@@ -376,10 +376,10 @@ CREATE TABLE public.submissions_1459695600_1476975600 (
 
 
 --
--- Name: submissions_1476975600_1494255600; Type: TABLE; Schema: public; Owner: -
+-- Name: submissions_2021; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.submissions_1476975600_1494255600 (
+CREATE TABLE public.submissions_2021 (
     id bigint NOT NULL,
     epoch_second bigint NOT NULL,
     problem_id text NOT NULL,
@@ -395,10 +395,10 @@ CREATE TABLE public.submissions_1476975600_1494255600 (
 
 
 --
--- Name: submissions_1494255600_1511535600; Type: TABLE; Schema: public; Owner: -
+-- Name: submissions_2022; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.submissions_1494255600_1511535600 (
+CREATE TABLE public.submissions_2022 (
     id bigint NOT NULL,
     epoch_second bigint NOT NULL,
     problem_id text NOT NULL,
@@ -414,10 +414,10 @@ CREATE TABLE public.submissions_1494255600_1511535600 (
 
 
 --
--- Name: submissions_1511535600_1528815600; Type: TABLE; Schema: public; Owner: -
+-- Name: submissions_2023; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.submissions_1511535600_1528815600 (
+CREATE TABLE public.submissions_2023 (
     id bigint NOT NULL,
     epoch_second bigint NOT NULL,
     problem_id text NOT NULL,
@@ -433,10 +433,10 @@ CREATE TABLE public.submissions_1511535600_1528815600 (
 
 
 --
--- Name: submissions_1528815600_1546095600; Type: TABLE; Schema: public; Owner: -
+-- Name: submissions_2024; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.submissions_1528815600_1546095600 (
+CREATE TABLE public.submissions_2024 (
     id bigint NOT NULL,
     epoch_second bigint NOT NULL,
     problem_id text NOT NULL,
@@ -452,10 +452,10 @@ CREATE TABLE public.submissions_1528815600_1546095600 (
 
 
 --
--- Name: submissions_1546095600_1563375600; Type: TABLE; Schema: public; Owner: -
+-- Name: submissions_2025; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.submissions_1546095600_1563375600 (
+CREATE TABLE public.submissions_2025 (
     id bigint NOT NULL,
     epoch_second bigint NOT NULL,
     problem_id text NOT NULL,
@@ -471,10 +471,10 @@ CREATE TABLE public.submissions_1546095600_1563375600 (
 
 
 --
--- Name: submissions_1563375600_1580655600; Type: TABLE; Schema: public; Owner: -
+-- Name: submissions_2026; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.submissions_1563375600_1580655600 (
+CREATE TABLE public.submissions_2026 (
     id bigint NOT NULL,
     epoch_second bigint NOT NULL,
     problem_id text NOT NULL,
@@ -490,10 +490,10 @@ CREATE TABLE public.submissions_1563375600_1580655600 (
 
 
 --
--- Name: submissions_1580655600_1597935600; Type: TABLE; Schema: public; Owner: -
+-- Name: submissions_2027; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.submissions_1580655600_1597935600 (
+CREATE TABLE public.submissions_2027 (
     id bigint NOT NULL,
     epoch_second bigint NOT NULL,
     problem_id text NOT NULL,
@@ -509,10 +509,10 @@ CREATE TABLE public.submissions_1580655600_1597935600 (
 
 
 --
--- Name: submissions_1597935600_1615215600; Type: TABLE; Schema: public; Owner: -
+-- Name: submissions_2028; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.submissions_1597935600_1615215600 (
+CREATE TABLE public.submissions_2028 (
     id bigint NOT NULL,
     epoch_second bigint NOT NULL,
     problem_id text NOT NULL,
@@ -528,162 +528,10 @@ CREATE TABLE public.submissions_1597935600_1615215600 (
 
 
 --
--- Name: submissions_1615215600_1632495600; Type: TABLE; Schema: public; Owner: -
+-- Name: submissions_2029; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.submissions_1615215600_1632495600 (
-    id bigint NOT NULL,
-    epoch_second bigint NOT NULL,
-    problem_id text NOT NULL,
-    contest_id text,
-    user_id text,
-    language text,
-    point double precision,
-    length integer,
-    result text,
-    execution_time integer,
-    updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
-);
-
-
---
--- Name: submissions_1632495600_1649775600; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.submissions_1632495600_1649775600 (
-    id bigint NOT NULL,
-    epoch_second bigint NOT NULL,
-    problem_id text NOT NULL,
-    contest_id text,
-    user_id text,
-    language text,
-    point double precision,
-    length integer,
-    result text,
-    execution_time integer,
-    updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
-);
-
-
---
--- Name: submissions_1649775600_1667055600; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.submissions_1649775600_1667055600 (
-    id bigint NOT NULL,
-    epoch_second bigint NOT NULL,
-    problem_id text NOT NULL,
-    contest_id text,
-    user_id text,
-    language text,
-    point double precision,
-    length integer,
-    result text,
-    execution_time integer,
-    updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
-);
-
-
---
--- Name: submissions_1667055600_1684335600; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.submissions_1667055600_1684335600 (
-    id bigint NOT NULL,
-    epoch_second bigint NOT NULL,
-    problem_id text NOT NULL,
-    contest_id text,
-    user_id text,
-    language text,
-    point double precision,
-    length integer,
-    result text,
-    execution_time integer,
-    updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
-);
-
-
---
--- Name: submissions_1684335600_1701615600; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.submissions_1684335600_1701615600 (
-    id bigint NOT NULL,
-    epoch_second bigint NOT NULL,
-    problem_id text NOT NULL,
-    contest_id text,
-    user_id text,
-    language text,
-    point double precision,
-    length integer,
-    result text,
-    execution_time integer,
-    updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
-);
-
-
---
--- Name: submissions_1701615600_1718895600; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.submissions_1701615600_1718895600 (
-    id bigint NOT NULL,
-    epoch_second bigint NOT NULL,
-    problem_id text NOT NULL,
-    contest_id text,
-    user_id text,
-    language text,
-    point double precision,
-    length integer,
-    result text,
-    execution_time integer,
-    updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
-);
-
-
---
--- Name: submissions_1718895600_1736175600; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.submissions_1718895600_1736175600 (
-    id bigint NOT NULL,
-    epoch_second bigint NOT NULL,
-    problem_id text NOT NULL,
-    contest_id text,
-    user_id text,
-    language text,
-    point double precision,
-    length integer,
-    result text,
-    execution_time integer,
-    updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
-);
-
-
---
--- Name: submissions_1736175600_1753455600; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.submissions_1736175600_1753455600 (
-    id bigint NOT NULL,
-    epoch_second bigint NOT NULL,
-    problem_id text NOT NULL,
-    contest_id text,
-    user_id text,
-    language text,
-    point double precision,
-    length integer,
-    result text,
-    execution_time integer,
-    updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
-);
-
-
---
--- Name: submissions_1753455600_1770735600; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.submissions_1753455600_1770735600 (
+CREATE TABLE public.submissions_2029 (
     id bigint NOT NULL,
     epoch_second bigint NOT NULL,
     problem_id text NOT NULL,
@@ -719,199 +567,143 @@ CREATE TABLE public.users (
 
 
 --
--- Name: submissions_0_1304175600; Type: TABLE ATTACH; Schema: public; Owner: -
+-- Name: submissions_2010; Type: TABLE ATTACH; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_0_1304175600 FOR VALUES FROM ('0') TO ('1304175600');
-
-
---
--- Name: submissions_1304175600_1321455600; Type: TABLE ATTACH; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_1304175600_1321455600 FOR VALUES FROM ('1304175600') TO ('1321455600');
+ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_2010 FOR VALUES FROM ('0') TO ('1293807600');
 
 
 --
--- Name: submissions_1321455600_1338735600; Type: TABLE ATTACH; Schema: public; Owner: -
+-- Name: submissions_2011; Type: TABLE ATTACH; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_1321455600_1338735600 FOR VALUES FROM ('1321455600') TO ('1338735600');
-
-
---
--- Name: submissions_1338735600_1356015600; Type: TABLE ATTACH; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_1338735600_1356015600 FOR VALUES FROM ('1338735600') TO ('1356015600');
+ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_2011 FOR VALUES FROM ('1293807600') TO ('1325343600');
 
 
 --
--- Name: submissions_1356015600_1373295600; Type: TABLE ATTACH; Schema: public; Owner: -
+-- Name: submissions_2012; Type: TABLE ATTACH; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_1356015600_1373295600 FOR VALUES FROM ('1356015600') TO ('1373295600');
-
-
---
--- Name: submissions_1373295600_1390575600; Type: TABLE ATTACH; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_1373295600_1390575600 FOR VALUES FROM ('1373295600') TO ('1390575600');
+ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_2012 FOR VALUES FROM ('1325343600') TO ('1356966000');
 
 
 --
--- Name: submissions_1390575600_1407855600; Type: TABLE ATTACH; Schema: public; Owner: -
+-- Name: submissions_2013; Type: TABLE ATTACH; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_1390575600_1407855600 FOR VALUES FROM ('1390575600') TO ('1407855600');
-
-
---
--- Name: submissions_1407855600_1425135600; Type: TABLE ATTACH; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_1407855600_1425135600 FOR VALUES FROM ('1407855600') TO ('1425135600');
+ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_2013 FOR VALUES FROM ('1356966000') TO ('1388502000');
 
 
 --
--- Name: submissions_1425135600_1442415600; Type: TABLE ATTACH; Schema: public; Owner: -
+-- Name: submissions_2014; Type: TABLE ATTACH; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_1425135600_1442415600 FOR VALUES FROM ('1425135600') TO ('1442415600');
-
-
---
--- Name: submissions_1442415600_1459695600; Type: TABLE ATTACH; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_1442415600_1459695600 FOR VALUES FROM ('1442415600') TO ('1459695600');
+ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_2014 FOR VALUES FROM ('1388502000') TO ('1420038000');
 
 
 --
--- Name: submissions_1459695600_1476975600; Type: TABLE ATTACH; Schema: public; Owner: -
+-- Name: submissions_2015; Type: TABLE ATTACH; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_1459695600_1476975600 FOR VALUES FROM ('1459695600') TO ('1476975600');
-
-
---
--- Name: submissions_1476975600_1494255600; Type: TABLE ATTACH; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_1476975600_1494255600 FOR VALUES FROM ('1476975600') TO ('1494255600');
+ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_2015 FOR VALUES FROM ('1420038000') TO ('1451574000');
 
 
 --
--- Name: submissions_1494255600_1511535600; Type: TABLE ATTACH; Schema: public; Owner: -
+-- Name: submissions_2016; Type: TABLE ATTACH; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_1494255600_1511535600 FOR VALUES FROM ('1494255600') TO ('1511535600');
-
-
---
--- Name: submissions_1511535600_1528815600; Type: TABLE ATTACH; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_1511535600_1528815600 FOR VALUES FROM ('1511535600') TO ('1528815600');
+ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_2016 FOR VALUES FROM ('1451574000') TO ('1483196400');
 
 
 --
--- Name: submissions_1528815600_1546095600; Type: TABLE ATTACH; Schema: public; Owner: -
+-- Name: submissions_2017; Type: TABLE ATTACH; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_1528815600_1546095600 FOR VALUES FROM ('1528815600') TO ('1546095600');
-
-
---
--- Name: submissions_1546095600_1563375600; Type: TABLE ATTACH; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_1546095600_1563375600 FOR VALUES FROM ('1546095600') TO ('1563375600');
+ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_2017 FOR VALUES FROM ('1483196400') TO ('1514732400');
 
 
 --
--- Name: submissions_1563375600_1580655600; Type: TABLE ATTACH; Schema: public; Owner: -
+-- Name: submissions_2018; Type: TABLE ATTACH; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_1563375600_1580655600 FOR VALUES FROM ('1563375600') TO ('1580655600');
-
-
---
--- Name: submissions_1580655600_1597935600; Type: TABLE ATTACH; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_1580655600_1597935600 FOR VALUES FROM ('1580655600') TO ('1597935600');
+ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_2018 FOR VALUES FROM ('1514732400') TO ('1546268400');
 
 
 --
--- Name: submissions_1597935600_1615215600; Type: TABLE ATTACH; Schema: public; Owner: -
+-- Name: submissions_2019; Type: TABLE ATTACH; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_1597935600_1615215600 FOR VALUES FROM ('1597935600') TO ('1615215600');
-
-
---
--- Name: submissions_1615215600_1632495600; Type: TABLE ATTACH; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_1615215600_1632495600 FOR VALUES FROM ('1615215600') TO ('1632495600');
+ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_2019 FOR VALUES FROM ('1546268400') TO ('1577804400');
 
 
 --
--- Name: submissions_1632495600_1649775600; Type: TABLE ATTACH; Schema: public; Owner: -
+-- Name: submissions_2020; Type: TABLE ATTACH; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_1632495600_1649775600 FOR VALUES FROM ('1632495600') TO ('1649775600');
-
-
---
--- Name: submissions_1649775600_1667055600; Type: TABLE ATTACH; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_1649775600_1667055600 FOR VALUES FROM ('1649775600') TO ('1667055600');
+ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_2020 FOR VALUES FROM ('1577804400') TO ('1609426800');
 
 
 --
--- Name: submissions_1667055600_1684335600; Type: TABLE ATTACH; Schema: public; Owner: -
+-- Name: submissions_2021; Type: TABLE ATTACH; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_1667055600_1684335600 FOR VALUES FROM ('1667055600') TO ('1684335600');
-
-
---
--- Name: submissions_1684335600_1701615600; Type: TABLE ATTACH; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_1684335600_1701615600 FOR VALUES FROM ('1684335600') TO ('1701615600');
+ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_2021 FOR VALUES FROM ('1609426800') TO ('1640962800');
 
 
 --
--- Name: submissions_1701615600_1718895600; Type: TABLE ATTACH; Schema: public; Owner: -
+-- Name: submissions_2022; Type: TABLE ATTACH; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_1701615600_1718895600 FOR VALUES FROM ('1701615600') TO ('1718895600');
-
-
---
--- Name: submissions_1718895600_1736175600; Type: TABLE ATTACH; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_1718895600_1736175600 FOR VALUES FROM ('1718895600') TO ('1736175600');
+ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_2022 FOR VALUES FROM ('1640962800') TO ('1672498800');
 
 
 --
--- Name: submissions_1736175600_1753455600; Type: TABLE ATTACH; Schema: public; Owner: -
+-- Name: submissions_2023; Type: TABLE ATTACH; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_1736175600_1753455600 FOR VALUES FROM ('1736175600') TO ('1753455600');
+ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_2023 FOR VALUES FROM ('1672498800') TO ('1704034800');
 
 
 --
--- Name: submissions_1753455600_1770735600; Type: TABLE ATTACH; Schema: public; Owner: -
+-- Name: submissions_2024; Type: TABLE ATTACH; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_1753455600_1770735600 FOR VALUES FROM ('1753455600') TO ('1770735600');
+ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_2024 FOR VALUES FROM ('1704034800') TO ('1735657200');
+
+
+--
+-- Name: submissions_2025; Type: TABLE ATTACH; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_2025 FOR VALUES FROM ('1735657200') TO ('1767193200');
+
+
+--
+-- Name: submissions_2026; Type: TABLE ATTACH; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_2026 FOR VALUES FROM ('1767193200') TO ('1798729200');
+
+
+--
+-- Name: submissions_2027; Type: TABLE ATTACH; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_2027 FOR VALUES FROM ('1798729200') TO ('1830265200');
+
+
+--
+-- Name: submissions_2028; Type: TABLE ATTACH; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_2028 FOR VALUES FROM ('1830265200') TO ('1861887600');
+
+
+--
+-- Name: submissions_2029; Type: TABLE ATTACH; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.submissions ATTACH PARTITION public.submissions_2029 FOR VALUES FROM ('1861887600') TO ('1893423600');
 
 
 --
@@ -1014,10 +806,10 @@ CREATE INDEX submissions_contest_id_epoch_second_index ON ONLY public.submission
 
 
 --
--- Name: submissions_0_1304175600_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2010_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_0_1304175600_contest_id_epoch_second_idx ON public.submissions_0_1304175600 USING btree (contest_id, epoch_second);
+CREATE INDEX submissions_2010_contest_id_epoch_second_idx ON public.submissions_2010 USING btree (contest_id, epoch_second);
 
 
 --
@@ -1028,10 +820,10 @@ CREATE INDEX submissions_contest_id_execution_time_index ON ONLY public.submissi
 
 
 --
--- Name: submissions_0_1304175600_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2010_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_0_1304175600_contest_id_execution_time_idx ON public.submissions_0_1304175600 USING btree (contest_id, execution_time);
+CREATE INDEX submissions_2010_contest_id_execution_time_idx ON public.submissions_2010 USING btree (contest_id, execution_time);
 
 
 --
@@ -1042,10 +834,10 @@ CREATE INDEX submissions_contest_id_length_index ON ONLY public.submissions USIN
 
 
 --
--- Name: submissions_0_1304175600_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2010_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_0_1304175600_contest_id_length_idx ON public.submissions_0_1304175600 USING btree (contest_id, length);
+CREATE INDEX submissions_2010_contest_id_length_idx ON public.submissions_2010 USING btree (contest_id, length);
 
 
 --
@@ -1056,80 +848,24 @@ CREATE INDEX submissions_contest_id_point_index ON ONLY public.submissions USING
 
 
 --
--- Name: submissions_0_1304175600_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2010_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_0_1304175600_contest_id_point_idx ON public.submissions_0_1304175600 USING btree (contest_id, point);
-
-
---
--- Name: submissions_updated_at_index; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX submissions_updated_at_index ON ONLY public.submissions USING btree (epoch_second, updated_at);
+CREATE INDEX submissions_2010_contest_id_point_idx ON public.submissions_2010 USING btree (contest_id, point);
 
 
 --
--- Name: submissions_0_1304175600_epoch_second_updated_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_unique; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_0_1304175600_epoch_second_updated_at_idx ON public.submissions_0_1304175600 USING btree (epoch_second, updated_at);
-
-
---
--- Name: submissions_execution_time_epoch_second_index; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX submissions_execution_time_epoch_second_index ON ONLY public.submissions USING btree (execution_time, epoch_second);
+CREATE UNIQUE INDEX submissions_unique ON ONLY public.submissions USING btree (epoch_second, id);
 
 
 --
--- Name: submissions_0_1304175600_execution_time_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2010_epoch_second_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_0_1304175600_execution_time_epoch_second_idx ON public.submissions_0_1304175600 USING btree (execution_time, epoch_second);
-
-
---
--- Name: submissions_execution_time_length_index; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX submissions_execution_time_length_index ON ONLY public.submissions USING btree (execution_time, length);
-
-
---
--- Name: submissions_0_1304175600_execution_time_length_idx; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX submissions_0_1304175600_execution_time_length_idx ON public.submissions_0_1304175600 USING btree (execution_time, length);
-
-
---
--- Name: submissions_execution_time_point_index; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX submissions_execution_time_point_index ON ONLY public.submissions USING btree (execution_time, point);
-
-
---
--- Name: submissions_0_1304175600_execution_time_point_idx; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX submissions_0_1304175600_execution_time_point_idx ON public.submissions_0_1304175600 USING btree (execution_time, point);
-
-
---
--- Name: submissions_id_epoch_second_unique; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX submissions_id_epoch_second_unique ON ONLY public.submissions USING btree (id, epoch_second);
-
-
---
--- Name: submissions_0_1304175600_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX submissions_0_1304175600_id_epoch_second_idx ON public.submissions_0_1304175600 USING btree (id, epoch_second);
+CREATE UNIQUE INDEX submissions_2010_epoch_second_id_idx ON public.submissions_2010 USING btree (epoch_second, id);
 
 
 --
@@ -1140,10 +876,10 @@ CREATE INDEX submissions_language_epoch_second_index ON ONLY public.submissions 
 
 
 --
--- Name: submissions_0_1304175600_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2010_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_0_1304175600_language_epoch_second_idx ON public.submissions_0_1304175600 USING btree (language, epoch_second);
+CREATE INDEX submissions_2010_language_epoch_second_idx ON public.submissions_2010 USING btree (language, epoch_second);
 
 
 --
@@ -1154,10 +890,10 @@ CREATE INDEX submissions_language_execution_time_index ON ONLY public.submission
 
 
 --
--- Name: submissions_0_1304175600_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2010_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_0_1304175600_language_execution_time_idx ON public.submissions_0_1304175600 USING btree (language, execution_time);
+CREATE INDEX submissions_2010_language_execution_time_idx ON public.submissions_2010 USING btree (language, execution_time);
 
 
 --
@@ -1168,10 +904,10 @@ CREATE INDEX submissions_language_length_index ON ONLY public.submissions USING 
 
 
 --
--- Name: submissions_0_1304175600_language_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2010_language_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_0_1304175600_language_length_idx ON public.submissions_0_1304175600 USING btree (language, length);
+CREATE INDEX submissions_2010_language_length_idx ON public.submissions_2010 USING btree (language, length);
 
 
 --
@@ -1182,94 +918,10 @@ CREATE INDEX submissions_language_point_index ON ONLY public.submissions USING b
 
 
 --
--- Name: submissions_0_1304175600_language_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2010_language_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_0_1304175600_language_point_idx ON public.submissions_0_1304175600 USING btree (language, point);
-
-
---
--- Name: submissions_length_epoch_second_index; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX submissions_length_epoch_second_index ON ONLY public.submissions USING btree (length, epoch_second);
-
-
---
--- Name: submissions_0_1304175600_length_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX submissions_0_1304175600_length_epoch_second_idx ON public.submissions_0_1304175600 USING btree (length, epoch_second);
-
-
---
--- Name: submissions_length_execution_time_index; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX submissions_length_execution_time_index ON ONLY public.submissions USING btree (length, execution_time);
-
-
---
--- Name: submissions_0_1304175600_length_execution_time_idx; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX submissions_0_1304175600_length_execution_time_idx ON public.submissions_0_1304175600 USING btree (length, execution_time);
-
-
---
--- Name: submissions_length_point_index; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX submissions_length_point_index ON ONLY public.submissions USING btree (length, point);
-
-
---
--- Name: submissions_0_1304175600_length_point_idx; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX submissions_0_1304175600_length_point_idx ON public.submissions_0_1304175600 USING btree (length, point);
-
-
---
--- Name: submissions_point_epoch_second_index; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX submissions_point_epoch_second_index ON ONLY public.submissions USING btree (point, epoch_second);
-
-
---
--- Name: submissions_0_1304175600_point_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX submissions_0_1304175600_point_epoch_second_idx ON public.submissions_0_1304175600 USING btree (point, epoch_second);
-
-
---
--- Name: submissions_point_execution_time_index; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX submissions_point_execution_time_index ON ONLY public.submissions USING btree (point, execution_time);
-
-
---
--- Name: submissions_0_1304175600_point_execution_time_idx; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX submissions_0_1304175600_point_execution_time_idx ON public.submissions_0_1304175600 USING btree (point, execution_time);
-
-
---
--- Name: submissions_point_length_index; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX submissions_point_length_index ON ONLY public.submissions USING btree (point, length);
-
-
---
--- Name: submissions_0_1304175600_point_length_idx; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX submissions_0_1304175600_point_length_idx ON public.submissions_0_1304175600 USING btree (point, length);
+CREATE INDEX submissions_2010_language_point_idx ON public.submissions_2010 USING btree (language, point);
 
 
 --
@@ -1280,10 +932,10 @@ CREATE INDEX submissions_problem_id_epoch_second_index ON ONLY public.submission
 
 
 --
--- Name: submissions_0_1304175600_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2010_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_0_1304175600_problem_id_epoch_second_idx ON public.submissions_0_1304175600 USING btree (problem_id, epoch_second);
+CREATE INDEX submissions_2010_problem_id_epoch_second_idx ON public.submissions_2010 USING btree (problem_id, epoch_second);
 
 
 --
@@ -1294,10 +946,10 @@ CREATE INDEX submissions_problem_id_execution_time_index ON ONLY public.submissi
 
 
 --
--- Name: submissions_0_1304175600_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2010_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_0_1304175600_problem_id_execution_time_idx ON public.submissions_0_1304175600 USING btree (problem_id, execution_time);
+CREATE INDEX submissions_2010_problem_id_execution_time_idx ON public.submissions_2010 USING btree (problem_id, execution_time);
 
 
 --
@@ -1308,10 +960,10 @@ CREATE INDEX submissions_problem_id_length_index ON ONLY public.submissions USIN
 
 
 --
--- Name: submissions_0_1304175600_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2010_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_0_1304175600_problem_id_length_idx ON public.submissions_0_1304175600 USING btree (problem_id, length);
+CREATE INDEX submissions_2010_problem_id_length_idx ON public.submissions_2010 USING btree (problem_id, length);
 
 
 --
@@ -1322,10 +974,10 @@ CREATE INDEX submissions_problem_id_point_index ON ONLY public.submissions USING
 
 
 --
--- Name: submissions_0_1304175600_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2010_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_0_1304175600_problem_id_point_idx ON public.submissions_0_1304175600 USING btree (problem_id, point);
+CREATE INDEX submissions_2010_problem_id_point_idx ON public.submissions_2010 USING btree (problem_id, point);
 
 
 --
@@ -1336,10 +988,10 @@ CREATE INDEX submissions_result_epoch_second_index ON ONLY public.submissions US
 
 
 --
--- Name: submissions_0_1304175600_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2010_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_0_1304175600_result_epoch_second_idx ON public.submissions_0_1304175600 USING btree (result, epoch_second);
+CREATE INDEX submissions_2010_result_epoch_second_idx ON public.submissions_2010 USING btree (result, epoch_second);
 
 
 --
@@ -1350,10 +1002,10 @@ CREATE INDEX submissions_result_execution_time_index ON ONLY public.submissions 
 
 
 --
--- Name: submissions_0_1304175600_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2010_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_0_1304175600_result_execution_time_idx ON public.submissions_0_1304175600 USING btree (result, execution_time);
+CREATE INDEX submissions_2010_result_execution_time_idx ON public.submissions_2010 USING btree (result, execution_time);
 
 
 --
@@ -1364,10 +1016,10 @@ CREATE INDEX submissions_result_length_index ON ONLY public.submissions USING bt
 
 
 --
--- Name: submissions_0_1304175600_result_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2010_result_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_0_1304175600_result_length_idx ON public.submissions_0_1304175600 USING btree (result, length);
+CREATE INDEX submissions_2010_result_length_idx ON public.submissions_2010 USING btree (result, length);
 
 
 --
@@ -1378,10 +1030,10 @@ CREATE INDEX submissions_result_point_index ON ONLY public.submissions USING btr
 
 
 --
--- Name: submissions_0_1304175600_result_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2010_result_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_0_1304175600_result_point_idx ON public.submissions_0_1304175600 USING btree (result, point);
+CREATE INDEX submissions_2010_result_point_idx ON public.submissions_2010 USING btree (result, point);
 
 
 --
@@ -1392,10 +1044,10 @@ CREATE INDEX submissions_user_id_epoch_second_index ON ONLY public.submissions U
 
 
 --
--- Name: submissions_0_1304175600_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2010_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_0_1304175600_user_id_epoch_second_idx ON public.submissions_0_1304175600 USING btree (user_id, epoch_second);
+CREATE INDEX submissions_2010_user_id_epoch_second_idx ON public.submissions_2010 USING btree (user_id, epoch_second);
 
 
 --
@@ -1406,10 +1058,10 @@ CREATE INDEX submissions_user_id_execution_time_index ON ONLY public.submissions
 
 
 --
--- Name: submissions_0_1304175600_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2010_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_0_1304175600_user_id_execution_time_idx ON public.submissions_0_1304175600 USING btree (user_id, execution_time);
+CREATE INDEX submissions_2010_user_id_execution_time_idx ON public.submissions_2010 USING btree (user_id, execution_time);
 
 
 --
@@ -1420,10 +1072,10 @@ CREATE INDEX submissions_user_id_length_index ON ONLY public.submissions USING b
 
 
 --
--- Name: submissions_0_1304175600_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2010_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_0_1304175600_user_id_length_idx ON public.submissions_0_1304175600 USING btree (user_id, length);
+CREATE INDEX submissions_2010_user_id_length_idx ON public.submissions_2010 USING btree (user_id, length);
 
 
 --
@@ -1434,11945 +1086,6030 @@ CREATE INDEX submissions_user_id_point_index ON ONLY public.submissions USING bt
 
 
 --
--- Name: submissions_0_1304175600_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2010_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_0_1304175600_user_id_point_idx ON public.submissions_0_1304175600 USING btree (user_id, point);
+CREATE INDEX submissions_2010_user_id_point_idx ON public.submissions_2010 USING btree (user_id, point);
 
 
 --
--- Name: submissions_1304175600_1321455600_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_user_id_result_index; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1304175600_1321455600_contest_id_epoch_second_idx ON public.submissions_1304175600_1321455600 USING btree (contest_id, epoch_second);
+CREATE INDEX submissions_user_id_result_index ON ONLY public.submissions USING btree (user_id, result);
 
 
 --
--- Name: submissions_1304175600_1321455600_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2010_user_id_result_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1304175600_1321455600_contest_id_execution_time_idx ON public.submissions_1304175600_1321455600 USING btree (contest_id, execution_time);
+CREATE INDEX submissions_2010_user_id_result_idx ON public.submissions_2010 USING btree (user_id, result);
 
 
 --
--- Name: submissions_1304175600_1321455600_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2011_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1304175600_1321455600_contest_id_length_idx ON public.submissions_1304175600_1321455600 USING btree (contest_id, length);
+CREATE INDEX submissions_2011_contest_id_epoch_second_idx ON public.submissions_2011 USING btree (contest_id, epoch_second);
 
 
 --
--- Name: submissions_1304175600_1321455600_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2011_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1304175600_1321455600_contest_id_point_idx ON public.submissions_1304175600_1321455600 USING btree (contest_id, point);
+CREATE INDEX submissions_2011_contest_id_execution_time_idx ON public.submissions_2011 USING btree (contest_id, execution_time);
 
 
 --
--- Name: submissions_1304175600_1321455600_epoch_second_updated_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2011_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1304175600_1321455600_epoch_second_updated_at_idx ON public.submissions_1304175600_1321455600 USING btree (epoch_second, updated_at);
+CREATE INDEX submissions_2011_contest_id_length_idx ON public.submissions_2011 USING btree (contest_id, length);
 
 
 --
--- Name: submissions_1304175600_1321455600_execution_time_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2011_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1304175600_1321455600_execution_time_length_idx ON public.submissions_1304175600_1321455600 USING btree (execution_time, length);
+CREATE INDEX submissions_2011_contest_id_point_idx ON public.submissions_2011 USING btree (contest_id, point);
 
 
 --
--- Name: submissions_1304175600_1321455600_execution_time_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2011_epoch_second_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1304175600_1321455600_execution_time_point_idx ON public.submissions_1304175600_1321455600 USING btree (execution_time, point);
+CREATE UNIQUE INDEX submissions_2011_epoch_second_id_idx ON public.submissions_2011 USING btree (epoch_second, id);
 
 
 --
--- Name: submissions_1304175600_1321455600_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2011_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX submissions_1304175600_1321455600_id_epoch_second_idx ON public.submissions_1304175600_1321455600 USING btree (id, epoch_second);
+CREATE INDEX submissions_2011_language_epoch_second_idx ON public.submissions_2011 USING btree (language, epoch_second);
 
 
 --
--- Name: submissions_1304175600_1321455600_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2011_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1304175600_1321455600_language_epoch_second_idx ON public.submissions_1304175600_1321455600 USING btree (language, epoch_second);
+CREATE INDEX submissions_2011_language_execution_time_idx ON public.submissions_2011 USING btree (language, execution_time);
 
 
 --
--- Name: submissions_1304175600_1321455600_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2011_language_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1304175600_1321455600_language_execution_time_idx ON public.submissions_1304175600_1321455600 USING btree (language, execution_time);
+CREATE INDEX submissions_2011_language_length_idx ON public.submissions_2011 USING btree (language, length);
 
 
 --
--- Name: submissions_1304175600_1321455600_language_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2011_language_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1304175600_1321455600_language_length_idx ON public.submissions_1304175600_1321455600 USING btree (language, length);
+CREATE INDEX submissions_2011_language_point_idx ON public.submissions_2011 USING btree (language, point);
 
 
 --
--- Name: submissions_1304175600_1321455600_language_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2011_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1304175600_1321455600_language_point_idx ON public.submissions_1304175600_1321455600 USING btree (language, point);
+CREATE INDEX submissions_2011_problem_id_epoch_second_idx ON public.submissions_2011 USING btree (problem_id, epoch_second);
 
 
 --
--- Name: submissions_1304175600_1321455600_length_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2011_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1304175600_1321455600_length_epoch_second_idx ON public.submissions_1304175600_1321455600 USING btree (length, epoch_second);
+CREATE INDEX submissions_2011_problem_id_execution_time_idx ON public.submissions_2011 USING btree (problem_id, execution_time);
 
 
 --
--- Name: submissions_1304175600_1321455600_length_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2011_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1304175600_1321455600_length_execution_time_idx ON public.submissions_1304175600_1321455600 USING btree (length, execution_time);
+CREATE INDEX submissions_2011_problem_id_length_idx ON public.submissions_2011 USING btree (problem_id, length);
 
 
 --
--- Name: submissions_1304175600_1321455600_length_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2011_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1304175600_1321455600_length_point_idx ON public.submissions_1304175600_1321455600 USING btree (length, point);
+CREATE INDEX submissions_2011_problem_id_point_idx ON public.submissions_2011 USING btree (problem_id, point);
 
 
 --
--- Name: submissions_1304175600_1321455600_point_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2011_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1304175600_1321455600_point_epoch_second_idx ON public.submissions_1304175600_1321455600 USING btree (point, epoch_second);
+CREATE INDEX submissions_2011_result_epoch_second_idx ON public.submissions_2011 USING btree (result, epoch_second);
 
 
 --
--- Name: submissions_1304175600_1321455600_point_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2011_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1304175600_1321455600_point_execution_time_idx ON public.submissions_1304175600_1321455600 USING btree (point, execution_time);
+CREATE INDEX submissions_2011_result_execution_time_idx ON public.submissions_2011 USING btree (result, execution_time);
 
 
 --
--- Name: submissions_1304175600_1321455600_point_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2011_result_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1304175600_1321455600_point_length_idx ON public.submissions_1304175600_1321455600 USING btree (point, length);
+CREATE INDEX submissions_2011_result_length_idx ON public.submissions_2011 USING btree (result, length);
 
 
 --
--- Name: submissions_1304175600_1321455600_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2011_result_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1304175600_1321455600_problem_id_epoch_second_idx ON public.submissions_1304175600_1321455600 USING btree (problem_id, epoch_second);
+CREATE INDEX submissions_2011_result_point_idx ON public.submissions_2011 USING btree (result, point);
 
 
 --
--- Name: submissions_1304175600_1321455600_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2011_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1304175600_1321455600_problem_id_execution_time_idx ON public.submissions_1304175600_1321455600 USING btree (problem_id, execution_time);
+CREATE INDEX submissions_2011_user_id_epoch_second_idx ON public.submissions_2011 USING btree (user_id, epoch_second);
 
 
 --
--- Name: submissions_1304175600_1321455600_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2011_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1304175600_1321455600_problem_id_length_idx ON public.submissions_1304175600_1321455600 USING btree (problem_id, length);
+CREATE INDEX submissions_2011_user_id_execution_time_idx ON public.submissions_2011 USING btree (user_id, execution_time);
 
 
 --
--- Name: submissions_1304175600_1321455600_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2011_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1304175600_1321455600_problem_id_point_idx ON public.submissions_1304175600_1321455600 USING btree (problem_id, point);
+CREATE INDEX submissions_2011_user_id_length_idx ON public.submissions_2011 USING btree (user_id, length);
 
 
 --
--- Name: submissions_1304175600_1321455600_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2011_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1304175600_1321455600_result_epoch_second_idx ON public.submissions_1304175600_1321455600 USING btree (result, epoch_second);
+CREATE INDEX submissions_2011_user_id_point_idx ON public.submissions_2011 USING btree (user_id, point);
 
 
 --
--- Name: submissions_1304175600_1321455600_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2011_user_id_result_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1304175600_1321455600_result_execution_time_idx ON public.submissions_1304175600_1321455600 USING btree (result, execution_time);
+CREATE INDEX submissions_2011_user_id_result_idx ON public.submissions_2011 USING btree (user_id, result);
 
 
 --
--- Name: submissions_1304175600_1321455600_result_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2012_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1304175600_1321455600_result_length_idx ON public.submissions_1304175600_1321455600 USING btree (result, length);
+CREATE INDEX submissions_2012_contest_id_epoch_second_idx ON public.submissions_2012 USING btree (contest_id, epoch_second);
 
 
 --
--- Name: submissions_1304175600_1321455600_result_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2012_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1304175600_1321455600_result_point_idx ON public.submissions_1304175600_1321455600 USING btree (result, point);
+CREATE INDEX submissions_2012_contest_id_execution_time_idx ON public.submissions_2012 USING btree (contest_id, execution_time);
 
 
 --
--- Name: submissions_1304175600_1321455600_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2012_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1304175600_1321455600_user_id_epoch_second_idx ON public.submissions_1304175600_1321455600 USING btree (user_id, epoch_second);
+CREATE INDEX submissions_2012_contest_id_length_idx ON public.submissions_2012 USING btree (contest_id, length);
 
 
 --
--- Name: submissions_1304175600_1321455600_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2012_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1304175600_1321455600_user_id_execution_time_idx ON public.submissions_1304175600_1321455600 USING btree (user_id, execution_time);
+CREATE INDEX submissions_2012_contest_id_point_idx ON public.submissions_2012 USING btree (contest_id, point);
 
 
 --
--- Name: submissions_1304175600_1321455600_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2012_epoch_second_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1304175600_1321455600_user_id_length_idx ON public.submissions_1304175600_1321455600 USING btree (user_id, length);
+CREATE UNIQUE INDEX submissions_2012_epoch_second_id_idx ON public.submissions_2012 USING btree (epoch_second, id);
 
 
 --
--- Name: submissions_1304175600_1321455600_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2012_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1304175600_1321455600_user_id_point_idx ON public.submissions_1304175600_1321455600 USING btree (user_id, point);
+CREATE INDEX submissions_2012_language_epoch_second_idx ON public.submissions_2012 USING btree (language, epoch_second);
 
 
 --
--- Name: submissions_1304175600_13214556_execution_time_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2012_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1304175600_13214556_execution_time_epoch_second_idx ON public.submissions_1304175600_1321455600 USING btree (execution_time, epoch_second);
+CREATE INDEX submissions_2012_language_execution_time_idx ON public.submissions_2012 USING btree (language, execution_time);
 
 
 --
--- Name: submissions_1321455600_1338735600_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2012_language_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1321455600_1338735600_contest_id_epoch_second_idx ON public.submissions_1321455600_1338735600 USING btree (contest_id, epoch_second);
+CREATE INDEX submissions_2012_language_length_idx ON public.submissions_2012 USING btree (language, length);
 
 
 --
--- Name: submissions_1321455600_1338735600_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2012_language_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1321455600_1338735600_contest_id_execution_time_idx ON public.submissions_1321455600_1338735600 USING btree (contest_id, execution_time);
+CREATE INDEX submissions_2012_language_point_idx ON public.submissions_2012 USING btree (language, point);
 
 
 --
--- Name: submissions_1321455600_1338735600_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2012_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1321455600_1338735600_contest_id_length_idx ON public.submissions_1321455600_1338735600 USING btree (contest_id, length);
+CREATE INDEX submissions_2012_problem_id_epoch_second_idx ON public.submissions_2012 USING btree (problem_id, epoch_second);
 
 
 --
--- Name: submissions_1321455600_1338735600_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2012_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1321455600_1338735600_contest_id_point_idx ON public.submissions_1321455600_1338735600 USING btree (contest_id, point);
+CREATE INDEX submissions_2012_problem_id_execution_time_idx ON public.submissions_2012 USING btree (problem_id, execution_time);
 
 
 --
--- Name: submissions_1321455600_1338735600_epoch_second_updated_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2012_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1321455600_1338735600_epoch_second_updated_at_idx ON public.submissions_1321455600_1338735600 USING btree (epoch_second, updated_at);
+CREATE INDEX submissions_2012_problem_id_length_idx ON public.submissions_2012 USING btree (problem_id, length);
 
 
 --
--- Name: submissions_1321455600_1338735600_execution_time_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2012_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1321455600_1338735600_execution_time_length_idx ON public.submissions_1321455600_1338735600 USING btree (execution_time, length);
+CREATE INDEX submissions_2012_problem_id_point_idx ON public.submissions_2012 USING btree (problem_id, point);
 
 
 --
--- Name: submissions_1321455600_1338735600_execution_time_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2012_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1321455600_1338735600_execution_time_point_idx ON public.submissions_1321455600_1338735600 USING btree (execution_time, point);
+CREATE INDEX submissions_2012_result_epoch_second_idx ON public.submissions_2012 USING btree (result, epoch_second);
 
 
 --
--- Name: submissions_1321455600_1338735600_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2012_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX submissions_1321455600_1338735600_id_epoch_second_idx ON public.submissions_1321455600_1338735600 USING btree (id, epoch_second);
+CREATE INDEX submissions_2012_result_execution_time_idx ON public.submissions_2012 USING btree (result, execution_time);
 
 
 --
--- Name: submissions_1321455600_1338735600_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2012_result_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1321455600_1338735600_language_epoch_second_idx ON public.submissions_1321455600_1338735600 USING btree (language, epoch_second);
+CREATE INDEX submissions_2012_result_length_idx ON public.submissions_2012 USING btree (result, length);
 
 
 --
--- Name: submissions_1321455600_1338735600_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2012_result_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1321455600_1338735600_language_execution_time_idx ON public.submissions_1321455600_1338735600 USING btree (language, execution_time);
+CREATE INDEX submissions_2012_result_point_idx ON public.submissions_2012 USING btree (result, point);
 
 
 --
--- Name: submissions_1321455600_1338735600_language_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2012_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1321455600_1338735600_language_length_idx ON public.submissions_1321455600_1338735600 USING btree (language, length);
+CREATE INDEX submissions_2012_user_id_epoch_second_idx ON public.submissions_2012 USING btree (user_id, epoch_second);
 
 
 --
--- Name: submissions_1321455600_1338735600_language_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2012_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1321455600_1338735600_language_point_idx ON public.submissions_1321455600_1338735600 USING btree (language, point);
+CREATE INDEX submissions_2012_user_id_execution_time_idx ON public.submissions_2012 USING btree (user_id, execution_time);
 
 
 --
--- Name: submissions_1321455600_1338735600_length_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2012_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1321455600_1338735600_length_epoch_second_idx ON public.submissions_1321455600_1338735600 USING btree (length, epoch_second);
+CREATE INDEX submissions_2012_user_id_length_idx ON public.submissions_2012 USING btree (user_id, length);
 
 
 --
--- Name: submissions_1321455600_1338735600_length_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2012_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1321455600_1338735600_length_execution_time_idx ON public.submissions_1321455600_1338735600 USING btree (length, execution_time);
+CREATE INDEX submissions_2012_user_id_point_idx ON public.submissions_2012 USING btree (user_id, point);
 
 
 --
--- Name: submissions_1321455600_1338735600_length_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2012_user_id_result_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1321455600_1338735600_length_point_idx ON public.submissions_1321455600_1338735600 USING btree (length, point);
+CREATE INDEX submissions_2012_user_id_result_idx ON public.submissions_2012 USING btree (user_id, result);
 
 
 --
--- Name: submissions_1321455600_1338735600_point_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2013_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1321455600_1338735600_point_epoch_second_idx ON public.submissions_1321455600_1338735600 USING btree (point, epoch_second);
+CREATE INDEX submissions_2013_contest_id_epoch_second_idx ON public.submissions_2013 USING btree (contest_id, epoch_second);
 
 
 --
--- Name: submissions_1321455600_1338735600_point_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2013_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1321455600_1338735600_point_execution_time_idx ON public.submissions_1321455600_1338735600 USING btree (point, execution_time);
+CREATE INDEX submissions_2013_contest_id_execution_time_idx ON public.submissions_2013 USING btree (contest_id, execution_time);
 
 
 --
--- Name: submissions_1321455600_1338735600_point_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2013_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1321455600_1338735600_point_length_idx ON public.submissions_1321455600_1338735600 USING btree (point, length);
+CREATE INDEX submissions_2013_contest_id_length_idx ON public.submissions_2013 USING btree (contest_id, length);
 
 
 --
--- Name: submissions_1321455600_1338735600_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2013_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1321455600_1338735600_problem_id_epoch_second_idx ON public.submissions_1321455600_1338735600 USING btree (problem_id, epoch_second);
+CREATE INDEX submissions_2013_contest_id_point_idx ON public.submissions_2013 USING btree (contest_id, point);
 
 
 --
--- Name: submissions_1321455600_1338735600_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2013_epoch_second_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1321455600_1338735600_problem_id_execution_time_idx ON public.submissions_1321455600_1338735600 USING btree (problem_id, execution_time);
+CREATE UNIQUE INDEX submissions_2013_epoch_second_id_idx ON public.submissions_2013 USING btree (epoch_second, id);
 
 
 --
--- Name: submissions_1321455600_1338735600_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2013_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1321455600_1338735600_problem_id_length_idx ON public.submissions_1321455600_1338735600 USING btree (problem_id, length);
+CREATE INDEX submissions_2013_language_epoch_second_idx ON public.submissions_2013 USING btree (language, epoch_second);
 
 
 --
--- Name: submissions_1321455600_1338735600_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2013_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1321455600_1338735600_problem_id_point_idx ON public.submissions_1321455600_1338735600 USING btree (problem_id, point);
+CREATE INDEX submissions_2013_language_execution_time_idx ON public.submissions_2013 USING btree (language, execution_time);
 
 
 --
--- Name: submissions_1321455600_1338735600_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2013_language_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1321455600_1338735600_result_epoch_second_idx ON public.submissions_1321455600_1338735600 USING btree (result, epoch_second);
+CREATE INDEX submissions_2013_language_length_idx ON public.submissions_2013 USING btree (language, length);
 
 
 --
--- Name: submissions_1321455600_1338735600_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2013_language_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1321455600_1338735600_result_execution_time_idx ON public.submissions_1321455600_1338735600 USING btree (result, execution_time);
+CREATE INDEX submissions_2013_language_point_idx ON public.submissions_2013 USING btree (language, point);
 
 
 --
--- Name: submissions_1321455600_1338735600_result_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2013_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1321455600_1338735600_result_length_idx ON public.submissions_1321455600_1338735600 USING btree (result, length);
+CREATE INDEX submissions_2013_problem_id_epoch_second_idx ON public.submissions_2013 USING btree (problem_id, epoch_second);
 
 
 --
--- Name: submissions_1321455600_1338735600_result_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2013_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1321455600_1338735600_result_point_idx ON public.submissions_1321455600_1338735600 USING btree (result, point);
+CREATE INDEX submissions_2013_problem_id_execution_time_idx ON public.submissions_2013 USING btree (problem_id, execution_time);
 
 
 --
--- Name: submissions_1321455600_1338735600_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2013_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1321455600_1338735600_user_id_epoch_second_idx ON public.submissions_1321455600_1338735600 USING btree (user_id, epoch_second);
+CREATE INDEX submissions_2013_problem_id_length_idx ON public.submissions_2013 USING btree (problem_id, length);
 
 
 --
--- Name: submissions_1321455600_1338735600_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2013_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1321455600_1338735600_user_id_execution_time_idx ON public.submissions_1321455600_1338735600 USING btree (user_id, execution_time);
+CREATE INDEX submissions_2013_problem_id_point_idx ON public.submissions_2013 USING btree (problem_id, point);
 
 
 --
--- Name: submissions_1321455600_1338735600_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2013_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1321455600_1338735600_user_id_length_idx ON public.submissions_1321455600_1338735600 USING btree (user_id, length);
+CREATE INDEX submissions_2013_result_epoch_second_idx ON public.submissions_2013 USING btree (result, epoch_second);
 
 
 --
--- Name: submissions_1321455600_1338735600_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2013_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1321455600_1338735600_user_id_point_idx ON public.submissions_1321455600_1338735600 USING btree (user_id, point);
+CREATE INDEX submissions_2013_result_execution_time_idx ON public.submissions_2013 USING btree (result, execution_time);
 
 
 --
--- Name: submissions_1321455600_13387356_execution_time_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2013_result_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1321455600_13387356_execution_time_epoch_second_idx ON public.submissions_1321455600_1338735600 USING btree (execution_time, epoch_second);
+CREATE INDEX submissions_2013_result_length_idx ON public.submissions_2013 USING btree (result, length);
 
 
 --
--- Name: submissions_1338735600_1356015600_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2013_result_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1338735600_1356015600_contest_id_epoch_second_idx ON public.submissions_1338735600_1356015600 USING btree (contest_id, epoch_second);
+CREATE INDEX submissions_2013_result_point_idx ON public.submissions_2013 USING btree (result, point);
 
 
 --
--- Name: submissions_1338735600_1356015600_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2013_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1338735600_1356015600_contest_id_execution_time_idx ON public.submissions_1338735600_1356015600 USING btree (contest_id, execution_time);
+CREATE INDEX submissions_2013_user_id_epoch_second_idx ON public.submissions_2013 USING btree (user_id, epoch_second);
 
 
 --
--- Name: submissions_1338735600_1356015600_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2013_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1338735600_1356015600_contest_id_length_idx ON public.submissions_1338735600_1356015600 USING btree (contest_id, length);
+CREATE INDEX submissions_2013_user_id_execution_time_idx ON public.submissions_2013 USING btree (user_id, execution_time);
 
 
 --
--- Name: submissions_1338735600_1356015600_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2013_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1338735600_1356015600_contest_id_point_idx ON public.submissions_1338735600_1356015600 USING btree (contest_id, point);
+CREATE INDEX submissions_2013_user_id_length_idx ON public.submissions_2013 USING btree (user_id, length);
 
 
 --
--- Name: submissions_1338735600_1356015600_epoch_second_updated_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2013_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1338735600_1356015600_epoch_second_updated_at_idx ON public.submissions_1338735600_1356015600 USING btree (epoch_second, updated_at);
+CREATE INDEX submissions_2013_user_id_point_idx ON public.submissions_2013 USING btree (user_id, point);
 
 
 --
--- Name: submissions_1338735600_1356015600_execution_time_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2013_user_id_result_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1338735600_1356015600_execution_time_length_idx ON public.submissions_1338735600_1356015600 USING btree (execution_time, length);
+CREATE INDEX submissions_2013_user_id_result_idx ON public.submissions_2013 USING btree (user_id, result);
 
 
 --
--- Name: submissions_1338735600_1356015600_execution_time_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2014_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1338735600_1356015600_execution_time_point_idx ON public.submissions_1338735600_1356015600 USING btree (execution_time, point);
+CREATE INDEX submissions_2014_contest_id_epoch_second_idx ON public.submissions_2014 USING btree (contest_id, epoch_second);
 
 
 --
--- Name: submissions_1338735600_1356015600_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2014_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX submissions_1338735600_1356015600_id_epoch_second_idx ON public.submissions_1338735600_1356015600 USING btree (id, epoch_second);
+CREATE INDEX submissions_2014_contest_id_execution_time_idx ON public.submissions_2014 USING btree (contest_id, execution_time);
 
 
 --
--- Name: submissions_1338735600_1356015600_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2014_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1338735600_1356015600_language_epoch_second_idx ON public.submissions_1338735600_1356015600 USING btree (language, epoch_second);
+CREATE INDEX submissions_2014_contest_id_length_idx ON public.submissions_2014 USING btree (contest_id, length);
 
 
 --
--- Name: submissions_1338735600_1356015600_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2014_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1338735600_1356015600_language_execution_time_idx ON public.submissions_1338735600_1356015600 USING btree (language, execution_time);
+CREATE INDEX submissions_2014_contest_id_point_idx ON public.submissions_2014 USING btree (contest_id, point);
 
 
 --
--- Name: submissions_1338735600_1356015600_language_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2014_epoch_second_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1338735600_1356015600_language_length_idx ON public.submissions_1338735600_1356015600 USING btree (language, length);
+CREATE UNIQUE INDEX submissions_2014_epoch_second_id_idx ON public.submissions_2014 USING btree (epoch_second, id);
 
 
 --
--- Name: submissions_1338735600_1356015600_language_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2014_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1338735600_1356015600_language_point_idx ON public.submissions_1338735600_1356015600 USING btree (language, point);
+CREATE INDEX submissions_2014_language_epoch_second_idx ON public.submissions_2014 USING btree (language, epoch_second);
 
 
 --
--- Name: submissions_1338735600_1356015600_length_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2014_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1338735600_1356015600_length_epoch_second_idx ON public.submissions_1338735600_1356015600 USING btree (length, epoch_second);
+CREATE INDEX submissions_2014_language_execution_time_idx ON public.submissions_2014 USING btree (language, execution_time);
 
 
 --
--- Name: submissions_1338735600_1356015600_length_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2014_language_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1338735600_1356015600_length_execution_time_idx ON public.submissions_1338735600_1356015600 USING btree (length, execution_time);
+CREATE INDEX submissions_2014_language_length_idx ON public.submissions_2014 USING btree (language, length);
 
 
 --
--- Name: submissions_1338735600_1356015600_length_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2014_language_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1338735600_1356015600_length_point_idx ON public.submissions_1338735600_1356015600 USING btree (length, point);
+CREATE INDEX submissions_2014_language_point_idx ON public.submissions_2014 USING btree (language, point);
 
 
 --
--- Name: submissions_1338735600_1356015600_point_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2014_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1338735600_1356015600_point_epoch_second_idx ON public.submissions_1338735600_1356015600 USING btree (point, epoch_second);
+CREATE INDEX submissions_2014_problem_id_epoch_second_idx ON public.submissions_2014 USING btree (problem_id, epoch_second);
 
 
 --
--- Name: submissions_1338735600_1356015600_point_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2014_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1338735600_1356015600_point_execution_time_idx ON public.submissions_1338735600_1356015600 USING btree (point, execution_time);
+CREATE INDEX submissions_2014_problem_id_execution_time_idx ON public.submissions_2014 USING btree (problem_id, execution_time);
 
 
 --
--- Name: submissions_1338735600_1356015600_point_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2014_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1338735600_1356015600_point_length_idx ON public.submissions_1338735600_1356015600 USING btree (point, length);
+CREATE INDEX submissions_2014_problem_id_length_idx ON public.submissions_2014 USING btree (problem_id, length);
 
 
 --
--- Name: submissions_1338735600_1356015600_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2014_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1338735600_1356015600_problem_id_epoch_second_idx ON public.submissions_1338735600_1356015600 USING btree (problem_id, epoch_second);
+CREATE INDEX submissions_2014_problem_id_point_idx ON public.submissions_2014 USING btree (problem_id, point);
 
 
 --
--- Name: submissions_1338735600_1356015600_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2014_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1338735600_1356015600_problem_id_execution_time_idx ON public.submissions_1338735600_1356015600 USING btree (problem_id, execution_time);
+CREATE INDEX submissions_2014_result_epoch_second_idx ON public.submissions_2014 USING btree (result, epoch_second);
 
 
 --
--- Name: submissions_1338735600_1356015600_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2014_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1338735600_1356015600_problem_id_length_idx ON public.submissions_1338735600_1356015600 USING btree (problem_id, length);
+CREATE INDEX submissions_2014_result_execution_time_idx ON public.submissions_2014 USING btree (result, execution_time);
 
 
 --
--- Name: submissions_1338735600_1356015600_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2014_result_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1338735600_1356015600_problem_id_point_idx ON public.submissions_1338735600_1356015600 USING btree (problem_id, point);
+CREATE INDEX submissions_2014_result_length_idx ON public.submissions_2014 USING btree (result, length);
 
 
 --
--- Name: submissions_1338735600_1356015600_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2014_result_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1338735600_1356015600_result_epoch_second_idx ON public.submissions_1338735600_1356015600 USING btree (result, epoch_second);
+CREATE INDEX submissions_2014_result_point_idx ON public.submissions_2014 USING btree (result, point);
 
 
 --
--- Name: submissions_1338735600_1356015600_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2014_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1338735600_1356015600_result_execution_time_idx ON public.submissions_1338735600_1356015600 USING btree (result, execution_time);
+CREATE INDEX submissions_2014_user_id_epoch_second_idx ON public.submissions_2014 USING btree (user_id, epoch_second);
 
 
 --
--- Name: submissions_1338735600_1356015600_result_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2014_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1338735600_1356015600_result_length_idx ON public.submissions_1338735600_1356015600 USING btree (result, length);
+CREATE INDEX submissions_2014_user_id_execution_time_idx ON public.submissions_2014 USING btree (user_id, execution_time);
 
 
 --
--- Name: submissions_1338735600_1356015600_result_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2014_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1338735600_1356015600_result_point_idx ON public.submissions_1338735600_1356015600 USING btree (result, point);
+CREATE INDEX submissions_2014_user_id_length_idx ON public.submissions_2014 USING btree (user_id, length);
 
 
 --
--- Name: submissions_1338735600_1356015600_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2014_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1338735600_1356015600_user_id_epoch_second_idx ON public.submissions_1338735600_1356015600 USING btree (user_id, epoch_second);
+CREATE INDEX submissions_2014_user_id_point_idx ON public.submissions_2014 USING btree (user_id, point);
 
 
 --
--- Name: submissions_1338735600_1356015600_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2014_user_id_result_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1338735600_1356015600_user_id_execution_time_idx ON public.submissions_1338735600_1356015600 USING btree (user_id, execution_time);
+CREATE INDEX submissions_2014_user_id_result_idx ON public.submissions_2014 USING btree (user_id, result);
 
 
 --
--- Name: submissions_1338735600_1356015600_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2015_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1338735600_1356015600_user_id_length_idx ON public.submissions_1338735600_1356015600 USING btree (user_id, length);
+CREATE INDEX submissions_2015_contest_id_epoch_second_idx ON public.submissions_2015 USING btree (contest_id, epoch_second);
 
 
 --
--- Name: submissions_1338735600_1356015600_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2015_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1338735600_1356015600_user_id_point_idx ON public.submissions_1338735600_1356015600 USING btree (user_id, point);
+CREATE INDEX submissions_2015_contest_id_execution_time_idx ON public.submissions_2015 USING btree (contest_id, execution_time);
 
 
 --
--- Name: submissions_1338735600_13560156_execution_time_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2015_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1338735600_13560156_execution_time_epoch_second_idx ON public.submissions_1338735600_1356015600 USING btree (execution_time, epoch_second);
+CREATE INDEX submissions_2015_contest_id_length_idx ON public.submissions_2015 USING btree (contest_id, length);
 
 
 --
--- Name: submissions_1356015600_1373295600_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2015_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1356015600_1373295600_contest_id_epoch_second_idx ON public.submissions_1356015600_1373295600 USING btree (contest_id, epoch_second);
+CREATE INDEX submissions_2015_contest_id_point_idx ON public.submissions_2015 USING btree (contest_id, point);
 
 
 --
--- Name: submissions_1356015600_1373295600_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2015_epoch_second_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1356015600_1373295600_contest_id_execution_time_idx ON public.submissions_1356015600_1373295600 USING btree (contest_id, execution_time);
+CREATE UNIQUE INDEX submissions_2015_epoch_second_id_idx ON public.submissions_2015 USING btree (epoch_second, id);
 
 
 --
--- Name: submissions_1356015600_1373295600_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2015_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1356015600_1373295600_contest_id_length_idx ON public.submissions_1356015600_1373295600 USING btree (contest_id, length);
+CREATE INDEX submissions_2015_language_epoch_second_idx ON public.submissions_2015 USING btree (language, epoch_second);
 
 
 --
--- Name: submissions_1356015600_1373295600_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2015_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1356015600_1373295600_contest_id_point_idx ON public.submissions_1356015600_1373295600 USING btree (contest_id, point);
+CREATE INDEX submissions_2015_language_execution_time_idx ON public.submissions_2015 USING btree (language, execution_time);
 
 
 --
--- Name: submissions_1356015600_1373295600_epoch_second_updated_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2015_language_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1356015600_1373295600_epoch_second_updated_at_idx ON public.submissions_1356015600_1373295600 USING btree (epoch_second, updated_at);
+CREATE INDEX submissions_2015_language_length_idx ON public.submissions_2015 USING btree (language, length);
 
 
 --
--- Name: submissions_1356015600_1373295600_execution_time_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2015_language_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1356015600_1373295600_execution_time_length_idx ON public.submissions_1356015600_1373295600 USING btree (execution_time, length);
+CREATE INDEX submissions_2015_language_point_idx ON public.submissions_2015 USING btree (language, point);
 
 
 --
--- Name: submissions_1356015600_1373295600_execution_time_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2015_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1356015600_1373295600_execution_time_point_idx ON public.submissions_1356015600_1373295600 USING btree (execution_time, point);
+CREATE INDEX submissions_2015_problem_id_epoch_second_idx ON public.submissions_2015 USING btree (problem_id, epoch_second);
 
 
 --
--- Name: submissions_1356015600_1373295600_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2015_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX submissions_1356015600_1373295600_id_epoch_second_idx ON public.submissions_1356015600_1373295600 USING btree (id, epoch_second);
+CREATE INDEX submissions_2015_problem_id_execution_time_idx ON public.submissions_2015 USING btree (problem_id, execution_time);
 
 
 --
--- Name: submissions_1356015600_1373295600_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2015_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1356015600_1373295600_language_epoch_second_idx ON public.submissions_1356015600_1373295600 USING btree (language, epoch_second);
+CREATE INDEX submissions_2015_problem_id_length_idx ON public.submissions_2015 USING btree (problem_id, length);
 
 
 --
--- Name: submissions_1356015600_1373295600_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2015_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1356015600_1373295600_language_execution_time_idx ON public.submissions_1356015600_1373295600 USING btree (language, execution_time);
+CREATE INDEX submissions_2015_problem_id_point_idx ON public.submissions_2015 USING btree (problem_id, point);
 
 
 --
--- Name: submissions_1356015600_1373295600_language_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2015_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1356015600_1373295600_language_length_idx ON public.submissions_1356015600_1373295600 USING btree (language, length);
+CREATE INDEX submissions_2015_result_epoch_second_idx ON public.submissions_2015 USING btree (result, epoch_second);
 
 
 --
--- Name: submissions_1356015600_1373295600_language_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2015_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1356015600_1373295600_language_point_idx ON public.submissions_1356015600_1373295600 USING btree (language, point);
+CREATE INDEX submissions_2015_result_execution_time_idx ON public.submissions_2015 USING btree (result, execution_time);
 
 
 --
--- Name: submissions_1356015600_1373295600_length_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2015_result_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1356015600_1373295600_length_epoch_second_idx ON public.submissions_1356015600_1373295600 USING btree (length, epoch_second);
+CREATE INDEX submissions_2015_result_length_idx ON public.submissions_2015 USING btree (result, length);
 
 
 --
--- Name: submissions_1356015600_1373295600_length_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2015_result_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1356015600_1373295600_length_execution_time_idx ON public.submissions_1356015600_1373295600 USING btree (length, execution_time);
+CREATE INDEX submissions_2015_result_point_idx ON public.submissions_2015 USING btree (result, point);
 
 
 --
--- Name: submissions_1356015600_1373295600_length_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2015_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1356015600_1373295600_length_point_idx ON public.submissions_1356015600_1373295600 USING btree (length, point);
+CREATE INDEX submissions_2015_user_id_epoch_second_idx ON public.submissions_2015 USING btree (user_id, epoch_second);
 
 
 --
--- Name: submissions_1356015600_1373295600_point_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2015_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1356015600_1373295600_point_epoch_second_idx ON public.submissions_1356015600_1373295600 USING btree (point, epoch_second);
+CREATE INDEX submissions_2015_user_id_execution_time_idx ON public.submissions_2015 USING btree (user_id, execution_time);
 
 
 --
--- Name: submissions_1356015600_1373295600_point_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2015_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1356015600_1373295600_point_execution_time_idx ON public.submissions_1356015600_1373295600 USING btree (point, execution_time);
+CREATE INDEX submissions_2015_user_id_length_idx ON public.submissions_2015 USING btree (user_id, length);
 
 
 --
--- Name: submissions_1356015600_1373295600_point_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2015_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1356015600_1373295600_point_length_idx ON public.submissions_1356015600_1373295600 USING btree (point, length);
+CREATE INDEX submissions_2015_user_id_point_idx ON public.submissions_2015 USING btree (user_id, point);
 
 
 --
--- Name: submissions_1356015600_1373295600_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2015_user_id_result_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1356015600_1373295600_problem_id_epoch_second_idx ON public.submissions_1356015600_1373295600 USING btree (problem_id, epoch_second);
+CREATE INDEX submissions_2015_user_id_result_idx ON public.submissions_2015 USING btree (user_id, result);
 
 
 --
--- Name: submissions_1356015600_1373295600_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2016_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1356015600_1373295600_problem_id_execution_time_idx ON public.submissions_1356015600_1373295600 USING btree (problem_id, execution_time);
+CREATE INDEX submissions_2016_contest_id_epoch_second_idx ON public.submissions_2016 USING btree (contest_id, epoch_second);
 
 
 --
--- Name: submissions_1356015600_1373295600_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2016_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1356015600_1373295600_problem_id_length_idx ON public.submissions_1356015600_1373295600 USING btree (problem_id, length);
+CREATE INDEX submissions_2016_contest_id_execution_time_idx ON public.submissions_2016 USING btree (contest_id, execution_time);
 
 
 --
--- Name: submissions_1356015600_1373295600_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2016_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1356015600_1373295600_problem_id_point_idx ON public.submissions_1356015600_1373295600 USING btree (problem_id, point);
+CREATE INDEX submissions_2016_contest_id_length_idx ON public.submissions_2016 USING btree (contest_id, length);
 
 
 --
--- Name: submissions_1356015600_1373295600_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2016_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1356015600_1373295600_result_epoch_second_idx ON public.submissions_1356015600_1373295600 USING btree (result, epoch_second);
+CREATE INDEX submissions_2016_contest_id_point_idx ON public.submissions_2016 USING btree (contest_id, point);
 
 
 --
--- Name: submissions_1356015600_1373295600_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2016_epoch_second_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1356015600_1373295600_result_execution_time_idx ON public.submissions_1356015600_1373295600 USING btree (result, execution_time);
+CREATE UNIQUE INDEX submissions_2016_epoch_second_id_idx ON public.submissions_2016 USING btree (epoch_second, id);
 
 
 --
--- Name: submissions_1356015600_1373295600_result_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2016_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1356015600_1373295600_result_length_idx ON public.submissions_1356015600_1373295600 USING btree (result, length);
+CREATE INDEX submissions_2016_language_epoch_second_idx ON public.submissions_2016 USING btree (language, epoch_second);
 
 
 --
--- Name: submissions_1356015600_1373295600_result_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2016_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1356015600_1373295600_result_point_idx ON public.submissions_1356015600_1373295600 USING btree (result, point);
+CREATE INDEX submissions_2016_language_execution_time_idx ON public.submissions_2016 USING btree (language, execution_time);
 
 
 --
--- Name: submissions_1356015600_1373295600_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2016_language_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1356015600_1373295600_user_id_epoch_second_idx ON public.submissions_1356015600_1373295600 USING btree (user_id, epoch_second);
+CREATE INDEX submissions_2016_language_length_idx ON public.submissions_2016 USING btree (language, length);
 
 
 --
--- Name: submissions_1356015600_1373295600_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2016_language_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1356015600_1373295600_user_id_execution_time_idx ON public.submissions_1356015600_1373295600 USING btree (user_id, execution_time);
+CREATE INDEX submissions_2016_language_point_idx ON public.submissions_2016 USING btree (language, point);
 
 
 --
--- Name: submissions_1356015600_1373295600_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2016_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1356015600_1373295600_user_id_length_idx ON public.submissions_1356015600_1373295600 USING btree (user_id, length);
+CREATE INDEX submissions_2016_problem_id_epoch_second_idx ON public.submissions_2016 USING btree (problem_id, epoch_second);
 
 
 --
--- Name: submissions_1356015600_1373295600_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2016_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1356015600_1373295600_user_id_point_idx ON public.submissions_1356015600_1373295600 USING btree (user_id, point);
+CREATE INDEX submissions_2016_problem_id_execution_time_idx ON public.submissions_2016 USING btree (problem_id, execution_time);
 
 
 --
--- Name: submissions_1356015600_13732956_execution_time_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2016_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1356015600_13732956_execution_time_epoch_second_idx ON public.submissions_1356015600_1373295600 USING btree (execution_time, epoch_second);
+CREATE INDEX submissions_2016_problem_id_length_idx ON public.submissions_2016 USING btree (problem_id, length);
 
 
 --
--- Name: submissions_1373295600_1390575600_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2016_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1373295600_1390575600_contest_id_epoch_second_idx ON public.submissions_1373295600_1390575600 USING btree (contest_id, epoch_second);
+CREATE INDEX submissions_2016_problem_id_point_idx ON public.submissions_2016 USING btree (problem_id, point);
 
 
 --
--- Name: submissions_1373295600_1390575600_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2016_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1373295600_1390575600_contest_id_execution_time_idx ON public.submissions_1373295600_1390575600 USING btree (contest_id, execution_time);
+CREATE INDEX submissions_2016_result_epoch_second_idx ON public.submissions_2016 USING btree (result, epoch_second);
 
 
 --
--- Name: submissions_1373295600_1390575600_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2016_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1373295600_1390575600_contest_id_length_idx ON public.submissions_1373295600_1390575600 USING btree (contest_id, length);
+CREATE INDEX submissions_2016_result_execution_time_idx ON public.submissions_2016 USING btree (result, execution_time);
 
 
 --
--- Name: submissions_1373295600_1390575600_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2016_result_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1373295600_1390575600_contest_id_point_idx ON public.submissions_1373295600_1390575600 USING btree (contest_id, point);
+CREATE INDEX submissions_2016_result_length_idx ON public.submissions_2016 USING btree (result, length);
 
 
 --
--- Name: submissions_1373295600_1390575600_epoch_second_updated_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2016_result_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1373295600_1390575600_epoch_second_updated_at_idx ON public.submissions_1373295600_1390575600 USING btree (epoch_second, updated_at);
+CREATE INDEX submissions_2016_result_point_idx ON public.submissions_2016 USING btree (result, point);
 
 
 --
--- Name: submissions_1373295600_1390575600_execution_time_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2016_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1373295600_1390575600_execution_time_length_idx ON public.submissions_1373295600_1390575600 USING btree (execution_time, length);
+CREATE INDEX submissions_2016_user_id_epoch_second_idx ON public.submissions_2016 USING btree (user_id, epoch_second);
 
 
 --
--- Name: submissions_1373295600_1390575600_execution_time_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2016_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1373295600_1390575600_execution_time_point_idx ON public.submissions_1373295600_1390575600 USING btree (execution_time, point);
+CREATE INDEX submissions_2016_user_id_execution_time_idx ON public.submissions_2016 USING btree (user_id, execution_time);
 
 
 --
--- Name: submissions_1373295600_1390575600_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2016_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX submissions_1373295600_1390575600_id_epoch_second_idx ON public.submissions_1373295600_1390575600 USING btree (id, epoch_second);
+CREATE INDEX submissions_2016_user_id_length_idx ON public.submissions_2016 USING btree (user_id, length);
 
 
 --
--- Name: submissions_1373295600_1390575600_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2016_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1373295600_1390575600_language_epoch_second_idx ON public.submissions_1373295600_1390575600 USING btree (language, epoch_second);
+CREATE INDEX submissions_2016_user_id_point_idx ON public.submissions_2016 USING btree (user_id, point);
 
 
 --
--- Name: submissions_1373295600_1390575600_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2016_user_id_result_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1373295600_1390575600_language_execution_time_idx ON public.submissions_1373295600_1390575600 USING btree (language, execution_time);
+CREATE INDEX submissions_2016_user_id_result_idx ON public.submissions_2016 USING btree (user_id, result);
 
 
 --
--- Name: submissions_1373295600_1390575600_language_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2017_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1373295600_1390575600_language_length_idx ON public.submissions_1373295600_1390575600 USING btree (language, length);
+CREATE INDEX submissions_2017_contest_id_epoch_second_idx ON public.submissions_2017 USING btree (contest_id, epoch_second);
 
 
 --
--- Name: submissions_1373295600_1390575600_language_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2017_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1373295600_1390575600_language_point_idx ON public.submissions_1373295600_1390575600 USING btree (language, point);
+CREATE INDEX submissions_2017_contest_id_execution_time_idx ON public.submissions_2017 USING btree (contest_id, execution_time);
 
 
 --
--- Name: submissions_1373295600_1390575600_length_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2017_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1373295600_1390575600_length_epoch_second_idx ON public.submissions_1373295600_1390575600 USING btree (length, epoch_second);
+CREATE INDEX submissions_2017_contest_id_length_idx ON public.submissions_2017 USING btree (contest_id, length);
 
 
 --
--- Name: submissions_1373295600_1390575600_length_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2017_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1373295600_1390575600_length_execution_time_idx ON public.submissions_1373295600_1390575600 USING btree (length, execution_time);
+CREATE INDEX submissions_2017_contest_id_point_idx ON public.submissions_2017 USING btree (contest_id, point);
 
 
 --
--- Name: submissions_1373295600_1390575600_length_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2017_epoch_second_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1373295600_1390575600_length_point_idx ON public.submissions_1373295600_1390575600 USING btree (length, point);
+CREATE UNIQUE INDEX submissions_2017_epoch_second_id_idx ON public.submissions_2017 USING btree (epoch_second, id);
 
 
 --
--- Name: submissions_1373295600_1390575600_point_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2017_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1373295600_1390575600_point_epoch_second_idx ON public.submissions_1373295600_1390575600 USING btree (point, epoch_second);
+CREATE INDEX submissions_2017_language_epoch_second_idx ON public.submissions_2017 USING btree (language, epoch_second);
 
 
 --
--- Name: submissions_1373295600_1390575600_point_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2017_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1373295600_1390575600_point_execution_time_idx ON public.submissions_1373295600_1390575600 USING btree (point, execution_time);
+CREATE INDEX submissions_2017_language_execution_time_idx ON public.submissions_2017 USING btree (language, execution_time);
 
 
 --
--- Name: submissions_1373295600_1390575600_point_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2017_language_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1373295600_1390575600_point_length_idx ON public.submissions_1373295600_1390575600 USING btree (point, length);
+CREATE INDEX submissions_2017_language_length_idx ON public.submissions_2017 USING btree (language, length);
 
 
 --
--- Name: submissions_1373295600_1390575600_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2017_language_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1373295600_1390575600_problem_id_epoch_second_idx ON public.submissions_1373295600_1390575600 USING btree (problem_id, epoch_second);
+CREATE INDEX submissions_2017_language_point_idx ON public.submissions_2017 USING btree (language, point);
 
 
 --
--- Name: submissions_1373295600_1390575600_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2017_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1373295600_1390575600_problem_id_execution_time_idx ON public.submissions_1373295600_1390575600 USING btree (problem_id, execution_time);
+CREATE INDEX submissions_2017_problem_id_epoch_second_idx ON public.submissions_2017 USING btree (problem_id, epoch_second);
 
 
 --
--- Name: submissions_1373295600_1390575600_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2017_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1373295600_1390575600_problem_id_length_idx ON public.submissions_1373295600_1390575600 USING btree (problem_id, length);
+CREATE INDEX submissions_2017_problem_id_execution_time_idx ON public.submissions_2017 USING btree (problem_id, execution_time);
 
 
 --
--- Name: submissions_1373295600_1390575600_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2017_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1373295600_1390575600_problem_id_point_idx ON public.submissions_1373295600_1390575600 USING btree (problem_id, point);
+CREATE INDEX submissions_2017_problem_id_length_idx ON public.submissions_2017 USING btree (problem_id, length);
 
 
 --
--- Name: submissions_1373295600_1390575600_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2017_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1373295600_1390575600_result_epoch_second_idx ON public.submissions_1373295600_1390575600 USING btree (result, epoch_second);
+CREATE INDEX submissions_2017_problem_id_point_idx ON public.submissions_2017 USING btree (problem_id, point);
 
 
 --
--- Name: submissions_1373295600_1390575600_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2017_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1373295600_1390575600_result_execution_time_idx ON public.submissions_1373295600_1390575600 USING btree (result, execution_time);
+CREATE INDEX submissions_2017_result_epoch_second_idx ON public.submissions_2017 USING btree (result, epoch_second);
 
 
 --
--- Name: submissions_1373295600_1390575600_result_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2017_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1373295600_1390575600_result_length_idx ON public.submissions_1373295600_1390575600 USING btree (result, length);
+CREATE INDEX submissions_2017_result_execution_time_idx ON public.submissions_2017 USING btree (result, execution_time);
 
 
 --
--- Name: submissions_1373295600_1390575600_result_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2017_result_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1373295600_1390575600_result_point_idx ON public.submissions_1373295600_1390575600 USING btree (result, point);
+CREATE INDEX submissions_2017_result_length_idx ON public.submissions_2017 USING btree (result, length);
 
 
 --
--- Name: submissions_1373295600_1390575600_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2017_result_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1373295600_1390575600_user_id_epoch_second_idx ON public.submissions_1373295600_1390575600 USING btree (user_id, epoch_second);
+CREATE INDEX submissions_2017_result_point_idx ON public.submissions_2017 USING btree (result, point);
 
 
 --
--- Name: submissions_1373295600_1390575600_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2017_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1373295600_1390575600_user_id_execution_time_idx ON public.submissions_1373295600_1390575600 USING btree (user_id, execution_time);
+CREATE INDEX submissions_2017_user_id_epoch_second_idx ON public.submissions_2017 USING btree (user_id, epoch_second);
 
 
 --
--- Name: submissions_1373295600_1390575600_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2017_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1373295600_1390575600_user_id_length_idx ON public.submissions_1373295600_1390575600 USING btree (user_id, length);
+CREATE INDEX submissions_2017_user_id_execution_time_idx ON public.submissions_2017 USING btree (user_id, execution_time);
 
 
 --
--- Name: submissions_1373295600_1390575600_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2017_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1373295600_1390575600_user_id_point_idx ON public.submissions_1373295600_1390575600 USING btree (user_id, point);
+CREATE INDEX submissions_2017_user_id_length_idx ON public.submissions_2017 USING btree (user_id, length);
 
 
 --
--- Name: submissions_1373295600_13905756_execution_time_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2017_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1373295600_13905756_execution_time_epoch_second_idx ON public.submissions_1373295600_1390575600 USING btree (execution_time, epoch_second);
+CREATE INDEX submissions_2017_user_id_point_idx ON public.submissions_2017 USING btree (user_id, point);
 
 
 --
--- Name: submissions_1390575600_1407855600_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2017_user_id_result_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1390575600_1407855600_contest_id_epoch_second_idx ON public.submissions_1390575600_1407855600 USING btree (contest_id, epoch_second);
+CREATE INDEX submissions_2017_user_id_result_idx ON public.submissions_2017 USING btree (user_id, result);
 
 
 --
--- Name: submissions_1390575600_1407855600_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2018_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1390575600_1407855600_contest_id_execution_time_idx ON public.submissions_1390575600_1407855600 USING btree (contest_id, execution_time);
+CREATE INDEX submissions_2018_contest_id_epoch_second_idx ON public.submissions_2018 USING btree (contest_id, epoch_second);
 
 
 --
--- Name: submissions_1390575600_1407855600_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2018_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1390575600_1407855600_contest_id_length_idx ON public.submissions_1390575600_1407855600 USING btree (contest_id, length);
+CREATE INDEX submissions_2018_contest_id_execution_time_idx ON public.submissions_2018 USING btree (contest_id, execution_time);
 
 
 --
--- Name: submissions_1390575600_1407855600_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2018_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1390575600_1407855600_contest_id_point_idx ON public.submissions_1390575600_1407855600 USING btree (contest_id, point);
+CREATE INDEX submissions_2018_contest_id_length_idx ON public.submissions_2018 USING btree (contest_id, length);
 
 
 --
--- Name: submissions_1390575600_1407855600_epoch_second_updated_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2018_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1390575600_1407855600_epoch_second_updated_at_idx ON public.submissions_1390575600_1407855600 USING btree (epoch_second, updated_at);
+CREATE INDEX submissions_2018_contest_id_point_idx ON public.submissions_2018 USING btree (contest_id, point);
 
 
 --
--- Name: submissions_1390575600_1407855600_execution_time_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2018_epoch_second_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1390575600_1407855600_execution_time_length_idx ON public.submissions_1390575600_1407855600 USING btree (execution_time, length);
+CREATE UNIQUE INDEX submissions_2018_epoch_second_id_idx ON public.submissions_2018 USING btree (epoch_second, id);
 
 
 --
--- Name: submissions_1390575600_1407855600_execution_time_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2018_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1390575600_1407855600_execution_time_point_idx ON public.submissions_1390575600_1407855600 USING btree (execution_time, point);
+CREATE INDEX submissions_2018_language_epoch_second_idx ON public.submissions_2018 USING btree (language, epoch_second);
 
 
 --
--- Name: submissions_1390575600_1407855600_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2018_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX submissions_1390575600_1407855600_id_epoch_second_idx ON public.submissions_1390575600_1407855600 USING btree (id, epoch_second);
+CREATE INDEX submissions_2018_language_execution_time_idx ON public.submissions_2018 USING btree (language, execution_time);
 
 
 --
--- Name: submissions_1390575600_1407855600_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2018_language_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1390575600_1407855600_language_epoch_second_idx ON public.submissions_1390575600_1407855600 USING btree (language, epoch_second);
+CREATE INDEX submissions_2018_language_length_idx ON public.submissions_2018 USING btree (language, length);
 
 
 --
--- Name: submissions_1390575600_1407855600_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2018_language_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1390575600_1407855600_language_execution_time_idx ON public.submissions_1390575600_1407855600 USING btree (language, execution_time);
+CREATE INDEX submissions_2018_language_point_idx ON public.submissions_2018 USING btree (language, point);
 
 
 --
--- Name: submissions_1390575600_1407855600_language_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2018_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1390575600_1407855600_language_length_idx ON public.submissions_1390575600_1407855600 USING btree (language, length);
+CREATE INDEX submissions_2018_problem_id_epoch_second_idx ON public.submissions_2018 USING btree (problem_id, epoch_second);
 
 
 --
--- Name: submissions_1390575600_1407855600_language_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2018_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1390575600_1407855600_language_point_idx ON public.submissions_1390575600_1407855600 USING btree (language, point);
+CREATE INDEX submissions_2018_problem_id_execution_time_idx ON public.submissions_2018 USING btree (problem_id, execution_time);
 
 
 --
--- Name: submissions_1390575600_1407855600_length_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2018_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1390575600_1407855600_length_epoch_second_idx ON public.submissions_1390575600_1407855600 USING btree (length, epoch_second);
+CREATE INDEX submissions_2018_problem_id_length_idx ON public.submissions_2018 USING btree (problem_id, length);
 
 
 --
--- Name: submissions_1390575600_1407855600_length_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2018_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1390575600_1407855600_length_execution_time_idx ON public.submissions_1390575600_1407855600 USING btree (length, execution_time);
+CREATE INDEX submissions_2018_problem_id_point_idx ON public.submissions_2018 USING btree (problem_id, point);
 
 
 --
--- Name: submissions_1390575600_1407855600_length_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2018_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1390575600_1407855600_length_point_idx ON public.submissions_1390575600_1407855600 USING btree (length, point);
+CREATE INDEX submissions_2018_result_epoch_second_idx ON public.submissions_2018 USING btree (result, epoch_second);
 
 
 --
--- Name: submissions_1390575600_1407855600_point_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2018_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1390575600_1407855600_point_epoch_second_idx ON public.submissions_1390575600_1407855600 USING btree (point, epoch_second);
+CREATE INDEX submissions_2018_result_execution_time_idx ON public.submissions_2018 USING btree (result, execution_time);
 
 
 --
--- Name: submissions_1390575600_1407855600_point_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2018_result_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1390575600_1407855600_point_execution_time_idx ON public.submissions_1390575600_1407855600 USING btree (point, execution_time);
+CREATE INDEX submissions_2018_result_length_idx ON public.submissions_2018 USING btree (result, length);
 
 
 --
--- Name: submissions_1390575600_1407855600_point_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2018_result_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1390575600_1407855600_point_length_idx ON public.submissions_1390575600_1407855600 USING btree (point, length);
+CREATE INDEX submissions_2018_result_point_idx ON public.submissions_2018 USING btree (result, point);
 
 
 --
--- Name: submissions_1390575600_1407855600_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2018_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1390575600_1407855600_problem_id_epoch_second_idx ON public.submissions_1390575600_1407855600 USING btree (problem_id, epoch_second);
+CREATE INDEX submissions_2018_user_id_epoch_second_idx ON public.submissions_2018 USING btree (user_id, epoch_second);
 
 
 --
--- Name: submissions_1390575600_1407855600_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2018_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1390575600_1407855600_problem_id_execution_time_idx ON public.submissions_1390575600_1407855600 USING btree (problem_id, execution_time);
+CREATE INDEX submissions_2018_user_id_execution_time_idx ON public.submissions_2018 USING btree (user_id, execution_time);
 
 
 --
--- Name: submissions_1390575600_1407855600_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2018_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1390575600_1407855600_problem_id_length_idx ON public.submissions_1390575600_1407855600 USING btree (problem_id, length);
+CREATE INDEX submissions_2018_user_id_length_idx ON public.submissions_2018 USING btree (user_id, length);
 
 
 --
--- Name: submissions_1390575600_1407855600_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2018_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1390575600_1407855600_problem_id_point_idx ON public.submissions_1390575600_1407855600 USING btree (problem_id, point);
+CREATE INDEX submissions_2018_user_id_point_idx ON public.submissions_2018 USING btree (user_id, point);
 
 
 --
--- Name: submissions_1390575600_1407855600_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2018_user_id_result_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1390575600_1407855600_result_epoch_second_idx ON public.submissions_1390575600_1407855600 USING btree (result, epoch_second);
+CREATE INDEX submissions_2018_user_id_result_idx ON public.submissions_2018 USING btree (user_id, result);
 
 
 --
--- Name: submissions_1390575600_1407855600_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2019_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1390575600_1407855600_result_execution_time_idx ON public.submissions_1390575600_1407855600 USING btree (result, execution_time);
+CREATE INDEX submissions_2019_contest_id_epoch_second_idx ON public.submissions_2019 USING btree (contest_id, epoch_second);
 
 
 --
--- Name: submissions_1390575600_1407855600_result_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2019_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1390575600_1407855600_result_length_idx ON public.submissions_1390575600_1407855600 USING btree (result, length);
+CREATE INDEX submissions_2019_contest_id_execution_time_idx ON public.submissions_2019 USING btree (contest_id, execution_time);
 
 
 --
--- Name: submissions_1390575600_1407855600_result_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2019_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1390575600_1407855600_result_point_idx ON public.submissions_1390575600_1407855600 USING btree (result, point);
+CREATE INDEX submissions_2019_contest_id_length_idx ON public.submissions_2019 USING btree (contest_id, length);
 
 
 --
--- Name: submissions_1390575600_1407855600_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2019_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1390575600_1407855600_user_id_epoch_second_idx ON public.submissions_1390575600_1407855600 USING btree (user_id, epoch_second);
+CREATE INDEX submissions_2019_contest_id_point_idx ON public.submissions_2019 USING btree (contest_id, point);
 
 
 --
--- Name: submissions_1390575600_1407855600_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2019_epoch_second_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1390575600_1407855600_user_id_execution_time_idx ON public.submissions_1390575600_1407855600 USING btree (user_id, execution_time);
+CREATE UNIQUE INDEX submissions_2019_epoch_second_id_idx ON public.submissions_2019 USING btree (epoch_second, id);
 
 
 --
--- Name: submissions_1390575600_1407855600_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2019_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1390575600_1407855600_user_id_length_idx ON public.submissions_1390575600_1407855600 USING btree (user_id, length);
+CREATE INDEX submissions_2019_language_epoch_second_idx ON public.submissions_2019 USING btree (language, epoch_second);
 
 
 --
--- Name: submissions_1390575600_1407855600_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2019_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1390575600_1407855600_user_id_point_idx ON public.submissions_1390575600_1407855600 USING btree (user_id, point);
+CREATE INDEX submissions_2019_language_execution_time_idx ON public.submissions_2019 USING btree (language, execution_time);
 
 
 --
--- Name: submissions_1390575600_14078556_execution_time_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2019_language_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1390575600_14078556_execution_time_epoch_second_idx ON public.submissions_1390575600_1407855600 USING btree (execution_time, epoch_second);
+CREATE INDEX submissions_2019_language_length_idx ON public.submissions_2019 USING btree (language, length);
 
 
 --
--- Name: submissions_1407855600_1425135600_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2019_language_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1407855600_1425135600_contest_id_epoch_second_idx ON public.submissions_1407855600_1425135600 USING btree (contest_id, epoch_second);
+CREATE INDEX submissions_2019_language_point_idx ON public.submissions_2019 USING btree (language, point);
 
 
 --
--- Name: submissions_1407855600_1425135600_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2019_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1407855600_1425135600_contest_id_execution_time_idx ON public.submissions_1407855600_1425135600 USING btree (contest_id, execution_time);
+CREATE INDEX submissions_2019_problem_id_epoch_second_idx ON public.submissions_2019 USING btree (problem_id, epoch_second);
 
 
 --
--- Name: submissions_1407855600_1425135600_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2019_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1407855600_1425135600_contest_id_length_idx ON public.submissions_1407855600_1425135600 USING btree (contest_id, length);
+CREATE INDEX submissions_2019_problem_id_execution_time_idx ON public.submissions_2019 USING btree (problem_id, execution_time);
 
 
 --
--- Name: submissions_1407855600_1425135600_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2019_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1407855600_1425135600_contest_id_point_idx ON public.submissions_1407855600_1425135600 USING btree (contest_id, point);
+CREATE INDEX submissions_2019_problem_id_length_idx ON public.submissions_2019 USING btree (problem_id, length);
 
 
 --
--- Name: submissions_1407855600_1425135600_epoch_second_updated_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2019_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1407855600_1425135600_epoch_second_updated_at_idx ON public.submissions_1407855600_1425135600 USING btree (epoch_second, updated_at);
+CREATE INDEX submissions_2019_problem_id_point_idx ON public.submissions_2019 USING btree (problem_id, point);
 
 
 --
--- Name: submissions_1407855600_1425135600_execution_time_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2019_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1407855600_1425135600_execution_time_length_idx ON public.submissions_1407855600_1425135600 USING btree (execution_time, length);
+CREATE INDEX submissions_2019_result_epoch_second_idx ON public.submissions_2019 USING btree (result, epoch_second);
 
 
 --
--- Name: submissions_1407855600_1425135600_execution_time_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2019_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1407855600_1425135600_execution_time_point_idx ON public.submissions_1407855600_1425135600 USING btree (execution_time, point);
+CREATE INDEX submissions_2019_result_execution_time_idx ON public.submissions_2019 USING btree (result, execution_time);
 
 
 --
--- Name: submissions_1407855600_1425135600_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2019_result_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX submissions_1407855600_1425135600_id_epoch_second_idx ON public.submissions_1407855600_1425135600 USING btree (id, epoch_second);
+CREATE INDEX submissions_2019_result_length_idx ON public.submissions_2019 USING btree (result, length);
 
 
 --
--- Name: submissions_1407855600_1425135600_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2019_result_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1407855600_1425135600_language_epoch_second_idx ON public.submissions_1407855600_1425135600 USING btree (language, epoch_second);
+CREATE INDEX submissions_2019_result_point_idx ON public.submissions_2019 USING btree (result, point);
 
 
 --
--- Name: submissions_1407855600_1425135600_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2019_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1407855600_1425135600_language_execution_time_idx ON public.submissions_1407855600_1425135600 USING btree (language, execution_time);
+CREATE INDEX submissions_2019_user_id_epoch_second_idx ON public.submissions_2019 USING btree (user_id, epoch_second);
 
 
 --
--- Name: submissions_1407855600_1425135600_language_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2019_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1407855600_1425135600_language_length_idx ON public.submissions_1407855600_1425135600 USING btree (language, length);
+CREATE INDEX submissions_2019_user_id_execution_time_idx ON public.submissions_2019 USING btree (user_id, execution_time);
 
 
 --
--- Name: submissions_1407855600_1425135600_language_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2019_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1407855600_1425135600_language_point_idx ON public.submissions_1407855600_1425135600 USING btree (language, point);
+CREATE INDEX submissions_2019_user_id_length_idx ON public.submissions_2019 USING btree (user_id, length);
 
 
 --
--- Name: submissions_1407855600_1425135600_length_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2019_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1407855600_1425135600_length_epoch_second_idx ON public.submissions_1407855600_1425135600 USING btree (length, epoch_second);
+CREATE INDEX submissions_2019_user_id_point_idx ON public.submissions_2019 USING btree (user_id, point);
 
 
 --
--- Name: submissions_1407855600_1425135600_length_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2019_user_id_result_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1407855600_1425135600_length_execution_time_idx ON public.submissions_1407855600_1425135600 USING btree (length, execution_time);
+CREATE INDEX submissions_2019_user_id_result_idx ON public.submissions_2019 USING btree (user_id, result);
 
 
 --
--- Name: submissions_1407855600_1425135600_length_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2020_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1407855600_1425135600_length_point_idx ON public.submissions_1407855600_1425135600 USING btree (length, point);
+CREATE INDEX submissions_2020_contest_id_epoch_second_idx ON public.submissions_2020 USING btree (contest_id, epoch_second);
 
 
 --
--- Name: submissions_1407855600_1425135600_point_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2020_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1407855600_1425135600_point_epoch_second_idx ON public.submissions_1407855600_1425135600 USING btree (point, epoch_second);
+CREATE INDEX submissions_2020_contest_id_execution_time_idx ON public.submissions_2020 USING btree (contest_id, execution_time);
 
 
 --
--- Name: submissions_1407855600_1425135600_point_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2020_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1407855600_1425135600_point_execution_time_idx ON public.submissions_1407855600_1425135600 USING btree (point, execution_time);
+CREATE INDEX submissions_2020_contest_id_length_idx ON public.submissions_2020 USING btree (contest_id, length);
 
 
 --
--- Name: submissions_1407855600_1425135600_point_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2020_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1407855600_1425135600_point_length_idx ON public.submissions_1407855600_1425135600 USING btree (point, length);
+CREATE INDEX submissions_2020_contest_id_point_idx ON public.submissions_2020 USING btree (contest_id, point);
 
 
 --
--- Name: submissions_1407855600_1425135600_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2020_epoch_second_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1407855600_1425135600_problem_id_epoch_second_idx ON public.submissions_1407855600_1425135600 USING btree (problem_id, epoch_second);
+CREATE UNIQUE INDEX submissions_2020_epoch_second_id_idx ON public.submissions_2020 USING btree (epoch_second, id);
 
 
 --
--- Name: submissions_1407855600_1425135600_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2020_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1407855600_1425135600_problem_id_execution_time_idx ON public.submissions_1407855600_1425135600 USING btree (problem_id, execution_time);
+CREATE INDEX submissions_2020_language_epoch_second_idx ON public.submissions_2020 USING btree (language, epoch_second);
 
 
 --
--- Name: submissions_1407855600_1425135600_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2020_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1407855600_1425135600_problem_id_length_idx ON public.submissions_1407855600_1425135600 USING btree (problem_id, length);
+CREATE INDEX submissions_2020_language_execution_time_idx ON public.submissions_2020 USING btree (language, execution_time);
 
 
 --
--- Name: submissions_1407855600_1425135600_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2020_language_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1407855600_1425135600_problem_id_point_idx ON public.submissions_1407855600_1425135600 USING btree (problem_id, point);
+CREATE INDEX submissions_2020_language_length_idx ON public.submissions_2020 USING btree (language, length);
 
 
 --
--- Name: submissions_1407855600_1425135600_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2020_language_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1407855600_1425135600_result_epoch_second_idx ON public.submissions_1407855600_1425135600 USING btree (result, epoch_second);
+CREATE INDEX submissions_2020_language_point_idx ON public.submissions_2020 USING btree (language, point);
 
 
 --
--- Name: submissions_1407855600_1425135600_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2020_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1407855600_1425135600_result_execution_time_idx ON public.submissions_1407855600_1425135600 USING btree (result, execution_time);
+CREATE INDEX submissions_2020_problem_id_epoch_second_idx ON public.submissions_2020 USING btree (problem_id, epoch_second);
 
 
 --
--- Name: submissions_1407855600_1425135600_result_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2020_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1407855600_1425135600_result_length_idx ON public.submissions_1407855600_1425135600 USING btree (result, length);
+CREATE INDEX submissions_2020_problem_id_execution_time_idx ON public.submissions_2020 USING btree (problem_id, execution_time);
 
 
 --
--- Name: submissions_1407855600_1425135600_result_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2020_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1407855600_1425135600_result_point_idx ON public.submissions_1407855600_1425135600 USING btree (result, point);
+CREATE INDEX submissions_2020_problem_id_length_idx ON public.submissions_2020 USING btree (problem_id, length);
 
 
 --
--- Name: submissions_1407855600_1425135600_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2020_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1407855600_1425135600_user_id_epoch_second_idx ON public.submissions_1407855600_1425135600 USING btree (user_id, epoch_second);
+CREATE INDEX submissions_2020_problem_id_point_idx ON public.submissions_2020 USING btree (problem_id, point);
 
 
 --
--- Name: submissions_1407855600_1425135600_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2020_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1407855600_1425135600_user_id_execution_time_idx ON public.submissions_1407855600_1425135600 USING btree (user_id, execution_time);
+CREATE INDEX submissions_2020_result_epoch_second_idx ON public.submissions_2020 USING btree (result, epoch_second);
 
 
 --
--- Name: submissions_1407855600_1425135600_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2020_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1407855600_1425135600_user_id_length_idx ON public.submissions_1407855600_1425135600 USING btree (user_id, length);
+CREATE INDEX submissions_2020_result_execution_time_idx ON public.submissions_2020 USING btree (result, execution_time);
 
 
 --
--- Name: submissions_1407855600_1425135600_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2020_result_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1407855600_1425135600_user_id_point_idx ON public.submissions_1407855600_1425135600 USING btree (user_id, point);
+CREATE INDEX submissions_2020_result_length_idx ON public.submissions_2020 USING btree (result, length);
 
 
 --
--- Name: submissions_1407855600_14251356_execution_time_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2020_result_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1407855600_14251356_execution_time_epoch_second_idx ON public.submissions_1407855600_1425135600 USING btree (execution_time, epoch_second);
+CREATE INDEX submissions_2020_result_point_idx ON public.submissions_2020 USING btree (result, point);
 
 
 --
--- Name: submissions_1425135600_1442415600_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2020_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1425135600_1442415600_contest_id_epoch_second_idx ON public.submissions_1425135600_1442415600 USING btree (contest_id, epoch_second);
+CREATE INDEX submissions_2020_user_id_epoch_second_idx ON public.submissions_2020 USING btree (user_id, epoch_second);
 
 
 --
--- Name: submissions_1425135600_1442415600_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2020_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1425135600_1442415600_contest_id_execution_time_idx ON public.submissions_1425135600_1442415600 USING btree (contest_id, execution_time);
+CREATE INDEX submissions_2020_user_id_execution_time_idx ON public.submissions_2020 USING btree (user_id, execution_time);
 
 
 --
--- Name: submissions_1425135600_1442415600_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2020_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1425135600_1442415600_contest_id_length_idx ON public.submissions_1425135600_1442415600 USING btree (contest_id, length);
+CREATE INDEX submissions_2020_user_id_length_idx ON public.submissions_2020 USING btree (user_id, length);
 
 
 --
--- Name: submissions_1425135600_1442415600_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2020_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1425135600_1442415600_contest_id_point_idx ON public.submissions_1425135600_1442415600 USING btree (contest_id, point);
+CREATE INDEX submissions_2020_user_id_point_idx ON public.submissions_2020 USING btree (user_id, point);
 
 
 --
--- Name: submissions_1425135600_1442415600_epoch_second_updated_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2020_user_id_result_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1425135600_1442415600_epoch_second_updated_at_idx ON public.submissions_1425135600_1442415600 USING btree (epoch_second, updated_at);
+CREATE INDEX submissions_2020_user_id_result_idx ON public.submissions_2020 USING btree (user_id, result);
 
 
 --
--- Name: submissions_1425135600_1442415600_execution_time_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2021_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1425135600_1442415600_execution_time_length_idx ON public.submissions_1425135600_1442415600 USING btree (execution_time, length);
+CREATE INDEX submissions_2021_contest_id_epoch_second_idx ON public.submissions_2021 USING btree (contest_id, epoch_second);
 
 
 --
--- Name: submissions_1425135600_1442415600_execution_time_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2021_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1425135600_1442415600_execution_time_point_idx ON public.submissions_1425135600_1442415600 USING btree (execution_time, point);
+CREATE INDEX submissions_2021_contest_id_execution_time_idx ON public.submissions_2021 USING btree (contest_id, execution_time);
 
 
 --
--- Name: submissions_1425135600_1442415600_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2021_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX submissions_1425135600_1442415600_id_epoch_second_idx ON public.submissions_1425135600_1442415600 USING btree (id, epoch_second);
+CREATE INDEX submissions_2021_contest_id_length_idx ON public.submissions_2021 USING btree (contest_id, length);
 
 
 --
--- Name: submissions_1425135600_1442415600_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2021_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1425135600_1442415600_language_epoch_second_idx ON public.submissions_1425135600_1442415600 USING btree (language, epoch_second);
+CREATE INDEX submissions_2021_contest_id_point_idx ON public.submissions_2021 USING btree (contest_id, point);
 
 
 --
--- Name: submissions_1425135600_1442415600_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2021_epoch_second_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1425135600_1442415600_language_execution_time_idx ON public.submissions_1425135600_1442415600 USING btree (language, execution_time);
+CREATE UNIQUE INDEX submissions_2021_epoch_second_id_idx ON public.submissions_2021 USING btree (epoch_second, id);
 
 
 --
--- Name: submissions_1425135600_1442415600_language_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2021_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1425135600_1442415600_language_length_idx ON public.submissions_1425135600_1442415600 USING btree (language, length);
+CREATE INDEX submissions_2021_language_epoch_second_idx ON public.submissions_2021 USING btree (language, epoch_second);
 
 
 --
--- Name: submissions_1425135600_1442415600_language_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2021_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1425135600_1442415600_language_point_idx ON public.submissions_1425135600_1442415600 USING btree (language, point);
+CREATE INDEX submissions_2021_language_execution_time_idx ON public.submissions_2021 USING btree (language, execution_time);
 
 
 --
--- Name: submissions_1425135600_1442415600_length_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2021_language_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1425135600_1442415600_length_epoch_second_idx ON public.submissions_1425135600_1442415600 USING btree (length, epoch_second);
+CREATE INDEX submissions_2021_language_length_idx ON public.submissions_2021 USING btree (language, length);
 
 
 --
--- Name: submissions_1425135600_1442415600_length_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2021_language_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1425135600_1442415600_length_execution_time_idx ON public.submissions_1425135600_1442415600 USING btree (length, execution_time);
+CREATE INDEX submissions_2021_language_point_idx ON public.submissions_2021 USING btree (language, point);
 
 
 --
--- Name: submissions_1425135600_1442415600_length_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2021_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1425135600_1442415600_length_point_idx ON public.submissions_1425135600_1442415600 USING btree (length, point);
+CREATE INDEX submissions_2021_problem_id_epoch_second_idx ON public.submissions_2021 USING btree (problem_id, epoch_second);
 
 
 --
--- Name: submissions_1425135600_1442415600_point_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2021_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1425135600_1442415600_point_epoch_second_idx ON public.submissions_1425135600_1442415600 USING btree (point, epoch_second);
+CREATE INDEX submissions_2021_problem_id_execution_time_idx ON public.submissions_2021 USING btree (problem_id, execution_time);
 
 
 --
--- Name: submissions_1425135600_1442415600_point_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2021_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1425135600_1442415600_point_execution_time_idx ON public.submissions_1425135600_1442415600 USING btree (point, execution_time);
+CREATE INDEX submissions_2021_problem_id_length_idx ON public.submissions_2021 USING btree (problem_id, length);
 
 
 --
--- Name: submissions_1425135600_1442415600_point_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2021_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1425135600_1442415600_point_length_idx ON public.submissions_1425135600_1442415600 USING btree (point, length);
+CREATE INDEX submissions_2021_problem_id_point_idx ON public.submissions_2021 USING btree (problem_id, point);
 
 
 --
--- Name: submissions_1425135600_1442415600_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2021_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1425135600_1442415600_problem_id_epoch_second_idx ON public.submissions_1425135600_1442415600 USING btree (problem_id, epoch_second);
+CREATE INDEX submissions_2021_result_epoch_second_idx ON public.submissions_2021 USING btree (result, epoch_second);
 
 
 --
--- Name: submissions_1425135600_1442415600_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2021_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1425135600_1442415600_problem_id_execution_time_idx ON public.submissions_1425135600_1442415600 USING btree (problem_id, execution_time);
+CREATE INDEX submissions_2021_result_execution_time_idx ON public.submissions_2021 USING btree (result, execution_time);
 
 
 --
--- Name: submissions_1425135600_1442415600_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2021_result_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1425135600_1442415600_problem_id_length_idx ON public.submissions_1425135600_1442415600 USING btree (problem_id, length);
+CREATE INDEX submissions_2021_result_length_idx ON public.submissions_2021 USING btree (result, length);
 
 
 --
--- Name: submissions_1425135600_1442415600_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2021_result_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1425135600_1442415600_problem_id_point_idx ON public.submissions_1425135600_1442415600 USING btree (problem_id, point);
+CREATE INDEX submissions_2021_result_point_idx ON public.submissions_2021 USING btree (result, point);
 
 
 --
--- Name: submissions_1425135600_1442415600_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2021_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1425135600_1442415600_result_epoch_second_idx ON public.submissions_1425135600_1442415600 USING btree (result, epoch_second);
+CREATE INDEX submissions_2021_user_id_epoch_second_idx ON public.submissions_2021 USING btree (user_id, epoch_second);
 
 
 --
--- Name: submissions_1425135600_1442415600_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2021_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1425135600_1442415600_result_execution_time_idx ON public.submissions_1425135600_1442415600 USING btree (result, execution_time);
+CREATE INDEX submissions_2021_user_id_execution_time_idx ON public.submissions_2021 USING btree (user_id, execution_time);
 
 
 --
--- Name: submissions_1425135600_1442415600_result_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2021_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1425135600_1442415600_result_length_idx ON public.submissions_1425135600_1442415600 USING btree (result, length);
+CREATE INDEX submissions_2021_user_id_length_idx ON public.submissions_2021 USING btree (user_id, length);
 
 
 --
--- Name: submissions_1425135600_1442415600_result_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2021_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1425135600_1442415600_result_point_idx ON public.submissions_1425135600_1442415600 USING btree (result, point);
+CREATE INDEX submissions_2021_user_id_point_idx ON public.submissions_2021 USING btree (user_id, point);
 
 
 --
--- Name: submissions_1425135600_1442415600_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2021_user_id_result_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1425135600_1442415600_user_id_epoch_second_idx ON public.submissions_1425135600_1442415600 USING btree (user_id, epoch_second);
+CREATE INDEX submissions_2021_user_id_result_idx ON public.submissions_2021 USING btree (user_id, result);
 
 
 --
--- Name: submissions_1425135600_1442415600_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2022_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1425135600_1442415600_user_id_execution_time_idx ON public.submissions_1425135600_1442415600 USING btree (user_id, execution_time);
+CREATE INDEX submissions_2022_contest_id_epoch_second_idx ON public.submissions_2022 USING btree (contest_id, epoch_second);
 
 
 --
--- Name: submissions_1425135600_1442415600_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2022_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1425135600_1442415600_user_id_length_idx ON public.submissions_1425135600_1442415600 USING btree (user_id, length);
+CREATE INDEX submissions_2022_contest_id_execution_time_idx ON public.submissions_2022 USING btree (contest_id, execution_time);
 
 
 --
--- Name: submissions_1425135600_1442415600_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2022_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1425135600_1442415600_user_id_point_idx ON public.submissions_1425135600_1442415600 USING btree (user_id, point);
+CREATE INDEX submissions_2022_contest_id_length_idx ON public.submissions_2022 USING btree (contest_id, length);
 
 
 --
--- Name: submissions_1425135600_14424156_execution_time_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2022_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1425135600_14424156_execution_time_epoch_second_idx ON public.submissions_1425135600_1442415600 USING btree (execution_time, epoch_second);
+CREATE INDEX submissions_2022_contest_id_point_idx ON public.submissions_2022 USING btree (contest_id, point);
 
 
 --
--- Name: submissions_1442415600_1459695600_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2022_epoch_second_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1442415600_1459695600_contest_id_epoch_second_idx ON public.submissions_1442415600_1459695600 USING btree (contest_id, epoch_second);
+CREATE UNIQUE INDEX submissions_2022_epoch_second_id_idx ON public.submissions_2022 USING btree (epoch_second, id);
 
 
 --
--- Name: submissions_1442415600_1459695600_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2022_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1442415600_1459695600_contest_id_execution_time_idx ON public.submissions_1442415600_1459695600 USING btree (contest_id, execution_time);
+CREATE INDEX submissions_2022_language_epoch_second_idx ON public.submissions_2022 USING btree (language, epoch_second);
 
 
 --
--- Name: submissions_1442415600_1459695600_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2022_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1442415600_1459695600_contest_id_length_idx ON public.submissions_1442415600_1459695600 USING btree (contest_id, length);
+CREATE INDEX submissions_2022_language_execution_time_idx ON public.submissions_2022 USING btree (language, execution_time);
 
 
 --
--- Name: submissions_1442415600_1459695600_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2022_language_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1442415600_1459695600_contest_id_point_idx ON public.submissions_1442415600_1459695600 USING btree (contest_id, point);
+CREATE INDEX submissions_2022_language_length_idx ON public.submissions_2022 USING btree (language, length);
 
 
 --
--- Name: submissions_1442415600_1459695600_epoch_second_updated_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2022_language_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1442415600_1459695600_epoch_second_updated_at_idx ON public.submissions_1442415600_1459695600 USING btree (epoch_second, updated_at);
+CREATE INDEX submissions_2022_language_point_idx ON public.submissions_2022 USING btree (language, point);
 
 
 --
--- Name: submissions_1442415600_1459695600_execution_time_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2022_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1442415600_1459695600_execution_time_length_idx ON public.submissions_1442415600_1459695600 USING btree (execution_time, length);
+CREATE INDEX submissions_2022_problem_id_epoch_second_idx ON public.submissions_2022 USING btree (problem_id, epoch_second);
 
 
 --
--- Name: submissions_1442415600_1459695600_execution_time_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2022_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1442415600_1459695600_execution_time_point_idx ON public.submissions_1442415600_1459695600 USING btree (execution_time, point);
+CREATE INDEX submissions_2022_problem_id_execution_time_idx ON public.submissions_2022 USING btree (problem_id, execution_time);
 
 
 --
--- Name: submissions_1442415600_1459695600_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2022_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX submissions_1442415600_1459695600_id_epoch_second_idx ON public.submissions_1442415600_1459695600 USING btree (id, epoch_second);
+CREATE INDEX submissions_2022_problem_id_length_idx ON public.submissions_2022 USING btree (problem_id, length);
 
 
 --
--- Name: submissions_1442415600_1459695600_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2022_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1442415600_1459695600_language_epoch_second_idx ON public.submissions_1442415600_1459695600 USING btree (language, epoch_second);
+CREATE INDEX submissions_2022_problem_id_point_idx ON public.submissions_2022 USING btree (problem_id, point);
 
 
 --
--- Name: submissions_1442415600_1459695600_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2022_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1442415600_1459695600_language_execution_time_idx ON public.submissions_1442415600_1459695600 USING btree (language, execution_time);
+CREATE INDEX submissions_2022_result_epoch_second_idx ON public.submissions_2022 USING btree (result, epoch_second);
 
 
 --
--- Name: submissions_1442415600_1459695600_language_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2022_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1442415600_1459695600_language_length_idx ON public.submissions_1442415600_1459695600 USING btree (language, length);
+CREATE INDEX submissions_2022_result_execution_time_idx ON public.submissions_2022 USING btree (result, execution_time);
 
 
 --
--- Name: submissions_1442415600_1459695600_language_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2022_result_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1442415600_1459695600_language_point_idx ON public.submissions_1442415600_1459695600 USING btree (language, point);
+CREATE INDEX submissions_2022_result_length_idx ON public.submissions_2022 USING btree (result, length);
 
 
 --
--- Name: submissions_1442415600_1459695600_length_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2022_result_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1442415600_1459695600_length_epoch_second_idx ON public.submissions_1442415600_1459695600 USING btree (length, epoch_second);
+CREATE INDEX submissions_2022_result_point_idx ON public.submissions_2022 USING btree (result, point);
 
 
 --
--- Name: submissions_1442415600_1459695600_length_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2022_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1442415600_1459695600_length_execution_time_idx ON public.submissions_1442415600_1459695600 USING btree (length, execution_time);
+CREATE INDEX submissions_2022_user_id_epoch_second_idx ON public.submissions_2022 USING btree (user_id, epoch_second);
 
 
 --
--- Name: submissions_1442415600_1459695600_length_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2022_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1442415600_1459695600_length_point_idx ON public.submissions_1442415600_1459695600 USING btree (length, point);
+CREATE INDEX submissions_2022_user_id_execution_time_idx ON public.submissions_2022 USING btree (user_id, execution_time);
 
 
 --
--- Name: submissions_1442415600_1459695600_point_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2022_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1442415600_1459695600_point_epoch_second_idx ON public.submissions_1442415600_1459695600 USING btree (point, epoch_second);
+CREATE INDEX submissions_2022_user_id_length_idx ON public.submissions_2022 USING btree (user_id, length);
 
 
 --
--- Name: submissions_1442415600_1459695600_point_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2022_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1442415600_1459695600_point_execution_time_idx ON public.submissions_1442415600_1459695600 USING btree (point, execution_time);
+CREATE INDEX submissions_2022_user_id_point_idx ON public.submissions_2022 USING btree (user_id, point);
 
 
 --
--- Name: submissions_1442415600_1459695600_point_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2022_user_id_result_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1442415600_1459695600_point_length_idx ON public.submissions_1442415600_1459695600 USING btree (point, length);
+CREATE INDEX submissions_2022_user_id_result_idx ON public.submissions_2022 USING btree (user_id, result);
 
 
 --
--- Name: submissions_1442415600_1459695600_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2023_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1442415600_1459695600_problem_id_epoch_second_idx ON public.submissions_1442415600_1459695600 USING btree (problem_id, epoch_second);
+CREATE INDEX submissions_2023_contest_id_epoch_second_idx ON public.submissions_2023 USING btree (contest_id, epoch_second);
 
 
 --
--- Name: submissions_1442415600_1459695600_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2023_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1442415600_1459695600_problem_id_execution_time_idx ON public.submissions_1442415600_1459695600 USING btree (problem_id, execution_time);
+CREATE INDEX submissions_2023_contest_id_execution_time_idx ON public.submissions_2023 USING btree (contest_id, execution_time);
 
 
 --
--- Name: submissions_1442415600_1459695600_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2023_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1442415600_1459695600_problem_id_length_idx ON public.submissions_1442415600_1459695600 USING btree (problem_id, length);
+CREATE INDEX submissions_2023_contest_id_length_idx ON public.submissions_2023 USING btree (contest_id, length);
 
 
 --
--- Name: submissions_1442415600_1459695600_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2023_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1442415600_1459695600_problem_id_point_idx ON public.submissions_1442415600_1459695600 USING btree (problem_id, point);
+CREATE INDEX submissions_2023_contest_id_point_idx ON public.submissions_2023 USING btree (contest_id, point);
 
 
 --
--- Name: submissions_1442415600_1459695600_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2023_epoch_second_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1442415600_1459695600_result_epoch_second_idx ON public.submissions_1442415600_1459695600 USING btree (result, epoch_second);
+CREATE UNIQUE INDEX submissions_2023_epoch_second_id_idx ON public.submissions_2023 USING btree (epoch_second, id);
 
 
 --
--- Name: submissions_1442415600_1459695600_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2023_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1442415600_1459695600_result_execution_time_idx ON public.submissions_1442415600_1459695600 USING btree (result, execution_time);
+CREATE INDEX submissions_2023_language_epoch_second_idx ON public.submissions_2023 USING btree (language, epoch_second);
 
 
 --
--- Name: submissions_1442415600_1459695600_result_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2023_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1442415600_1459695600_result_length_idx ON public.submissions_1442415600_1459695600 USING btree (result, length);
+CREATE INDEX submissions_2023_language_execution_time_idx ON public.submissions_2023 USING btree (language, execution_time);
 
 
 --
--- Name: submissions_1442415600_1459695600_result_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2023_language_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1442415600_1459695600_result_point_idx ON public.submissions_1442415600_1459695600 USING btree (result, point);
+CREATE INDEX submissions_2023_language_length_idx ON public.submissions_2023 USING btree (language, length);
 
 
 --
--- Name: submissions_1442415600_1459695600_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2023_language_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1442415600_1459695600_user_id_epoch_second_idx ON public.submissions_1442415600_1459695600 USING btree (user_id, epoch_second);
+CREATE INDEX submissions_2023_language_point_idx ON public.submissions_2023 USING btree (language, point);
 
 
 --
--- Name: submissions_1442415600_1459695600_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2023_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1442415600_1459695600_user_id_execution_time_idx ON public.submissions_1442415600_1459695600 USING btree (user_id, execution_time);
+CREATE INDEX submissions_2023_problem_id_epoch_second_idx ON public.submissions_2023 USING btree (problem_id, epoch_second);
 
 
 --
--- Name: submissions_1442415600_1459695600_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2023_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1442415600_1459695600_user_id_length_idx ON public.submissions_1442415600_1459695600 USING btree (user_id, length);
+CREATE INDEX submissions_2023_problem_id_execution_time_idx ON public.submissions_2023 USING btree (problem_id, execution_time);
 
 
 --
--- Name: submissions_1442415600_1459695600_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2023_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1442415600_1459695600_user_id_point_idx ON public.submissions_1442415600_1459695600 USING btree (user_id, point);
+CREATE INDEX submissions_2023_problem_id_length_idx ON public.submissions_2023 USING btree (problem_id, length);
 
 
 --
--- Name: submissions_1442415600_14596956_execution_time_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2023_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1442415600_14596956_execution_time_epoch_second_idx ON public.submissions_1442415600_1459695600 USING btree (execution_time, epoch_second);
+CREATE INDEX submissions_2023_problem_id_point_idx ON public.submissions_2023 USING btree (problem_id, point);
 
 
 --
--- Name: submissions_1459695600_1476975600_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2023_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1459695600_1476975600_contest_id_epoch_second_idx ON public.submissions_1459695600_1476975600 USING btree (contest_id, epoch_second);
+CREATE INDEX submissions_2023_result_epoch_second_idx ON public.submissions_2023 USING btree (result, epoch_second);
 
 
 --
--- Name: submissions_1459695600_1476975600_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2023_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1459695600_1476975600_contest_id_execution_time_idx ON public.submissions_1459695600_1476975600 USING btree (contest_id, execution_time);
+CREATE INDEX submissions_2023_result_execution_time_idx ON public.submissions_2023 USING btree (result, execution_time);
 
 
 --
--- Name: submissions_1459695600_1476975600_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2023_result_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1459695600_1476975600_contest_id_length_idx ON public.submissions_1459695600_1476975600 USING btree (contest_id, length);
+CREATE INDEX submissions_2023_result_length_idx ON public.submissions_2023 USING btree (result, length);
 
 
 --
--- Name: submissions_1459695600_1476975600_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2023_result_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1459695600_1476975600_contest_id_point_idx ON public.submissions_1459695600_1476975600 USING btree (contest_id, point);
+CREATE INDEX submissions_2023_result_point_idx ON public.submissions_2023 USING btree (result, point);
 
 
 --
--- Name: submissions_1459695600_1476975600_epoch_second_updated_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2023_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1459695600_1476975600_epoch_second_updated_at_idx ON public.submissions_1459695600_1476975600 USING btree (epoch_second, updated_at);
+CREATE INDEX submissions_2023_user_id_epoch_second_idx ON public.submissions_2023 USING btree (user_id, epoch_second);
 
 
 --
--- Name: submissions_1459695600_1476975600_execution_time_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2023_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1459695600_1476975600_execution_time_length_idx ON public.submissions_1459695600_1476975600 USING btree (execution_time, length);
+CREATE INDEX submissions_2023_user_id_execution_time_idx ON public.submissions_2023 USING btree (user_id, execution_time);
 
 
 --
--- Name: submissions_1459695600_1476975600_execution_time_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2023_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1459695600_1476975600_execution_time_point_idx ON public.submissions_1459695600_1476975600 USING btree (execution_time, point);
+CREATE INDEX submissions_2023_user_id_length_idx ON public.submissions_2023 USING btree (user_id, length);
 
 
 --
--- Name: submissions_1459695600_1476975600_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2023_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX submissions_1459695600_1476975600_id_epoch_second_idx ON public.submissions_1459695600_1476975600 USING btree (id, epoch_second);
+CREATE INDEX submissions_2023_user_id_point_idx ON public.submissions_2023 USING btree (user_id, point);
 
 
 --
--- Name: submissions_1459695600_1476975600_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2023_user_id_result_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1459695600_1476975600_language_epoch_second_idx ON public.submissions_1459695600_1476975600 USING btree (language, epoch_second);
+CREATE INDEX submissions_2023_user_id_result_idx ON public.submissions_2023 USING btree (user_id, result);
 
 
 --
--- Name: submissions_1459695600_1476975600_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2024_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1459695600_1476975600_language_execution_time_idx ON public.submissions_1459695600_1476975600 USING btree (language, execution_time);
+CREATE INDEX submissions_2024_contest_id_epoch_second_idx ON public.submissions_2024 USING btree (contest_id, epoch_second);
 
 
 --
--- Name: submissions_1459695600_1476975600_language_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2024_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1459695600_1476975600_language_length_idx ON public.submissions_1459695600_1476975600 USING btree (language, length);
+CREATE INDEX submissions_2024_contest_id_execution_time_idx ON public.submissions_2024 USING btree (contest_id, execution_time);
 
 
 --
--- Name: submissions_1459695600_1476975600_language_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2024_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1459695600_1476975600_language_point_idx ON public.submissions_1459695600_1476975600 USING btree (language, point);
+CREATE INDEX submissions_2024_contest_id_length_idx ON public.submissions_2024 USING btree (contest_id, length);
 
 
 --
--- Name: submissions_1459695600_1476975600_length_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2024_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1459695600_1476975600_length_epoch_second_idx ON public.submissions_1459695600_1476975600 USING btree (length, epoch_second);
+CREATE INDEX submissions_2024_contest_id_point_idx ON public.submissions_2024 USING btree (contest_id, point);
 
 
 --
--- Name: submissions_1459695600_1476975600_length_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2024_epoch_second_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1459695600_1476975600_length_execution_time_idx ON public.submissions_1459695600_1476975600 USING btree (length, execution_time);
+CREATE UNIQUE INDEX submissions_2024_epoch_second_id_idx ON public.submissions_2024 USING btree (epoch_second, id);
 
 
 --
--- Name: submissions_1459695600_1476975600_length_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2024_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1459695600_1476975600_length_point_idx ON public.submissions_1459695600_1476975600 USING btree (length, point);
+CREATE INDEX submissions_2024_language_epoch_second_idx ON public.submissions_2024 USING btree (language, epoch_second);
 
 
 --
--- Name: submissions_1459695600_1476975600_point_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2024_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1459695600_1476975600_point_epoch_second_idx ON public.submissions_1459695600_1476975600 USING btree (point, epoch_second);
+CREATE INDEX submissions_2024_language_execution_time_idx ON public.submissions_2024 USING btree (language, execution_time);
 
 
 --
--- Name: submissions_1459695600_1476975600_point_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2024_language_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1459695600_1476975600_point_execution_time_idx ON public.submissions_1459695600_1476975600 USING btree (point, execution_time);
+CREATE INDEX submissions_2024_language_length_idx ON public.submissions_2024 USING btree (language, length);
 
 
 --
--- Name: submissions_1459695600_1476975600_point_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2024_language_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1459695600_1476975600_point_length_idx ON public.submissions_1459695600_1476975600 USING btree (point, length);
+CREATE INDEX submissions_2024_language_point_idx ON public.submissions_2024 USING btree (language, point);
 
 
 --
--- Name: submissions_1459695600_1476975600_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2024_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1459695600_1476975600_problem_id_epoch_second_idx ON public.submissions_1459695600_1476975600 USING btree (problem_id, epoch_second);
+CREATE INDEX submissions_2024_problem_id_epoch_second_idx ON public.submissions_2024 USING btree (problem_id, epoch_second);
 
 
 --
--- Name: submissions_1459695600_1476975600_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2024_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1459695600_1476975600_problem_id_execution_time_idx ON public.submissions_1459695600_1476975600 USING btree (problem_id, execution_time);
+CREATE INDEX submissions_2024_problem_id_execution_time_idx ON public.submissions_2024 USING btree (problem_id, execution_time);
 
 
 --
--- Name: submissions_1459695600_1476975600_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2024_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1459695600_1476975600_problem_id_length_idx ON public.submissions_1459695600_1476975600 USING btree (problem_id, length);
+CREATE INDEX submissions_2024_problem_id_length_idx ON public.submissions_2024 USING btree (problem_id, length);
 
 
 --
--- Name: submissions_1459695600_1476975600_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2024_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1459695600_1476975600_problem_id_point_idx ON public.submissions_1459695600_1476975600 USING btree (problem_id, point);
+CREATE INDEX submissions_2024_problem_id_point_idx ON public.submissions_2024 USING btree (problem_id, point);
 
 
 --
--- Name: submissions_1459695600_1476975600_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2024_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1459695600_1476975600_result_epoch_second_idx ON public.submissions_1459695600_1476975600 USING btree (result, epoch_second);
+CREATE INDEX submissions_2024_result_epoch_second_idx ON public.submissions_2024 USING btree (result, epoch_second);
 
 
 --
--- Name: submissions_1459695600_1476975600_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2024_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1459695600_1476975600_result_execution_time_idx ON public.submissions_1459695600_1476975600 USING btree (result, execution_time);
+CREATE INDEX submissions_2024_result_execution_time_idx ON public.submissions_2024 USING btree (result, execution_time);
 
 
 --
--- Name: submissions_1459695600_1476975600_result_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2024_result_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1459695600_1476975600_result_length_idx ON public.submissions_1459695600_1476975600 USING btree (result, length);
+CREATE INDEX submissions_2024_result_length_idx ON public.submissions_2024 USING btree (result, length);
 
 
 --
--- Name: submissions_1459695600_1476975600_result_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2024_result_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1459695600_1476975600_result_point_idx ON public.submissions_1459695600_1476975600 USING btree (result, point);
+CREATE INDEX submissions_2024_result_point_idx ON public.submissions_2024 USING btree (result, point);
 
 
 --
--- Name: submissions_1459695600_1476975600_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2024_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1459695600_1476975600_user_id_epoch_second_idx ON public.submissions_1459695600_1476975600 USING btree (user_id, epoch_second);
+CREATE INDEX submissions_2024_user_id_epoch_second_idx ON public.submissions_2024 USING btree (user_id, epoch_second);
 
 
 --
--- Name: submissions_1459695600_1476975600_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2024_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1459695600_1476975600_user_id_execution_time_idx ON public.submissions_1459695600_1476975600 USING btree (user_id, execution_time);
+CREATE INDEX submissions_2024_user_id_execution_time_idx ON public.submissions_2024 USING btree (user_id, execution_time);
 
 
 --
--- Name: submissions_1459695600_1476975600_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2024_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1459695600_1476975600_user_id_length_idx ON public.submissions_1459695600_1476975600 USING btree (user_id, length);
+CREATE INDEX submissions_2024_user_id_length_idx ON public.submissions_2024 USING btree (user_id, length);
 
 
 --
--- Name: submissions_1459695600_1476975600_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2024_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1459695600_1476975600_user_id_point_idx ON public.submissions_1459695600_1476975600 USING btree (user_id, point);
+CREATE INDEX submissions_2024_user_id_point_idx ON public.submissions_2024 USING btree (user_id, point);
 
 
 --
--- Name: submissions_1459695600_14769756_execution_time_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2024_user_id_result_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1459695600_14769756_execution_time_epoch_second_idx ON public.submissions_1459695600_1476975600 USING btree (execution_time, epoch_second);
+CREATE INDEX submissions_2024_user_id_result_idx ON public.submissions_2024 USING btree (user_id, result);
 
 
 --
--- Name: submissions_1476975600_1494255600_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2025_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1476975600_1494255600_contest_id_epoch_second_idx ON public.submissions_1476975600_1494255600 USING btree (contest_id, epoch_second);
+CREATE INDEX submissions_2025_contest_id_epoch_second_idx ON public.submissions_2025 USING btree (contest_id, epoch_second);
 
 
 --
--- Name: submissions_1476975600_1494255600_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2025_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1476975600_1494255600_contest_id_execution_time_idx ON public.submissions_1476975600_1494255600 USING btree (contest_id, execution_time);
+CREATE INDEX submissions_2025_contest_id_execution_time_idx ON public.submissions_2025 USING btree (contest_id, execution_time);
 
 
 --
--- Name: submissions_1476975600_1494255600_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2025_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1476975600_1494255600_contest_id_length_idx ON public.submissions_1476975600_1494255600 USING btree (contest_id, length);
+CREATE INDEX submissions_2025_contest_id_length_idx ON public.submissions_2025 USING btree (contest_id, length);
 
 
 --
--- Name: submissions_1476975600_1494255600_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2025_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1476975600_1494255600_contest_id_point_idx ON public.submissions_1476975600_1494255600 USING btree (contest_id, point);
+CREATE INDEX submissions_2025_contest_id_point_idx ON public.submissions_2025 USING btree (contest_id, point);
 
 
 --
--- Name: submissions_1476975600_1494255600_epoch_second_updated_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2025_epoch_second_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1476975600_1494255600_epoch_second_updated_at_idx ON public.submissions_1476975600_1494255600 USING btree (epoch_second, updated_at);
+CREATE UNIQUE INDEX submissions_2025_epoch_second_id_idx ON public.submissions_2025 USING btree (epoch_second, id);
 
 
 --
--- Name: submissions_1476975600_1494255600_execution_time_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2025_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1476975600_1494255600_execution_time_length_idx ON public.submissions_1476975600_1494255600 USING btree (execution_time, length);
+CREATE INDEX submissions_2025_language_epoch_second_idx ON public.submissions_2025 USING btree (language, epoch_second);
 
 
 --
--- Name: submissions_1476975600_1494255600_execution_time_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2025_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1476975600_1494255600_execution_time_point_idx ON public.submissions_1476975600_1494255600 USING btree (execution_time, point);
+CREATE INDEX submissions_2025_language_execution_time_idx ON public.submissions_2025 USING btree (language, execution_time);
 
 
 --
--- Name: submissions_1476975600_1494255600_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2025_language_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX submissions_1476975600_1494255600_id_epoch_second_idx ON public.submissions_1476975600_1494255600 USING btree (id, epoch_second);
+CREATE INDEX submissions_2025_language_length_idx ON public.submissions_2025 USING btree (language, length);
 
 
 --
--- Name: submissions_1476975600_1494255600_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2025_language_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1476975600_1494255600_language_epoch_second_idx ON public.submissions_1476975600_1494255600 USING btree (language, epoch_second);
+CREATE INDEX submissions_2025_language_point_idx ON public.submissions_2025 USING btree (language, point);
 
 
 --
--- Name: submissions_1476975600_1494255600_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2025_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1476975600_1494255600_language_execution_time_idx ON public.submissions_1476975600_1494255600 USING btree (language, execution_time);
+CREATE INDEX submissions_2025_problem_id_epoch_second_idx ON public.submissions_2025 USING btree (problem_id, epoch_second);
 
 
 --
--- Name: submissions_1476975600_1494255600_language_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2025_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1476975600_1494255600_language_length_idx ON public.submissions_1476975600_1494255600 USING btree (language, length);
+CREATE INDEX submissions_2025_problem_id_execution_time_idx ON public.submissions_2025 USING btree (problem_id, execution_time);
 
 
 --
--- Name: submissions_1476975600_1494255600_language_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2025_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1476975600_1494255600_language_point_idx ON public.submissions_1476975600_1494255600 USING btree (language, point);
+CREATE INDEX submissions_2025_problem_id_length_idx ON public.submissions_2025 USING btree (problem_id, length);
 
 
 --
--- Name: submissions_1476975600_1494255600_length_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2025_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1476975600_1494255600_length_epoch_second_idx ON public.submissions_1476975600_1494255600 USING btree (length, epoch_second);
+CREATE INDEX submissions_2025_problem_id_point_idx ON public.submissions_2025 USING btree (problem_id, point);
 
 
 --
--- Name: submissions_1476975600_1494255600_length_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2025_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1476975600_1494255600_length_execution_time_idx ON public.submissions_1476975600_1494255600 USING btree (length, execution_time);
+CREATE INDEX submissions_2025_result_epoch_second_idx ON public.submissions_2025 USING btree (result, epoch_second);
 
 
 --
--- Name: submissions_1476975600_1494255600_length_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2025_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1476975600_1494255600_length_point_idx ON public.submissions_1476975600_1494255600 USING btree (length, point);
+CREATE INDEX submissions_2025_result_execution_time_idx ON public.submissions_2025 USING btree (result, execution_time);
 
 
 --
--- Name: submissions_1476975600_1494255600_point_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2025_result_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1476975600_1494255600_point_epoch_second_idx ON public.submissions_1476975600_1494255600 USING btree (point, epoch_second);
+CREATE INDEX submissions_2025_result_length_idx ON public.submissions_2025 USING btree (result, length);
 
 
 --
--- Name: submissions_1476975600_1494255600_point_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2025_result_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1476975600_1494255600_point_execution_time_idx ON public.submissions_1476975600_1494255600 USING btree (point, execution_time);
+CREATE INDEX submissions_2025_result_point_idx ON public.submissions_2025 USING btree (result, point);
 
 
 --
--- Name: submissions_1476975600_1494255600_point_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2025_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1476975600_1494255600_point_length_idx ON public.submissions_1476975600_1494255600 USING btree (point, length);
+CREATE INDEX submissions_2025_user_id_epoch_second_idx ON public.submissions_2025 USING btree (user_id, epoch_second);
 
 
 --
--- Name: submissions_1476975600_1494255600_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2025_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1476975600_1494255600_problem_id_epoch_second_idx ON public.submissions_1476975600_1494255600 USING btree (problem_id, epoch_second);
+CREATE INDEX submissions_2025_user_id_execution_time_idx ON public.submissions_2025 USING btree (user_id, execution_time);
 
 
 --
--- Name: submissions_1476975600_1494255600_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2025_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1476975600_1494255600_problem_id_execution_time_idx ON public.submissions_1476975600_1494255600 USING btree (problem_id, execution_time);
+CREATE INDEX submissions_2025_user_id_length_idx ON public.submissions_2025 USING btree (user_id, length);
 
 
 --
--- Name: submissions_1476975600_1494255600_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2025_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1476975600_1494255600_problem_id_length_idx ON public.submissions_1476975600_1494255600 USING btree (problem_id, length);
+CREATE INDEX submissions_2025_user_id_point_idx ON public.submissions_2025 USING btree (user_id, point);
 
 
 --
--- Name: submissions_1476975600_1494255600_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2025_user_id_result_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1476975600_1494255600_problem_id_point_idx ON public.submissions_1476975600_1494255600 USING btree (problem_id, point);
+CREATE INDEX submissions_2025_user_id_result_idx ON public.submissions_2025 USING btree (user_id, result);
 
 
 --
--- Name: submissions_1476975600_1494255600_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2026_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1476975600_1494255600_result_epoch_second_idx ON public.submissions_1476975600_1494255600 USING btree (result, epoch_second);
+CREATE INDEX submissions_2026_contest_id_epoch_second_idx ON public.submissions_2026 USING btree (contest_id, epoch_second);
 
 
 --
--- Name: submissions_1476975600_1494255600_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2026_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1476975600_1494255600_result_execution_time_idx ON public.submissions_1476975600_1494255600 USING btree (result, execution_time);
+CREATE INDEX submissions_2026_contest_id_execution_time_idx ON public.submissions_2026 USING btree (contest_id, execution_time);
 
 
 --
--- Name: submissions_1476975600_1494255600_result_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2026_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1476975600_1494255600_result_length_idx ON public.submissions_1476975600_1494255600 USING btree (result, length);
+CREATE INDEX submissions_2026_contest_id_length_idx ON public.submissions_2026 USING btree (contest_id, length);
 
 
 --
--- Name: submissions_1476975600_1494255600_result_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2026_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1476975600_1494255600_result_point_idx ON public.submissions_1476975600_1494255600 USING btree (result, point);
+CREATE INDEX submissions_2026_contest_id_point_idx ON public.submissions_2026 USING btree (contest_id, point);
 
 
 --
--- Name: submissions_1476975600_1494255600_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2026_epoch_second_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1476975600_1494255600_user_id_epoch_second_idx ON public.submissions_1476975600_1494255600 USING btree (user_id, epoch_second);
+CREATE UNIQUE INDEX submissions_2026_epoch_second_id_idx ON public.submissions_2026 USING btree (epoch_second, id);
 
 
 --
--- Name: submissions_1476975600_1494255600_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2026_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1476975600_1494255600_user_id_execution_time_idx ON public.submissions_1476975600_1494255600 USING btree (user_id, execution_time);
+CREATE INDEX submissions_2026_language_epoch_second_idx ON public.submissions_2026 USING btree (language, epoch_second);
 
 
 --
--- Name: submissions_1476975600_1494255600_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2026_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1476975600_1494255600_user_id_length_idx ON public.submissions_1476975600_1494255600 USING btree (user_id, length);
+CREATE INDEX submissions_2026_language_execution_time_idx ON public.submissions_2026 USING btree (language, execution_time);
 
 
 --
--- Name: submissions_1476975600_1494255600_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2026_language_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1476975600_1494255600_user_id_point_idx ON public.submissions_1476975600_1494255600 USING btree (user_id, point);
+CREATE INDEX submissions_2026_language_length_idx ON public.submissions_2026 USING btree (language, length);
 
 
 --
--- Name: submissions_1476975600_14942556_execution_time_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2026_language_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1476975600_14942556_execution_time_epoch_second_idx ON public.submissions_1476975600_1494255600 USING btree (execution_time, epoch_second);
+CREATE INDEX submissions_2026_language_point_idx ON public.submissions_2026 USING btree (language, point);
 
 
 --
--- Name: submissions_1494255600_1511535600_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2026_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1494255600_1511535600_contest_id_epoch_second_idx ON public.submissions_1494255600_1511535600 USING btree (contest_id, epoch_second);
+CREATE INDEX submissions_2026_problem_id_epoch_second_idx ON public.submissions_2026 USING btree (problem_id, epoch_second);
 
 
 --
--- Name: submissions_1494255600_1511535600_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2026_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1494255600_1511535600_contest_id_execution_time_idx ON public.submissions_1494255600_1511535600 USING btree (contest_id, execution_time);
+CREATE INDEX submissions_2026_problem_id_execution_time_idx ON public.submissions_2026 USING btree (problem_id, execution_time);
 
 
 --
--- Name: submissions_1494255600_1511535600_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2026_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1494255600_1511535600_contest_id_length_idx ON public.submissions_1494255600_1511535600 USING btree (contest_id, length);
+CREATE INDEX submissions_2026_problem_id_length_idx ON public.submissions_2026 USING btree (problem_id, length);
 
 
 --
--- Name: submissions_1494255600_1511535600_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2026_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1494255600_1511535600_contest_id_point_idx ON public.submissions_1494255600_1511535600 USING btree (contest_id, point);
+CREATE INDEX submissions_2026_problem_id_point_idx ON public.submissions_2026 USING btree (problem_id, point);
 
 
 --
--- Name: submissions_1494255600_1511535600_epoch_second_updated_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2026_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1494255600_1511535600_epoch_second_updated_at_idx ON public.submissions_1494255600_1511535600 USING btree (epoch_second, updated_at);
+CREATE INDEX submissions_2026_result_epoch_second_idx ON public.submissions_2026 USING btree (result, epoch_second);
 
 
 --
--- Name: submissions_1494255600_1511535600_execution_time_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2026_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1494255600_1511535600_execution_time_length_idx ON public.submissions_1494255600_1511535600 USING btree (execution_time, length);
+CREATE INDEX submissions_2026_result_execution_time_idx ON public.submissions_2026 USING btree (result, execution_time);
 
 
 --
--- Name: submissions_1494255600_1511535600_execution_time_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2026_result_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1494255600_1511535600_execution_time_point_idx ON public.submissions_1494255600_1511535600 USING btree (execution_time, point);
+CREATE INDEX submissions_2026_result_length_idx ON public.submissions_2026 USING btree (result, length);
 
 
 --
--- Name: submissions_1494255600_1511535600_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2026_result_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX submissions_1494255600_1511535600_id_epoch_second_idx ON public.submissions_1494255600_1511535600 USING btree (id, epoch_second);
+CREATE INDEX submissions_2026_result_point_idx ON public.submissions_2026 USING btree (result, point);
 
 
 --
--- Name: submissions_1494255600_1511535600_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2026_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1494255600_1511535600_language_epoch_second_idx ON public.submissions_1494255600_1511535600 USING btree (language, epoch_second);
+CREATE INDEX submissions_2026_user_id_epoch_second_idx ON public.submissions_2026 USING btree (user_id, epoch_second);
 
 
 --
--- Name: submissions_1494255600_1511535600_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2026_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1494255600_1511535600_language_execution_time_idx ON public.submissions_1494255600_1511535600 USING btree (language, execution_time);
+CREATE INDEX submissions_2026_user_id_execution_time_idx ON public.submissions_2026 USING btree (user_id, execution_time);
 
 
 --
--- Name: submissions_1494255600_1511535600_language_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2026_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1494255600_1511535600_language_length_idx ON public.submissions_1494255600_1511535600 USING btree (language, length);
+CREATE INDEX submissions_2026_user_id_length_idx ON public.submissions_2026 USING btree (user_id, length);
 
 
 --
--- Name: submissions_1494255600_1511535600_language_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2026_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1494255600_1511535600_language_point_idx ON public.submissions_1494255600_1511535600 USING btree (language, point);
+CREATE INDEX submissions_2026_user_id_point_idx ON public.submissions_2026 USING btree (user_id, point);
 
 
 --
--- Name: submissions_1494255600_1511535600_length_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2026_user_id_result_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1494255600_1511535600_length_epoch_second_idx ON public.submissions_1494255600_1511535600 USING btree (length, epoch_second);
+CREATE INDEX submissions_2026_user_id_result_idx ON public.submissions_2026 USING btree (user_id, result);
 
 
 --
--- Name: submissions_1494255600_1511535600_length_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2027_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1494255600_1511535600_length_execution_time_idx ON public.submissions_1494255600_1511535600 USING btree (length, execution_time);
+CREATE INDEX submissions_2027_contest_id_epoch_second_idx ON public.submissions_2027 USING btree (contest_id, epoch_second);
 
 
 --
--- Name: submissions_1494255600_1511535600_length_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2027_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1494255600_1511535600_length_point_idx ON public.submissions_1494255600_1511535600 USING btree (length, point);
+CREATE INDEX submissions_2027_contest_id_execution_time_idx ON public.submissions_2027 USING btree (contest_id, execution_time);
 
 
 --
--- Name: submissions_1494255600_1511535600_point_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2027_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1494255600_1511535600_point_epoch_second_idx ON public.submissions_1494255600_1511535600 USING btree (point, epoch_second);
+CREATE INDEX submissions_2027_contest_id_length_idx ON public.submissions_2027 USING btree (contest_id, length);
 
 
 --
--- Name: submissions_1494255600_1511535600_point_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2027_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1494255600_1511535600_point_execution_time_idx ON public.submissions_1494255600_1511535600 USING btree (point, execution_time);
+CREATE INDEX submissions_2027_contest_id_point_idx ON public.submissions_2027 USING btree (contest_id, point);
 
 
 --
--- Name: submissions_1494255600_1511535600_point_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2027_epoch_second_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1494255600_1511535600_point_length_idx ON public.submissions_1494255600_1511535600 USING btree (point, length);
+CREATE UNIQUE INDEX submissions_2027_epoch_second_id_idx ON public.submissions_2027 USING btree (epoch_second, id);
 
 
 --
--- Name: submissions_1494255600_1511535600_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2027_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1494255600_1511535600_problem_id_epoch_second_idx ON public.submissions_1494255600_1511535600 USING btree (problem_id, epoch_second);
+CREATE INDEX submissions_2027_language_epoch_second_idx ON public.submissions_2027 USING btree (language, epoch_second);
 
 
 --
--- Name: submissions_1494255600_1511535600_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2027_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1494255600_1511535600_problem_id_execution_time_idx ON public.submissions_1494255600_1511535600 USING btree (problem_id, execution_time);
+CREATE INDEX submissions_2027_language_execution_time_idx ON public.submissions_2027 USING btree (language, execution_time);
 
 
 --
--- Name: submissions_1494255600_1511535600_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2027_language_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1494255600_1511535600_problem_id_length_idx ON public.submissions_1494255600_1511535600 USING btree (problem_id, length);
+CREATE INDEX submissions_2027_language_length_idx ON public.submissions_2027 USING btree (language, length);
 
 
 --
--- Name: submissions_1494255600_1511535600_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2027_language_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1494255600_1511535600_problem_id_point_idx ON public.submissions_1494255600_1511535600 USING btree (problem_id, point);
+CREATE INDEX submissions_2027_language_point_idx ON public.submissions_2027 USING btree (language, point);
 
 
 --
--- Name: submissions_1494255600_1511535600_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2027_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1494255600_1511535600_result_epoch_second_idx ON public.submissions_1494255600_1511535600 USING btree (result, epoch_second);
+CREATE INDEX submissions_2027_problem_id_epoch_second_idx ON public.submissions_2027 USING btree (problem_id, epoch_second);
 
 
 --
--- Name: submissions_1494255600_1511535600_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2027_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1494255600_1511535600_result_execution_time_idx ON public.submissions_1494255600_1511535600 USING btree (result, execution_time);
+CREATE INDEX submissions_2027_problem_id_execution_time_idx ON public.submissions_2027 USING btree (problem_id, execution_time);
 
 
 --
--- Name: submissions_1494255600_1511535600_result_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2027_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1494255600_1511535600_result_length_idx ON public.submissions_1494255600_1511535600 USING btree (result, length);
+CREATE INDEX submissions_2027_problem_id_length_idx ON public.submissions_2027 USING btree (problem_id, length);
 
 
 --
--- Name: submissions_1494255600_1511535600_result_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2027_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1494255600_1511535600_result_point_idx ON public.submissions_1494255600_1511535600 USING btree (result, point);
+CREATE INDEX submissions_2027_problem_id_point_idx ON public.submissions_2027 USING btree (problem_id, point);
 
 
 --
--- Name: submissions_1494255600_1511535600_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2027_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1494255600_1511535600_user_id_epoch_second_idx ON public.submissions_1494255600_1511535600 USING btree (user_id, epoch_second);
+CREATE INDEX submissions_2027_result_epoch_second_idx ON public.submissions_2027 USING btree (result, epoch_second);
 
 
 --
--- Name: submissions_1494255600_1511535600_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2027_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1494255600_1511535600_user_id_execution_time_idx ON public.submissions_1494255600_1511535600 USING btree (user_id, execution_time);
+CREATE INDEX submissions_2027_result_execution_time_idx ON public.submissions_2027 USING btree (result, execution_time);
 
 
 --
--- Name: submissions_1494255600_1511535600_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2027_result_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1494255600_1511535600_user_id_length_idx ON public.submissions_1494255600_1511535600 USING btree (user_id, length);
+CREATE INDEX submissions_2027_result_length_idx ON public.submissions_2027 USING btree (result, length);
 
 
 --
--- Name: submissions_1494255600_1511535600_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2027_result_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1494255600_1511535600_user_id_point_idx ON public.submissions_1494255600_1511535600 USING btree (user_id, point);
+CREATE INDEX submissions_2027_result_point_idx ON public.submissions_2027 USING btree (result, point);
 
 
 --
--- Name: submissions_1494255600_15115356_execution_time_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2027_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1494255600_15115356_execution_time_epoch_second_idx ON public.submissions_1494255600_1511535600 USING btree (execution_time, epoch_second);
+CREATE INDEX submissions_2027_user_id_epoch_second_idx ON public.submissions_2027 USING btree (user_id, epoch_second);
 
 
 --
--- Name: submissions_1511535600_1528815600_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2027_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1511535600_1528815600_contest_id_epoch_second_idx ON public.submissions_1511535600_1528815600 USING btree (contest_id, epoch_second);
+CREATE INDEX submissions_2027_user_id_execution_time_idx ON public.submissions_2027 USING btree (user_id, execution_time);
 
 
 --
--- Name: submissions_1511535600_1528815600_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2027_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1511535600_1528815600_contest_id_execution_time_idx ON public.submissions_1511535600_1528815600 USING btree (contest_id, execution_time);
+CREATE INDEX submissions_2027_user_id_length_idx ON public.submissions_2027 USING btree (user_id, length);
 
 
 --
--- Name: submissions_1511535600_1528815600_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2027_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1511535600_1528815600_contest_id_length_idx ON public.submissions_1511535600_1528815600 USING btree (contest_id, length);
+CREATE INDEX submissions_2027_user_id_point_idx ON public.submissions_2027 USING btree (user_id, point);
 
 
 --
--- Name: submissions_1511535600_1528815600_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2027_user_id_result_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1511535600_1528815600_contest_id_point_idx ON public.submissions_1511535600_1528815600 USING btree (contest_id, point);
+CREATE INDEX submissions_2027_user_id_result_idx ON public.submissions_2027 USING btree (user_id, result);
 
 
 --
--- Name: submissions_1511535600_1528815600_epoch_second_updated_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2028_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1511535600_1528815600_epoch_second_updated_at_idx ON public.submissions_1511535600_1528815600 USING btree (epoch_second, updated_at);
+CREATE INDEX submissions_2028_contest_id_epoch_second_idx ON public.submissions_2028 USING btree (contest_id, epoch_second);
 
 
 --
--- Name: submissions_1511535600_1528815600_execution_time_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2028_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1511535600_1528815600_execution_time_length_idx ON public.submissions_1511535600_1528815600 USING btree (execution_time, length);
+CREATE INDEX submissions_2028_contest_id_execution_time_idx ON public.submissions_2028 USING btree (contest_id, execution_time);
 
 
 --
--- Name: submissions_1511535600_1528815600_execution_time_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2028_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1511535600_1528815600_execution_time_point_idx ON public.submissions_1511535600_1528815600 USING btree (execution_time, point);
+CREATE INDEX submissions_2028_contest_id_length_idx ON public.submissions_2028 USING btree (contest_id, length);
 
 
 --
--- Name: submissions_1511535600_1528815600_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2028_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX submissions_1511535600_1528815600_id_epoch_second_idx ON public.submissions_1511535600_1528815600 USING btree (id, epoch_second);
+CREATE INDEX submissions_2028_contest_id_point_idx ON public.submissions_2028 USING btree (contest_id, point);
 
 
 --
--- Name: submissions_1511535600_1528815600_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2028_epoch_second_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1511535600_1528815600_language_epoch_second_idx ON public.submissions_1511535600_1528815600 USING btree (language, epoch_second);
+CREATE UNIQUE INDEX submissions_2028_epoch_second_id_idx ON public.submissions_2028 USING btree (epoch_second, id);
 
 
 --
--- Name: submissions_1511535600_1528815600_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2028_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1511535600_1528815600_language_execution_time_idx ON public.submissions_1511535600_1528815600 USING btree (language, execution_time);
+CREATE INDEX submissions_2028_language_epoch_second_idx ON public.submissions_2028 USING btree (language, epoch_second);
 
 
 --
--- Name: submissions_1511535600_1528815600_language_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2028_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1511535600_1528815600_language_length_idx ON public.submissions_1511535600_1528815600 USING btree (language, length);
+CREATE INDEX submissions_2028_language_execution_time_idx ON public.submissions_2028 USING btree (language, execution_time);
 
 
 --
--- Name: submissions_1511535600_1528815600_language_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2028_language_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1511535600_1528815600_language_point_idx ON public.submissions_1511535600_1528815600 USING btree (language, point);
+CREATE INDEX submissions_2028_language_length_idx ON public.submissions_2028 USING btree (language, length);
 
 
 --
--- Name: submissions_1511535600_1528815600_length_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2028_language_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1511535600_1528815600_length_epoch_second_idx ON public.submissions_1511535600_1528815600 USING btree (length, epoch_second);
+CREATE INDEX submissions_2028_language_point_idx ON public.submissions_2028 USING btree (language, point);
 
 
 --
--- Name: submissions_1511535600_1528815600_length_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2028_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1511535600_1528815600_length_execution_time_idx ON public.submissions_1511535600_1528815600 USING btree (length, execution_time);
+CREATE INDEX submissions_2028_problem_id_epoch_second_idx ON public.submissions_2028 USING btree (problem_id, epoch_second);
 
 
 --
--- Name: submissions_1511535600_1528815600_length_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2028_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1511535600_1528815600_length_point_idx ON public.submissions_1511535600_1528815600 USING btree (length, point);
+CREATE INDEX submissions_2028_problem_id_execution_time_idx ON public.submissions_2028 USING btree (problem_id, execution_time);
 
 
 --
--- Name: submissions_1511535600_1528815600_point_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2028_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1511535600_1528815600_point_epoch_second_idx ON public.submissions_1511535600_1528815600 USING btree (point, epoch_second);
+CREATE INDEX submissions_2028_problem_id_length_idx ON public.submissions_2028 USING btree (problem_id, length);
 
 
 --
--- Name: submissions_1511535600_1528815600_point_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2028_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1511535600_1528815600_point_execution_time_idx ON public.submissions_1511535600_1528815600 USING btree (point, execution_time);
+CREATE INDEX submissions_2028_problem_id_point_idx ON public.submissions_2028 USING btree (problem_id, point);
 
 
 --
--- Name: submissions_1511535600_1528815600_point_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2028_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1511535600_1528815600_point_length_idx ON public.submissions_1511535600_1528815600 USING btree (point, length);
+CREATE INDEX submissions_2028_result_epoch_second_idx ON public.submissions_2028 USING btree (result, epoch_second);
 
 
 --
--- Name: submissions_1511535600_1528815600_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2028_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1511535600_1528815600_problem_id_epoch_second_idx ON public.submissions_1511535600_1528815600 USING btree (problem_id, epoch_second);
+CREATE INDEX submissions_2028_result_execution_time_idx ON public.submissions_2028 USING btree (result, execution_time);
 
 
 --
--- Name: submissions_1511535600_1528815600_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2028_result_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1511535600_1528815600_problem_id_execution_time_idx ON public.submissions_1511535600_1528815600 USING btree (problem_id, execution_time);
+CREATE INDEX submissions_2028_result_length_idx ON public.submissions_2028 USING btree (result, length);
 
 
 --
--- Name: submissions_1511535600_1528815600_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2028_result_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1511535600_1528815600_problem_id_length_idx ON public.submissions_1511535600_1528815600 USING btree (problem_id, length);
+CREATE INDEX submissions_2028_result_point_idx ON public.submissions_2028 USING btree (result, point);
 
 
 --
--- Name: submissions_1511535600_1528815600_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2028_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1511535600_1528815600_problem_id_point_idx ON public.submissions_1511535600_1528815600 USING btree (problem_id, point);
+CREATE INDEX submissions_2028_user_id_epoch_second_idx ON public.submissions_2028 USING btree (user_id, epoch_second);
 
 
 --
--- Name: submissions_1511535600_1528815600_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2028_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1511535600_1528815600_result_epoch_second_idx ON public.submissions_1511535600_1528815600 USING btree (result, epoch_second);
+CREATE INDEX submissions_2028_user_id_execution_time_idx ON public.submissions_2028 USING btree (user_id, execution_time);
 
 
 --
--- Name: submissions_1511535600_1528815600_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2028_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1511535600_1528815600_result_execution_time_idx ON public.submissions_1511535600_1528815600 USING btree (result, execution_time);
+CREATE INDEX submissions_2028_user_id_length_idx ON public.submissions_2028 USING btree (user_id, length);
 
 
 --
--- Name: submissions_1511535600_1528815600_result_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2028_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1511535600_1528815600_result_length_idx ON public.submissions_1511535600_1528815600 USING btree (result, length);
+CREATE INDEX submissions_2028_user_id_point_idx ON public.submissions_2028 USING btree (user_id, point);
 
 
 --
--- Name: submissions_1511535600_1528815600_result_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2028_user_id_result_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1511535600_1528815600_result_point_idx ON public.submissions_1511535600_1528815600 USING btree (result, point);
+CREATE INDEX submissions_2028_user_id_result_idx ON public.submissions_2028 USING btree (user_id, result);
 
 
 --
--- Name: submissions_1511535600_1528815600_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2029_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1511535600_1528815600_user_id_epoch_second_idx ON public.submissions_1511535600_1528815600 USING btree (user_id, epoch_second);
+CREATE INDEX submissions_2029_contest_id_epoch_second_idx ON public.submissions_2029 USING btree (contest_id, epoch_second);
 
 
 --
--- Name: submissions_1511535600_1528815600_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2029_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1511535600_1528815600_user_id_execution_time_idx ON public.submissions_1511535600_1528815600 USING btree (user_id, execution_time);
+CREATE INDEX submissions_2029_contest_id_execution_time_idx ON public.submissions_2029 USING btree (contest_id, execution_time);
 
 
 --
--- Name: submissions_1511535600_1528815600_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2029_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1511535600_1528815600_user_id_length_idx ON public.submissions_1511535600_1528815600 USING btree (user_id, length);
+CREATE INDEX submissions_2029_contest_id_length_idx ON public.submissions_2029 USING btree (contest_id, length);
 
 
 --
--- Name: submissions_1511535600_1528815600_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2029_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1511535600_1528815600_user_id_point_idx ON public.submissions_1511535600_1528815600 USING btree (user_id, point);
+CREATE INDEX submissions_2029_contest_id_point_idx ON public.submissions_2029 USING btree (contest_id, point);
 
 
 --
--- Name: submissions_1511535600_15288156_execution_time_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2029_epoch_second_id_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1511535600_15288156_execution_time_epoch_second_idx ON public.submissions_1511535600_1528815600 USING btree (execution_time, epoch_second);
+CREATE UNIQUE INDEX submissions_2029_epoch_second_id_idx ON public.submissions_2029 USING btree (epoch_second, id);
 
 
 --
--- Name: submissions_1528815600_1546095600_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2029_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1528815600_1546095600_contest_id_epoch_second_idx ON public.submissions_1528815600_1546095600 USING btree (contest_id, epoch_second);
+CREATE INDEX submissions_2029_language_epoch_second_idx ON public.submissions_2029 USING btree (language, epoch_second);
 
 
 --
--- Name: submissions_1528815600_1546095600_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2029_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1528815600_1546095600_contest_id_execution_time_idx ON public.submissions_1528815600_1546095600 USING btree (contest_id, execution_time);
+CREATE INDEX submissions_2029_language_execution_time_idx ON public.submissions_2029 USING btree (language, execution_time);
 
 
 --
--- Name: submissions_1528815600_1546095600_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2029_language_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1528815600_1546095600_contest_id_length_idx ON public.submissions_1528815600_1546095600 USING btree (contest_id, length);
+CREATE INDEX submissions_2029_language_length_idx ON public.submissions_2029 USING btree (language, length);
 
 
 --
--- Name: submissions_1528815600_1546095600_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2029_language_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1528815600_1546095600_contest_id_point_idx ON public.submissions_1528815600_1546095600 USING btree (contest_id, point);
+CREATE INDEX submissions_2029_language_point_idx ON public.submissions_2029 USING btree (language, point);
 
 
 --
--- Name: submissions_1528815600_1546095600_epoch_second_updated_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2029_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1528815600_1546095600_epoch_second_updated_at_idx ON public.submissions_1528815600_1546095600 USING btree (epoch_second, updated_at);
+CREATE INDEX submissions_2029_problem_id_epoch_second_idx ON public.submissions_2029 USING btree (problem_id, epoch_second);
 
 
 --
--- Name: submissions_1528815600_1546095600_execution_time_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2029_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1528815600_1546095600_execution_time_length_idx ON public.submissions_1528815600_1546095600 USING btree (execution_time, length);
+CREATE INDEX submissions_2029_problem_id_execution_time_idx ON public.submissions_2029 USING btree (problem_id, execution_time);
 
 
 --
--- Name: submissions_1528815600_1546095600_execution_time_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2029_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1528815600_1546095600_execution_time_point_idx ON public.submissions_1528815600_1546095600 USING btree (execution_time, point);
+CREATE INDEX submissions_2029_problem_id_length_idx ON public.submissions_2029 USING btree (problem_id, length);
 
 
 --
--- Name: submissions_1528815600_1546095600_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2029_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX submissions_1528815600_1546095600_id_epoch_second_idx ON public.submissions_1528815600_1546095600 USING btree (id, epoch_second);
+CREATE INDEX submissions_2029_problem_id_point_idx ON public.submissions_2029 USING btree (problem_id, point);
 
 
 --
--- Name: submissions_1528815600_1546095600_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2029_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1528815600_1546095600_language_epoch_second_idx ON public.submissions_1528815600_1546095600 USING btree (language, epoch_second);
+CREATE INDEX submissions_2029_result_epoch_second_idx ON public.submissions_2029 USING btree (result, epoch_second);
 
 
 --
--- Name: submissions_1528815600_1546095600_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2029_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1528815600_1546095600_language_execution_time_idx ON public.submissions_1528815600_1546095600 USING btree (language, execution_time);
+CREATE INDEX submissions_2029_result_execution_time_idx ON public.submissions_2029 USING btree (result, execution_time);
 
 
 --
--- Name: submissions_1528815600_1546095600_language_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2029_result_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1528815600_1546095600_language_length_idx ON public.submissions_1528815600_1546095600 USING btree (language, length);
+CREATE INDEX submissions_2029_result_length_idx ON public.submissions_2029 USING btree (result, length);
 
 
 --
--- Name: submissions_1528815600_1546095600_language_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2029_result_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1528815600_1546095600_language_point_idx ON public.submissions_1528815600_1546095600 USING btree (language, point);
+CREATE INDEX submissions_2029_result_point_idx ON public.submissions_2029 USING btree (result, point);
 
 
 --
--- Name: submissions_1528815600_1546095600_length_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2029_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1528815600_1546095600_length_epoch_second_idx ON public.submissions_1528815600_1546095600 USING btree (length, epoch_second);
+CREATE INDEX submissions_2029_user_id_epoch_second_idx ON public.submissions_2029 USING btree (user_id, epoch_second);
 
 
 --
--- Name: submissions_1528815600_1546095600_length_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2029_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1528815600_1546095600_length_execution_time_idx ON public.submissions_1528815600_1546095600 USING btree (length, execution_time);
+CREATE INDEX submissions_2029_user_id_execution_time_idx ON public.submissions_2029 USING btree (user_id, execution_time);
 
 
 --
--- Name: submissions_1528815600_1546095600_length_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2029_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1528815600_1546095600_length_point_idx ON public.submissions_1528815600_1546095600 USING btree (length, point);
+CREATE INDEX submissions_2029_user_id_length_idx ON public.submissions_2029 USING btree (user_id, length);
 
 
 --
--- Name: submissions_1528815600_1546095600_point_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2029_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1528815600_1546095600_point_epoch_second_idx ON public.submissions_1528815600_1546095600 USING btree (point, epoch_second);
+CREATE INDEX submissions_2029_user_id_point_idx ON public.submissions_2029 USING btree (user_id, point);
 
 
 --
--- Name: submissions_1528815600_1546095600_point_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2029_user_id_result_idx; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1528815600_1546095600_point_execution_time_idx ON public.submissions_1528815600_1546095600 USING btree (point, execution_time);
+CREATE INDEX submissions_2029_user_id_result_idx ON public.submissions_2029 USING btree (user_id, result);
 
 
 --
--- Name: submissions_1528815600_1546095600_point_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2010_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1528815600_1546095600_point_length_idx ON public.submissions_1528815600_1546095600 USING btree (point, length);
+ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_2010_contest_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1528815600_1546095600_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2010_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1528815600_1546095600_problem_id_epoch_second_idx ON public.submissions_1528815600_1546095600 USING btree (problem_id, epoch_second);
+ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_2010_contest_id_execution_time_idx;
 
 
 --
--- Name: submissions_1528815600_1546095600_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2010_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1528815600_1546095600_problem_id_execution_time_idx ON public.submissions_1528815600_1546095600 USING btree (problem_id, execution_time);
+ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_2010_contest_id_length_idx;
 
 
 --
--- Name: submissions_1528815600_1546095600_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2010_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1528815600_1546095600_problem_id_length_idx ON public.submissions_1528815600_1546095600 USING btree (problem_id, length);
+ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_2010_contest_id_point_idx;
 
 
 --
--- Name: submissions_1528815600_1546095600_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2010_epoch_second_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1528815600_1546095600_problem_id_point_idx ON public.submissions_1528815600_1546095600 USING btree (problem_id, point);
+ALTER INDEX public.submissions_unique ATTACH PARTITION public.submissions_2010_epoch_second_id_idx;
 
 
 --
--- Name: submissions_1528815600_1546095600_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2010_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1528815600_1546095600_result_epoch_second_idx ON public.submissions_1528815600_1546095600 USING btree (result, epoch_second);
+ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_2010_language_epoch_second_idx;
 
 
 --
--- Name: submissions_1528815600_1546095600_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2010_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1528815600_1546095600_result_execution_time_idx ON public.submissions_1528815600_1546095600 USING btree (result, execution_time);
+ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_2010_language_execution_time_idx;
 
 
 --
--- Name: submissions_1528815600_1546095600_result_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2010_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1528815600_1546095600_result_length_idx ON public.submissions_1528815600_1546095600 USING btree (result, length);
+ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_2010_language_length_idx;
 
 
 --
--- Name: submissions_1528815600_1546095600_result_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2010_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1528815600_1546095600_result_point_idx ON public.submissions_1528815600_1546095600 USING btree (result, point);
+ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_2010_language_point_idx;
 
 
 --
--- Name: submissions_1528815600_1546095600_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2010_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1528815600_1546095600_user_id_epoch_second_idx ON public.submissions_1528815600_1546095600 USING btree (user_id, epoch_second);
+ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_2010_problem_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1528815600_1546095600_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2010_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1528815600_1546095600_user_id_execution_time_idx ON public.submissions_1528815600_1546095600 USING btree (user_id, execution_time);
+ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_2010_problem_id_execution_time_idx;
 
 
 --
--- Name: submissions_1528815600_1546095600_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2010_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1528815600_1546095600_user_id_length_idx ON public.submissions_1528815600_1546095600 USING btree (user_id, length);
+ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_2010_problem_id_length_idx;
 
 
 --
--- Name: submissions_1528815600_1546095600_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2010_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1528815600_1546095600_user_id_point_idx ON public.submissions_1528815600_1546095600 USING btree (user_id, point);
+ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_2010_problem_id_point_idx;
 
 
 --
--- Name: submissions_1528815600_15460956_execution_time_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2010_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1528815600_15460956_execution_time_epoch_second_idx ON public.submissions_1528815600_1546095600 USING btree (execution_time, epoch_second);
+ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_2010_result_epoch_second_idx;
 
 
 --
--- Name: submissions_1546095600_1563375600_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2010_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1546095600_1563375600_contest_id_epoch_second_idx ON public.submissions_1546095600_1563375600 USING btree (contest_id, epoch_second);
+ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_2010_result_execution_time_idx;
 
 
 --
--- Name: submissions_1546095600_1563375600_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2010_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1546095600_1563375600_contest_id_execution_time_idx ON public.submissions_1546095600_1563375600 USING btree (contest_id, execution_time);
+ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_2010_result_length_idx;
 
 
 --
--- Name: submissions_1546095600_1563375600_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2010_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1546095600_1563375600_contest_id_length_idx ON public.submissions_1546095600_1563375600 USING btree (contest_id, length);
+ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_2010_result_point_idx;
 
 
 --
--- Name: submissions_1546095600_1563375600_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2010_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1546095600_1563375600_contest_id_point_idx ON public.submissions_1546095600_1563375600 USING btree (contest_id, point);
+ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_2010_user_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1546095600_1563375600_epoch_second_updated_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2010_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1546095600_1563375600_epoch_second_updated_at_idx ON public.submissions_1546095600_1563375600 USING btree (epoch_second, updated_at);
+ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_2010_user_id_execution_time_idx;
 
 
 --
--- Name: submissions_1546095600_1563375600_execution_time_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2010_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1546095600_1563375600_execution_time_length_idx ON public.submissions_1546095600_1563375600 USING btree (execution_time, length);
+ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_2010_user_id_length_idx;
 
 
 --
--- Name: submissions_1546095600_1563375600_execution_time_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2010_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1546095600_1563375600_execution_time_point_idx ON public.submissions_1546095600_1563375600 USING btree (execution_time, point);
+ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_2010_user_id_point_idx;
 
 
 --
--- Name: submissions_1546095600_1563375600_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2010_user_id_result_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX submissions_1546095600_1563375600_id_epoch_second_idx ON public.submissions_1546095600_1563375600 USING btree (id, epoch_second);
+ALTER INDEX public.submissions_user_id_result_index ATTACH PARTITION public.submissions_2010_user_id_result_idx;
 
 
 --
--- Name: submissions_1546095600_1563375600_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2011_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1546095600_1563375600_language_epoch_second_idx ON public.submissions_1546095600_1563375600 USING btree (language, epoch_second);
+ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_2011_contest_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1546095600_1563375600_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2011_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1546095600_1563375600_language_execution_time_idx ON public.submissions_1546095600_1563375600 USING btree (language, execution_time);
+ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_2011_contest_id_execution_time_idx;
 
 
 --
--- Name: submissions_1546095600_1563375600_language_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2011_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1546095600_1563375600_language_length_idx ON public.submissions_1546095600_1563375600 USING btree (language, length);
+ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_2011_contest_id_length_idx;
 
 
 --
--- Name: submissions_1546095600_1563375600_language_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2011_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1546095600_1563375600_language_point_idx ON public.submissions_1546095600_1563375600 USING btree (language, point);
+ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_2011_contest_id_point_idx;
 
 
 --
--- Name: submissions_1546095600_1563375600_length_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2011_epoch_second_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1546095600_1563375600_length_epoch_second_idx ON public.submissions_1546095600_1563375600 USING btree (length, epoch_second);
+ALTER INDEX public.submissions_unique ATTACH PARTITION public.submissions_2011_epoch_second_id_idx;
 
 
 --
--- Name: submissions_1546095600_1563375600_length_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2011_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1546095600_1563375600_length_execution_time_idx ON public.submissions_1546095600_1563375600 USING btree (length, execution_time);
+ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_2011_language_epoch_second_idx;
 
 
 --
--- Name: submissions_1546095600_1563375600_length_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2011_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1546095600_1563375600_length_point_idx ON public.submissions_1546095600_1563375600 USING btree (length, point);
+ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_2011_language_execution_time_idx;
 
 
 --
--- Name: submissions_1546095600_1563375600_point_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2011_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1546095600_1563375600_point_epoch_second_idx ON public.submissions_1546095600_1563375600 USING btree (point, epoch_second);
+ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_2011_language_length_idx;
 
 
 --
--- Name: submissions_1546095600_1563375600_point_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2011_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1546095600_1563375600_point_execution_time_idx ON public.submissions_1546095600_1563375600 USING btree (point, execution_time);
+ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_2011_language_point_idx;
 
 
 --
--- Name: submissions_1546095600_1563375600_point_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2011_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1546095600_1563375600_point_length_idx ON public.submissions_1546095600_1563375600 USING btree (point, length);
+ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_2011_problem_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1546095600_1563375600_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2011_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1546095600_1563375600_problem_id_epoch_second_idx ON public.submissions_1546095600_1563375600 USING btree (problem_id, epoch_second);
+ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_2011_problem_id_execution_time_idx;
 
 
 --
--- Name: submissions_1546095600_1563375600_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2011_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1546095600_1563375600_problem_id_execution_time_idx ON public.submissions_1546095600_1563375600 USING btree (problem_id, execution_time);
+ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_2011_problem_id_length_idx;
 
 
 --
--- Name: submissions_1546095600_1563375600_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2011_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1546095600_1563375600_problem_id_length_idx ON public.submissions_1546095600_1563375600 USING btree (problem_id, length);
+ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_2011_problem_id_point_idx;
 
 
 --
--- Name: submissions_1546095600_1563375600_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2011_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1546095600_1563375600_problem_id_point_idx ON public.submissions_1546095600_1563375600 USING btree (problem_id, point);
+ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_2011_result_epoch_second_idx;
 
 
 --
--- Name: submissions_1546095600_1563375600_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2011_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1546095600_1563375600_result_epoch_second_idx ON public.submissions_1546095600_1563375600 USING btree (result, epoch_second);
+ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_2011_result_execution_time_idx;
 
 
 --
--- Name: submissions_1546095600_1563375600_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2011_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1546095600_1563375600_result_execution_time_idx ON public.submissions_1546095600_1563375600 USING btree (result, execution_time);
+ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_2011_result_length_idx;
 
 
 --
--- Name: submissions_1546095600_1563375600_result_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2011_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1546095600_1563375600_result_length_idx ON public.submissions_1546095600_1563375600 USING btree (result, length);
+ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_2011_result_point_idx;
 
 
 --
--- Name: submissions_1546095600_1563375600_result_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2011_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1546095600_1563375600_result_point_idx ON public.submissions_1546095600_1563375600 USING btree (result, point);
+ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_2011_user_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1546095600_1563375600_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2011_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1546095600_1563375600_user_id_epoch_second_idx ON public.submissions_1546095600_1563375600 USING btree (user_id, epoch_second);
+ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_2011_user_id_execution_time_idx;
 
 
 --
--- Name: submissions_1546095600_1563375600_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2011_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1546095600_1563375600_user_id_execution_time_idx ON public.submissions_1546095600_1563375600 USING btree (user_id, execution_time);
+ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_2011_user_id_length_idx;
 
 
 --
--- Name: submissions_1546095600_1563375600_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2011_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1546095600_1563375600_user_id_length_idx ON public.submissions_1546095600_1563375600 USING btree (user_id, length);
+ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_2011_user_id_point_idx;
 
 
 --
--- Name: submissions_1546095600_1563375600_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2011_user_id_result_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1546095600_1563375600_user_id_point_idx ON public.submissions_1546095600_1563375600 USING btree (user_id, point);
+ALTER INDEX public.submissions_user_id_result_index ATTACH PARTITION public.submissions_2011_user_id_result_idx;
 
 
 --
--- Name: submissions_1546095600_15633756_execution_time_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2012_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1546095600_15633756_execution_time_epoch_second_idx ON public.submissions_1546095600_1563375600 USING btree (execution_time, epoch_second);
+ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_2012_contest_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1563375600_1580655600_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2012_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1563375600_1580655600_contest_id_epoch_second_idx ON public.submissions_1563375600_1580655600 USING btree (contest_id, epoch_second);
+ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_2012_contest_id_execution_time_idx;
 
 
 --
--- Name: submissions_1563375600_1580655600_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2012_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1563375600_1580655600_contest_id_execution_time_idx ON public.submissions_1563375600_1580655600 USING btree (contest_id, execution_time);
+ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_2012_contest_id_length_idx;
 
 
 --
--- Name: submissions_1563375600_1580655600_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2012_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1563375600_1580655600_contest_id_length_idx ON public.submissions_1563375600_1580655600 USING btree (contest_id, length);
+ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_2012_contest_id_point_idx;
 
 
 --
--- Name: submissions_1563375600_1580655600_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2012_epoch_second_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1563375600_1580655600_contest_id_point_idx ON public.submissions_1563375600_1580655600 USING btree (contest_id, point);
+ALTER INDEX public.submissions_unique ATTACH PARTITION public.submissions_2012_epoch_second_id_idx;
 
 
 --
--- Name: submissions_1563375600_1580655600_epoch_second_updated_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2012_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1563375600_1580655600_epoch_second_updated_at_idx ON public.submissions_1563375600_1580655600 USING btree (epoch_second, updated_at);
+ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_2012_language_epoch_second_idx;
 
 
 --
--- Name: submissions_1563375600_1580655600_execution_time_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2012_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1563375600_1580655600_execution_time_length_idx ON public.submissions_1563375600_1580655600 USING btree (execution_time, length);
+ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_2012_language_execution_time_idx;
 
 
 --
--- Name: submissions_1563375600_1580655600_execution_time_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2012_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1563375600_1580655600_execution_time_point_idx ON public.submissions_1563375600_1580655600 USING btree (execution_time, point);
+ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_2012_language_length_idx;
 
 
 --
--- Name: submissions_1563375600_1580655600_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2012_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX submissions_1563375600_1580655600_id_epoch_second_idx ON public.submissions_1563375600_1580655600 USING btree (id, epoch_second);
+ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_2012_language_point_idx;
 
 
 --
--- Name: submissions_1563375600_1580655600_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2012_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1563375600_1580655600_language_epoch_second_idx ON public.submissions_1563375600_1580655600 USING btree (language, epoch_second);
+ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_2012_problem_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1563375600_1580655600_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2012_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1563375600_1580655600_language_execution_time_idx ON public.submissions_1563375600_1580655600 USING btree (language, execution_time);
+ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_2012_problem_id_execution_time_idx;
 
 
 --
--- Name: submissions_1563375600_1580655600_language_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2012_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1563375600_1580655600_language_length_idx ON public.submissions_1563375600_1580655600 USING btree (language, length);
+ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_2012_problem_id_length_idx;
 
 
 --
--- Name: submissions_1563375600_1580655600_language_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2012_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1563375600_1580655600_language_point_idx ON public.submissions_1563375600_1580655600 USING btree (language, point);
+ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_2012_problem_id_point_idx;
 
 
 --
--- Name: submissions_1563375600_1580655600_length_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2012_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1563375600_1580655600_length_epoch_second_idx ON public.submissions_1563375600_1580655600 USING btree (length, epoch_second);
+ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_2012_result_epoch_second_idx;
 
 
 --
--- Name: submissions_1563375600_1580655600_length_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2012_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1563375600_1580655600_length_execution_time_idx ON public.submissions_1563375600_1580655600 USING btree (length, execution_time);
+ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_2012_result_execution_time_idx;
 
 
 --
--- Name: submissions_1563375600_1580655600_length_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2012_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1563375600_1580655600_length_point_idx ON public.submissions_1563375600_1580655600 USING btree (length, point);
+ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_2012_result_length_idx;
 
 
 --
--- Name: submissions_1563375600_1580655600_point_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2012_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1563375600_1580655600_point_epoch_second_idx ON public.submissions_1563375600_1580655600 USING btree (point, epoch_second);
+ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_2012_result_point_idx;
 
 
 --
--- Name: submissions_1563375600_1580655600_point_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2012_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1563375600_1580655600_point_execution_time_idx ON public.submissions_1563375600_1580655600 USING btree (point, execution_time);
+ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_2012_user_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1563375600_1580655600_point_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2012_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1563375600_1580655600_point_length_idx ON public.submissions_1563375600_1580655600 USING btree (point, length);
+ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_2012_user_id_execution_time_idx;
 
 
 --
--- Name: submissions_1563375600_1580655600_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2012_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1563375600_1580655600_problem_id_epoch_second_idx ON public.submissions_1563375600_1580655600 USING btree (problem_id, epoch_second);
+ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_2012_user_id_length_idx;
 
 
 --
--- Name: submissions_1563375600_1580655600_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2012_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1563375600_1580655600_problem_id_execution_time_idx ON public.submissions_1563375600_1580655600 USING btree (problem_id, execution_time);
+ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_2012_user_id_point_idx;
 
 
 --
--- Name: submissions_1563375600_1580655600_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2012_user_id_result_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1563375600_1580655600_problem_id_length_idx ON public.submissions_1563375600_1580655600 USING btree (problem_id, length);
+ALTER INDEX public.submissions_user_id_result_index ATTACH PARTITION public.submissions_2012_user_id_result_idx;
 
 
 --
--- Name: submissions_1563375600_1580655600_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2013_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1563375600_1580655600_problem_id_point_idx ON public.submissions_1563375600_1580655600 USING btree (problem_id, point);
+ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_2013_contest_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1563375600_1580655600_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2013_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1563375600_1580655600_result_epoch_second_idx ON public.submissions_1563375600_1580655600 USING btree (result, epoch_second);
+ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_2013_contest_id_execution_time_idx;
 
 
 --
--- Name: submissions_1563375600_1580655600_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2013_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1563375600_1580655600_result_execution_time_idx ON public.submissions_1563375600_1580655600 USING btree (result, execution_time);
+ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_2013_contest_id_length_idx;
 
 
 --
--- Name: submissions_1563375600_1580655600_result_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2013_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1563375600_1580655600_result_length_idx ON public.submissions_1563375600_1580655600 USING btree (result, length);
+ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_2013_contest_id_point_idx;
 
 
 --
--- Name: submissions_1563375600_1580655600_result_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2013_epoch_second_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1563375600_1580655600_result_point_idx ON public.submissions_1563375600_1580655600 USING btree (result, point);
+ALTER INDEX public.submissions_unique ATTACH PARTITION public.submissions_2013_epoch_second_id_idx;
 
 
 --
--- Name: submissions_1563375600_1580655600_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2013_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1563375600_1580655600_user_id_epoch_second_idx ON public.submissions_1563375600_1580655600 USING btree (user_id, epoch_second);
+ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_2013_language_epoch_second_idx;
 
 
 --
--- Name: submissions_1563375600_1580655600_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2013_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1563375600_1580655600_user_id_execution_time_idx ON public.submissions_1563375600_1580655600 USING btree (user_id, execution_time);
+ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_2013_language_execution_time_idx;
 
 
 --
--- Name: submissions_1563375600_1580655600_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2013_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1563375600_1580655600_user_id_length_idx ON public.submissions_1563375600_1580655600 USING btree (user_id, length);
+ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_2013_language_length_idx;
 
 
 --
--- Name: submissions_1563375600_1580655600_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2013_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1563375600_1580655600_user_id_point_idx ON public.submissions_1563375600_1580655600 USING btree (user_id, point);
+ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_2013_language_point_idx;
 
 
 --
--- Name: submissions_1563375600_15806556_execution_time_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2013_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1563375600_15806556_execution_time_epoch_second_idx ON public.submissions_1563375600_1580655600 USING btree (execution_time, epoch_second);
+ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_2013_problem_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1580655600_1597935600_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2013_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1580655600_1597935600_contest_id_epoch_second_idx ON public.submissions_1580655600_1597935600 USING btree (contest_id, epoch_second);
+ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_2013_problem_id_execution_time_idx;
 
 
 --
--- Name: submissions_1580655600_1597935600_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2013_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1580655600_1597935600_contest_id_execution_time_idx ON public.submissions_1580655600_1597935600 USING btree (contest_id, execution_time);
+ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_2013_problem_id_length_idx;
 
 
 --
--- Name: submissions_1580655600_1597935600_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2013_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1580655600_1597935600_contest_id_length_idx ON public.submissions_1580655600_1597935600 USING btree (contest_id, length);
+ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_2013_problem_id_point_idx;
 
 
 --
--- Name: submissions_1580655600_1597935600_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2013_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1580655600_1597935600_contest_id_point_idx ON public.submissions_1580655600_1597935600 USING btree (contest_id, point);
+ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_2013_result_epoch_second_idx;
 
 
 --
--- Name: submissions_1580655600_1597935600_epoch_second_updated_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2013_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1580655600_1597935600_epoch_second_updated_at_idx ON public.submissions_1580655600_1597935600 USING btree (epoch_second, updated_at);
+ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_2013_result_execution_time_idx;
 
 
 --
--- Name: submissions_1580655600_1597935600_execution_time_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2013_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1580655600_1597935600_execution_time_length_idx ON public.submissions_1580655600_1597935600 USING btree (execution_time, length);
+ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_2013_result_length_idx;
 
 
 --
--- Name: submissions_1580655600_1597935600_execution_time_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2013_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1580655600_1597935600_execution_time_point_idx ON public.submissions_1580655600_1597935600 USING btree (execution_time, point);
+ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_2013_result_point_idx;
 
 
 --
--- Name: submissions_1580655600_1597935600_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2013_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX submissions_1580655600_1597935600_id_epoch_second_idx ON public.submissions_1580655600_1597935600 USING btree (id, epoch_second);
+ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_2013_user_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1580655600_1597935600_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2013_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1580655600_1597935600_language_epoch_second_idx ON public.submissions_1580655600_1597935600 USING btree (language, epoch_second);
+ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_2013_user_id_execution_time_idx;
 
 
 --
--- Name: submissions_1580655600_1597935600_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2013_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1580655600_1597935600_language_execution_time_idx ON public.submissions_1580655600_1597935600 USING btree (language, execution_time);
+ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_2013_user_id_length_idx;
 
 
 --
--- Name: submissions_1580655600_1597935600_language_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2013_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1580655600_1597935600_language_length_idx ON public.submissions_1580655600_1597935600 USING btree (language, length);
+ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_2013_user_id_point_idx;
 
 
 --
--- Name: submissions_1580655600_1597935600_language_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2013_user_id_result_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1580655600_1597935600_language_point_idx ON public.submissions_1580655600_1597935600 USING btree (language, point);
+ALTER INDEX public.submissions_user_id_result_index ATTACH PARTITION public.submissions_2013_user_id_result_idx;
 
 
 --
--- Name: submissions_1580655600_1597935600_length_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2014_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1580655600_1597935600_length_epoch_second_idx ON public.submissions_1580655600_1597935600 USING btree (length, epoch_second);
+ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_2014_contest_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1580655600_1597935600_length_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2014_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1580655600_1597935600_length_execution_time_idx ON public.submissions_1580655600_1597935600 USING btree (length, execution_time);
+ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_2014_contest_id_execution_time_idx;
 
 
 --
--- Name: submissions_1580655600_1597935600_length_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2014_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1580655600_1597935600_length_point_idx ON public.submissions_1580655600_1597935600 USING btree (length, point);
+ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_2014_contest_id_length_idx;
 
 
 --
--- Name: submissions_1580655600_1597935600_point_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2014_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1580655600_1597935600_point_epoch_second_idx ON public.submissions_1580655600_1597935600 USING btree (point, epoch_second);
+ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_2014_contest_id_point_idx;
 
 
 --
--- Name: submissions_1580655600_1597935600_point_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2014_epoch_second_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1580655600_1597935600_point_execution_time_idx ON public.submissions_1580655600_1597935600 USING btree (point, execution_time);
+ALTER INDEX public.submissions_unique ATTACH PARTITION public.submissions_2014_epoch_second_id_idx;
 
 
 --
--- Name: submissions_1580655600_1597935600_point_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2014_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1580655600_1597935600_point_length_idx ON public.submissions_1580655600_1597935600 USING btree (point, length);
+ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_2014_language_epoch_second_idx;
 
 
 --
--- Name: submissions_1580655600_1597935600_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2014_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1580655600_1597935600_problem_id_epoch_second_idx ON public.submissions_1580655600_1597935600 USING btree (problem_id, epoch_second);
+ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_2014_language_execution_time_idx;
 
 
 --
--- Name: submissions_1580655600_1597935600_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2014_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1580655600_1597935600_problem_id_execution_time_idx ON public.submissions_1580655600_1597935600 USING btree (problem_id, execution_time);
+ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_2014_language_length_idx;
 
 
 --
--- Name: submissions_1580655600_1597935600_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2014_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1580655600_1597935600_problem_id_length_idx ON public.submissions_1580655600_1597935600 USING btree (problem_id, length);
+ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_2014_language_point_idx;
 
 
 --
--- Name: submissions_1580655600_1597935600_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2014_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1580655600_1597935600_problem_id_point_idx ON public.submissions_1580655600_1597935600 USING btree (problem_id, point);
+ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_2014_problem_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1580655600_1597935600_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2014_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1580655600_1597935600_result_epoch_second_idx ON public.submissions_1580655600_1597935600 USING btree (result, epoch_second);
+ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_2014_problem_id_execution_time_idx;
 
 
 --
--- Name: submissions_1580655600_1597935600_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2014_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1580655600_1597935600_result_execution_time_idx ON public.submissions_1580655600_1597935600 USING btree (result, execution_time);
+ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_2014_problem_id_length_idx;
 
 
 --
--- Name: submissions_1580655600_1597935600_result_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2014_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1580655600_1597935600_result_length_idx ON public.submissions_1580655600_1597935600 USING btree (result, length);
+ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_2014_problem_id_point_idx;
 
 
 --
--- Name: submissions_1580655600_1597935600_result_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2014_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1580655600_1597935600_result_point_idx ON public.submissions_1580655600_1597935600 USING btree (result, point);
+ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_2014_result_epoch_second_idx;
 
 
 --
--- Name: submissions_1580655600_1597935600_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2014_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1580655600_1597935600_user_id_epoch_second_idx ON public.submissions_1580655600_1597935600 USING btree (user_id, epoch_second);
+ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_2014_result_execution_time_idx;
 
 
 --
--- Name: submissions_1580655600_1597935600_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2014_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1580655600_1597935600_user_id_execution_time_idx ON public.submissions_1580655600_1597935600 USING btree (user_id, execution_time);
+ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_2014_result_length_idx;
 
 
 --
--- Name: submissions_1580655600_1597935600_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2014_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1580655600_1597935600_user_id_length_idx ON public.submissions_1580655600_1597935600 USING btree (user_id, length);
+ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_2014_result_point_idx;
 
 
 --
--- Name: submissions_1580655600_1597935600_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2014_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1580655600_1597935600_user_id_point_idx ON public.submissions_1580655600_1597935600 USING btree (user_id, point);
+ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_2014_user_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1580655600_15979356_execution_time_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2014_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1580655600_15979356_execution_time_epoch_second_idx ON public.submissions_1580655600_1597935600 USING btree (execution_time, epoch_second);
+ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_2014_user_id_execution_time_idx;
 
 
 --
--- Name: submissions_1597935600_1615215600_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2014_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1597935600_1615215600_contest_id_epoch_second_idx ON public.submissions_1597935600_1615215600 USING btree (contest_id, epoch_second);
+ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_2014_user_id_length_idx;
 
 
 --
--- Name: submissions_1597935600_1615215600_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2014_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1597935600_1615215600_contest_id_execution_time_idx ON public.submissions_1597935600_1615215600 USING btree (contest_id, execution_time);
+ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_2014_user_id_point_idx;
 
 
 --
--- Name: submissions_1597935600_1615215600_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2014_user_id_result_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1597935600_1615215600_contest_id_length_idx ON public.submissions_1597935600_1615215600 USING btree (contest_id, length);
+ALTER INDEX public.submissions_user_id_result_index ATTACH PARTITION public.submissions_2014_user_id_result_idx;
 
 
 --
--- Name: submissions_1597935600_1615215600_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2015_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1597935600_1615215600_contest_id_point_idx ON public.submissions_1597935600_1615215600 USING btree (contest_id, point);
+ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_2015_contest_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1597935600_1615215600_epoch_second_updated_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2015_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1597935600_1615215600_epoch_second_updated_at_idx ON public.submissions_1597935600_1615215600 USING btree (epoch_second, updated_at);
+ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_2015_contest_id_execution_time_idx;
 
 
 --
--- Name: submissions_1597935600_1615215600_execution_time_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2015_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1597935600_1615215600_execution_time_length_idx ON public.submissions_1597935600_1615215600 USING btree (execution_time, length);
+ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_2015_contest_id_length_idx;
 
 
 --
--- Name: submissions_1597935600_1615215600_execution_time_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2015_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1597935600_1615215600_execution_time_point_idx ON public.submissions_1597935600_1615215600 USING btree (execution_time, point);
+ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_2015_contest_id_point_idx;
 
 
 --
--- Name: submissions_1597935600_1615215600_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2015_epoch_second_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX submissions_1597935600_1615215600_id_epoch_second_idx ON public.submissions_1597935600_1615215600 USING btree (id, epoch_second);
+ALTER INDEX public.submissions_unique ATTACH PARTITION public.submissions_2015_epoch_second_id_idx;
 
 
 --
--- Name: submissions_1597935600_1615215600_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2015_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1597935600_1615215600_language_epoch_second_idx ON public.submissions_1597935600_1615215600 USING btree (language, epoch_second);
+ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_2015_language_epoch_second_idx;
 
 
 --
--- Name: submissions_1597935600_1615215600_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2015_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1597935600_1615215600_language_execution_time_idx ON public.submissions_1597935600_1615215600 USING btree (language, execution_time);
+ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_2015_language_execution_time_idx;
 
 
 --
--- Name: submissions_1597935600_1615215600_language_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2015_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1597935600_1615215600_language_length_idx ON public.submissions_1597935600_1615215600 USING btree (language, length);
+ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_2015_language_length_idx;
 
 
 --
--- Name: submissions_1597935600_1615215600_language_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2015_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1597935600_1615215600_language_point_idx ON public.submissions_1597935600_1615215600 USING btree (language, point);
+ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_2015_language_point_idx;
 
 
 --
--- Name: submissions_1597935600_1615215600_length_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2015_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1597935600_1615215600_length_epoch_second_idx ON public.submissions_1597935600_1615215600 USING btree (length, epoch_second);
+ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_2015_problem_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1597935600_1615215600_length_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2015_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1597935600_1615215600_length_execution_time_idx ON public.submissions_1597935600_1615215600 USING btree (length, execution_time);
+ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_2015_problem_id_execution_time_idx;
 
 
 --
--- Name: submissions_1597935600_1615215600_length_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2015_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1597935600_1615215600_length_point_idx ON public.submissions_1597935600_1615215600 USING btree (length, point);
+ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_2015_problem_id_length_idx;
 
 
 --
--- Name: submissions_1597935600_1615215600_point_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2015_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1597935600_1615215600_point_epoch_second_idx ON public.submissions_1597935600_1615215600 USING btree (point, epoch_second);
+ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_2015_problem_id_point_idx;
 
 
 --
--- Name: submissions_1597935600_1615215600_point_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2015_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1597935600_1615215600_point_execution_time_idx ON public.submissions_1597935600_1615215600 USING btree (point, execution_time);
+ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_2015_result_epoch_second_idx;
 
 
 --
--- Name: submissions_1597935600_1615215600_point_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2015_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1597935600_1615215600_point_length_idx ON public.submissions_1597935600_1615215600 USING btree (point, length);
+ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_2015_result_execution_time_idx;
 
 
 --
--- Name: submissions_1597935600_1615215600_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2015_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1597935600_1615215600_problem_id_epoch_second_idx ON public.submissions_1597935600_1615215600 USING btree (problem_id, epoch_second);
+ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_2015_result_length_idx;
 
 
 --
--- Name: submissions_1597935600_1615215600_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2015_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1597935600_1615215600_problem_id_execution_time_idx ON public.submissions_1597935600_1615215600 USING btree (problem_id, execution_time);
+ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_2015_result_point_idx;
 
 
 --
--- Name: submissions_1597935600_1615215600_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2015_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1597935600_1615215600_problem_id_length_idx ON public.submissions_1597935600_1615215600 USING btree (problem_id, length);
+ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_2015_user_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1597935600_1615215600_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2015_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1597935600_1615215600_problem_id_point_idx ON public.submissions_1597935600_1615215600 USING btree (problem_id, point);
+ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_2015_user_id_execution_time_idx;
 
 
 --
--- Name: submissions_1597935600_1615215600_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2015_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1597935600_1615215600_result_epoch_second_idx ON public.submissions_1597935600_1615215600 USING btree (result, epoch_second);
+ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_2015_user_id_length_idx;
 
 
 --
--- Name: submissions_1597935600_1615215600_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2015_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1597935600_1615215600_result_execution_time_idx ON public.submissions_1597935600_1615215600 USING btree (result, execution_time);
+ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_2015_user_id_point_idx;
 
 
 --
--- Name: submissions_1597935600_1615215600_result_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2015_user_id_result_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1597935600_1615215600_result_length_idx ON public.submissions_1597935600_1615215600 USING btree (result, length);
+ALTER INDEX public.submissions_user_id_result_index ATTACH PARTITION public.submissions_2015_user_id_result_idx;
 
 
 --
--- Name: submissions_1597935600_1615215600_result_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2016_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1597935600_1615215600_result_point_idx ON public.submissions_1597935600_1615215600 USING btree (result, point);
+ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_2016_contest_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1597935600_1615215600_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2016_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1597935600_1615215600_user_id_epoch_second_idx ON public.submissions_1597935600_1615215600 USING btree (user_id, epoch_second);
+ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_2016_contest_id_execution_time_idx;
 
 
 --
--- Name: submissions_1597935600_1615215600_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2016_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1597935600_1615215600_user_id_execution_time_idx ON public.submissions_1597935600_1615215600 USING btree (user_id, execution_time);
+ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_2016_contest_id_length_idx;
 
 
 --
--- Name: submissions_1597935600_1615215600_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2016_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1597935600_1615215600_user_id_length_idx ON public.submissions_1597935600_1615215600 USING btree (user_id, length);
+ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_2016_contest_id_point_idx;
 
 
 --
--- Name: submissions_1597935600_1615215600_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2016_epoch_second_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1597935600_1615215600_user_id_point_idx ON public.submissions_1597935600_1615215600 USING btree (user_id, point);
+ALTER INDEX public.submissions_unique ATTACH PARTITION public.submissions_2016_epoch_second_id_idx;
 
 
 --
--- Name: submissions_1597935600_16152156_execution_time_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2016_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1597935600_16152156_execution_time_epoch_second_idx ON public.submissions_1597935600_1615215600 USING btree (execution_time, epoch_second);
+ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_2016_language_epoch_second_idx;
 
 
 --
--- Name: submissions_1615215600_1632495600_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2016_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1615215600_1632495600_contest_id_epoch_second_idx ON public.submissions_1615215600_1632495600 USING btree (contest_id, epoch_second);
+ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_2016_language_execution_time_idx;
 
 
 --
--- Name: submissions_1615215600_1632495600_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2016_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1615215600_1632495600_contest_id_execution_time_idx ON public.submissions_1615215600_1632495600 USING btree (contest_id, execution_time);
+ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_2016_language_length_idx;
 
 
 --
--- Name: submissions_1615215600_1632495600_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2016_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1615215600_1632495600_contest_id_length_idx ON public.submissions_1615215600_1632495600 USING btree (contest_id, length);
+ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_2016_language_point_idx;
 
 
 --
--- Name: submissions_1615215600_1632495600_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2016_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1615215600_1632495600_contest_id_point_idx ON public.submissions_1615215600_1632495600 USING btree (contest_id, point);
+ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_2016_problem_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1615215600_1632495600_epoch_second_updated_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2016_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1615215600_1632495600_epoch_second_updated_at_idx ON public.submissions_1615215600_1632495600 USING btree (epoch_second, updated_at);
+ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_2016_problem_id_execution_time_idx;
 
 
 --
--- Name: submissions_1615215600_1632495600_execution_time_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2016_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1615215600_1632495600_execution_time_length_idx ON public.submissions_1615215600_1632495600 USING btree (execution_time, length);
+ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_2016_problem_id_length_idx;
 
 
 --
--- Name: submissions_1615215600_1632495600_execution_time_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2016_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1615215600_1632495600_execution_time_point_idx ON public.submissions_1615215600_1632495600 USING btree (execution_time, point);
+ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_2016_problem_id_point_idx;
 
 
 --
--- Name: submissions_1615215600_1632495600_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2016_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX submissions_1615215600_1632495600_id_epoch_second_idx ON public.submissions_1615215600_1632495600 USING btree (id, epoch_second);
+ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_2016_result_epoch_second_idx;
 
 
 --
--- Name: submissions_1615215600_1632495600_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2016_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1615215600_1632495600_language_epoch_second_idx ON public.submissions_1615215600_1632495600 USING btree (language, epoch_second);
+ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_2016_result_execution_time_idx;
 
 
 --
--- Name: submissions_1615215600_1632495600_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2016_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1615215600_1632495600_language_execution_time_idx ON public.submissions_1615215600_1632495600 USING btree (language, execution_time);
+ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_2016_result_length_idx;
 
 
 --
--- Name: submissions_1615215600_1632495600_language_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2016_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1615215600_1632495600_language_length_idx ON public.submissions_1615215600_1632495600 USING btree (language, length);
+ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_2016_result_point_idx;
 
 
 --
--- Name: submissions_1615215600_1632495600_language_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2016_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1615215600_1632495600_language_point_idx ON public.submissions_1615215600_1632495600 USING btree (language, point);
+ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_2016_user_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1615215600_1632495600_length_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2016_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1615215600_1632495600_length_epoch_second_idx ON public.submissions_1615215600_1632495600 USING btree (length, epoch_second);
+ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_2016_user_id_execution_time_idx;
 
 
 --
--- Name: submissions_1615215600_1632495600_length_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2016_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1615215600_1632495600_length_execution_time_idx ON public.submissions_1615215600_1632495600 USING btree (length, execution_time);
+ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_2016_user_id_length_idx;
 
 
 --
--- Name: submissions_1615215600_1632495600_length_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2016_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1615215600_1632495600_length_point_idx ON public.submissions_1615215600_1632495600 USING btree (length, point);
+ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_2016_user_id_point_idx;
 
 
 --
--- Name: submissions_1615215600_1632495600_point_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2016_user_id_result_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1615215600_1632495600_point_epoch_second_idx ON public.submissions_1615215600_1632495600 USING btree (point, epoch_second);
+ALTER INDEX public.submissions_user_id_result_index ATTACH PARTITION public.submissions_2016_user_id_result_idx;
 
 
 --
--- Name: submissions_1615215600_1632495600_point_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2017_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1615215600_1632495600_point_execution_time_idx ON public.submissions_1615215600_1632495600 USING btree (point, execution_time);
+ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_2017_contest_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1615215600_1632495600_point_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2017_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1615215600_1632495600_point_length_idx ON public.submissions_1615215600_1632495600 USING btree (point, length);
+ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_2017_contest_id_execution_time_idx;
 
 
 --
--- Name: submissions_1615215600_1632495600_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2017_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1615215600_1632495600_problem_id_epoch_second_idx ON public.submissions_1615215600_1632495600 USING btree (problem_id, epoch_second);
+ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_2017_contest_id_length_idx;
 
 
 --
--- Name: submissions_1615215600_1632495600_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2017_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1615215600_1632495600_problem_id_execution_time_idx ON public.submissions_1615215600_1632495600 USING btree (problem_id, execution_time);
+ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_2017_contest_id_point_idx;
 
 
 --
--- Name: submissions_1615215600_1632495600_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2017_epoch_second_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1615215600_1632495600_problem_id_length_idx ON public.submissions_1615215600_1632495600 USING btree (problem_id, length);
+ALTER INDEX public.submissions_unique ATTACH PARTITION public.submissions_2017_epoch_second_id_idx;
 
 
 --
--- Name: submissions_1615215600_1632495600_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2017_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1615215600_1632495600_problem_id_point_idx ON public.submissions_1615215600_1632495600 USING btree (problem_id, point);
+ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_2017_language_epoch_second_idx;
 
 
 --
--- Name: submissions_1615215600_1632495600_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2017_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1615215600_1632495600_result_epoch_second_idx ON public.submissions_1615215600_1632495600 USING btree (result, epoch_second);
+ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_2017_language_execution_time_idx;
 
 
 --
--- Name: submissions_1615215600_1632495600_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2017_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1615215600_1632495600_result_execution_time_idx ON public.submissions_1615215600_1632495600 USING btree (result, execution_time);
+ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_2017_language_length_idx;
 
 
 --
--- Name: submissions_1615215600_1632495600_result_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2017_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1615215600_1632495600_result_length_idx ON public.submissions_1615215600_1632495600 USING btree (result, length);
+ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_2017_language_point_idx;
 
 
 --
--- Name: submissions_1615215600_1632495600_result_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2017_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1615215600_1632495600_result_point_idx ON public.submissions_1615215600_1632495600 USING btree (result, point);
+ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_2017_problem_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1615215600_1632495600_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2017_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1615215600_1632495600_user_id_epoch_second_idx ON public.submissions_1615215600_1632495600 USING btree (user_id, epoch_second);
+ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_2017_problem_id_execution_time_idx;
 
 
 --
--- Name: submissions_1615215600_1632495600_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2017_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1615215600_1632495600_user_id_execution_time_idx ON public.submissions_1615215600_1632495600 USING btree (user_id, execution_time);
+ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_2017_problem_id_length_idx;
 
 
 --
--- Name: submissions_1615215600_1632495600_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2017_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1615215600_1632495600_user_id_length_idx ON public.submissions_1615215600_1632495600 USING btree (user_id, length);
+ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_2017_problem_id_point_idx;
 
 
 --
--- Name: submissions_1615215600_1632495600_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2017_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1615215600_1632495600_user_id_point_idx ON public.submissions_1615215600_1632495600 USING btree (user_id, point);
+ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_2017_result_epoch_second_idx;
 
 
 --
--- Name: submissions_1615215600_16324956_execution_time_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2017_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1615215600_16324956_execution_time_epoch_second_idx ON public.submissions_1615215600_1632495600 USING btree (execution_time, epoch_second);
+ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_2017_result_execution_time_idx;
 
 
 --
--- Name: submissions_1632495600_1649775600_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2017_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1632495600_1649775600_contest_id_epoch_second_idx ON public.submissions_1632495600_1649775600 USING btree (contest_id, epoch_second);
+ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_2017_result_length_idx;
 
 
 --
--- Name: submissions_1632495600_1649775600_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2017_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1632495600_1649775600_contest_id_execution_time_idx ON public.submissions_1632495600_1649775600 USING btree (contest_id, execution_time);
+ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_2017_result_point_idx;
 
 
 --
--- Name: submissions_1632495600_1649775600_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2017_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1632495600_1649775600_contest_id_length_idx ON public.submissions_1632495600_1649775600 USING btree (contest_id, length);
+ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_2017_user_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1632495600_1649775600_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2017_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1632495600_1649775600_contest_id_point_idx ON public.submissions_1632495600_1649775600 USING btree (contest_id, point);
+ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_2017_user_id_execution_time_idx;
 
 
 --
--- Name: submissions_1632495600_1649775600_epoch_second_updated_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2017_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1632495600_1649775600_epoch_second_updated_at_idx ON public.submissions_1632495600_1649775600 USING btree (epoch_second, updated_at);
+ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_2017_user_id_length_idx;
 
 
 --
--- Name: submissions_1632495600_1649775600_execution_time_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2017_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1632495600_1649775600_execution_time_length_idx ON public.submissions_1632495600_1649775600 USING btree (execution_time, length);
+ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_2017_user_id_point_idx;
 
 
 --
--- Name: submissions_1632495600_1649775600_execution_time_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2017_user_id_result_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1632495600_1649775600_execution_time_point_idx ON public.submissions_1632495600_1649775600 USING btree (execution_time, point);
+ALTER INDEX public.submissions_user_id_result_index ATTACH PARTITION public.submissions_2017_user_id_result_idx;
 
 
 --
--- Name: submissions_1632495600_1649775600_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2018_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX submissions_1632495600_1649775600_id_epoch_second_idx ON public.submissions_1632495600_1649775600 USING btree (id, epoch_second);
+ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_2018_contest_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1632495600_1649775600_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2018_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1632495600_1649775600_language_epoch_second_idx ON public.submissions_1632495600_1649775600 USING btree (language, epoch_second);
+ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_2018_contest_id_execution_time_idx;
 
 
 --
--- Name: submissions_1632495600_1649775600_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2018_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1632495600_1649775600_language_execution_time_idx ON public.submissions_1632495600_1649775600 USING btree (language, execution_time);
+ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_2018_contest_id_length_idx;
 
 
 --
--- Name: submissions_1632495600_1649775600_language_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2018_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1632495600_1649775600_language_length_idx ON public.submissions_1632495600_1649775600 USING btree (language, length);
+ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_2018_contest_id_point_idx;
 
 
 --
--- Name: submissions_1632495600_1649775600_language_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2018_epoch_second_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1632495600_1649775600_language_point_idx ON public.submissions_1632495600_1649775600 USING btree (language, point);
+ALTER INDEX public.submissions_unique ATTACH PARTITION public.submissions_2018_epoch_second_id_idx;
 
 
 --
--- Name: submissions_1632495600_1649775600_length_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2018_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1632495600_1649775600_length_epoch_second_idx ON public.submissions_1632495600_1649775600 USING btree (length, epoch_second);
+ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_2018_language_epoch_second_idx;
 
 
 --
--- Name: submissions_1632495600_1649775600_length_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2018_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1632495600_1649775600_length_execution_time_idx ON public.submissions_1632495600_1649775600 USING btree (length, execution_time);
+ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_2018_language_execution_time_idx;
 
 
 --
--- Name: submissions_1632495600_1649775600_length_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2018_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1632495600_1649775600_length_point_idx ON public.submissions_1632495600_1649775600 USING btree (length, point);
+ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_2018_language_length_idx;
 
 
 --
--- Name: submissions_1632495600_1649775600_point_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2018_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1632495600_1649775600_point_epoch_second_idx ON public.submissions_1632495600_1649775600 USING btree (point, epoch_second);
+ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_2018_language_point_idx;
 
 
 --
--- Name: submissions_1632495600_1649775600_point_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2018_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1632495600_1649775600_point_execution_time_idx ON public.submissions_1632495600_1649775600 USING btree (point, execution_time);
+ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_2018_problem_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1632495600_1649775600_point_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2018_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1632495600_1649775600_point_length_idx ON public.submissions_1632495600_1649775600 USING btree (point, length);
+ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_2018_problem_id_execution_time_idx;
 
 
 --
--- Name: submissions_1632495600_1649775600_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2018_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1632495600_1649775600_problem_id_epoch_second_idx ON public.submissions_1632495600_1649775600 USING btree (problem_id, epoch_second);
+ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_2018_problem_id_length_idx;
 
 
 --
--- Name: submissions_1632495600_1649775600_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2018_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1632495600_1649775600_problem_id_execution_time_idx ON public.submissions_1632495600_1649775600 USING btree (problem_id, execution_time);
+ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_2018_problem_id_point_idx;
 
 
 --
--- Name: submissions_1632495600_1649775600_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2018_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1632495600_1649775600_problem_id_length_idx ON public.submissions_1632495600_1649775600 USING btree (problem_id, length);
+ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_2018_result_epoch_second_idx;
 
 
 --
--- Name: submissions_1632495600_1649775600_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2018_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1632495600_1649775600_problem_id_point_idx ON public.submissions_1632495600_1649775600 USING btree (problem_id, point);
+ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_2018_result_execution_time_idx;
 
 
 --
--- Name: submissions_1632495600_1649775600_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2018_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1632495600_1649775600_result_epoch_second_idx ON public.submissions_1632495600_1649775600 USING btree (result, epoch_second);
+ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_2018_result_length_idx;
 
 
 --
--- Name: submissions_1632495600_1649775600_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2018_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1632495600_1649775600_result_execution_time_idx ON public.submissions_1632495600_1649775600 USING btree (result, execution_time);
+ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_2018_result_point_idx;
 
 
 --
--- Name: submissions_1632495600_1649775600_result_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2018_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1632495600_1649775600_result_length_idx ON public.submissions_1632495600_1649775600 USING btree (result, length);
+ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_2018_user_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1632495600_1649775600_result_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2018_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1632495600_1649775600_result_point_idx ON public.submissions_1632495600_1649775600 USING btree (result, point);
+ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_2018_user_id_execution_time_idx;
 
 
 --
--- Name: submissions_1632495600_1649775600_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2018_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1632495600_1649775600_user_id_epoch_second_idx ON public.submissions_1632495600_1649775600 USING btree (user_id, epoch_second);
+ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_2018_user_id_length_idx;
 
 
 --
--- Name: submissions_1632495600_1649775600_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2018_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1632495600_1649775600_user_id_execution_time_idx ON public.submissions_1632495600_1649775600 USING btree (user_id, execution_time);
+ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_2018_user_id_point_idx;
 
 
 --
--- Name: submissions_1632495600_1649775600_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2018_user_id_result_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1632495600_1649775600_user_id_length_idx ON public.submissions_1632495600_1649775600 USING btree (user_id, length);
+ALTER INDEX public.submissions_user_id_result_index ATTACH PARTITION public.submissions_2018_user_id_result_idx;
 
 
 --
--- Name: submissions_1632495600_1649775600_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2019_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1632495600_1649775600_user_id_point_idx ON public.submissions_1632495600_1649775600 USING btree (user_id, point);
+ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_2019_contest_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1632495600_16497756_execution_time_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2019_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1632495600_16497756_execution_time_epoch_second_idx ON public.submissions_1632495600_1649775600 USING btree (execution_time, epoch_second);
+ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_2019_contest_id_execution_time_idx;
 
 
 --
--- Name: submissions_1649775600_1667055600_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2019_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1649775600_1667055600_contest_id_epoch_second_idx ON public.submissions_1649775600_1667055600 USING btree (contest_id, epoch_second);
+ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_2019_contest_id_length_idx;
 
 
 --
--- Name: submissions_1649775600_1667055600_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2019_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1649775600_1667055600_contest_id_execution_time_idx ON public.submissions_1649775600_1667055600 USING btree (contest_id, execution_time);
+ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_2019_contest_id_point_idx;
 
 
 --
--- Name: submissions_1649775600_1667055600_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2019_epoch_second_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1649775600_1667055600_contest_id_length_idx ON public.submissions_1649775600_1667055600 USING btree (contest_id, length);
+ALTER INDEX public.submissions_unique ATTACH PARTITION public.submissions_2019_epoch_second_id_idx;
 
 
 --
--- Name: submissions_1649775600_1667055600_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2019_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1649775600_1667055600_contest_id_point_idx ON public.submissions_1649775600_1667055600 USING btree (contest_id, point);
+ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_2019_language_epoch_second_idx;
 
 
 --
--- Name: submissions_1649775600_1667055600_epoch_second_updated_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2019_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1649775600_1667055600_epoch_second_updated_at_idx ON public.submissions_1649775600_1667055600 USING btree (epoch_second, updated_at);
+ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_2019_language_execution_time_idx;
 
 
 --
--- Name: submissions_1649775600_1667055600_execution_time_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2019_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1649775600_1667055600_execution_time_length_idx ON public.submissions_1649775600_1667055600 USING btree (execution_time, length);
+ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_2019_language_length_idx;
 
 
 --
--- Name: submissions_1649775600_1667055600_execution_time_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2019_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1649775600_1667055600_execution_time_point_idx ON public.submissions_1649775600_1667055600 USING btree (execution_time, point);
+ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_2019_language_point_idx;
 
 
 --
--- Name: submissions_1649775600_1667055600_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2019_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX submissions_1649775600_1667055600_id_epoch_second_idx ON public.submissions_1649775600_1667055600 USING btree (id, epoch_second);
+ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_2019_problem_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1649775600_1667055600_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2019_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1649775600_1667055600_language_epoch_second_idx ON public.submissions_1649775600_1667055600 USING btree (language, epoch_second);
+ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_2019_problem_id_execution_time_idx;
 
 
 --
--- Name: submissions_1649775600_1667055600_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2019_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1649775600_1667055600_language_execution_time_idx ON public.submissions_1649775600_1667055600 USING btree (language, execution_time);
+ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_2019_problem_id_length_idx;
 
 
 --
--- Name: submissions_1649775600_1667055600_language_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2019_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1649775600_1667055600_language_length_idx ON public.submissions_1649775600_1667055600 USING btree (language, length);
+ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_2019_problem_id_point_idx;
 
 
 --
--- Name: submissions_1649775600_1667055600_language_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2019_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1649775600_1667055600_language_point_idx ON public.submissions_1649775600_1667055600 USING btree (language, point);
+ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_2019_result_epoch_second_idx;
 
 
 --
--- Name: submissions_1649775600_1667055600_length_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2019_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1649775600_1667055600_length_epoch_second_idx ON public.submissions_1649775600_1667055600 USING btree (length, epoch_second);
+ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_2019_result_execution_time_idx;
 
 
 --
--- Name: submissions_1649775600_1667055600_length_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2019_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1649775600_1667055600_length_execution_time_idx ON public.submissions_1649775600_1667055600 USING btree (length, execution_time);
+ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_2019_result_length_idx;
 
 
 --
--- Name: submissions_1649775600_1667055600_length_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2019_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1649775600_1667055600_length_point_idx ON public.submissions_1649775600_1667055600 USING btree (length, point);
+ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_2019_result_point_idx;
 
 
 --
--- Name: submissions_1649775600_1667055600_point_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2019_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1649775600_1667055600_point_epoch_second_idx ON public.submissions_1649775600_1667055600 USING btree (point, epoch_second);
+ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_2019_user_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1649775600_1667055600_point_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2019_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1649775600_1667055600_point_execution_time_idx ON public.submissions_1649775600_1667055600 USING btree (point, execution_time);
+ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_2019_user_id_execution_time_idx;
 
 
 --
--- Name: submissions_1649775600_1667055600_point_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2019_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1649775600_1667055600_point_length_idx ON public.submissions_1649775600_1667055600 USING btree (point, length);
+ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_2019_user_id_length_idx;
 
 
 --
--- Name: submissions_1649775600_1667055600_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2019_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1649775600_1667055600_problem_id_epoch_second_idx ON public.submissions_1649775600_1667055600 USING btree (problem_id, epoch_second);
+ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_2019_user_id_point_idx;
 
 
 --
--- Name: submissions_1649775600_1667055600_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2019_user_id_result_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1649775600_1667055600_problem_id_execution_time_idx ON public.submissions_1649775600_1667055600 USING btree (problem_id, execution_time);
+ALTER INDEX public.submissions_user_id_result_index ATTACH PARTITION public.submissions_2019_user_id_result_idx;
 
 
 --
--- Name: submissions_1649775600_1667055600_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2020_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1649775600_1667055600_problem_id_length_idx ON public.submissions_1649775600_1667055600 USING btree (problem_id, length);
+ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_2020_contest_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1649775600_1667055600_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2020_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1649775600_1667055600_problem_id_point_idx ON public.submissions_1649775600_1667055600 USING btree (problem_id, point);
+ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_2020_contest_id_execution_time_idx;
 
 
 --
--- Name: submissions_1649775600_1667055600_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2020_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1649775600_1667055600_result_epoch_second_idx ON public.submissions_1649775600_1667055600 USING btree (result, epoch_second);
+ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_2020_contest_id_length_idx;
 
 
 --
--- Name: submissions_1649775600_1667055600_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2020_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1649775600_1667055600_result_execution_time_idx ON public.submissions_1649775600_1667055600 USING btree (result, execution_time);
+ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_2020_contest_id_point_idx;
 
 
 --
--- Name: submissions_1649775600_1667055600_result_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2020_epoch_second_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1649775600_1667055600_result_length_idx ON public.submissions_1649775600_1667055600 USING btree (result, length);
+ALTER INDEX public.submissions_unique ATTACH PARTITION public.submissions_2020_epoch_second_id_idx;
 
 
 --
--- Name: submissions_1649775600_1667055600_result_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2020_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1649775600_1667055600_result_point_idx ON public.submissions_1649775600_1667055600 USING btree (result, point);
+ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_2020_language_epoch_second_idx;
 
 
 --
--- Name: submissions_1649775600_1667055600_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2020_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1649775600_1667055600_user_id_epoch_second_idx ON public.submissions_1649775600_1667055600 USING btree (user_id, epoch_second);
+ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_2020_language_execution_time_idx;
 
 
 --
--- Name: submissions_1649775600_1667055600_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2020_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1649775600_1667055600_user_id_execution_time_idx ON public.submissions_1649775600_1667055600 USING btree (user_id, execution_time);
+ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_2020_language_length_idx;
 
 
 --
--- Name: submissions_1649775600_1667055600_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2020_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1649775600_1667055600_user_id_length_idx ON public.submissions_1649775600_1667055600 USING btree (user_id, length);
+ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_2020_language_point_idx;
 
 
 --
--- Name: submissions_1649775600_1667055600_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2020_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1649775600_1667055600_user_id_point_idx ON public.submissions_1649775600_1667055600 USING btree (user_id, point);
+ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_2020_problem_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1649775600_16670556_execution_time_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2020_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1649775600_16670556_execution_time_epoch_second_idx ON public.submissions_1649775600_1667055600 USING btree (execution_time, epoch_second);
+ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_2020_problem_id_execution_time_idx;
 
 
 --
--- Name: submissions_1667055600_1684335600_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2020_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1667055600_1684335600_contest_id_epoch_second_idx ON public.submissions_1667055600_1684335600 USING btree (contest_id, epoch_second);
+ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_2020_problem_id_length_idx;
 
 
 --
--- Name: submissions_1667055600_1684335600_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2020_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1667055600_1684335600_contest_id_execution_time_idx ON public.submissions_1667055600_1684335600 USING btree (contest_id, execution_time);
+ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_2020_problem_id_point_idx;
 
 
 --
--- Name: submissions_1667055600_1684335600_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2020_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1667055600_1684335600_contest_id_length_idx ON public.submissions_1667055600_1684335600 USING btree (contest_id, length);
+ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_2020_result_epoch_second_idx;
 
 
 --
--- Name: submissions_1667055600_1684335600_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2020_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1667055600_1684335600_contest_id_point_idx ON public.submissions_1667055600_1684335600 USING btree (contest_id, point);
+ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_2020_result_execution_time_idx;
 
 
 --
--- Name: submissions_1667055600_1684335600_epoch_second_updated_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2020_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1667055600_1684335600_epoch_second_updated_at_idx ON public.submissions_1667055600_1684335600 USING btree (epoch_second, updated_at);
+ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_2020_result_length_idx;
 
 
 --
--- Name: submissions_1667055600_1684335600_execution_time_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2020_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1667055600_1684335600_execution_time_length_idx ON public.submissions_1667055600_1684335600 USING btree (execution_time, length);
+ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_2020_result_point_idx;
 
 
 --
--- Name: submissions_1667055600_1684335600_execution_time_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2020_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1667055600_1684335600_execution_time_point_idx ON public.submissions_1667055600_1684335600 USING btree (execution_time, point);
+ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_2020_user_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1667055600_1684335600_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2020_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX submissions_1667055600_1684335600_id_epoch_second_idx ON public.submissions_1667055600_1684335600 USING btree (id, epoch_second);
+ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_2020_user_id_execution_time_idx;
 
 
 --
--- Name: submissions_1667055600_1684335600_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2020_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1667055600_1684335600_language_epoch_second_idx ON public.submissions_1667055600_1684335600 USING btree (language, epoch_second);
+ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_2020_user_id_length_idx;
 
 
 --
--- Name: submissions_1667055600_1684335600_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2020_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1667055600_1684335600_language_execution_time_idx ON public.submissions_1667055600_1684335600 USING btree (language, execution_time);
+ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_2020_user_id_point_idx;
 
 
 --
--- Name: submissions_1667055600_1684335600_language_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2020_user_id_result_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1667055600_1684335600_language_length_idx ON public.submissions_1667055600_1684335600 USING btree (language, length);
+ALTER INDEX public.submissions_user_id_result_index ATTACH PARTITION public.submissions_2020_user_id_result_idx;
 
 
 --
--- Name: submissions_1667055600_1684335600_language_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2021_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1667055600_1684335600_language_point_idx ON public.submissions_1667055600_1684335600 USING btree (language, point);
+ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_2021_contest_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1667055600_1684335600_length_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2021_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1667055600_1684335600_length_epoch_second_idx ON public.submissions_1667055600_1684335600 USING btree (length, epoch_second);
+ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_2021_contest_id_execution_time_idx;
 
 
 --
--- Name: submissions_1667055600_1684335600_length_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2021_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1667055600_1684335600_length_execution_time_idx ON public.submissions_1667055600_1684335600 USING btree (length, execution_time);
+ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_2021_contest_id_length_idx;
 
 
 --
--- Name: submissions_1667055600_1684335600_length_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2021_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1667055600_1684335600_length_point_idx ON public.submissions_1667055600_1684335600 USING btree (length, point);
+ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_2021_contest_id_point_idx;
 
 
 --
--- Name: submissions_1667055600_1684335600_point_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2021_epoch_second_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1667055600_1684335600_point_epoch_second_idx ON public.submissions_1667055600_1684335600 USING btree (point, epoch_second);
+ALTER INDEX public.submissions_unique ATTACH PARTITION public.submissions_2021_epoch_second_id_idx;
 
 
 --
--- Name: submissions_1667055600_1684335600_point_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2021_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1667055600_1684335600_point_execution_time_idx ON public.submissions_1667055600_1684335600 USING btree (point, execution_time);
+ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_2021_language_epoch_second_idx;
 
 
 --
--- Name: submissions_1667055600_1684335600_point_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2021_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1667055600_1684335600_point_length_idx ON public.submissions_1667055600_1684335600 USING btree (point, length);
+ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_2021_language_execution_time_idx;
 
 
 --
--- Name: submissions_1667055600_1684335600_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2021_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1667055600_1684335600_problem_id_epoch_second_idx ON public.submissions_1667055600_1684335600 USING btree (problem_id, epoch_second);
+ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_2021_language_length_idx;
 
 
 --
--- Name: submissions_1667055600_1684335600_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2021_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1667055600_1684335600_problem_id_execution_time_idx ON public.submissions_1667055600_1684335600 USING btree (problem_id, execution_time);
+ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_2021_language_point_idx;
 
 
 --
--- Name: submissions_1667055600_1684335600_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2021_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1667055600_1684335600_problem_id_length_idx ON public.submissions_1667055600_1684335600 USING btree (problem_id, length);
+ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_2021_problem_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1667055600_1684335600_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2021_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1667055600_1684335600_problem_id_point_idx ON public.submissions_1667055600_1684335600 USING btree (problem_id, point);
+ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_2021_problem_id_execution_time_idx;
 
 
 --
--- Name: submissions_1667055600_1684335600_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2021_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1667055600_1684335600_result_epoch_second_idx ON public.submissions_1667055600_1684335600 USING btree (result, epoch_second);
+ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_2021_problem_id_length_idx;
 
 
 --
--- Name: submissions_1667055600_1684335600_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2021_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1667055600_1684335600_result_execution_time_idx ON public.submissions_1667055600_1684335600 USING btree (result, execution_time);
+ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_2021_problem_id_point_idx;
 
 
 --
--- Name: submissions_1667055600_1684335600_result_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2021_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1667055600_1684335600_result_length_idx ON public.submissions_1667055600_1684335600 USING btree (result, length);
+ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_2021_result_epoch_second_idx;
 
 
 --
--- Name: submissions_1667055600_1684335600_result_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2021_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1667055600_1684335600_result_point_idx ON public.submissions_1667055600_1684335600 USING btree (result, point);
+ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_2021_result_execution_time_idx;
 
 
 --
--- Name: submissions_1667055600_1684335600_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2021_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1667055600_1684335600_user_id_epoch_second_idx ON public.submissions_1667055600_1684335600 USING btree (user_id, epoch_second);
+ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_2021_result_length_idx;
 
 
 --
--- Name: submissions_1667055600_1684335600_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2021_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1667055600_1684335600_user_id_execution_time_idx ON public.submissions_1667055600_1684335600 USING btree (user_id, execution_time);
+ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_2021_result_point_idx;
 
 
 --
--- Name: submissions_1667055600_1684335600_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2021_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1667055600_1684335600_user_id_length_idx ON public.submissions_1667055600_1684335600 USING btree (user_id, length);
+ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_2021_user_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1667055600_1684335600_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2021_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1667055600_1684335600_user_id_point_idx ON public.submissions_1667055600_1684335600 USING btree (user_id, point);
+ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_2021_user_id_execution_time_idx;
 
 
 --
--- Name: submissions_1667055600_16843356_execution_time_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2021_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1667055600_16843356_execution_time_epoch_second_idx ON public.submissions_1667055600_1684335600 USING btree (execution_time, epoch_second);
+ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_2021_user_id_length_idx;
 
 
 --
--- Name: submissions_1684335600_1701615600_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2021_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1684335600_1701615600_contest_id_epoch_second_idx ON public.submissions_1684335600_1701615600 USING btree (contest_id, epoch_second);
+ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_2021_user_id_point_idx;
 
 
 --
--- Name: submissions_1684335600_1701615600_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2021_user_id_result_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1684335600_1701615600_contest_id_execution_time_idx ON public.submissions_1684335600_1701615600 USING btree (contest_id, execution_time);
+ALTER INDEX public.submissions_user_id_result_index ATTACH PARTITION public.submissions_2021_user_id_result_idx;
 
 
 --
--- Name: submissions_1684335600_1701615600_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2022_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1684335600_1701615600_contest_id_length_idx ON public.submissions_1684335600_1701615600 USING btree (contest_id, length);
+ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_2022_contest_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1684335600_1701615600_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2022_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1684335600_1701615600_contest_id_point_idx ON public.submissions_1684335600_1701615600 USING btree (contest_id, point);
+ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_2022_contest_id_execution_time_idx;
 
 
 --
--- Name: submissions_1684335600_1701615600_epoch_second_updated_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2022_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1684335600_1701615600_epoch_second_updated_at_idx ON public.submissions_1684335600_1701615600 USING btree (epoch_second, updated_at);
+ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_2022_contest_id_length_idx;
 
 
 --
--- Name: submissions_1684335600_1701615600_execution_time_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2022_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1684335600_1701615600_execution_time_length_idx ON public.submissions_1684335600_1701615600 USING btree (execution_time, length);
+ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_2022_contest_id_point_idx;
 
 
 --
--- Name: submissions_1684335600_1701615600_execution_time_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2022_epoch_second_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1684335600_1701615600_execution_time_point_idx ON public.submissions_1684335600_1701615600 USING btree (execution_time, point);
+ALTER INDEX public.submissions_unique ATTACH PARTITION public.submissions_2022_epoch_second_id_idx;
 
 
 --
--- Name: submissions_1684335600_1701615600_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2022_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX submissions_1684335600_1701615600_id_epoch_second_idx ON public.submissions_1684335600_1701615600 USING btree (id, epoch_second);
+ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_2022_language_epoch_second_idx;
 
 
 --
--- Name: submissions_1684335600_1701615600_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2022_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1684335600_1701615600_language_epoch_second_idx ON public.submissions_1684335600_1701615600 USING btree (language, epoch_second);
+ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_2022_language_execution_time_idx;
 
 
 --
--- Name: submissions_1684335600_1701615600_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2022_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1684335600_1701615600_language_execution_time_idx ON public.submissions_1684335600_1701615600 USING btree (language, execution_time);
+ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_2022_language_length_idx;
 
 
 --
--- Name: submissions_1684335600_1701615600_language_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2022_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1684335600_1701615600_language_length_idx ON public.submissions_1684335600_1701615600 USING btree (language, length);
+ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_2022_language_point_idx;
 
 
 --
--- Name: submissions_1684335600_1701615600_language_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2022_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1684335600_1701615600_language_point_idx ON public.submissions_1684335600_1701615600 USING btree (language, point);
+ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_2022_problem_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1684335600_1701615600_length_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2022_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1684335600_1701615600_length_epoch_second_idx ON public.submissions_1684335600_1701615600 USING btree (length, epoch_second);
+ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_2022_problem_id_execution_time_idx;
 
 
 --
--- Name: submissions_1684335600_1701615600_length_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2022_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1684335600_1701615600_length_execution_time_idx ON public.submissions_1684335600_1701615600 USING btree (length, execution_time);
+ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_2022_problem_id_length_idx;
 
 
 --
--- Name: submissions_1684335600_1701615600_length_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2022_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1684335600_1701615600_length_point_idx ON public.submissions_1684335600_1701615600 USING btree (length, point);
+ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_2022_problem_id_point_idx;
 
 
 --
--- Name: submissions_1684335600_1701615600_point_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2022_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1684335600_1701615600_point_epoch_second_idx ON public.submissions_1684335600_1701615600 USING btree (point, epoch_second);
+ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_2022_result_epoch_second_idx;
 
 
 --
--- Name: submissions_1684335600_1701615600_point_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2022_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1684335600_1701615600_point_execution_time_idx ON public.submissions_1684335600_1701615600 USING btree (point, execution_time);
+ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_2022_result_execution_time_idx;
 
 
 --
--- Name: submissions_1684335600_1701615600_point_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2022_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1684335600_1701615600_point_length_idx ON public.submissions_1684335600_1701615600 USING btree (point, length);
+ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_2022_result_length_idx;
 
 
 --
--- Name: submissions_1684335600_1701615600_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2022_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1684335600_1701615600_problem_id_epoch_second_idx ON public.submissions_1684335600_1701615600 USING btree (problem_id, epoch_second);
+ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_2022_result_point_idx;
 
 
 --
--- Name: submissions_1684335600_1701615600_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2022_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1684335600_1701615600_problem_id_execution_time_idx ON public.submissions_1684335600_1701615600 USING btree (problem_id, execution_time);
+ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_2022_user_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1684335600_1701615600_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2022_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1684335600_1701615600_problem_id_length_idx ON public.submissions_1684335600_1701615600 USING btree (problem_id, length);
+ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_2022_user_id_execution_time_idx;
 
 
 --
--- Name: submissions_1684335600_1701615600_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2022_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1684335600_1701615600_problem_id_point_idx ON public.submissions_1684335600_1701615600 USING btree (problem_id, point);
+ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_2022_user_id_length_idx;
 
 
 --
--- Name: submissions_1684335600_1701615600_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2022_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1684335600_1701615600_result_epoch_second_idx ON public.submissions_1684335600_1701615600 USING btree (result, epoch_second);
+ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_2022_user_id_point_idx;
 
 
 --
--- Name: submissions_1684335600_1701615600_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2022_user_id_result_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1684335600_1701615600_result_execution_time_idx ON public.submissions_1684335600_1701615600 USING btree (result, execution_time);
+ALTER INDEX public.submissions_user_id_result_index ATTACH PARTITION public.submissions_2022_user_id_result_idx;
 
 
 --
--- Name: submissions_1684335600_1701615600_result_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2023_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1684335600_1701615600_result_length_idx ON public.submissions_1684335600_1701615600 USING btree (result, length);
+ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_2023_contest_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1684335600_1701615600_result_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2023_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1684335600_1701615600_result_point_idx ON public.submissions_1684335600_1701615600 USING btree (result, point);
+ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_2023_contest_id_execution_time_idx;
 
 
 --
--- Name: submissions_1684335600_1701615600_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2023_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1684335600_1701615600_user_id_epoch_second_idx ON public.submissions_1684335600_1701615600 USING btree (user_id, epoch_second);
+ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_2023_contest_id_length_idx;
 
 
 --
--- Name: submissions_1684335600_1701615600_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2023_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1684335600_1701615600_user_id_execution_time_idx ON public.submissions_1684335600_1701615600 USING btree (user_id, execution_time);
+ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_2023_contest_id_point_idx;
 
 
 --
--- Name: submissions_1684335600_1701615600_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2023_epoch_second_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1684335600_1701615600_user_id_length_idx ON public.submissions_1684335600_1701615600 USING btree (user_id, length);
+ALTER INDEX public.submissions_unique ATTACH PARTITION public.submissions_2023_epoch_second_id_idx;
 
 
 --
--- Name: submissions_1684335600_1701615600_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2023_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1684335600_1701615600_user_id_point_idx ON public.submissions_1684335600_1701615600 USING btree (user_id, point);
+ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_2023_language_epoch_second_idx;
 
 
 --
--- Name: submissions_1684335600_17016156_execution_time_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2023_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1684335600_17016156_execution_time_epoch_second_idx ON public.submissions_1684335600_1701615600 USING btree (execution_time, epoch_second);
+ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_2023_language_execution_time_idx;
 
 
 --
--- Name: submissions_1701615600_1718895600_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2023_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1701615600_1718895600_contest_id_epoch_second_idx ON public.submissions_1701615600_1718895600 USING btree (contest_id, epoch_second);
+ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_2023_language_length_idx;
 
 
 --
--- Name: submissions_1701615600_1718895600_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2023_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1701615600_1718895600_contest_id_execution_time_idx ON public.submissions_1701615600_1718895600 USING btree (contest_id, execution_time);
+ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_2023_language_point_idx;
 
 
 --
--- Name: submissions_1701615600_1718895600_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2023_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1701615600_1718895600_contest_id_length_idx ON public.submissions_1701615600_1718895600 USING btree (contest_id, length);
+ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_2023_problem_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1701615600_1718895600_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2023_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1701615600_1718895600_contest_id_point_idx ON public.submissions_1701615600_1718895600 USING btree (contest_id, point);
+ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_2023_problem_id_execution_time_idx;
 
 
 --
--- Name: submissions_1701615600_1718895600_epoch_second_updated_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2023_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1701615600_1718895600_epoch_second_updated_at_idx ON public.submissions_1701615600_1718895600 USING btree (epoch_second, updated_at);
+ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_2023_problem_id_length_idx;
 
 
 --
--- Name: submissions_1701615600_1718895600_execution_time_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2023_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1701615600_1718895600_execution_time_length_idx ON public.submissions_1701615600_1718895600 USING btree (execution_time, length);
+ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_2023_problem_id_point_idx;
 
 
 --
--- Name: submissions_1701615600_1718895600_execution_time_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2023_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1701615600_1718895600_execution_time_point_idx ON public.submissions_1701615600_1718895600 USING btree (execution_time, point);
+ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_2023_result_epoch_second_idx;
 
 
 --
--- Name: submissions_1701615600_1718895600_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2023_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX submissions_1701615600_1718895600_id_epoch_second_idx ON public.submissions_1701615600_1718895600 USING btree (id, epoch_second);
+ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_2023_result_execution_time_idx;
 
 
 --
--- Name: submissions_1701615600_1718895600_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2023_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1701615600_1718895600_language_epoch_second_idx ON public.submissions_1701615600_1718895600 USING btree (language, epoch_second);
+ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_2023_result_length_idx;
 
 
 --
--- Name: submissions_1701615600_1718895600_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2023_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1701615600_1718895600_language_execution_time_idx ON public.submissions_1701615600_1718895600 USING btree (language, execution_time);
+ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_2023_result_point_idx;
 
 
 --
--- Name: submissions_1701615600_1718895600_language_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2023_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1701615600_1718895600_language_length_idx ON public.submissions_1701615600_1718895600 USING btree (language, length);
+ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_2023_user_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1701615600_1718895600_language_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2023_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1701615600_1718895600_language_point_idx ON public.submissions_1701615600_1718895600 USING btree (language, point);
+ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_2023_user_id_execution_time_idx;
 
 
 --
--- Name: submissions_1701615600_1718895600_length_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2023_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1701615600_1718895600_length_epoch_second_idx ON public.submissions_1701615600_1718895600 USING btree (length, epoch_second);
+ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_2023_user_id_length_idx;
 
 
 --
--- Name: submissions_1701615600_1718895600_length_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2023_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1701615600_1718895600_length_execution_time_idx ON public.submissions_1701615600_1718895600 USING btree (length, execution_time);
+ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_2023_user_id_point_idx;
 
 
 --
--- Name: submissions_1701615600_1718895600_length_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2023_user_id_result_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1701615600_1718895600_length_point_idx ON public.submissions_1701615600_1718895600 USING btree (length, point);
+ALTER INDEX public.submissions_user_id_result_index ATTACH PARTITION public.submissions_2023_user_id_result_idx;
 
 
 --
--- Name: submissions_1701615600_1718895600_point_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2024_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1701615600_1718895600_point_epoch_second_idx ON public.submissions_1701615600_1718895600 USING btree (point, epoch_second);
+ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_2024_contest_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1701615600_1718895600_point_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2024_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1701615600_1718895600_point_execution_time_idx ON public.submissions_1701615600_1718895600 USING btree (point, execution_time);
+ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_2024_contest_id_execution_time_idx;
 
 
 --
--- Name: submissions_1701615600_1718895600_point_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2024_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1701615600_1718895600_point_length_idx ON public.submissions_1701615600_1718895600 USING btree (point, length);
+ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_2024_contest_id_length_idx;
 
 
 --
--- Name: submissions_1701615600_1718895600_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2024_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1701615600_1718895600_problem_id_epoch_second_idx ON public.submissions_1701615600_1718895600 USING btree (problem_id, epoch_second);
+ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_2024_contest_id_point_idx;
 
 
 --
--- Name: submissions_1701615600_1718895600_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2024_epoch_second_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1701615600_1718895600_problem_id_execution_time_idx ON public.submissions_1701615600_1718895600 USING btree (problem_id, execution_time);
+ALTER INDEX public.submissions_unique ATTACH PARTITION public.submissions_2024_epoch_second_id_idx;
 
 
 --
--- Name: submissions_1701615600_1718895600_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2024_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1701615600_1718895600_problem_id_length_idx ON public.submissions_1701615600_1718895600 USING btree (problem_id, length);
+ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_2024_language_epoch_second_idx;
 
 
 --
--- Name: submissions_1701615600_1718895600_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2024_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1701615600_1718895600_problem_id_point_idx ON public.submissions_1701615600_1718895600 USING btree (problem_id, point);
+ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_2024_language_execution_time_idx;
 
 
 --
--- Name: submissions_1701615600_1718895600_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2024_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1701615600_1718895600_result_epoch_second_idx ON public.submissions_1701615600_1718895600 USING btree (result, epoch_second);
+ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_2024_language_length_idx;
 
 
 --
--- Name: submissions_1701615600_1718895600_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2024_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1701615600_1718895600_result_execution_time_idx ON public.submissions_1701615600_1718895600 USING btree (result, execution_time);
+ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_2024_language_point_idx;
 
 
 --
--- Name: submissions_1701615600_1718895600_result_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2024_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1701615600_1718895600_result_length_idx ON public.submissions_1701615600_1718895600 USING btree (result, length);
+ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_2024_problem_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1701615600_1718895600_result_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2024_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1701615600_1718895600_result_point_idx ON public.submissions_1701615600_1718895600 USING btree (result, point);
+ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_2024_problem_id_execution_time_idx;
 
 
 --
--- Name: submissions_1701615600_1718895600_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2024_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1701615600_1718895600_user_id_epoch_second_idx ON public.submissions_1701615600_1718895600 USING btree (user_id, epoch_second);
+ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_2024_problem_id_length_idx;
 
 
 --
--- Name: submissions_1701615600_1718895600_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2024_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1701615600_1718895600_user_id_execution_time_idx ON public.submissions_1701615600_1718895600 USING btree (user_id, execution_time);
+ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_2024_problem_id_point_idx;
 
 
 --
--- Name: submissions_1701615600_1718895600_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2024_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1701615600_1718895600_user_id_length_idx ON public.submissions_1701615600_1718895600 USING btree (user_id, length);
+ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_2024_result_epoch_second_idx;
 
 
 --
--- Name: submissions_1701615600_1718895600_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2024_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1701615600_1718895600_user_id_point_idx ON public.submissions_1701615600_1718895600 USING btree (user_id, point);
+ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_2024_result_execution_time_idx;
 
 
 --
--- Name: submissions_1701615600_17188956_execution_time_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2024_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1701615600_17188956_execution_time_epoch_second_idx ON public.submissions_1701615600_1718895600 USING btree (execution_time, epoch_second);
+ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_2024_result_length_idx;
 
 
 --
--- Name: submissions_1718895600_1736175600_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2024_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1718895600_1736175600_contest_id_epoch_second_idx ON public.submissions_1718895600_1736175600 USING btree (contest_id, epoch_second);
+ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_2024_result_point_idx;
 
 
 --
--- Name: submissions_1718895600_1736175600_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2024_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1718895600_1736175600_contest_id_execution_time_idx ON public.submissions_1718895600_1736175600 USING btree (contest_id, execution_time);
+ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_2024_user_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1718895600_1736175600_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2024_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1718895600_1736175600_contest_id_length_idx ON public.submissions_1718895600_1736175600 USING btree (contest_id, length);
+ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_2024_user_id_execution_time_idx;
 
 
 --
--- Name: submissions_1718895600_1736175600_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2024_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1718895600_1736175600_contest_id_point_idx ON public.submissions_1718895600_1736175600 USING btree (contest_id, point);
+ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_2024_user_id_length_idx;
 
 
 --
--- Name: submissions_1718895600_1736175600_epoch_second_updated_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2024_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1718895600_1736175600_epoch_second_updated_at_idx ON public.submissions_1718895600_1736175600 USING btree (epoch_second, updated_at);
+ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_2024_user_id_point_idx;
 
 
 --
--- Name: submissions_1718895600_1736175600_execution_time_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2024_user_id_result_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1718895600_1736175600_execution_time_length_idx ON public.submissions_1718895600_1736175600 USING btree (execution_time, length);
+ALTER INDEX public.submissions_user_id_result_index ATTACH PARTITION public.submissions_2024_user_id_result_idx;
 
 
 --
--- Name: submissions_1718895600_1736175600_execution_time_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2025_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1718895600_1736175600_execution_time_point_idx ON public.submissions_1718895600_1736175600 USING btree (execution_time, point);
+ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_2025_contest_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1718895600_1736175600_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2025_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX submissions_1718895600_1736175600_id_epoch_second_idx ON public.submissions_1718895600_1736175600 USING btree (id, epoch_second);
+ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_2025_contest_id_execution_time_idx;
 
 
 --
--- Name: submissions_1718895600_1736175600_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2025_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1718895600_1736175600_language_epoch_second_idx ON public.submissions_1718895600_1736175600 USING btree (language, epoch_second);
+ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_2025_contest_id_length_idx;
 
 
 --
--- Name: submissions_1718895600_1736175600_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2025_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1718895600_1736175600_language_execution_time_idx ON public.submissions_1718895600_1736175600 USING btree (language, execution_time);
+ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_2025_contest_id_point_idx;
 
 
 --
--- Name: submissions_1718895600_1736175600_language_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2025_epoch_second_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1718895600_1736175600_language_length_idx ON public.submissions_1718895600_1736175600 USING btree (language, length);
+ALTER INDEX public.submissions_unique ATTACH PARTITION public.submissions_2025_epoch_second_id_idx;
 
 
 --
--- Name: submissions_1718895600_1736175600_language_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2025_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1718895600_1736175600_language_point_idx ON public.submissions_1718895600_1736175600 USING btree (language, point);
+ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_2025_language_epoch_second_idx;
 
 
 --
--- Name: submissions_1718895600_1736175600_length_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2025_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1718895600_1736175600_length_epoch_second_idx ON public.submissions_1718895600_1736175600 USING btree (length, epoch_second);
+ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_2025_language_execution_time_idx;
 
 
 --
--- Name: submissions_1718895600_1736175600_length_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2025_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1718895600_1736175600_length_execution_time_idx ON public.submissions_1718895600_1736175600 USING btree (length, execution_time);
+ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_2025_language_length_idx;
 
 
 --
--- Name: submissions_1718895600_1736175600_length_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2025_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1718895600_1736175600_length_point_idx ON public.submissions_1718895600_1736175600 USING btree (length, point);
+ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_2025_language_point_idx;
 
 
 --
--- Name: submissions_1718895600_1736175600_point_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2025_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1718895600_1736175600_point_epoch_second_idx ON public.submissions_1718895600_1736175600 USING btree (point, epoch_second);
+ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_2025_problem_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1718895600_1736175600_point_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2025_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1718895600_1736175600_point_execution_time_idx ON public.submissions_1718895600_1736175600 USING btree (point, execution_time);
+ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_2025_problem_id_execution_time_idx;
 
 
 --
--- Name: submissions_1718895600_1736175600_point_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2025_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1718895600_1736175600_point_length_idx ON public.submissions_1718895600_1736175600 USING btree (point, length);
+ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_2025_problem_id_length_idx;
 
 
 --
--- Name: submissions_1718895600_1736175600_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2025_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1718895600_1736175600_problem_id_epoch_second_idx ON public.submissions_1718895600_1736175600 USING btree (problem_id, epoch_second);
+ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_2025_problem_id_point_idx;
 
 
 --
--- Name: submissions_1718895600_1736175600_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2025_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1718895600_1736175600_problem_id_execution_time_idx ON public.submissions_1718895600_1736175600 USING btree (problem_id, execution_time);
+ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_2025_result_epoch_second_idx;
 
 
 --
--- Name: submissions_1718895600_1736175600_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2025_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1718895600_1736175600_problem_id_length_idx ON public.submissions_1718895600_1736175600 USING btree (problem_id, length);
+ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_2025_result_execution_time_idx;
 
 
 --
--- Name: submissions_1718895600_1736175600_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2025_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1718895600_1736175600_problem_id_point_idx ON public.submissions_1718895600_1736175600 USING btree (problem_id, point);
+ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_2025_result_length_idx;
 
 
 --
--- Name: submissions_1718895600_1736175600_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2025_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1718895600_1736175600_result_epoch_second_idx ON public.submissions_1718895600_1736175600 USING btree (result, epoch_second);
+ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_2025_result_point_idx;
 
 
 --
--- Name: submissions_1718895600_1736175600_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2025_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1718895600_1736175600_result_execution_time_idx ON public.submissions_1718895600_1736175600 USING btree (result, execution_time);
+ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_2025_user_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1718895600_1736175600_result_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2025_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1718895600_1736175600_result_length_idx ON public.submissions_1718895600_1736175600 USING btree (result, length);
+ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_2025_user_id_execution_time_idx;
 
 
 --
--- Name: submissions_1718895600_1736175600_result_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2025_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1718895600_1736175600_result_point_idx ON public.submissions_1718895600_1736175600 USING btree (result, point);
+ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_2025_user_id_length_idx;
 
 
 --
--- Name: submissions_1718895600_1736175600_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2025_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1718895600_1736175600_user_id_epoch_second_idx ON public.submissions_1718895600_1736175600 USING btree (user_id, epoch_second);
+ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_2025_user_id_point_idx;
 
 
 --
--- Name: submissions_1718895600_1736175600_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2025_user_id_result_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1718895600_1736175600_user_id_execution_time_idx ON public.submissions_1718895600_1736175600 USING btree (user_id, execution_time);
+ALTER INDEX public.submissions_user_id_result_index ATTACH PARTITION public.submissions_2025_user_id_result_idx;
 
 
 --
--- Name: submissions_1718895600_1736175600_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2026_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1718895600_1736175600_user_id_length_idx ON public.submissions_1718895600_1736175600 USING btree (user_id, length);
+ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_2026_contest_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1718895600_1736175600_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2026_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1718895600_1736175600_user_id_point_idx ON public.submissions_1718895600_1736175600 USING btree (user_id, point);
+ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_2026_contest_id_execution_time_idx;
 
 
 --
--- Name: submissions_1718895600_17361756_execution_time_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2026_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1718895600_17361756_execution_time_epoch_second_idx ON public.submissions_1718895600_1736175600 USING btree (execution_time, epoch_second);
+ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_2026_contest_id_length_idx;
 
 
 --
--- Name: submissions_1736175600_1753455600_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2026_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1736175600_1753455600_contest_id_epoch_second_idx ON public.submissions_1736175600_1753455600 USING btree (contest_id, epoch_second);
+ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_2026_contest_id_point_idx;
 
 
 --
--- Name: submissions_1736175600_1753455600_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2026_epoch_second_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1736175600_1753455600_contest_id_execution_time_idx ON public.submissions_1736175600_1753455600 USING btree (contest_id, execution_time);
+ALTER INDEX public.submissions_unique ATTACH PARTITION public.submissions_2026_epoch_second_id_idx;
 
 
 --
--- Name: submissions_1736175600_1753455600_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2026_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1736175600_1753455600_contest_id_length_idx ON public.submissions_1736175600_1753455600 USING btree (contest_id, length);
+ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_2026_language_epoch_second_idx;
 
 
 --
--- Name: submissions_1736175600_1753455600_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2026_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1736175600_1753455600_contest_id_point_idx ON public.submissions_1736175600_1753455600 USING btree (contest_id, point);
+ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_2026_language_execution_time_idx;
 
 
 --
--- Name: submissions_1736175600_1753455600_epoch_second_updated_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2026_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1736175600_1753455600_epoch_second_updated_at_idx ON public.submissions_1736175600_1753455600 USING btree (epoch_second, updated_at);
+ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_2026_language_length_idx;
 
 
 --
--- Name: submissions_1736175600_1753455600_execution_time_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2026_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1736175600_1753455600_execution_time_length_idx ON public.submissions_1736175600_1753455600 USING btree (execution_time, length);
+ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_2026_language_point_idx;
 
 
 --
--- Name: submissions_1736175600_1753455600_execution_time_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2026_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1736175600_1753455600_execution_time_point_idx ON public.submissions_1736175600_1753455600 USING btree (execution_time, point);
+ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_2026_problem_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1736175600_1753455600_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2026_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX submissions_1736175600_1753455600_id_epoch_second_idx ON public.submissions_1736175600_1753455600 USING btree (id, epoch_second);
+ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_2026_problem_id_execution_time_idx;
 
 
 --
--- Name: submissions_1736175600_1753455600_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2026_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1736175600_1753455600_language_epoch_second_idx ON public.submissions_1736175600_1753455600 USING btree (language, epoch_second);
+ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_2026_problem_id_length_idx;
 
 
 --
--- Name: submissions_1736175600_1753455600_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2026_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1736175600_1753455600_language_execution_time_idx ON public.submissions_1736175600_1753455600 USING btree (language, execution_time);
+ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_2026_problem_id_point_idx;
 
 
 --
--- Name: submissions_1736175600_1753455600_language_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2026_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1736175600_1753455600_language_length_idx ON public.submissions_1736175600_1753455600 USING btree (language, length);
+ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_2026_result_epoch_second_idx;
 
 
 --
--- Name: submissions_1736175600_1753455600_language_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2026_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1736175600_1753455600_language_point_idx ON public.submissions_1736175600_1753455600 USING btree (language, point);
+ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_2026_result_execution_time_idx;
 
 
 --
--- Name: submissions_1736175600_1753455600_length_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2026_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1736175600_1753455600_length_epoch_second_idx ON public.submissions_1736175600_1753455600 USING btree (length, epoch_second);
+ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_2026_result_length_idx;
 
 
 --
--- Name: submissions_1736175600_1753455600_length_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2026_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1736175600_1753455600_length_execution_time_idx ON public.submissions_1736175600_1753455600 USING btree (length, execution_time);
+ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_2026_result_point_idx;
 
 
 --
--- Name: submissions_1736175600_1753455600_length_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2026_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1736175600_1753455600_length_point_idx ON public.submissions_1736175600_1753455600 USING btree (length, point);
+ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_2026_user_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1736175600_1753455600_point_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2026_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1736175600_1753455600_point_epoch_second_idx ON public.submissions_1736175600_1753455600 USING btree (point, epoch_second);
+ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_2026_user_id_execution_time_idx;
 
 
 --
--- Name: submissions_1736175600_1753455600_point_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2026_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1736175600_1753455600_point_execution_time_idx ON public.submissions_1736175600_1753455600 USING btree (point, execution_time);
+ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_2026_user_id_length_idx;
 
 
 --
--- Name: submissions_1736175600_1753455600_point_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2026_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1736175600_1753455600_point_length_idx ON public.submissions_1736175600_1753455600 USING btree (point, length);
+ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_2026_user_id_point_idx;
 
 
 --
--- Name: submissions_1736175600_1753455600_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2026_user_id_result_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1736175600_1753455600_problem_id_epoch_second_idx ON public.submissions_1736175600_1753455600 USING btree (problem_id, epoch_second);
+ALTER INDEX public.submissions_user_id_result_index ATTACH PARTITION public.submissions_2026_user_id_result_idx;
 
 
 --
--- Name: submissions_1736175600_1753455600_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2027_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1736175600_1753455600_problem_id_execution_time_idx ON public.submissions_1736175600_1753455600 USING btree (problem_id, execution_time);
+ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_2027_contest_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1736175600_1753455600_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2027_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1736175600_1753455600_problem_id_length_idx ON public.submissions_1736175600_1753455600 USING btree (problem_id, length);
+ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_2027_contest_id_execution_time_idx;
 
 
 --
--- Name: submissions_1736175600_1753455600_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2027_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1736175600_1753455600_problem_id_point_idx ON public.submissions_1736175600_1753455600 USING btree (problem_id, point);
+ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_2027_contest_id_length_idx;
 
 
 --
--- Name: submissions_1736175600_1753455600_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2027_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1736175600_1753455600_result_epoch_second_idx ON public.submissions_1736175600_1753455600 USING btree (result, epoch_second);
+ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_2027_contest_id_point_idx;
 
 
 --
--- Name: submissions_1736175600_1753455600_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2027_epoch_second_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1736175600_1753455600_result_execution_time_idx ON public.submissions_1736175600_1753455600 USING btree (result, execution_time);
+ALTER INDEX public.submissions_unique ATTACH PARTITION public.submissions_2027_epoch_second_id_idx;
 
 
 --
--- Name: submissions_1736175600_1753455600_result_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2027_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1736175600_1753455600_result_length_idx ON public.submissions_1736175600_1753455600 USING btree (result, length);
+ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_2027_language_epoch_second_idx;
 
 
 --
--- Name: submissions_1736175600_1753455600_result_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2027_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1736175600_1753455600_result_point_idx ON public.submissions_1736175600_1753455600 USING btree (result, point);
+ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_2027_language_execution_time_idx;
 
 
 --
--- Name: submissions_1736175600_1753455600_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2027_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1736175600_1753455600_user_id_epoch_second_idx ON public.submissions_1736175600_1753455600 USING btree (user_id, epoch_second);
+ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_2027_language_length_idx;
 
 
 --
--- Name: submissions_1736175600_1753455600_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2027_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1736175600_1753455600_user_id_execution_time_idx ON public.submissions_1736175600_1753455600 USING btree (user_id, execution_time);
+ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_2027_language_point_idx;
 
 
 --
--- Name: submissions_1736175600_1753455600_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2027_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1736175600_1753455600_user_id_length_idx ON public.submissions_1736175600_1753455600 USING btree (user_id, length);
+ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_2027_problem_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1736175600_1753455600_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2027_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1736175600_1753455600_user_id_point_idx ON public.submissions_1736175600_1753455600 USING btree (user_id, point);
+ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_2027_problem_id_execution_time_idx;
 
 
 --
--- Name: submissions_1736175600_17534556_execution_time_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2027_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1736175600_17534556_execution_time_epoch_second_idx ON public.submissions_1736175600_1753455600 USING btree (execution_time, epoch_second);
+ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_2027_problem_id_length_idx;
 
 
 --
--- Name: submissions_1753455600_1770735600_contest_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2027_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1753455600_1770735600_contest_id_epoch_second_idx ON public.submissions_1753455600_1770735600 USING btree (contest_id, epoch_second);
+ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_2027_problem_id_point_idx;
 
 
 --
--- Name: submissions_1753455600_1770735600_contest_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2027_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1753455600_1770735600_contest_id_execution_time_idx ON public.submissions_1753455600_1770735600 USING btree (contest_id, execution_time);
+ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_2027_result_epoch_second_idx;
 
 
 --
--- Name: submissions_1753455600_1770735600_contest_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2027_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1753455600_1770735600_contest_id_length_idx ON public.submissions_1753455600_1770735600 USING btree (contest_id, length);
+ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_2027_result_execution_time_idx;
 
 
 --
--- Name: submissions_1753455600_1770735600_contest_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2027_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1753455600_1770735600_contest_id_point_idx ON public.submissions_1753455600_1770735600 USING btree (contest_id, point);
+ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_2027_result_length_idx;
 
 
 --
--- Name: submissions_1753455600_1770735600_epoch_second_updated_at_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2027_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1753455600_1770735600_epoch_second_updated_at_idx ON public.submissions_1753455600_1770735600 USING btree (epoch_second, updated_at);
+ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_2027_result_point_idx;
 
 
 --
--- Name: submissions_1753455600_1770735600_execution_time_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2027_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1753455600_1770735600_execution_time_length_idx ON public.submissions_1753455600_1770735600 USING btree (execution_time, length);
+ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_2027_user_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1753455600_1770735600_execution_time_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2027_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1753455600_1770735600_execution_time_point_idx ON public.submissions_1753455600_1770735600 USING btree (execution_time, point);
+ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_2027_user_id_execution_time_idx;
 
 
 --
--- Name: submissions_1753455600_1770735600_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2027_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX submissions_1753455600_1770735600_id_epoch_second_idx ON public.submissions_1753455600_1770735600 USING btree (id, epoch_second);
+ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_2027_user_id_length_idx;
 
 
 --
--- Name: submissions_1753455600_1770735600_language_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2027_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1753455600_1770735600_language_epoch_second_idx ON public.submissions_1753455600_1770735600 USING btree (language, epoch_second);
+ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_2027_user_id_point_idx;
 
 
 --
--- Name: submissions_1753455600_1770735600_language_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2027_user_id_result_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1753455600_1770735600_language_execution_time_idx ON public.submissions_1753455600_1770735600 USING btree (language, execution_time);
+ALTER INDEX public.submissions_user_id_result_index ATTACH PARTITION public.submissions_2027_user_id_result_idx;
 
 
 --
--- Name: submissions_1753455600_1770735600_language_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2028_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1753455600_1770735600_language_length_idx ON public.submissions_1753455600_1770735600 USING btree (language, length);
+ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_2028_contest_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1753455600_1770735600_language_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2028_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1753455600_1770735600_language_point_idx ON public.submissions_1753455600_1770735600 USING btree (language, point);
+ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_2028_contest_id_execution_time_idx;
 
 
 --
--- Name: submissions_1753455600_1770735600_length_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2028_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1753455600_1770735600_length_epoch_second_idx ON public.submissions_1753455600_1770735600 USING btree (length, epoch_second);
+ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_2028_contest_id_length_idx;
 
 
 --
--- Name: submissions_1753455600_1770735600_length_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2028_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1753455600_1770735600_length_execution_time_idx ON public.submissions_1753455600_1770735600 USING btree (length, execution_time);
+ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_2028_contest_id_point_idx;
 
 
 --
--- Name: submissions_1753455600_1770735600_length_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2028_epoch_second_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1753455600_1770735600_length_point_idx ON public.submissions_1753455600_1770735600 USING btree (length, point);
+ALTER INDEX public.submissions_unique ATTACH PARTITION public.submissions_2028_epoch_second_id_idx;
 
 
 --
--- Name: submissions_1753455600_1770735600_point_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2028_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1753455600_1770735600_point_epoch_second_idx ON public.submissions_1753455600_1770735600 USING btree (point, epoch_second);
+ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_2028_language_epoch_second_idx;
 
 
 --
--- Name: submissions_1753455600_1770735600_point_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2028_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1753455600_1770735600_point_execution_time_idx ON public.submissions_1753455600_1770735600 USING btree (point, execution_time);
+ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_2028_language_execution_time_idx;
 
 
 --
--- Name: submissions_1753455600_1770735600_point_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2028_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1753455600_1770735600_point_length_idx ON public.submissions_1753455600_1770735600 USING btree (point, length);
+ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_2028_language_length_idx;
 
 
 --
--- Name: submissions_1753455600_1770735600_problem_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2028_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1753455600_1770735600_problem_id_epoch_second_idx ON public.submissions_1753455600_1770735600 USING btree (problem_id, epoch_second);
+ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_2028_language_point_idx;
 
 
 --
--- Name: submissions_1753455600_1770735600_problem_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2028_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1753455600_1770735600_problem_id_execution_time_idx ON public.submissions_1753455600_1770735600 USING btree (problem_id, execution_time);
+ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_2028_problem_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1753455600_1770735600_problem_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2028_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1753455600_1770735600_problem_id_length_idx ON public.submissions_1753455600_1770735600 USING btree (problem_id, length);
+ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_2028_problem_id_execution_time_idx;
 
 
 --
--- Name: submissions_1753455600_1770735600_problem_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2028_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1753455600_1770735600_problem_id_point_idx ON public.submissions_1753455600_1770735600 USING btree (problem_id, point);
+ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_2028_problem_id_length_idx;
 
 
 --
--- Name: submissions_1753455600_1770735600_result_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2028_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1753455600_1770735600_result_epoch_second_idx ON public.submissions_1753455600_1770735600 USING btree (result, epoch_second);
+ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_2028_problem_id_point_idx;
 
 
 --
--- Name: submissions_1753455600_1770735600_result_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2028_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1753455600_1770735600_result_execution_time_idx ON public.submissions_1753455600_1770735600 USING btree (result, execution_time);
+ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_2028_result_epoch_second_idx;
 
 
 --
--- Name: submissions_1753455600_1770735600_result_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2028_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1753455600_1770735600_result_length_idx ON public.submissions_1753455600_1770735600 USING btree (result, length);
+ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_2028_result_execution_time_idx;
 
 
 --
--- Name: submissions_1753455600_1770735600_result_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2028_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1753455600_1770735600_result_point_idx ON public.submissions_1753455600_1770735600 USING btree (result, point);
+ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_2028_result_length_idx;
 
 
 --
--- Name: submissions_1753455600_1770735600_user_id_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2028_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1753455600_1770735600_user_id_epoch_second_idx ON public.submissions_1753455600_1770735600 USING btree (user_id, epoch_second);
+ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_2028_result_point_idx;
 
 
 --
--- Name: submissions_1753455600_1770735600_user_id_execution_time_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2028_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1753455600_1770735600_user_id_execution_time_idx ON public.submissions_1753455600_1770735600 USING btree (user_id, execution_time);
+ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_2028_user_id_epoch_second_idx;
 
 
 --
--- Name: submissions_1753455600_1770735600_user_id_length_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2028_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1753455600_1770735600_user_id_length_idx ON public.submissions_1753455600_1770735600 USING btree (user_id, length);
+ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_2028_user_id_execution_time_idx;
 
 
 --
--- Name: submissions_1753455600_1770735600_user_id_point_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2028_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1753455600_1770735600_user_id_point_idx ON public.submissions_1753455600_1770735600 USING btree (user_id, point);
+ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_2028_user_id_length_idx;
 
 
 --
--- Name: submissions_1753455600_17707356_execution_time_epoch_second_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: submissions_2028_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-CREATE INDEX submissions_1753455600_17707356_execution_time_epoch_second_idx ON public.submissions_1753455600_1770735600 USING btree (execution_time, epoch_second);
+ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_2028_user_id_point_idx;
 
 
 --
--- Name: submissions_0_1304175600_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: submissions_2028_user_id_result_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_0_1304175600_contest_id_epoch_second_idx;
+ALTER INDEX public.submissions_user_id_result_index ATTACH PARTITION public.submissions_2028_user_id_result_idx;
 
 
 --
--- Name: submissions_0_1304175600_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: submissions_2029_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_0_1304175600_contest_id_execution_time_idx;
+ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_2029_contest_id_epoch_second_idx;
 
 
 --
--- Name: submissions_0_1304175600_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: submissions_2029_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_0_1304175600_contest_id_length_idx;
+ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_2029_contest_id_execution_time_idx;
 
 
 --
--- Name: submissions_0_1304175600_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: submissions_2029_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_0_1304175600_contest_id_point_idx;
+ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_2029_contest_id_length_idx;
 
 
 --
--- Name: submissions_0_1304175600_epoch_second_updated_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: submissions_2029_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.submissions_updated_at_index ATTACH PARTITION public.submissions_0_1304175600_epoch_second_updated_at_idx;
+ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_2029_contest_id_point_idx;
 
 
 --
--- Name: submissions_0_1304175600_execution_time_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: submissions_2029_epoch_second_id_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.submissions_execution_time_epoch_second_index ATTACH PARTITION public.submissions_0_1304175600_execution_time_epoch_second_idx;
+ALTER INDEX public.submissions_unique ATTACH PARTITION public.submissions_2029_epoch_second_id_idx;
 
 
 --
--- Name: submissions_0_1304175600_execution_time_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: submissions_2029_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.submissions_execution_time_length_index ATTACH PARTITION public.submissions_0_1304175600_execution_time_length_idx;
+ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_2029_language_epoch_second_idx;
 
 
 --
--- Name: submissions_0_1304175600_execution_time_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: submissions_2029_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.submissions_execution_time_point_index ATTACH PARTITION public.submissions_0_1304175600_execution_time_point_idx;
+ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_2029_language_execution_time_idx;
 
 
 --
--- Name: submissions_0_1304175600_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: submissions_2029_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.submissions_id_epoch_second_unique ATTACH PARTITION public.submissions_0_1304175600_id_epoch_second_idx;
+ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_2029_language_length_idx;
 
 
 --
--- Name: submissions_0_1304175600_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: submissions_2029_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_0_1304175600_language_epoch_second_idx;
+ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_2029_language_point_idx;
 
 
 --
--- Name: submissions_0_1304175600_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: submissions_2029_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_0_1304175600_language_execution_time_idx;
+ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_2029_problem_id_epoch_second_idx;
 
 
 --
--- Name: submissions_0_1304175600_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: submissions_2029_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_0_1304175600_language_length_idx;
+ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_2029_problem_id_execution_time_idx;
 
 
 --
--- Name: submissions_0_1304175600_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: submissions_2029_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_0_1304175600_language_point_idx;
+ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_2029_problem_id_length_idx;
 
 
 --
--- Name: submissions_0_1304175600_length_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: submissions_2029_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.submissions_length_epoch_second_index ATTACH PARTITION public.submissions_0_1304175600_length_epoch_second_idx;
+ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_2029_problem_id_point_idx;
 
 
 --
--- Name: submissions_0_1304175600_length_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: submissions_2029_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.submissions_length_execution_time_index ATTACH PARTITION public.submissions_0_1304175600_length_execution_time_idx;
+ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_2029_result_epoch_second_idx;
 
 
 --
--- Name: submissions_0_1304175600_length_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: submissions_2029_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.submissions_length_point_index ATTACH PARTITION public.submissions_0_1304175600_length_point_idx;
+ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_2029_result_execution_time_idx;
 
 
 --
--- Name: submissions_0_1304175600_point_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: submissions_2029_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.submissions_point_epoch_second_index ATTACH PARTITION public.submissions_0_1304175600_point_epoch_second_idx;
+ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_2029_result_length_idx;
 
 
 --
--- Name: submissions_0_1304175600_point_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: submissions_2029_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.submissions_point_execution_time_index ATTACH PARTITION public.submissions_0_1304175600_point_execution_time_idx;
+ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_2029_result_point_idx;
 
 
 --
--- Name: submissions_0_1304175600_point_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: submissions_2029_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.submissions_point_length_index ATTACH PARTITION public.submissions_0_1304175600_point_length_idx;
+ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_2029_user_id_epoch_second_idx;
 
 
 --
--- Name: submissions_0_1304175600_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: submissions_2029_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_0_1304175600_problem_id_epoch_second_idx;
+ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_2029_user_id_execution_time_idx;
 
 
 --
--- Name: submissions_0_1304175600_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: submissions_2029_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_0_1304175600_problem_id_execution_time_idx;
+ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_2029_user_id_length_idx;
 
 
 --
--- Name: submissions_0_1304175600_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: submissions_2029_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_0_1304175600_problem_id_length_idx;
+ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_2029_user_id_point_idx;
 
 
 --
--- Name: submissions_0_1304175600_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
+-- Name: submissions_2029_user_id_result_idx; Type: INDEX ATTACH; Schema: public; Owner: -
 --
 
-ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_0_1304175600_problem_id_point_idx;
-
-
---
--- Name: submissions_0_1304175600_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_0_1304175600_result_epoch_second_idx;
-
-
---
--- Name: submissions_0_1304175600_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_0_1304175600_result_execution_time_idx;
-
-
---
--- Name: submissions_0_1304175600_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_0_1304175600_result_length_idx;
-
-
---
--- Name: submissions_0_1304175600_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_0_1304175600_result_point_idx;
-
-
---
--- Name: submissions_0_1304175600_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_0_1304175600_user_id_epoch_second_idx;
-
-
---
--- Name: submissions_0_1304175600_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_0_1304175600_user_id_execution_time_idx;
-
-
---
--- Name: submissions_0_1304175600_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_0_1304175600_user_id_length_idx;
-
-
---
--- Name: submissions_0_1304175600_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_0_1304175600_user_id_point_idx;
-
-
---
--- Name: submissions_1304175600_1321455600_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_1304175600_1321455600_contest_id_epoch_second_idx;
-
-
---
--- Name: submissions_1304175600_1321455600_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_1304175600_1321455600_contest_id_execution_time_idx;
-
-
---
--- Name: submissions_1304175600_1321455600_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_1304175600_1321455600_contest_id_length_idx;
-
-
---
--- Name: submissions_1304175600_1321455600_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_1304175600_1321455600_contest_id_point_idx;
-
-
---
--- Name: submissions_1304175600_1321455600_epoch_second_updated_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_updated_at_index ATTACH PARTITION public.submissions_1304175600_1321455600_epoch_second_updated_at_idx;
-
-
---
--- Name: submissions_1304175600_1321455600_execution_time_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_length_index ATTACH PARTITION public.submissions_1304175600_1321455600_execution_time_length_idx;
-
-
---
--- Name: submissions_1304175600_1321455600_execution_time_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_point_index ATTACH PARTITION public.submissions_1304175600_1321455600_execution_time_point_idx;
-
-
---
--- Name: submissions_1304175600_1321455600_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_id_epoch_second_unique ATTACH PARTITION public.submissions_1304175600_1321455600_id_epoch_second_idx;
-
-
---
--- Name: submissions_1304175600_1321455600_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_1304175600_1321455600_language_epoch_second_idx;
-
-
---
--- Name: submissions_1304175600_1321455600_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_1304175600_1321455600_language_execution_time_idx;
-
-
---
--- Name: submissions_1304175600_1321455600_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_1304175600_1321455600_language_length_idx;
-
-
---
--- Name: submissions_1304175600_1321455600_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_1304175600_1321455600_language_point_idx;
-
-
---
--- Name: submissions_1304175600_1321455600_length_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_epoch_second_index ATTACH PARTITION public.submissions_1304175600_1321455600_length_epoch_second_idx;
-
-
---
--- Name: submissions_1304175600_1321455600_length_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_execution_time_index ATTACH PARTITION public.submissions_1304175600_1321455600_length_execution_time_idx;
-
-
---
--- Name: submissions_1304175600_1321455600_length_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_point_index ATTACH PARTITION public.submissions_1304175600_1321455600_length_point_idx;
-
-
---
--- Name: submissions_1304175600_1321455600_point_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_epoch_second_index ATTACH PARTITION public.submissions_1304175600_1321455600_point_epoch_second_idx;
-
-
---
--- Name: submissions_1304175600_1321455600_point_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_execution_time_index ATTACH PARTITION public.submissions_1304175600_1321455600_point_execution_time_idx;
-
-
---
--- Name: submissions_1304175600_1321455600_point_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_length_index ATTACH PARTITION public.submissions_1304175600_1321455600_point_length_idx;
-
-
---
--- Name: submissions_1304175600_1321455600_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_1304175600_1321455600_problem_id_epoch_second_idx;
-
-
---
--- Name: submissions_1304175600_1321455600_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_1304175600_1321455600_problem_id_execution_time_idx;
-
-
---
--- Name: submissions_1304175600_1321455600_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_1304175600_1321455600_problem_id_length_idx;
-
-
---
--- Name: submissions_1304175600_1321455600_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_1304175600_1321455600_problem_id_point_idx;
-
-
---
--- Name: submissions_1304175600_1321455600_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_1304175600_1321455600_result_epoch_second_idx;
-
-
---
--- Name: submissions_1304175600_1321455600_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_1304175600_1321455600_result_execution_time_idx;
-
-
---
--- Name: submissions_1304175600_1321455600_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_1304175600_1321455600_result_length_idx;
-
-
---
--- Name: submissions_1304175600_1321455600_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_1304175600_1321455600_result_point_idx;
-
-
---
--- Name: submissions_1304175600_1321455600_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_1304175600_1321455600_user_id_epoch_second_idx;
-
-
---
--- Name: submissions_1304175600_1321455600_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_1304175600_1321455600_user_id_execution_time_idx;
-
-
---
--- Name: submissions_1304175600_1321455600_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_1304175600_1321455600_user_id_length_idx;
-
-
---
--- Name: submissions_1304175600_1321455600_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_1304175600_1321455600_user_id_point_idx;
-
-
---
--- Name: submissions_1304175600_13214556_execution_time_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_epoch_second_index ATTACH PARTITION public.submissions_1304175600_13214556_execution_time_epoch_second_idx;
-
-
---
--- Name: submissions_1321455600_1338735600_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_1321455600_1338735600_contest_id_epoch_second_idx;
-
-
---
--- Name: submissions_1321455600_1338735600_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_1321455600_1338735600_contest_id_execution_time_idx;
-
-
---
--- Name: submissions_1321455600_1338735600_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_1321455600_1338735600_contest_id_length_idx;
-
-
---
--- Name: submissions_1321455600_1338735600_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_1321455600_1338735600_contest_id_point_idx;
-
-
---
--- Name: submissions_1321455600_1338735600_epoch_second_updated_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_updated_at_index ATTACH PARTITION public.submissions_1321455600_1338735600_epoch_second_updated_at_idx;
-
-
---
--- Name: submissions_1321455600_1338735600_execution_time_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_length_index ATTACH PARTITION public.submissions_1321455600_1338735600_execution_time_length_idx;
-
-
---
--- Name: submissions_1321455600_1338735600_execution_time_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_point_index ATTACH PARTITION public.submissions_1321455600_1338735600_execution_time_point_idx;
-
-
---
--- Name: submissions_1321455600_1338735600_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_id_epoch_second_unique ATTACH PARTITION public.submissions_1321455600_1338735600_id_epoch_second_idx;
-
-
---
--- Name: submissions_1321455600_1338735600_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_1321455600_1338735600_language_epoch_second_idx;
-
-
---
--- Name: submissions_1321455600_1338735600_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_1321455600_1338735600_language_execution_time_idx;
-
-
---
--- Name: submissions_1321455600_1338735600_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_1321455600_1338735600_language_length_idx;
-
-
---
--- Name: submissions_1321455600_1338735600_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_1321455600_1338735600_language_point_idx;
-
-
---
--- Name: submissions_1321455600_1338735600_length_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_epoch_second_index ATTACH PARTITION public.submissions_1321455600_1338735600_length_epoch_second_idx;
-
-
---
--- Name: submissions_1321455600_1338735600_length_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_execution_time_index ATTACH PARTITION public.submissions_1321455600_1338735600_length_execution_time_idx;
-
-
---
--- Name: submissions_1321455600_1338735600_length_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_point_index ATTACH PARTITION public.submissions_1321455600_1338735600_length_point_idx;
-
-
---
--- Name: submissions_1321455600_1338735600_point_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_epoch_second_index ATTACH PARTITION public.submissions_1321455600_1338735600_point_epoch_second_idx;
-
-
---
--- Name: submissions_1321455600_1338735600_point_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_execution_time_index ATTACH PARTITION public.submissions_1321455600_1338735600_point_execution_time_idx;
-
-
---
--- Name: submissions_1321455600_1338735600_point_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_length_index ATTACH PARTITION public.submissions_1321455600_1338735600_point_length_idx;
-
-
---
--- Name: submissions_1321455600_1338735600_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_1321455600_1338735600_problem_id_epoch_second_idx;
-
-
---
--- Name: submissions_1321455600_1338735600_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_1321455600_1338735600_problem_id_execution_time_idx;
-
-
---
--- Name: submissions_1321455600_1338735600_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_1321455600_1338735600_problem_id_length_idx;
-
-
---
--- Name: submissions_1321455600_1338735600_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_1321455600_1338735600_problem_id_point_idx;
-
-
---
--- Name: submissions_1321455600_1338735600_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_1321455600_1338735600_result_epoch_second_idx;
-
-
---
--- Name: submissions_1321455600_1338735600_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_1321455600_1338735600_result_execution_time_idx;
-
-
---
--- Name: submissions_1321455600_1338735600_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_1321455600_1338735600_result_length_idx;
-
-
---
--- Name: submissions_1321455600_1338735600_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_1321455600_1338735600_result_point_idx;
-
-
---
--- Name: submissions_1321455600_1338735600_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_1321455600_1338735600_user_id_epoch_second_idx;
-
-
---
--- Name: submissions_1321455600_1338735600_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_1321455600_1338735600_user_id_execution_time_idx;
-
-
---
--- Name: submissions_1321455600_1338735600_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_1321455600_1338735600_user_id_length_idx;
-
-
---
--- Name: submissions_1321455600_1338735600_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_1321455600_1338735600_user_id_point_idx;
-
-
---
--- Name: submissions_1321455600_13387356_execution_time_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_epoch_second_index ATTACH PARTITION public.submissions_1321455600_13387356_execution_time_epoch_second_idx;
-
-
---
--- Name: submissions_1338735600_1356015600_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_1338735600_1356015600_contest_id_epoch_second_idx;
-
-
---
--- Name: submissions_1338735600_1356015600_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_1338735600_1356015600_contest_id_execution_time_idx;
-
-
---
--- Name: submissions_1338735600_1356015600_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_1338735600_1356015600_contest_id_length_idx;
-
-
---
--- Name: submissions_1338735600_1356015600_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_1338735600_1356015600_contest_id_point_idx;
-
-
---
--- Name: submissions_1338735600_1356015600_epoch_second_updated_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_updated_at_index ATTACH PARTITION public.submissions_1338735600_1356015600_epoch_second_updated_at_idx;
-
-
---
--- Name: submissions_1338735600_1356015600_execution_time_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_length_index ATTACH PARTITION public.submissions_1338735600_1356015600_execution_time_length_idx;
-
-
---
--- Name: submissions_1338735600_1356015600_execution_time_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_point_index ATTACH PARTITION public.submissions_1338735600_1356015600_execution_time_point_idx;
-
-
---
--- Name: submissions_1338735600_1356015600_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_id_epoch_second_unique ATTACH PARTITION public.submissions_1338735600_1356015600_id_epoch_second_idx;
-
-
---
--- Name: submissions_1338735600_1356015600_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_1338735600_1356015600_language_epoch_second_idx;
-
-
---
--- Name: submissions_1338735600_1356015600_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_1338735600_1356015600_language_execution_time_idx;
-
-
---
--- Name: submissions_1338735600_1356015600_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_1338735600_1356015600_language_length_idx;
-
-
---
--- Name: submissions_1338735600_1356015600_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_1338735600_1356015600_language_point_idx;
-
-
---
--- Name: submissions_1338735600_1356015600_length_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_epoch_second_index ATTACH PARTITION public.submissions_1338735600_1356015600_length_epoch_second_idx;
-
-
---
--- Name: submissions_1338735600_1356015600_length_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_execution_time_index ATTACH PARTITION public.submissions_1338735600_1356015600_length_execution_time_idx;
-
-
---
--- Name: submissions_1338735600_1356015600_length_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_point_index ATTACH PARTITION public.submissions_1338735600_1356015600_length_point_idx;
-
-
---
--- Name: submissions_1338735600_1356015600_point_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_epoch_second_index ATTACH PARTITION public.submissions_1338735600_1356015600_point_epoch_second_idx;
-
-
---
--- Name: submissions_1338735600_1356015600_point_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_execution_time_index ATTACH PARTITION public.submissions_1338735600_1356015600_point_execution_time_idx;
-
-
---
--- Name: submissions_1338735600_1356015600_point_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_length_index ATTACH PARTITION public.submissions_1338735600_1356015600_point_length_idx;
-
-
---
--- Name: submissions_1338735600_1356015600_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_1338735600_1356015600_problem_id_epoch_second_idx;
-
-
---
--- Name: submissions_1338735600_1356015600_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_1338735600_1356015600_problem_id_execution_time_idx;
-
-
---
--- Name: submissions_1338735600_1356015600_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_1338735600_1356015600_problem_id_length_idx;
-
-
---
--- Name: submissions_1338735600_1356015600_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_1338735600_1356015600_problem_id_point_idx;
-
-
---
--- Name: submissions_1338735600_1356015600_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_1338735600_1356015600_result_epoch_second_idx;
-
-
---
--- Name: submissions_1338735600_1356015600_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_1338735600_1356015600_result_execution_time_idx;
-
-
---
--- Name: submissions_1338735600_1356015600_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_1338735600_1356015600_result_length_idx;
-
-
---
--- Name: submissions_1338735600_1356015600_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_1338735600_1356015600_result_point_idx;
-
-
---
--- Name: submissions_1338735600_1356015600_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_1338735600_1356015600_user_id_epoch_second_idx;
-
-
---
--- Name: submissions_1338735600_1356015600_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_1338735600_1356015600_user_id_execution_time_idx;
-
-
---
--- Name: submissions_1338735600_1356015600_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_1338735600_1356015600_user_id_length_idx;
-
-
---
--- Name: submissions_1338735600_1356015600_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_1338735600_1356015600_user_id_point_idx;
-
-
---
--- Name: submissions_1338735600_13560156_execution_time_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_epoch_second_index ATTACH PARTITION public.submissions_1338735600_13560156_execution_time_epoch_second_idx;
-
-
---
--- Name: submissions_1356015600_1373295600_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_1356015600_1373295600_contest_id_epoch_second_idx;
-
-
---
--- Name: submissions_1356015600_1373295600_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_1356015600_1373295600_contest_id_execution_time_idx;
-
-
---
--- Name: submissions_1356015600_1373295600_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_1356015600_1373295600_contest_id_length_idx;
-
-
---
--- Name: submissions_1356015600_1373295600_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_1356015600_1373295600_contest_id_point_idx;
-
-
---
--- Name: submissions_1356015600_1373295600_epoch_second_updated_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_updated_at_index ATTACH PARTITION public.submissions_1356015600_1373295600_epoch_second_updated_at_idx;
-
-
---
--- Name: submissions_1356015600_1373295600_execution_time_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_length_index ATTACH PARTITION public.submissions_1356015600_1373295600_execution_time_length_idx;
-
-
---
--- Name: submissions_1356015600_1373295600_execution_time_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_point_index ATTACH PARTITION public.submissions_1356015600_1373295600_execution_time_point_idx;
-
-
---
--- Name: submissions_1356015600_1373295600_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_id_epoch_second_unique ATTACH PARTITION public.submissions_1356015600_1373295600_id_epoch_second_idx;
-
-
---
--- Name: submissions_1356015600_1373295600_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_1356015600_1373295600_language_epoch_second_idx;
-
-
---
--- Name: submissions_1356015600_1373295600_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_1356015600_1373295600_language_execution_time_idx;
-
-
---
--- Name: submissions_1356015600_1373295600_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_1356015600_1373295600_language_length_idx;
-
-
---
--- Name: submissions_1356015600_1373295600_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_1356015600_1373295600_language_point_idx;
-
-
---
--- Name: submissions_1356015600_1373295600_length_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_epoch_second_index ATTACH PARTITION public.submissions_1356015600_1373295600_length_epoch_second_idx;
-
-
---
--- Name: submissions_1356015600_1373295600_length_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_execution_time_index ATTACH PARTITION public.submissions_1356015600_1373295600_length_execution_time_idx;
-
-
---
--- Name: submissions_1356015600_1373295600_length_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_point_index ATTACH PARTITION public.submissions_1356015600_1373295600_length_point_idx;
-
-
---
--- Name: submissions_1356015600_1373295600_point_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_epoch_second_index ATTACH PARTITION public.submissions_1356015600_1373295600_point_epoch_second_idx;
-
-
---
--- Name: submissions_1356015600_1373295600_point_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_execution_time_index ATTACH PARTITION public.submissions_1356015600_1373295600_point_execution_time_idx;
-
-
---
--- Name: submissions_1356015600_1373295600_point_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_length_index ATTACH PARTITION public.submissions_1356015600_1373295600_point_length_idx;
-
-
---
--- Name: submissions_1356015600_1373295600_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_1356015600_1373295600_problem_id_epoch_second_idx;
-
-
---
--- Name: submissions_1356015600_1373295600_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_1356015600_1373295600_problem_id_execution_time_idx;
-
-
---
--- Name: submissions_1356015600_1373295600_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_1356015600_1373295600_problem_id_length_idx;
-
-
---
--- Name: submissions_1356015600_1373295600_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_1356015600_1373295600_problem_id_point_idx;
-
-
---
--- Name: submissions_1356015600_1373295600_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_1356015600_1373295600_result_epoch_second_idx;
-
-
---
--- Name: submissions_1356015600_1373295600_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_1356015600_1373295600_result_execution_time_idx;
-
-
---
--- Name: submissions_1356015600_1373295600_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_1356015600_1373295600_result_length_idx;
-
-
---
--- Name: submissions_1356015600_1373295600_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_1356015600_1373295600_result_point_idx;
-
-
---
--- Name: submissions_1356015600_1373295600_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_1356015600_1373295600_user_id_epoch_second_idx;
-
-
---
--- Name: submissions_1356015600_1373295600_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_1356015600_1373295600_user_id_execution_time_idx;
-
-
---
--- Name: submissions_1356015600_1373295600_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_1356015600_1373295600_user_id_length_idx;
-
-
---
--- Name: submissions_1356015600_1373295600_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_1356015600_1373295600_user_id_point_idx;
-
-
---
--- Name: submissions_1356015600_13732956_execution_time_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_epoch_second_index ATTACH PARTITION public.submissions_1356015600_13732956_execution_time_epoch_second_idx;
-
-
---
--- Name: submissions_1373295600_1390575600_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_1373295600_1390575600_contest_id_epoch_second_idx;
-
-
---
--- Name: submissions_1373295600_1390575600_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_1373295600_1390575600_contest_id_execution_time_idx;
-
-
---
--- Name: submissions_1373295600_1390575600_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_1373295600_1390575600_contest_id_length_idx;
-
-
---
--- Name: submissions_1373295600_1390575600_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_1373295600_1390575600_contest_id_point_idx;
-
-
---
--- Name: submissions_1373295600_1390575600_epoch_second_updated_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_updated_at_index ATTACH PARTITION public.submissions_1373295600_1390575600_epoch_second_updated_at_idx;
-
-
---
--- Name: submissions_1373295600_1390575600_execution_time_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_length_index ATTACH PARTITION public.submissions_1373295600_1390575600_execution_time_length_idx;
-
-
---
--- Name: submissions_1373295600_1390575600_execution_time_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_point_index ATTACH PARTITION public.submissions_1373295600_1390575600_execution_time_point_idx;
-
-
---
--- Name: submissions_1373295600_1390575600_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_id_epoch_second_unique ATTACH PARTITION public.submissions_1373295600_1390575600_id_epoch_second_idx;
-
-
---
--- Name: submissions_1373295600_1390575600_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_1373295600_1390575600_language_epoch_second_idx;
-
-
---
--- Name: submissions_1373295600_1390575600_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_1373295600_1390575600_language_execution_time_idx;
-
-
---
--- Name: submissions_1373295600_1390575600_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_1373295600_1390575600_language_length_idx;
-
-
---
--- Name: submissions_1373295600_1390575600_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_1373295600_1390575600_language_point_idx;
-
-
---
--- Name: submissions_1373295600_1390575600_length_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_epoch_second_index ATTACH PARTITION public.submissions_1373295600_1390575600_length_epoch_second_idx;
-
-
---
--- Name: submissions_1373295600_1390575600_length_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_execution_time_index ATTACH PARTITION public.submissions_1373295600_1390575600_length_execution_time_idx;
-
-
---
--- Name: submissions_1373295600_1390575600_length_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_point_index ATTACH PARTITION public.submissions_1373295600_1390575600_length_point_idx;
-
-
---
--- Name: submissions_1373295600_1390575600_point_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_epoch_second_index ATTACH PARTITION public.submissions_1373295600_1390575600_point_epoch_second_idx;
-
-
---
--- Name: submissions_1373295600_1390575600_point_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_execution_time_index ATTACH PARTITION public.submissions_1373295600_1390575600_point_execution_time_idx;
-
-
---
--- Name: submissions_1373295600_1390575600_point_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_length_index ATTACH PARTITION public.submissions_1373295600_1390575600_point_length_idx;
-
-
---
--- Name: submissions_1373295600_1390575600_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_1373295600_1390575600_problem_id_epoch_second_idx;
-
-
---
--- Name: submissions_1373295600_1390575600_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_1373295600_1390575600_problem_id_execution_time_idx;
-
-
---
--- Name: submissions_1373295600_1390575600_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_1373295600_1390575600_problem_id_length_idx;
-
-
---
--- Name: submissions_1373295600_1390575600_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_1373295600_1390575600_problem_id_point_idx;
-
-
---
--- Name: submissions_1373295600_1390575600_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_1373295600_1390575600_result_epoch_second_idx;
-
-
---
--- Name: submissions_1373295600_1390575600_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_1373295600_1390575600_result_execution_time_idx;
-
-
---
--- Name: submissions_1373295600_1390575600_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_1373295600_1390575600_result_length_idx;
-
-
---
--- Name: submissions_1373295600_1390575600_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_1373295600_1390575600_result_point_idx;
-
-
---
--- Name: submissions_1373295600_1390575600_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_1373295600_1390575600_user_id_epoch_second_idx;
-
-
---
--- Name: submissions_1373295600_1390575600_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_1373295600_1390575600_user_id_execution_time_idx;
-
-
---
--- Name: submissions_1373295600_1390575600_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_1373295600_1390575600_user_id_length_idx;
-
-
---
--- Name: submissions_1373295600_1390575600_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_1373295600_1390575600_user_id_point_idx;
-
-
---
--- Name: submissions_1373295600_13905756_execution_time_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_epoch_second_index ATTACH PARTITION public.submissions_1373295600_13905756_execution_time_epoch_second_idx;
-
-
---
--- Name: submissions_1390575600_1407855600_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_1390575600_1407855600_contest_id_epoch_second_idx;
-
-
---
--- Name: submissions_1390575600_1407855600_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_1390575600_1407855600_contest_id_execution_time_idx;
-
-
---
--- Name: submissions_1390575600_1407855600_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_1390575600_1407855600_contest_id_length_idx;
-
-
---
--- Name: submissions_1390575600_1407855600_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_1390575600_1407855600_contest_id_point_idx;
-
-
---
--- Name: submissions_1390575600_1407855600_epoch_second_updated_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_updated_at_index ATTACH PARTITION public.submissions_1390575600_1407855600_epoch_second_updated_at_idx;
-
-
---
--- Name: submissions_1390575600_1407855600_execution_time_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_length_index ATTACH PARTITION public.submissions_1390575600_1407855600_execution_time_length_idx;
-
-
---
--- Name: submissions_1390575600_1407855600_execution_time_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_point_index ATTACH PARTITION public.submissions_1390575600_1407855600_execution_time_point_idx;
-
-
---
--- Name: submissions_1390575600_1407855600_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_id_epoch_second_unique ATTACH PARTITION public.submissions_1390575600_1407855600_id_epoch_second_idx;
-
-
---
--- Name: submissions_1390575600_1407855600_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_1390575600_1407855600_language_epoch_second_idx;
-
-
---
--- Name: submissions_1390575600_1407855600_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_1390575600_1407855600_language_execution_time_idx;
-
-
---
--- Name: submissions_1390575600_1407855600_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_1390575600_1407855600_language_length_idx;
-
-
---
--- Name: submissions_1390575600_1407855600_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_1390575600_1407855600_language_point_idx;
-
-
---
--- Name: submissions_1390575600_1407855600_length_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_epoch_second_index ATTACH PARTITION public.submissions_1390575600_1407855600_length_epoch_second_idx;
-
-
---
--- Name: submissions_1390575600_1407855600_length_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_execution_time_index ATTACH PARTITION public.submissions_1390575600_1407855600_length_execution_time_idx;
-
-
---
--- Name: submissions_1390575600_1407855600_length_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_point_index ATTACH PARTITION public.submissions_1390575600_1407855600_length_point_idx;
-
-
---
--- Name: submissions_1390575600_1407855600_point_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_epoch_second_index ATTACH PARTITION public.submissions_1390575600_1407855600_point_epoch_second_idx;
-
-
---
--- Name: submissions_1390575600_1407855600_point_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_execution_time_index ATTACH PARTITION public.submissions_1390575600_1407855600_point_execution_time_idx;
-
-
---
--- Name: submissions_1390575600_1407855600_point_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_length_index ATTACH PARTITION public.submissions_1390575600_1407855600_point_length_idx;
-
-
---
--- Name: submissions_1390575600_1407855600_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_1390575600_1407855600_problem_id_epoch_second_idx;
-
-
---
--- Name: submissions_1390575600_1407855600_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_1390575600_1407855600_problem_id_execution_time_idx;
-
-
---
--- Name: submissions_1390575600_1407855600_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_1390575600_1407855600_problem_id_length_idx;
-
-
---
--- Name: submissions_1390575600_1407855600_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_1390575600_1407855600_problem_id_point_idx;
-
-
---
--- Name: submissions_1390575600_1407855600_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_1390575600_1407855600_result_epoch_second_idx;
-
-
---
--- Name: submissions_1390575600_1407855600_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_1390575600_1407855600_result_execution_time_idx;
-
-
---
--- Name: submissions_1390575600_1407855600_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_1390575600_1407855600_result_length_idx;
-
-
---
--- Name: submissions_1390575600_1407855600_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_1390575600_1407855600_result_point_idx;
-
-
---
--- Name: submissions_1390575600_1407855600_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_1390575600_1407855600_user_id_epoch_second_idx;
-
-
---
--- Name: submissions_1390575600_1407855600_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_1390575600_1407855600_user_id_execution_time_idx;
-
-
---
--- Name: submissions_1390575600_1407855600_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_1390575600_1407855600_user_id_length_idx;
-
-
---
--- Name: submissions_1390575600_1407855600_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_1390575600_1407855600_user_id_point_idx;
-
-
---
--- Name: submissions_1390575600_14078556_execution_time_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_epoch_second_index ATTACH PARTITION public.submissions_1390575600_14078556_execution_time_epoch_second_idx;
-
-
---
--- Name: submissions_1407855600_1425135600_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_1407855600_1425135600_contest_id_epoch_second_idx;
-
-
---
--- Name: submissions_1407855600_1425135600_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_1407855600_1425135600_contest_id_execution_time_idx;
-
-
---
--- Name: submissions_1407855600_1425135600_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_1407855600_1425135600_contest_id_length_idx;
-
-
---
--- Name: submissions_1407855600_1425135600_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_1407855600_1425135600_contest_id_point_idx;
-
-
---
--- Name: submissions_1407855600_1425135600_epoch_second_updated_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_updated_at_index ATTACH PARTITION public.submissions_1407855600_1425135600_epoch_second_updated_at_idx;
-
-
---
--- Name: submissions_1407855600_1425135600_execution_time_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_length_index ATTACH PARTITION public.submissions_1407855600_1425135600_execution_time_length_idx;
-
-
---
--- Name: submissions_1407855600_1425135600_execution_time_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_point_index ATTACH PARTITION public.submissions_1407855600_1425135600_execution_time_point_idx;
-
-
---
--- Name: submissions_1407855600_1425135600_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_id_epoch_second_unique ATTACH PARTITION public.submissions_1407855600_1425135600_id_epoch_second_idx;
-
-
---
--- Name: submissions_1407855600_1425135600_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_1407855600_1425135600_language_epoch_second_idx;
-
-
---
--- Name: submissions_1407855600_1425135600_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_1407855600_1425135600_language_execution_time_idx;
-
-
---
--- Name: submissions_1407855600_1425135600_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_1407855600_1425135600_language_length_idx;
-
-
---
--- Name: submissions_1407855600_1425135600_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_1407855600_1425135600_language_point_idx;
-
-
---
--- Name: submissions_1407855600_1425135600_length_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_epoch_second_index ATTACH PARTITION public.submissions_1407855600_1425135600_length_epoch_second_idx;
-
-
---
--- Name: submissions_1407855600_1425135600_length_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_execution_time_index ATTACH PARTITION public.submissions_1407855600_1425135600_length_execution_time_idx;
-
-
---
--- Name: submissions_1407855600_1425135600_length_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_point_index ATTACH PARTITION public.submissions_1407855600_1425135600_length_point_idx;
-
-
---
--- Name: submissions_1407855600_1425135600_point_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_epoch_second_index ATTACH PARTITION public.submissions_1407855600_1425135600_point_epoch_second_idx;
-
-
---
--- Name: submissions_1407855600_1425135600_point_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_execution_time_index ATTACH PARTITION public.submissions_1407855600_1425135600_point_execution_time_idx;
-
-
---
--- Name: submissions_1407855600_1425135600_point_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_length_index ATTACH PARTITION public.submissions_1407855600_1425135600_point_length_idx;
-
-
---
--- Name: submissions_1407855600_1425135600_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_1407855600_1425135600_problem_id_epoch_second_idx;
-
-
---
--- Name: submissions_1407855600_1425135600_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_1407855600_1425135600_problem_id_execution_time_idx;
-
-
---
--- Name: submissions_1407855600_1425135600_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_1407855600_1425135600_problem_id_length_idx;
-
-
---
--- Name: submissions_1407855600_1425135600_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_1407855600_1425135600_problem_id_point_idx;
-
-
---
--- Name: submissions_1407855600_1425135600_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_1407855600_1425135600_result_epoch_second_idx;
-
-
---
--- Name: submissions_1407855600_1425135600_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_1407855600_1425135600_result_execution_time_idx;
-
-
---
--- Name: submissions_1407855600_1425135600_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_1407855600_1425135600_result_length_idx;
-
-
---
--- Name: submissions_1407855600_1425135600_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_1407855600_1425135600_result_point_idx;
-
-
---
--- Name: submissions_1407855600_1425135600_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_1407855600_1425135600_user_id_epoch_second_idx;
-
-
---
--- Name: submissions_1407855600_1425135600_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_1407855600_1425135600_user_id_execution_time_idx;
-
-
---
--- Name: submissions_1407855600_1425135600_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_1407855600_1425135600_user_id_length_idx;
-
-
---
--- Name: submissions_1407855600_1425135600_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_1407855600_1425135600_user_id_point_idx;
-
-
---
--- Name: submissions_1407855600_14251356_execution_time_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_epoch_second_index ATTACH PARTITION public.submissions_1407855600_14251356_execution_time_epoch_second_idx;
-
-
---
--- Name: submissions_1425135600_1442415600_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_1425135600_1442415600_contest_id_epoch_second_idx;
-
-
---
--- Name: submissions_1425135600_1442415600_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_1425135600_1442415600_contest_id_execution_time_idx;
-
-
---
--- Name: submissions_1425135600_1442415600_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_1425135600_1442415600_contest_id_length_idx;
-
-
---
--- Name: submissions_1425135600_1442415600_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_1425135600_1442415600_contest_id_point_idx;
-
-
---
--- Name: submissions_1425135600_1442415600_epoch_second_updated_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_updated_at_index ATTACH PARTITION public.submissions_1425135600_1442415600_epoch_second_updated_at_idx;
-
-
---
--- Name: submissions_1425135600_1442415600_execution_time_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_length_index ATTACH PARTITION public.submissions_1425135600_1442415600_execution_time_length_idx;
-
-
---
--- Name: submissions_1425135600_1442415600_execution_time_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_point_index ATTACH PARTITION public.submissions_1425135600_1442415600_execution_time_point_idx;
-
-
---
--- Name: submissions_1425135600_1442415600_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_id_epoch_second_unique ATTACH PARTITION public.submissions_1425135600_1442415600_id_epoch_second_idx;
-
-
---
--- Name: submissions_1425135600_1442415600_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_1425135600_1442415600_language_epoch_second_idx;
-
-
---
--- Name: submissions_1425135600_1442415600_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_1425135600_1442415600_language_execution_time_idx;
-
-
---
--- Name: submissions_1425135600_1442415600_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_1425135600_1442415600_language_length_idx;
-
-
---
--- Name: submissions_1425135600_1442415600_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_1425135600_1442415600_language_point_idx;
-
-
---
--- Name: submissions_1425135600_1442415600_length_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_epoch_second_index ATTACH PARTITION public.submissions_1425135600_1442415600_length_epoch_second_idx;
-
-
---
--- Name: submissions_1425135600_1442415600_length_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_execution_time_index ATTACH PARTITION public.submissions_1425135600_1442415600_length_execution_time_idx;
-
-
---
--- Name: submissions_1425135600_1442415600_length_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_point_index ATTACH PARTITION public.submissions_1425135600_1442415600_length_point_idx;
-
-
---
--- Name: submissions_1425135600_1442415600_point_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_epoch_second_index ATTACH PARTITION public.submissions_1425135600_1442415600_point_epoch_second_idx;
-
-
---
--- Name: submissions_1425135600_1442415600_point_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_execution_time_index ATTACH PARTITION public.submissions_1425135600_1442415600_point_execution_time_idx;
-
-
---
--- Name: submissions_1425135600_1442415600_point_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_length_index ATTACH PARTITION public.submissions_1425135600_1442415600_point_length_idx;
-
-
---
--- Name: submissions_1425135600_1442415600_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_1425135600_1442415600_problem_id_epoch_second_idx;
-
-
---
--- Name: submissions_1425135600_1442415600_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_1425135600_1442415600_problem_id_execution_time_idx;
-
-
---
--- Name: submissions_1425135600_1442415600_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_1425135600_1442415600_problem_id_length_idx;
-
-
---
--- Name: submissions_1425135600_1442415600_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_1425135600_1442415600_problem_id_point_idx;
-
-
---
--- Name: submissions_1425135600_1442415600_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_1425135600_1442415600_result_epoch_second_idx;
-
-
---
--- Name: submissions_1425135600_1442415600_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_1425135600_1442415600_result_execution_time_idx;
-
-
---
--- Name: submissions_1425135600_1442415600_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_1425135600_1442415600_result_length_idx;
-
-
---
--- Name: submissions_1425135600_1442415600_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_1425135600_1442415600_result_point_idx;
-
-
---
--- Name: submissions_1425135600_1442415600_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_1425135600_1442415600_user_id_epoch_second_idx;
-
-
---
--- Name: submissions_1425135600_1442415600_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_1425135600_1442415600_user_id_execution_time_idx;
-
-
---
--- Name: submissions_1425135600_1442415600_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_1425135600_1442415600_user_id_length_idx;
-
-
---
--- Name: submissions_1425135600_1442415600_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_1425135600_1442415600_user_id_point_idx;
-
-
---
--- Name: submissions_1425135600_14424156_execution_time_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_epoch_second_index ATTACH PARTITION public.submissions_1425135600_14424156_execution_time_epoch_second_idx;
-
-
---
--- Name: submissions_1442415600_1459695600_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_1442415600_1459695600_contest_id_epoch_second_idx;
-
-
---
--- Name: submissions_1442415600_1459695600_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_1442415600_1459695600_contest_id_execution_time_idx;
-
-
---
--- Name: submissions_1442415600_1459695600_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_1442415600_1459695600_contest_id_length_idx;
-
-
---
--- Name: submissions_1442415600_1459695600_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_1442415600_1459695600_contest_id_point_idx;
-
-
---
--- Name: submissions_1442415600_1459695600_epoch_second_updated_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_updated_at_index ATTACH PARTITION public.submissions_1442415600_1459695600_epoch_second_updated_at_idx;
-
-
---
--- Name: submissions_1442415600_1459695600_execution_time_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_length_index ATTACH PARTITION public.submissions_1442415600_1459695600_execution_time_length_idx;
-
-
---
--- Name: submissions_1442415600_1459695600_execution_time_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_point_index ATTACH PARTITION public.submissions_1442415600_1459695600_execution_time_point_idx;
-
-
---
--- Name: submissions_1442415600_1459695600_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_id_epoch_second_unique ATTACH PARTITION public.submissions_1442415600_1459695600_id_epoch_second_idx;
-
-
---
--- Name: submissions_1442415600_1459695600_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_1442415600_1459695600_language_epoch_second_idx;
-
-
---
--- Name: submissions_1442415600_1459695600_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_1442415600_1459695600_language_execution_time_idx;
-
-
---
--- Name: submissions_1442415600_1459695600_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_1442415600_1459695600_language_length_idx;
-
-
---
--- Name: submissions_1442415600_1459695600_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_1442415600_1459695600_language_point_idx;
-
-
---
--- Name: submissions_1442415600_1459695600_length_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_epoch_second_index ATTACH PARTITION public.submissions_1442415600_1459695600_length_epoch_second_idx;
-
-
---
--- Name: submissions_1442415600_1459695600_length_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_execution_time_index ATTACH PARTITION public.submissions_1442415600_1459695600_length_execution_time_idx;
-
-
---
--- Name: submissions_1442415600_1459695600_length_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_point_index ATTACH PARTITION public.submissions_1442415600_1459695600_length_point_idx;
-
-
---
--- Name: submissions_1442415600_1459695600_point_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_epoch_second_index ATTACH PARTITION public.submissions_1442415600_1459695600_point_epoch_second_idx;
-
-
---
--- Name: submissions_1442415600_1459695600_point_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_execution_time_index ATTACH PARTITION public.submissions_1442415600_1459695600_point_execution_time_idx;
-
-
---
--- Name: submissions_1442415600_1459695600_point_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_length_index ATTACH PARTITION public.submissions_1442415600_1459695600_point_length_idx;
-
-
---
--- Name: submissions_1442415600_1459695600_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_1442415600_1459695600_problem_id_epoch_second_idx;
-
-
---
--- Name: submissions_1442415600_1459695600_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_1442415600_1459695600_problem_id_execution_time_idx;
-
-
---
--- Name: submissions_1442415600_1459695600_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_1442415600_1459695600_problem_id_length_idx;
-
-
---
--- Name: submissions_1442415600_1459695600_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_1442415600_1459695600_problem_id_point_idx;
-
-
---
--- Name: submissions_1442415600_1459695600_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_1442415600_1459695600_result_epoch_second_idx;
-
-
---
--- Name: submissions_1442415600_1459695600_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_1442415600_1459695600_result_execution_time_idx;
-
-
---
--- Name: submissions_1442415600_1459695600_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_1442415600_1459695600_result_length_idx;
-
-
---
--- Name: submissions_1442415600_1459695600_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_1442415600_1459695600_result_point_idx;
-
-
---
--- Name: submissions_1442415600_1459695600_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_1442415600_1459695600_user_id_epoch_second_idx;
-
-
---
--- Name: submissions_1442415600_1459695600_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_1442415600_1459695600_user_id_execution_time_idx;
-
-
---
--- Name: submissions_1442415600_1459695600_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_1442415600_1459695600_user_id_length_idx;
-
-
---
--- Name: submissions_1442415600_1459695600_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_1442415600_1459695600_user_id_point_idx;
-
-
---
--- Name: submissions_1442415600_14596956_execution_time_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_epoch_second_index ATTACH PARTITION public.submissions_1442415600_14596956_execution_time_epoch_second_idx;
-
-
---
--- Name: submissions_1459695600_1476975600_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_1459695600_1476975600_contest_id_epoch_second_idx;
-
-
---
--- Name: submissions_1459695600_1476975600_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_1459695600_1476975600_contest_id_execution_time_idx;
-
-
---
--- Name: submissions_1459695600_1476975600_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_1459695600_1476975600_contest_id_length_idx;
-
-
---
--- Name: submissions_1459695600_1476975600_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_1459695600_1476975600_contest_id_point_idx;
-
-
---
--- Name: submissions_1459695600_1476975600_epoch_second_updated_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_updated_at_index ATTACH PARTITION public.submissions_1459695600_1476975600_epoch_second_updated_at_idx;
-
-
---
--- Name: submissions_1459695600_1476975600_execution_time_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_length_index ATTACH PARTITION public.submissions_1459695600_1476975600_execution_time_length_idx;
-
-
---
--- Name: submissions_1459695600_1476975600_execution_time_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_point_index ATTACH PARTITION public.submissions_1459695600_1476975600_execution_time_point_idx;
-
-
---
--- Name: submissions_1459695600_1476975600_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_id_epoch_second_unique ATTACH PARTITION public.submissions_1459695600_1476975600_id_epoch_second_idx;
-
-
---
--- Name: submissions_1459695600_1476975600_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_1459695600_1476975600_language_epoch_second_idx;
-
-
---
--- Name: submissions_1459695600_1476975600_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_1459695600_1476975600_language_execution_time_idx;
-
-
---
--- Name: submissions_1459695600_1476975600_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_1459695600_1476975600_language_length_idx;
-
-
---
--- Name: submissions_1459695600_1476975600_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_1459695600_1476975600_language_point_idx;
-
-
---
--- Name: submissions_1459695600_1476975600_length_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_epoch_second_index ATTACH PARTITION public.submissions_1459695600_1476975600_length_epoch_second_idx;
-
-
---
--- Name: submissions_1459695600_1476975600_length_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_execution_time_index ATTACH PARTITION public.submissions_1459695600_1476975600_length_execution_time_idx;
-
-
---
--- Name: submissions_1459695600_1476975600_length_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_point_index ATTACH PARTITION public.submissions_1459695600_1476975600_length_point_idx;
-
-
---
--- Name: submissions_1459695600_1476975600_point_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_epoch_second_index ATTACH PARTITION public.submissions_1459695600_1476975600_point_epoch_second_idx;
-
-
---
--- Name: submissions_1459695600_1476975600_point_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_execution_time_index ATTACH PARTITION public.submissions_1459695600_1476975600_point_execution_time_idx;
-
-
---
--- Name: submissions_1459695600_1476975600_point_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_length_index ATTACH PARTITION public.submissions_1459695600_1476975600_point_length_idx;
-
-
---
--- Name: submissions_1459695600_1476975600_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_1459695600_1476975600_problem_id_epoch_second_idx;
-
-
---
--- Name: submissions_1459695600_1476975600_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_1459695600_1476975600_problem_id_execution_time_idx;
-
-
---
--- Name: submissions_1459695600_1476975600_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_1459695600_1476975600_problem_id_length_idx;
-
-
---
--- Name: submissions_1459695600_1476975600_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_1459695600_1476975600_problem_id_point_idx;
-
-
---
--- Name: submissions_1459695600_1476975600_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_1459695600_1476975600_result_epoch_second_idx;
-
-
---
--- Name: submissions_1459695600_1476975600_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_1459695600_1476975600_result_execution_time_idx;
-
-
---
--- Name: submissions_1459695600_1476975600_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_1459695600_1476975600_result_length_idx;
-
-
---
--- Name: submissions_1459695600_1476975600_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_1459695600_1476975600_result_point_idx;
-
-
---
--- Name: submissions_1459695600_1476975600_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_1459695600_1476975600_user_id_epoch_second_idx;
-
-
---
--- Name: submissions_1459695600_1476975600_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_1459695600_1476975600_user_id_execution_time_idx;
-
-
---
--- Name: submissions_1459695600_1476975600_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_1459695600_1476975600_user_id_length_idx;
-
-
---
--- Name: submissions_1459695600_1476975600_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_1459695600_1476975600_user_id_point_idx;
-
-
---
--- Name: submissions_1459695600_14769756_execution_time_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_epoch_second_index ATTACH PARTITION public.submissions_1459695600_14769756_execution_time_epoch_second_idx;
-
-
---
--- Name: submissions_1476975600_1494255600_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_1476975600_1494255600_contest_id_epoch_second_idx;
-
-
---
--- Name: submissions_1476975600_1494255600_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_1476975600_1494255600_contest_id_execution_time_idx;
-
-
---
--- Name: submissions_1476975600_1494255600_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_1476975600_1494255600_contest_id_length_idx;
-
-
---
--- Name: submissions_1476975600_1494255600_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_1476975600_1494255600_contest_id_point_idx;
-
-
---
--- Name: submissions_1476975600_1494255600_epoch_second_updated_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_updated_at_index ATTACH PARTITION public.submissions_1476975600_1494255600_epoch_second_updated_at_idx;
-
-
---
--- Name: submissions_1476975600_1494255600_execution_time_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_length_index ATTACH PARTITION public.submissions_1476975600_1494255600_execution_time_length_idx;
-
-
---
--- Name: submissions_1476975600_1494255600_execution_time_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_point_index ATTACH PARTITION public.submissions_1476975600_1494255600_execution_time_point_idx;
-
-
---
--- Name: submissions_1476975600_1494255600_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_id_epoch_second_unique ATTACH PARTITION public.submissions_1476975600_1494255600_id_epoch_second_idx;
-
-
---
--- Name: submissions_1476975600_1494255600_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_1476975600_1494255600_language_epoch_second_idx;
-
-
---
--- Name: submissions_1476975600_1494255600_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_1476975600_1494255600_language_execution_time_idx;
-
-
---
--- Name: submissions_1476975600_1494255600_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_1476975600_1494255600_language_length_idx;
-
-
---
--- Name: submissions_1476975600_1494255600_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_1476975600_1494255600_language_point_idx;
-
-
---
--- Name: submissions_1476975600_1494255600_length_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_epoch_second_index ATTACH PARTITION public.submissions_1476975600_1494255600_length_epoch_second_idx;
-
-
---
--- Name: submissions_1476975600_1494255600_length_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_execution_time_index ATTACH PARTITION public.submissions_1476975600_1494255600_length_execution_time_idx;
-
-
---
--- Name: submissions_1476975600_1494255600_length_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_point_index ATTACH PARTITION public.submissions_1476975600_1494255600_length_point_idx;
-
-
---
--- Name: submissions_1476975600_1494255600_point_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_epoch_second_index ATTACH PARTITION public.submissions_1476975600_1494255600_point_epoch_second_idx;
-
-
---
--- Name: submissions_1476975600_1494255600_point_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_execution_time_index ATTACH PARTITION public.submissions_1476975600_1494255600_point_execution_time_idx;
-
-
---
--- Name: submissions_1476975600_1494255600_point_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_length_index ATTACH PARTITION public.submissions_1476975600_1494255600_point_length_idx;
-
-
---
--- Name: submissions_1476975600_1494255600_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_1476975600_1494255600_problem_id_epoch_second_idx;
-
-
---
--- Name: submissions_1476975600_1494255600_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_1476975600_1494255600_problem_id_execution_time_idx;
-
-
---
--- Name: submissions_1476975600_1494255600_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_1476975600_1494255600_problem_id_length_idx;
-
-
---
--- Name: submissions_1476975600_1494255600_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_1476975600_1494255600_problem_id_point_idx;
-
-
---
--- Name: submissions_1476975600_1494255600_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_1476975600_1494255600_result_epoch_second_idx;
-
-
---
--- Name: submissions_1476975600_1494255600_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_1476975600_1494255600_result_execution_time_idx;
-
-
---
--- Name: submissions_1476975600_1494255600_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_1476975600_1494255600_result_length_idx;
-
-
---
--- Name: submissions_1476975600_1494255600_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_1476975600_1494255600_result_point_idx;
-
-
---
--- Name: submissions_1476975600_1494255600_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_1476975600_1494255600_user_id_epoch_second_idx;
-
-
---
--- Name: submissions_1476975600_1494255600_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_1476975600_1494255600_user_id_execution_time_idx;
-
-
---
--- Name: submissions_1476975600_1494255600_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_1476975600_1494255600_user_id_length_idx;
-
-
---
--- Name: submissions_1476975600_1494255600_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_1476975600_1494255600_user_id_point_idx;
-
-
---
--- Name: submissions_1476975600_14942556_execution_time_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_epoch_second_index ATTACH PARTITION public.submissions_1476975600_14942556_execution_time_epoch_second_idx;
-
-
---
--- Name: submissions_1494255600_1511535600_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_1494255600_1511535600_contest_id_epoch_second_idx;
-
-
---
--- Name: submissions_1494255600_1511535600_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_1494255600_1511535600_contest_id_execution_time_idx;
-
-
---
--- Name: submissions_1494255600_1511535600_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_1494255600_1511535600_contest_id_length_idx;
-
-
---
--- Name: submissions_1494255600_1511535600_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_1494255600_1511535600_contest_id_point_idx;
-
-
---
--- Name: submissions_1494255600_1511535600_epoch_second_updated_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_updated_at_index ATTACH PARTITION public.submissions_1494255600_1511535600_epoch_second_updated_at_idx;
-
-
---
--- Name: submissions_1494255600_1511535600_execution_time_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_length_index ATTACH PARTITION public.submissions_1494255600_1511535600_execution_time_length_idx;
-
-
---
--- Name: submissions_1494255600_1511535600_execution_time_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_point_index ATTACH PARTITION public.submissions_1494255600_1511535600_execution_time_point_idx;
-
-
---
--- Name: submissions_1494255600_1511535600_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_id_epoch_second_unique ATTACH PARTITION public.submissions_1494255600_1511535600_id_epoch_second_idx;
-
-
---
--- Name: submissions_1494255600_1511535600_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_1494255600_1511535600_language_epoch_second_idx;
-
-
---
--- Name: submissions_1494255600_1511535600_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_1494255600_1511535600_language_execution_time_idx;
-
-
---
--- Name: submissions_1494255600_1511535600_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_1494255600_1511535600_language_length_idx;
-
-
---
--- Name: submissions_1494255600_1511535600_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_1494255600_1511535600_language_point_idx;
-
-
---
--- Name: submissions_1494255600_1511535600_length_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_epoch_second_index ATTACH PARTITION public.submissions_1494255600_1511535600_length_epoch_second_idx;
-
-
---
--- Name: submissions_1494255600_1511535600_length_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_execution_time_index ATTACH PARTITION public.submissions_1494255600_1511535600_length_execution_time_idx;
-
-
---
--- Name: submissions_1494255600_1511535600_length_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_point_index ATTACH PARTITION public.submissions_1494255600_1511535600_length_point_idx;
-
-
---
--- Name: submissions_1494255600_1511535600_point_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_epoch_second_index ATTACH PARTITION public.submissions_1494255600_1511535600_point_epoch_second_idx;
-
-
---
--- Name: submissions_1494255600_1511535600_point_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_execution_time_index ATTACH PARTITION public.submissions_1494255600_1511535600_point_execution_time_idx;
-
-
---
--- Name: submissions_1494255600_1511535600_point_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_length_index ATTACH PARTITION public.submissions_1494255600_1511535600_point_length_idx;
-
-
---
--- Name: submissions_1494255600_1511535600_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_1494255600_1511535600_problem_id_epoch_second_idx;
-
-
---
--- Name: submissions_1494255600_1511535600_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_1494255600_1511535600_problem_id_execution_time_idx;
-
-
---
--- Name: submissions_1494255600_1511535600_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_1494255600_1511535600_problem_id_length_idx;
-
-
---
--- Name: submissions_1494255600_1511535600_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_1494255600_1511535600_problem_id_point_idx;
-
-
---
--- Name: submissions_1494255600_1511535600_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_1494255600_1511535600_result_epoch_second_idx;
-
-
---
--- Name: submissions_1494255600_1511535600_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_1494255600_1511535600_result_execution_time_idx;
-
-
---
--- Name: submissions_1494255600_1511535600_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_1494255600_1511535600_result_length_idx;
-
-
---
--- Name: submissions_1494255600_1511535600_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_1494255600_1511535600_result_point_idx;
-
-
---
--- Name: submissions_1494255600_1511535600_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_1494255600_1511535600_user_id_epoch_second_idx;
-
-
---
--- Name: submissions_1494255600_1511535600_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_1494255600_1511535600_user_id_execution_time_idx;
-
-
---
--- Name: submissions_1494255600_1511535600_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_1494255600_1511535600_user_id_length_idx;
-
-
---
--- Name: submissions_1494255600_1511535600_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_1494255600_1511535600_user_id_point_idx;
-
-
---
--- Name: submissions_1494255600_15115356_execution_time_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_epoch_second_index ATTACH PARTITION public.submissions_1494255600_15115356_execution_time_epoch_second_idx;
-
-
---
--- Name: submissions_1511535600_1528815600_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_1511535600_1528815600_contest_id_epoch_second_idx;
-
-
---
--- Name: submissions_1511535600_1528815600_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_1511535600_1528815600_contest_id_execution_time_idx;
-
-
---
--- Name: submissions_1511535600_1528815600_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_1511535600_1528815600_contest_id_length_idx;
-
-
---
--- Name: submissions_1511535600_1528815600_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_1511535600_1528815600_contest_id_point_idx;
-
-
---
--- Name: submissions_1511535600_1528815600_epoch_second_updated_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_updated_at_index ATTACH PARTITION public.submissions_1511535600_1528815600_epoch_second_updated_at_idx;
-
-
---
--- Name: submissions_1511535600_1528815600_execution_time_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_length_index ATTACH PARTITION public.submissions_1511535600_1528815600_execution_time_length_idx;
-
-
---
--- Name: submissions_1511535600_1528815600_execution_time_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_point_index ATTACH PARTITION public.submissions_1511535600_1528815600_execution_time_point_idx;
-
-
---
--- Name: submissions_1511535600_1528815600_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_id_epoch_second_unique ATTACH PARTITION public.submissions_1511535600_1528815600_id_epoch_second_idx;
-
-
---
--- Name: submissions_1511535600_1528815600_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_1511535600_1528815600_language_epoch_second_idx;
-
-
---
--- Name: submissions_1511535600_1528815600_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_1511535600_1528815600_language_execution_time_idx;
-
-
---
--- Name: submissions_1511535600_1528815600_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_1511535600_1528815600_language_length_idx;
-
-
---
--- Name: submissions_1511535600_1528815600_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_1511535600_1528815600_language_point_idx;
-
-
---
--- Name: submissions_1511535600_1528815600_length_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_epoch_second_index ATTACH PARTITION public.submissions_1511535600_1528815600_length_epoch_second_idx;
-
-
---
--- Name: submissions_1511535600_1528815600_length_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_execution_time_index ATTACH PARTITION public.submissions_1511535600_1528815600_length_execution_time_idx;
-
-
---
--- Name: submissions_1511535600_1528815600_length_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_point_index ATTACH PARTITION public.submissions_1511535600_1528815600_length_point_idx;
-
-
---
--- Name: submissions_1511535600_1528815600_point_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_epoch_second_index ATTACH PARTITION public.submissions_1511535600_1528815600_point_epoch_second_idx;
-
-
---
--- Name: submissions_1511535600_1528815600_point_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_execution_time_index ATTACH PARTITION public.submissions_1511535600_1528815600_point_execution_time_idx;
-
-
---
--- Name: submissions_1511535600_1528815600_point_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_length_index ATTACH PARTITION public.submissions_1511535600_1528815600_point_length_idx;
-
-
---
--- Name: submissions_1511535600_1528815600_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_1511535600_1528815600_problem_id_epoch_second_idx;
-
-
---
--- Name: submissions_1511535600_1528815600_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_1511535600_1528815600_problem_id_execution_time_idx;
-
-
---
--- Name: submissions_1511535600_1528815600_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_1511535600_1528815600_problem_id_length_idx;
-
-
---
--- Name: submissions_1511535600_1528815600_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_1511535600_1528815600_problem_id_point_idx;
-
-
---
--- Name: submissions_1511535600_1528815600_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_1511535600_1528815600_result_epoch_second_idx;
-
-
---
--- Name: submissions_1511535600_1528815600_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_1511535600_1528815600_result_execution_time_idx;
-
-
---
--- Name: submissions_1511535600_1528815600_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_1511535600_1528815600_result_length_idx;
-
-
---
--- Name: submissions_1511535600_1528815600_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_1511535600_1528815600_result_point_idx;
-
-
---
--- Name: submissions_1511535600_1528815600_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_1511535600_1528815600_user_id_epoch_second_idx;
-
-
---
--- Name: submissions_1511535600_1528815600_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_1511535600_1528815600_user_id_execution_time_idx;
-
-
---
--- Name: submissions_1511535600_1528815600_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_1511535600_1528815600_user_id_length_idx;
-
-
---
--- Name: submissions_1511535600_1528815600_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_1511535600_1528815600_user_id_point_idx;
-
-
---
--- Name: submissions_1511535600_15288156_execution_time_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_epoch_second_index ATTACH PARTITION public.submissions_1511535600_15288156_execution_time_epoch_second_idx;
-
-
---
--- Name: submissions_1528815600_1546095600_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_1528815600_1546095600_contest_id_epoch_second_idx;
-
-
---
--- Name: submissions_1528815600_1546095600_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_1528815600_1546095600_contest_id_execution_time_idx;
-
-
---
--- Name: submissions_1528815600_1546095600_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_1528815600_1546095600_contest_id_length_idx;
-
-
---
--- Name: submissions_1528815600_1546095600_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_1528815600_1546095600_contest_id_point_idx;
-
-
---
--- Name: submissions_1528815600_1546095600_epoch_second_updated_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_updated_at_index ATTACH PARTITION public.submissions_1528815600_1546095600_epoch_second_updated_at_idx;
-
-
---
--- Name: submissions_1528815600_1546095600_execution_time_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_length_index ATTACH PARTITION public.submissions_1528815600_1546095600_execution_time_length_idx;
-
-
---
--- Name: submissions_1528815600_1546095600_execution_time_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_point_index ATTACH PARTITION public.submissions_1528815600_1546095600_execution_time_point_idx;
-
-
---
--- Name: submissions_1528815600_1546095600_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_id_epoch_second_unique ATTACH PARTITION public.submissions_1528815600_1546095600_id_epoch_second_idx;
-
-
---
--- Name: submissions_1528815600_1546095600_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_1528815600_1546095600_language_epoch_second_idx;
-
-
---
--- Name: submissions_1528815600_1546095600_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_1528815600_1546095600_language_execution_time_idx;
-
-
---
--- Name: submissions_1528815600_1546095600_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_1528815600_1546095600_language_length_idx;
-
-
---
--- Name: submissions_1528815600_1546095600_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_1528815600_1546095600_language_point_idx;
-
-
---
--- Name: submissions_1528815600_1546095600_length_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_epoch_second_index ATTACH PARTITION public.submissions_1528815600_1546095600_length_epoch_second_idx;
-
-
---
--- Name: submissions_1528815600_1546095600_length_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_execution_time_index ATTACH PARTITION public.submissions_1528815600_1546095600_length_execution_time_idx;
-
-
---
--- Name: submissions_1528815600_1546095600_length_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_point_index ATTACH PARTITION public.submissions_1528815600_1546095600_length_point_idx;
-
-
---
--- Name: submissions_1528815600_1546095600_point_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_epoch_second_index ATTACH PARTITION public.submissions_1528815600_1546095600_point_epoch_second_idx;
-
-
---
--- Name: submissions_1528815600_1546095600_point_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_execution_time_index ATTACH PARTITION public.submissions_1528815600_1546095600_point_execution_time_idx;
-
-
---
--- Name: submissions_1528815600_1546095600_point_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_length_index ATTACH PARTITION public.submissions_1528815600_1546095600_point_length_idx;
-
-
---
--- Name: submissions_1528815600_1546095600_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_1528815600_1546095600_problem_id_epoch_second_idx;
-
-
---
--- Name: submissions_1528815600_1546095600_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_1528815600_1546095600_problem_id_execution_time_idx;
-
-
---
--- Name: submissions_1528815600_1546095600_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_1528815600_1546095600_problem_id_length_idx;
-
-
---
--- Name: submissions_1528815600_1546095600_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_1528815600_1546095600_problem_id_point_idx;
-
-
---
--- Name: submissions_1528815600_1546095600_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_1528815600_1546095600_result_epoch_second_idx;
-
-
---
--- Name: submissions_1528815600_1546095600_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_1528815600_1546095600_result_execution_time_idx;
-
-
---
--- Name: submissions_1528815600_1546095600_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_1528815600_1546095600_result_length_idx;
-
-
---
--- Name: submissions_1528815600_1546095600_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_1528815600_1546095600_result_point_idx;
-
-
---
--- Name: submissions_1528815600_1546095600_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_1528815600_1546095600_user_id_epoch_second_idx;
-
-
---
--- Name: submissions_1528815600_1546095600_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_1528815600_1546095600_user_id_execution_time_idx;
-
-
---
--- Name: submissions_1528815600_1546095600_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_1528815600_1546095600_user_id_length_idx;
-
-
---
--- Name: submissions_1528815600_1546095600_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_1528815600_1546095600_user_id_point_idx;
-
-
---
--- Name: submissions_1528815600_15460956_execution_time_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_epoch_second_index ATTACH PARTITION public.submissions_1528815600_15460956_execution_time_epoch_second_idx;
-
-
---
--- Name: submissions_1546095600_1563375600_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_1546095600_1563375600_contest_id_epoch_second_idx;
-
-
---
--- Name: submissions_1546095600_1563375600_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_1546095600_1563375600_contest_id_execution_time_idx;
-
-
---
--- Name: submissions_1546095600_1563375600_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_1546095600_1563375600_contest_id_length_idx;
-
-
---
--- Name: submissions_1546095600_1563375600_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_1546095600_1563375600_contest_id_point_idx;
-
-
---
--- Name: submissions_1546095600_1563375600_epoch_second_updated_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_updated_at_index ATTACH PARTITION public.submissions_1546095600_1563375600_epoch_second_updated_at_idx;
-
-
---
--- Name: submissions_1546095600_1563375600_execution_time_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_length_index ATTACH PARTITION public.submissions_1546095600_1563375600_execution_time_length_idx;
-
-
---
--- Name: submissions_1546095600_1563375600_execution_time_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_point_index ATTACH PARTITION public.submissions_1546095600_1563375600_execution_time_point_idx;
-
-
---
--- Name: submissions_1546095600_1563375600_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_id_epoch_second_unique ATTACH PARTITION public.submissions_1546095600_1563375600_id_epoch_second_idx;
-
-
---
--- Name: submissions_1546095600_1563375600_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_1546095600_1563375600_language_epoch_second_idx;
-
-
---
--- Name: submissions_1546095600_1563375600_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_1546095600_1563375600_language_execution_time_idx;
-
-
---
--- Name: submissions_1546095600_1563375600_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_1546095600_1563375600_language_length_idx;
-
-
---
--- Name: submissions_1546095600_1563375600_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_1546095600_1563375600_language_point_idx;
-
-
---
--- Name: submissions_1546095600_1563375600_length_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_epoch_second_index ATTACH PARTITION public.submissions_1546095600_1563375600_length_epoch_second_idx;
-
-
---
--- Name: submissions_1546095600_1563375600_length_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_execution_time_index ATTACH PARTITION public.submissions_1546095600_1563375600_length_execution_time_idx;
-
-
---
--- Name: submissions_1546095600_1563375600_length_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_point_index ATTACH PARTITION public.submissions_1546095600_1563375600_length_point_idx;
-
-
---
--- Name: submissions_1546095600_1563375600_point_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_epoch_second_index ATTACH PARTITION public.submissions_1546095600_1563375600_point_epoch_second_idx;
-
-
---
--- Name: submissions_1546095600_1563375600_point_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_execution_time_index ATTACH PARTITION public.submissions_1546095600_1563375600_point_execution_time_idx;
-
-
---
--- Name: submissions_1546095600_1563375600_point_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_length_index ATTACH PARTITION public.submissions_1546095600_1563375600_point_length_idx;
-
-
---
--- Name: submissions_1546095600_1563375600_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_1546095600_1563375600_problem_id_epoch_second_idx;
-
-
---
--- Name: submissions_1546095600_1563375600_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_1546095600_1563375600_problem_id_execution_time_idx;
-
-
---
--- Name: submissions_1546095600_1563375600_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_1546095600_1563375600_problem_id_length_idx;
-
-
---
--- Name: submissions_1546095600_1563375600_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_1546095600_1563375600_problem_id_point_idx;
-
-
---
--- Name: submissions_1546095600_1563375600_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_1546095600_1563375600_result_epoch_second_idx;
-
-
---
--- Name: submissions_1546095600_1563375600_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_1546095600_1563375600_result_execution_time_idx;
-
-
---
--- Name: submissions_1546095600_1563375600_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_1546095600_1563375600_result_length_idx;
-
-
---
--- Name: submissions_1546095600_1563375600_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_1546095600_1563375600_result_point_idx;
-
-
---
--- Name: submissions_1546095600_1563375600_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_1546095600_1563375600_user_id_epoch_second_idx;
-
-
---
--- Name: submissions_1546095600_1563375600_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_1546095600_1563375600_user_id_execution_time_idx;
-
-
---
--- Name: submissions_1546095600_1563375600_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_1546095600_1563375600_user_id_length_idx;
-
-
---
--- Name: submissions_1546095600_1563375600_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_1546095600_1563375600_user_id_point_idx;
-
-
---
--- Name: submissions_1546095600_15633756_execution_time_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_epoch_second_index ATTACH PARTITION public.submissions_1546095600_15633756_execution_time_epoch_second_idx;
-
-
---
--- Name: submissions_1563375600_1580655600_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_1563375600_1580655600_contest_id_epoch_second_idx;
-
-
---
--- Name: submissions_1563375600_1580655600_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_1563375600_1580655600_contest_id_execution_time_idx;
-
-
---
--- Name: submissions_1563375600_1580655600_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_1563375600_1580655600_contest_id_length_idx;
-
-
---
--- Name: submissions_1563375600_1580655600_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_1563375600_1580655600_contest_id_point_idx;
-
-
---
--- Name: submissions_1563375600_1580655600_epoch_second_updated_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_updated_at_index ATTACH PARTITION public.submissions_1563375600_1580655600_epoch_second_updated_at_idx;
-
-
---
--- Name: submissions_1563375600_1580655600_execution_time_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_length_index ATTACH PARTITION public.submissions_1563375600_1580655600_execution_time_length_idx;
-
-
---
--- Name: submissions_1563375600_1580655600_execution_time_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_point_index ATTACH PARTITION public.submissions_1563375600_1580655600_execution_time_point_idx;
-
-
---
--- Name: submissions_1563375600_1580655600_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_id_epoch_second_unique ATTACH PARTITION public.submissions_1563375600_1580655600_id_epoch_second_idx;
-
-
---
--- Name: submissions_1563375600_1580655600_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_1563375600_1580655600_language_epoch_second_idx;
-
-
---
--- Name: submissions_1563375600_1580655600_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_1563375600_1580655600_language_execution_time_idx;
-
-
---
--- Name: submissions_1563375600_1580655600_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_1563375600_1580655600_language_length_idx;
-
-
---
--- Name: submissions_1563375600_1580655600_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_1563375600_1580655600_language_point_idx;
-
-
---
--- Name: submissions_1563375600_1580655600_length_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_epoch_second_index ATTACH PARTITION public.submissions_1563375600_1580655600_length_epoch_second_idx;
-
-
---
--- Name: submissions_1563375600_1580655600_length_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_execution_time_index ATTACH PARTITION public.submissions_1563375600_1580655600_length_execution_time_idx;
-
-
---
--- Name: submissions_1563375600_1580655600_length_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_point_index ATTACH PARTITION public.submissions_1563375600_1580655600_length_point_idx;
-
-
---
--- Name: submissions_1563375600_1580655600_point_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_epoch_second_index ATTACH PARTITION public.submissions_1563375600_1580655600_point_epoch_second_idx;
-
-
---
--- Name: submissions_1563375600_1580655600_point_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_execution_time_index ATTACH PARTITION public.submissions_1563375600_1580655600_point_execution_time_idx;
-
-
---
--- Name: submissions_1563375600_1580655600_point_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_length_index ATTACH PARTITION public.submissions_1563375600_1580655600_point_length_idx;
-
-
---
--- Name: submissions_1563375600_1580655600_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_1563375600_1580655600_problem_id_epoch_second_idx;
-
-
---
--- Name: submissions_1563375600_1580655600_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_1563375600_1580655600_problem_id_execution_time_idx;
-
-
---
--- Name: submissions_1563375600_1580655600_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_1563375600_1580655600_problem_id_length_idx;
-
-
---
--- Name: submissions_1563375600_1580655600_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_1563375600_1580655600_problem_id_point_idx;
-
-
---
--- Name: submissions_1563375600_1580655600_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_1563375600_1580655600_result_epoch_second_idx;
-
-
---
--- Name: submissions_1563375600_1580655600_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_1563375600_1580655600_result_execution_time_idx;
-
-
---
--- Name: submissions_1563375600_1580655600_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_1563375600_1580655600_result_length_idx;
-
-
---
--- Name: submissions_1563375600_1580655600_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_1563375600_1580655600_result_point_idx;
-
-
---
--- Name: submissions_1563375600_1580655600_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_1563375600_1580655600_user_id_epoch_second_idx;
-
-
---
--- Name: submissions_1563375600_1580655600_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_1563375600_1580655600_user_id_execution_time_idx;
-
-
---
--- Name: submissions_1563375600_1580655600_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_1563375600_1580655600_user_id_length_idx;
-
-
---
--- Name: submissions_1563375600_1580655600_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_1563375600_1580655600_user_id_point_idx;
-
-
---
--- Name: submissions_1563375600_15806556_execution_time_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_epoch_second_index ATTACH PARTITION public.submissions_1563375600_15806556_execution_time_epoch_second_idx;
-
-
---
--- Name: submissions_1580655600_1597935600_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_1580655600_1597935600_contest_id_epoch_second_idx;
-
-
---
--- Name: submissions_1580655600_1597935600_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_1580655600_1597935600_contest_id_execution_time_idx;
-
-
---
--- Name: submissions_1580655600_1597935600_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_1580655600_1597935600_contest_id_length_idx;
-
-
---
--- Name: submissions_1580655600_1597935600_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_1580655600_1597935600_contest_id_point_idx;
-
-
---
--- Name: submissions_1580655600_1597935600_epoch_second_updated_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_updated_at_index ATTACH PARTITION public.submissions_1580655600_1597935600_epoch_second_updated_at_idx;
-
-
---
--- Name: submissions_1580655600_1597935600_execution_time_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_length_index ATTACH PARTITION public.submissions_1580655600_1597935600_execution_time_length_idx;
-
-
---
--- Name: submissions_1580655600_1597935600_execution_time_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_point_index ATTACH PARTITION public.submissions_1580655600_1597935600_execution_time_point_idx;
-
-
---
--- Name: submissions_1580655600_1597935600_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_id_epoch_second_unique ATTACH PARTITION public.submissions_1580655600_1597935600_id_epoch_second_idx;
-
-
---
--- Name: submissions_1580655600_1597935600_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_1580655600_1597935600_language_epoch_second_idx;
-
-
---
--- Name: submissions_1580655600_1597935600_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_1580655600_1597935600_language_execution_time_idx;
-
-
---
--- Name: submissions_1580655600_1597935600_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_1580655600_1597935600_language_length_idx;
-
-
---
--- Name: submissions_1580655600_1597935600_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_1580655600_1597935600_language_point_idx;
-
-
---
--- Name: submissions_1580655600_1597935600_length_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_epoch_second_index ATTACH PARTITION public.submissions_1580655600_1597935600_length_epoch_second_idx;
-
-
---
--- Name: submissions_1580655600_1597935600_length_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_execution_time_index ATTACH PARTITION public.submissions_1580655600_1597935600_length_execution_time_idx;
-
-
---
--- Name: submissions_1580655600_1597935600_length_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_point_index ATTACH PARTITION public.submissions_1580655600_1597935600_length_point_idx;
-
-
---
--- Name: submissions_1580655600_1597935600_point_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_epoch_second_index ATTACH PARTITION public.submissions_1580655600_1597935600_point_epoch_second_idx;
-
-
---
--- Name: submissions_1580655600_1597935600_point_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_execution_time_index ATTACH PARTITION public.submissions_1580655600_1597935600_point_execution_time_idx;
-
-
---
--- Name: submissions_1580655600_1597935600_point_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_length_index ATTACH PARTITION public.submissions_1580655600_1597935600_point_length_idx;
-
-
---
--- Name: submissions_1580655600_1597935600_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_1580655600_1597935600_problem_id_epoch_second_idx;
-
-
---
--- Name: submissions_1580655600_1597935600_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_1580655600_1597935600_problem_id_execution_time_idx;
-
-
---
--- Name: submissions_1580655600_1597935600_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_1580655600_1597935600_problem_id_length_idx;
-
-
---
--- Name: submissions_1580655600_1597935600_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_1580655600_1597935600_problem_id_point_idx;
-
-
---
--- Name: submissions_1580655600_1597935600_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_1580655600_1597935600_result_epoch_second_idx;
-
-
---
--- Name: submissions_1580655600_1597935600_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_1580655600_1597935600_result_execution_time_idx;
-
-
---
--- Name: submissions_1580655600_1597935600_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_1580655600_1597935600_result_length_idx;
-
-
---
--- Name: submissions_1580655600_1597935600_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_1580655600_1597935600_result_point_idx;
-
-
---
--- Name: submissions_1580655600_1597935600_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_1580655600_1597935600_user_id_epoch_second_idx;
-
-
---
--- Name: submissions_1580655600_1597935600_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_1580655600_1597935600_user_id_execution_time_idx;
-
-
---
--- Name: submissions_1580655600_1597935600_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_1580655600_1597935600_user_id_length_idx;
-
-
---
--- Name: submissions_1580655600_1597935600_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_1580655600_1597935600_user_id_point_idx;
-
-
---
--- Name: submissions_1580655600_15979356_execution_time_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_epoch_second_index ATTACH PARTITION public.submissions_1580655600_15979356_execution_time_epoch_second_idx;
-
-
---
--- Name: submissions_1597935600_1615215600_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_1597935600_1615215600_contest_id_epoch_second_idx;
-
-
---
--- Name: submissions_1597935600_1615215600_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_1597935600_1615215600_contest_id_execution_time_idx;
-
-
---
--- Name: submissions_1597935600_1615215600_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_1597935600_1615215600_contest_id_length_idx;
-
-
---
--- Name: submissions_1597935600_1615215600_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_1597935600_1615215600_contest_id_point_idx;
-
-
---
--- Name: submissions_1597935600_1615215600_epoch_second_updated_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_updated_at_index ATTACH PARTITION public.submissions_1597935600_1615215600_epoch_second_updated_at_idx;
-
-
---
--- Name: submissions_1597935600_1615215600_execution_time_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_length_index ATTACH PARTITION public.submissions_1597935600_1615215600_execution_time_length_idx;
-
-
---
--- Name: submissions_1597935600_1615215600_execution_time_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_point_index ATTACH PARTITION public.submissions_1597935600_1615215600_execution_time_point_idx;
-
-
---
--- Name: submissions_1597935600_1615215600_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_id_epoch_second_unique ATTACH PARTITION public.submissions_1597935600_1615215600_id_epoch_second_idx;
-
-
---
--- Name: submissions_1597935600_1615215600_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_1597935600_1615215600_language_epoch_second_idx;
-
-
---
--- Name: submissions_1597935600_1615215600_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_1597935600_1615215600_language_execution_time_idx;
-
-
---
--- Name: submissions_1597935600_1615215600_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_1597935600_1615215600_language_length_idx;
-
-
---
--- Name: submissions_1597935600_1615215600_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_1597935600_1615215600_language_point_idx;
-
-
---
--- Name: submissions_1597935600_1615215600_length_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_epoch_second_index ATTACH PARTITION public.submissions_1597935600_1615215600_length_epoch_second_idx;
-
-
---
--- Name: submissions_1597935600_1615215600_length_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_execution_time_index ATTACH PARTITION public.submissions_1597935600_1615215600_length_execution_time_idx;
-
-
---
--- Name: submissions_1597935600_1615215600_length_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_point_index ATTACH PARTITION public.submissions_1597935600_1615215600_length_point_idx;
-
-
---
--- Name: submissions_1597935600_1615215600_point_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_epoch_second_index ATTACH PARTITION public.submissions_1597935600_1615215600_point_epoch_second_idx;
-
-
---
--- Name: submissions_1597935600_1615215600_point_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_execution_time_index ATTACH PARTITION public.submissions_1597935600_1615215600_point_execution_time_idx;
-
-
---
--- Name: submissions_1597935600_1615215600_point_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_length_index ATTACH PARTITION public.submissions_1597935600_1615215600_point_length_idx;
-
-
---
--- Name: submissions_1597935600_1615215600_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_1597935600_1615215600_problem_id_epoch_second_idx;
-
-
---
--- Name: submissions_1597935600_1615215600_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_1597935600_1615215600_problem_id_execution_time_idx;
-
-
---
--- Name: submissions_1597935600_1615215600_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_1597935600_1615215600_problem_id_length_idx;
-
-
---
--- Name: submissions_1597935600_1615215600_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_1597935600_1615215600_problem_id_point_idx;
-
-
---
--- Name: submissions_1597935600_1615215600_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_1597935600_1615215600_result_epoch_second_idx;
-
-
---
--- Name: submissions_1597935600_1615215600_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_1597935600_1615215600_result_execution_time_idx;
-
-
---
--- Name: submissions_1597935600_1615215600_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_1597935600_1615215600_result_length_idx;
-
-
---
--- Name: submissions_1597935600_1615215600_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_1597935600_1615215600_result_point_idx;
-
-
---
--- Name: submissions_1597935600_1615215600_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_1597935600_1615215600_user_id_epoch_second_idx;
-
-
---
--- Name: submissions_1597935600_1615215600_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_1597935600_1615215600_user_id_execution_time_idx;
-
-
---
--- Name: submissions_1597935600_1615215600_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_1597935600_1615215600_user_id_length_idx;
-
-
---
--- Name: submissions_1597935600_1615215600_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_1597935600_1615215600_user_id_point_idx;
-
-
---
--- Name: submissions_1597935600_16152156_execution_time_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_epoch_second_index ATTACH PARTITION public.submissions_1597935600_16152156_execution_time_epoch_second_idx;
-
-
---
--- Name: submissions_1615215600_1632495600_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_1615215600_1632495600_contest_id_epoch_second_idx;
-
-
---
--- Name: submissions_1615215600_1632495600_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_1615215600_1632495600_contest_id_execution_time_idx;
-
-
---
--- Name: submissions_1615215600_1632495600_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_1615215600_1632495600_contest_id_length_idx;
-
-
---
--- Name: submissions_1615215600_1632495600_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_1615215600_1632495600_contest_id_point_idx;
-
-
---
--- Name: submissions_1615215600_1632495600_epoch_second_updated_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_updated_at_index ATTACH PARTITION public.submissions_1615215600_1632495600_epoch_second_updated_at_idx;
-
-
---
--- Name: submissions_1615215600_1632495600_execution_time_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_length_index ATTACH PARTITION public.submissions_1615215600_1632495600_execution_time_length_idx;
-
-
---
--- Name: submissions_1615215600_1632495600_execution_time_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_point_index ATTACH PARTITION public.submissions_1615215600_1632495600_execution_time_point_idx;
-
-
---
--- Name: submissions_1615215600_1632495600_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_id_epoch_second_unique ATTACH PARTITION public.submissions_1615215600_1632495600_id_epoch_second_idx;
-
-
---
--- Name: submissions_1615215600_1632495600_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_1615215600_1632495600_language_epoch_second_idx;
-
-
---
--- Name: submissions_1615215600_1632495600_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_1615215600_1632495600_language_execution_time_idx;
-
-
---
--- Name: submissions_1615215600_1632495600_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_1615215600_1632495600_language_length_idx;
-
-
---
--- Name: submissions_1615215600_1632495600_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_1615215600_1632495600_language_point_idx;
-
-
---
--- Name: submissions_1615215600_1632495600_length_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_epoch_second_index ATTACH PARTITION public.submissions_1615215600_1632495600_length_epoch_second_idx;
-
-
---
--- Name: submissions_1615215600_1632495600_length_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_execution_time_index ATTACH PARTITION public.submissions_1615215600_1632495600_length_execution_time_idx;
-
-
---
--- Name: submissions_1615215600_1632495600_length_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_point_index ATTACH PARTITION public.submissions_1615215600_1632495600_length_point_idx;
-
-
---
--- Name: submissions_1615215600_1632495600_point_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_epoch_second_index ATTACH PARTITION public.submissions_1615215600_1632495600_point_epoch_second_idx;
-
-
---
--- Name: submissions_1615215600_1632495600_point_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_execution_time_index ATTACH PARTITION public.submissions_1615215600_1632495600_point_execution_time_idx;
-
-
---
--- Name: submissions_1615215600_1632495600_point_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_length_index ATTACH PARTITION public.submissions_1615215600_1632495600_point_length_idx;
-
-
---
--- Name: submissions_1615215600_1632495600_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_1615215600_1632495600_problem_id_epoch_second_idx;
-
-
---
--- Name: submissions_1615215600_1632495600_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_1615215600_1632495600_problem_id_execution_time_idx;
-
-
---
--- Name: submissions_1615215600_1632495600_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_1615215600_1632495600_problem_id_length_idx;
-
-
---
--- Name: submissions_1615215600_1632495600_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_1615215600_1632495600_problem_id_point_idx;
-
-
---
--- Name: submissions_1615215600_1632495600_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_1615215600_1632495600_result_epoch_second_idx;
-
-
---
--- Name: submissions_1615215600_1632495600_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_1615215600_1632495600_result_execution_time_idx;
-
-
---
--- Name: submissions_1615215600_1632495600_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_1615215600_1632495600_result_length_idx;
-
-
---
--- Name: submissions_1615215600_1632495600_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_1615215600_1632495600_result_point_idx;
-
-
---
--- Name: submissions_1615215600_1632495600_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_1615215600_1632495600_user_id_epoch_second_idx;
-
-
---
--- Name: submissions_1615215600_1632495600_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_1615215600_1632495600_user_id_execution_time_idx;
-
-
---
--- Name: submissions_1615215600_1632495600_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_1615215600_1632495600_user_id_length_idx;
-
-
---
--- Name: submissions_1615215600_1632495600_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_1615215600_1632495600_user_id_point_idx;
-
-
---
--- Name: submissions_1615215600_16324956_execution_time_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_epoch_second_index ATTACH PARTITION public.submissions_1615215600_16324956_execution_time_epoch_second_idx;
-
-
---
--- Name: submissions_1632495600_1649775600_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_1632495600_1649775600_contest_id_epoch_second_idx;
-
-
---
--- Name: submissions_1632495600_1649775600_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_1632495600_1649775600_contest_id_execution_time_idx;
-
-
---
--- Name: submissions_1632495600_1649775600_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_1632495600_1649775600_contest_id_length_idx;
-
-
---
--- Name: submissions_1632495600_1649775600_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_1632495600_1649775600_contest_id_point_idx;
-
-
---
--- Name: submissions_1632495600_1649775600_epoch_second_updated_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_updated_at_index ATTACH PARTITION public.submissions_1632495600_1649775600_epoch_second_updated_at_idx;
-
-
---
--- Name: submissions_1632495600_1649775600_execution_time_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_length_index ATTACH PARTITION public.submissions_1632495600_1649775600_execution_time_length_idx;
-
-
---
--- Name: submissions_1632495600_1649775600_execution_time_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_point_index ATTACH PARTITION public.submissions_1632495600_1649775600_execution_time_point_idx;
-
-
---
--- Name: submissions_1632495600_1649775600_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_id_epoch_second_unique ATTACH PARTITION public.submissions_1632495600_1649775600_id_epoch_second_idx;
-
-
---
--- Name: submissions_1632495600_1649775600_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_1632495600_1649775600_language_epoch_second_idx;
-
-
---
--- Name: submissions_1632495600_1649775600_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_1632495600_1649775600_language_execution_time_idx;
-
-
---
--- Name: submissions_1632495600_1649775600_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_1632495600_1649775600_language_length_idx;
-
-
---
--- Name: submissions_1632495600_1649775600_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_1632495600_1649775600_language_point_idx;
-
-
---
--- Name: submissions_1632495600_1649775600_length_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_epoch_second_index ATTACH PARTITION public.submissions_1632495600_1649775600_length_epoch_second_idx;
-
-
---
--- Name: submissions_1632495600_1649775600_length_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_execution_time_index ATTACH PARTITION public.submissions_1632495600_1649775600_length_execution_time_idx;
-
-
---
--- Name: submissions_1632495600_1649775600_length_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_point_index ATTACH PARTITION public.submissions_1632495600_1649775600_length_point_idx;
-
-
---
--- Name: submissions_1632495600_1649775600_point_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_epoch_second_index ATTACH PARTITION public.submissions_1632495600_1649775600_point_epoch_second_idx;
-
-
---
--- Name: submissions_1632495600_1649775600_point_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_execution_time_index ATTACH PARTITION public.submissions_1632495600_1649775600_point_execution_time_idx;
-
-
---
--- Name: submissions_1632495600_1649775600_point_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_length_index ATTACH PARTITION public.submissions_1632495600_1649775600_point_length_idx;
-
-
---
--- Name: submissions_1632495600_1649775600_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_1632495600_1649775600_problem_id_epoch_second_idx;
-
-
---
--- Name: submissions_1632495600_1649775600_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_1632495600_1649775600_problem_id_execution_time_idx;
-
-
---
--- Name: submissions_1632495600_1649775600_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_1632495600_1649775600_problem_id_length_idx;
-
-
---
--- Name: submissions_1632495600_1649775600_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_1632495600_1649775600_problem_id_point_idx;
-
-
---
--- Name: submissions_1632495600_1649775600_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_1632495600_1649775600_result_epoch_second_idx;
-
-
---
--- Name: submissions_1632495600_1649775600_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_1632495600_1649775600_result_execution_time_idx;
-
-
---
--- Name: submissions_1632495600_1649775600_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_1632495600_1649775600_result_length_idx;
-
-
---
--- Name: submissions_1632495600_1649775600_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_1632495600_1649775600_result_point_idx;
-
-
---
--- Name: submissions_1632495600_1649775600_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_1632495600_1649775600_user_id_epoch_second_idx;
-
-
---
--- Name: submissions_1632495600_1649775600_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_1632495600_1649775600_user_id_execution_time_idx;
-
-
---
--- Name: submissions_1632495600_1649775600_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_1632495600_1649775600_user_id_length_idx;
-
-
---
--- Name: submissions_1632495600_1649775600_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_1632495600_1649775600_user_id_point_idx;
-
-
---
--- Name: submissions_1632495600_16497756_execution_time_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_epoch_second_index ATTACH PARTITION public.submissions_1632495600_16497756_execution_time_epoch_second_idx;
-
-
---
--- Name: submissions_1649775600_1667055600_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_1649775600_1667055600_contest_id_epoch_second_idx;
-
-
---
--- Name: submissions_1649775600_1667055600_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_1649775600_1667055600_contest_id_execution_time_idx;
-
-
---
--- Name: submissions_1649775600_1667055600_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_1649775600_1667055600_contest_id_length_idx;
-
-
---
--- Name: submissions_1649775600_1667055600_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_1649775600_1667055600_contest_id_point_idx;
-
-
---
--- Name: submissions_1649775600_1667055600_epoch_second_updated_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_updated_at_index ATTACH PARTITION public.submissions_1649775600_1667055600_epoch_second_updated_at_idx;
-
-
---
--- Name: submissions_1649775600_1667055600_execution_time_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_length_index ATTACH PARTITION public.submissions_1649775600_1667055600_execution_time_length_idx;
-
-
---
--- Name: submissions_1649775600_1667055600_execution_time_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_point_index ATTACH PARTITION public.submissions_1649775600_1667055600_execution_time_point_idx;
-
-
---
--- Name: submissions_1649775600_1667055600_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_id_epoch_second_unique ATTACH PARTITION public.submissions_1649775600_1667055600_id_epoch_second_idx;
-
-
---
--- Name: submissions_1649775600_1667055600_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_1649775600_1667055600_language_epoch_second_idx;
-
-
---
--- Name: submissions_1649775600_1667055600_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_1649775600_1667055600_language_execution_time_idx;
-
-
---
--- Name: submissions_1649775600_1667055600_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_1649775600_1667055600_language_length_idx;
-
-
---
--- Name: submissions_1649775600_1667055600_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_1649775600_1667055600_language_point_idx;
-
-
---
--- Name: submissions_1649775600_1667055600_length_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_epoch_second_index ATTACH PARTITION public.submissions_1649775600_1667055600_length_epoch_second_idx;
-
-
---
--- Name: submissions_1649775600_1667055600_length_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_execution_time_index ATTACH PARTITION public.submissions_1649775600_1667055600_length_execution_time_idx;
-
-
---
--- Name: submissions_1649775600_1667055600_length_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_point_index ATTACH PARTITION public.submissions_1649775600_1667055600_length_point_idx;
-
-
---
--- Name: submissions_1649775600_1667055600_point_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_epoch_second_index ATTACH PARTITION public.submissions_1649775600_1667055600_point_epoch_second_idx;
-
-
---
--- Name: submissions_1649775600_1667055600_point_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_execution_time_index ATTACH PARTITION public.submissions_1649775600_1667055600_point_execution_time_idx;
-
-
---
--- Name: submissions_1649775600_1667055600_point_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_length_index ATTACH PARTITION public.submissions_1649775600_1667055600_point_length_idx;
-
-
---
--- Name: submissions_1649775600_1667055600_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_1649775600_1667055600_problem_id_epoch_second_idx;
-
-
---
--- Name: submissions_1649775600_1667055600_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_1649775600_1667055600_problem_id_execution_time_idx;
-
-
---
--- Name: submissions_1649775600_1667055600_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_1649775600_1667055600_problem_id_length_idx;
-
-
---
--- Name: submissions_1649775600_1667055600_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_1649775600_1667055600_problem_id_point_idx;
-
-
---
--- Name: submissions_1649775600_1667055600_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_1649775600_1667055600_result_epoch_second_idx;
-
-
---
--- Name: submissions_1649775600_1667055600_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_1649775600_1667055600_result_execution_time_idx;
-
-
---
--- Name: submissions_1649775600_1667055600_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_1649775600_1667055600_result_length_idx;
-
-
---
--- Name: submissions_1649775600_1667055600_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_1649775600_1667055600_result_point_idx;
-
-
---
--- Name: submissions_1649775600_1667055600_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_1649775600_1667055600_user_id_epoch_second_idx;
-
-
---
--- Name: submissions_1649775600_1667055600_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_1649775600_1667055600_user_id_execution_time_idx;
-
-
---
--- Name: submissions_1649775600_1667055600_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_1649775600_1667055600_user_id_length_idx;
-
-
---
--- Name: submissions_1649775600_1667055600_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_1649775600_1667055600_user_id_point_idx;
-
-
---
--- Name: submissions_1649775600_16670556_execution_time_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_epoch_second_index ATTACH PARTITION public.submissions_1649775600_16670556_execution_time_epoch_second_idx;
-
-
---
--- Name: submissions_1667055600_1684335600_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_1667055600_1684335600_contest_id_epoch_second_idx;
-
-
---
--- Name: submissions_1667055600_1684335600_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_1667055600_1684335600_contest_id_execution_time_idx;
-
-
---
--- Name: submissions_1667055600_1684335600_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_1667055600_1684335600_contest_id_length_idx;
-
-
---
--- Name: submissions_1667055600_1684335600_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_1667055600_1684335600_contest_id_point_idx;
-
-
---
--- Name: submissions_1667055600_1684335600_epoch_second_updated_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_updated_at_index ATTACH PARTITION public.submissions_1667055600_1684335600_epoch_second_updated_at_idx;
-
-
---
--- Name: submissions_1667055600_1684335600_execution_time_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_length_index ATTACH PARTITION public.submissions_1667055600_1684335600_execution_time_length_idx;
-
-
---
--- Name: submissions_1667055600_1684335600_execution_time_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_point_index ATTACH PARTITION public.submissions_1667055600_1684335600_execution_time_point_idx;
-
-
---
--- Name: submissions_1667055600_1684335600_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_id_epoch_second_unique ATTACH PARTITION public.submissions_1667055600_1684335600_id_epoch_second_idx;
-
-
---
--- Name: submissions_1667055600_1684335600_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_1667055600_1684335600_language_epoch_second_idx;
-
-
---
--- Name: submissions_1667055600_1684335600_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_1667055600_1684335600_language_execution_time_idx;
-
-
---
--- Name: submissions_1667055600_1684335600_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_1667055600_1684335600_language_length_idx;
-
-
---
--- Name: submissions_1667055600_1684335600_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_1667055600_1684335600_language_point_idx;
-
-
---
--- Name: submissions_1667055600_1684335600_length_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_epoch_second_index ATTACH PARTITION public.submissions_1667055600_1684335600_length_epoch_second_idx;
-
-
---
--- Name: submissions_1667055600_1684335600_length_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_execution_time_index ATTACH PARTITION public.submissions_1667055600_1684335600_length_execution_time_idx;
-
-
---
--- Name: submissions_1667055600_1684335600_length_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_point_index ATTACH PARTITION public.submissions_1667055600_1684335600_length_point_idx;
-
-
---
--- Name: submissions_1667055600_1684335600_point_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_epoch_second_index ATTACH PARTITION public.submissions_1667055600_1684335600_point_epoch_second_idx;
-
-
---
--- Name: submissions_1667055600_1684335600_point_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_execution_time_index ATTACH PARTITION public.submissions_1667055600_1684335600_point_execution_time_idx;
-
-
---
--- Name: submissions_1667055600_1684335600_point_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_length_index ATTACH PARTITION public.submissions_1667055600_1684335600_point_length_idx;
-
-
---
--- Name: submissions_1667055600_1684335600_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_1667055600_1684335600_problem_id_epoch_second_idx;
-
-
---
--- Name: submissions_1667055600_1684335600_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_1667055600_1684335600_problem_id_execution_time_idx;
-
-
---
--- Name: submissions_1667055600_1684335600_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_1667055600_1684335600_problem_id_length_idx;
-
-
---
--- Name: submissions_1667055600_1684335600_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_1667055600_1684335600_problem_id_point_idx;
-
-
---
--- Name: submissions_1667055600_1684335600_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_1667055600_1684335600_result_epoch_second_idx;
-
-
---
--- Name: submissions_1667055600_1684335600_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_1667055600_1684335600_result_execution_time_idx;
-
-
---
--- Name: submissions_1667055600_1684335600_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_1667055600_1684335600_result_length_idx;
-
-
---
--- Name: submissions_1667055600_1684335600_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_1667055600_1684335600_result_point_idx;
-
-
---
--- Name: submissions_1667055600_1684335600_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_1667055600_1684335600_user_id_epoch_second_idx;
-
-
---
--- Name: submissions_1667055600_1684335600_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_1667055600_1684335600_user_id_execution_time_idx;
-
-
---
--- Name: submissions_1667055600_1684335600_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_1667055600_1684335600_user_id_length_idx;
-
-
---
--- Name: submissions_1667055600_1684335600_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_1667055600_1684335600_user_id_point_idx;
-
-
---
--- Name: submissions_1667055600_16843356_execution_time_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_epoch_second_index ATTACH PARTITION public.submissions_1667055600_16843356_execution_time_epoch_second_idx;
-
-
---
--- Name: submissions_1684335600_1701615600_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_1684335600_1701615600_contest_id_epoch_second_idx;
-
-
---
--- Name: submissions_1684335600_1701615600_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_1684335600_1701615600_contest_id_execution_time_idx;
-
-
---
--- Name: submissions_1684335600_1701615600_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_1684335600_1701615600_contest_id_length_idx;
-
-
---
--- Name: submissions_1684335600_1701615600_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_1684335600_1701615600_contest_id_point_idx;
-
-
---
--- Name: submissions_1684335600_1701615600_epoch_second_updated_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_updated_at_index ATTACH PARTITION public.submissions_1684335600_1701615600_epoch_second_updated_at_idx;
-
-
---
--- Name: submissions_1684335600_1701615600_execution_time_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_length_index ATTACH PARTITION public.submissions_1684335600_1701615600_execution_time_length_idx;
-
-
---
--- Name: submissions_1684335600_1701615600_execution_time_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_point_index ATTACH PARTITION public.submissions_1684335600_1701615600_execution_time_point_idx;
-
-
---
--- Name: submissions_1684335600_1701615600_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_id_epoch_second_unique ATTACH PARTITION public.submissions_1684335600_1701615600_id_epoch_second_idx;
-
-
---
--- Name: submissions_1684335600_1701615600_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_1684335600_1701615600_language_epoch_second_idx;
-
-
---
--- Name: submissions_1684335600_1701615600_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_1684335600_1701615600_language_execution_time_idx;
-
-
---
--- Name: submissions_1684335600_1701615600_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_1684335600_1701615600_language_length_idx;
-
-
---
--- Name: submissions_1684335600_1701615600_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_1684335600_1701615600_language_point_idx;
-
-
---
--- Name: submissions_1684335600_1701615600_length_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_epoch_second_index ATTACH PARTITION public.submissions_1684335600_1701615600_length_epoch_second_idx;
-
-
---
--- Name: submissions_1684335600_1701615600_length_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_execution_time_index ATTACH PARTITION public.submissions_1684335600_1701615600_length_execution_time_idx;
-
-
---
--- Name: submissions_1684335600_1701615600_length_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_point_index ATTACH PARTITION public.submissions_1684335600_1701615600_length_point_idx;
-
-
---
--- Name: submissions_1684335600_1701615600_point_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_epoch_second_index ATTACH PARTITION public.submissions_1684335600_1701615600_point_epoch_second_idx;
-
-
---
--- Name: submissions_1684335600_1701615600_point_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_execution_time_index ATTACH PARTITION public.submissions_1684335600_1701615600_point_execution_time_idx;
-
-
---
--- Name: submissions_1684335600_1701615600_point_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_length_index ATTACH PARTITION public.submissions_1684335600_1701615600_point_length_idx;
-
-
---
--- Name: submissions_1684335600_1701615600_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_1684335600_1701615600_problem_id_epoch_second_idx;
-
-
---
--- Name: submissions_1684335600_1701615600_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_1684335600_1701615600_problem_id_execution_time_idx;
-
-
---
--- Name: submissions_1684335600_1701615600_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_1684335600_1701615600_problem_id_length_idx;
-
-
---
--- Name: submissions_1684335600_1701615600_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_1684335600_1701615600_problem_id_point_idx;
-
-
---
--- Name: submissions_1684335600_1701615600_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_1684335600_1701615600_result_epoch_second_idx;
-
-
---
--- Name: submissions_1684335600_1701615600_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_1684335600_1701615600_result_execution_time_idx;
-
-
---
--- Name: submissions_1684335600_1701615600_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_1684335600_1701615600_result_length_idx;
-
-
---
--- Name: submissions_1684335600_1701615600_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_1684335600_1701615600_result_point_idx;
-
-
---
--- Name: submissions_1684335600_1701615600_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_1684335600_1701615600_user_id_epoch_second_idx;
-
-
---
--- Name: submissions_1684335600_1701615600_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_1684335600_1701615600_user_id_execution_time_idx;
-
-
---
--- Name: submissions_1684335600_1701615600_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_1684335600_1701615600_user_id_length_idx;
-
-
---
--- Name: submissions_1684335600_1701615600_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_1684335600_1701615600_user_id_point_idx;
-
-
---
--- Name: submissions_1684335600_17016156_execution_time_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_epoch_second_index ATTACH PARTITION public.submissions_1684335600_17016156_execution_time_epoch_second_idx;
-
-
---
--- Name: submissions_1701615600_1718895600_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_1701615600_1718895600_contest_id_epoch_second_idx;
-
-
---
--- Name: submissions_1701615600_1718895600_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_1701615600_1718895600_contest_id_execution_time_idx;
-
-
---
--- Name: submissions_1701615600_1718895600_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_1701615600_1718895600_contest_id_length_idx;
-
-
---
--- Name: submissions_1701615600_1718895600_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_1701615600_1718895600_contest_id_point_idx;
-
-
---
--- Name: submissions_1701615600_1718895600_epoch_second_updated_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_updated_at_index ATTACH PARTITION public.submissions_1701615600_1718895600_epoch_second_updated_at_idx;
-
-
---
--- Name: submissions_1701615600_1718895600_execution_time_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_length_index ATTACH PARTITION public.submissions_1701615600_1718895600_execution_time_length_idx;
-
-
---
--- Name: submissions_1701615600_1718895600_execution_time_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_point_index ATTACH PARTITION public.submissions_1701615600_1718895600_execution_time_point_idx;
-
-
---
--- Name: submissions_1701615600_1718895600_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_id_epoch_second_unique ATTACH PARTITION public.submissions_1701615600_1718895600_id_epoch_second_idx;
-
-
---
--- Name: submissions_1701615600_1718895600_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_1701615600_1718895600_language_epoch_second_idx;
-
-
---
--- Name: submissions_1701615600_1718895600_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_1701615600_1718895600_language_execution_time_idx;
-
-
---
--- Name: submissions_1701615600_1718895600_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_1701615600_1718895600_language_length_idx;
-
-
---
--- Name: submissions_1701615600_1718895600_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_1701615600_1718895600_language_point_idx;
-
-
---
--- Name: submissions_1701615600_1718895600_length_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_epoch_second_index ATTACH PARTITION public.submissions_1701615600_1718895600_length_epoch_second_idx;
-
-
---
--- Name: submissions_1701615600_1718895600_length_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_execution_time_index ATTACH PARTITION public.submissions_1701615600_1718895600_length_execution_time_idx;
-
-
---
--- Name: submissions_1701615600_1718895600_length_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_point_index ATTACH PARTITION public.submissions_1701615600_1718895600_length_point_idx;
-
-
---
--- Name: submissions_1701615600_1718895600_point_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_epoch_second_index ATTACH PARTITION public.submissions_1701615600_1718895600_point_epoch_second_idx;
-
-
---
--- Name: submissions_1701615600_1718895600_point_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_execution_time_index ATTACH PARTITION public.submissions_1701615600_1718895600_point_execution_time_idx;
-
-
---
--- Name: submissions_1701615600_1718895600_point_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_length_index ATTACH PARTITION public.submissions_1701615600_1718895600_point_length_idx;
-
-
---
--- Name: submissions_1701615600_1718895600_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_1701615600_1718895600_problem_id_epoch_second_idx;
-
-
---
--- Name: submissions_1701615600_1718895600_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_1701615600_1718895600_problem_id_execution_time_idx;
-
-
---
--- Name: submissions_1701615600_1718895600_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_1701615600_1718895600_problem_id_length_idx;
-
-
---
--- Name: submissions_1701615600_1718895600_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_1701615600_1718895600_problem_id_point_idx;
-
-
---
--- Name: submissions_1701615600_1718895600_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_1701615600_1718895600_result_epoch_second_idx;
-
-
---
--- Name: submissions_1701615600_1718895600_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_1701615600_1718895600_result_execution_time_idx;
-
-
---
--- Name: submissions_1701615600_1718895600_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_1701615600_1718895600_result_length_idx;
-
-
---
--- Name: submissions_1701615600_1718895600_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_1701615600_1718895600_result_point_idx;
-
-
---
--- Name: submissions_1701615600_1718895600_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_1701615600_1718895600_user_id_epoch_second_idx;
-
-
---
--- Name: submissions_1701615600_1718895600_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_1701615600_1718895600_user_id_execution_time_idx;
-
-
---
--- Name: submissions_1701615600_1718895600_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_1701615600_1718895600_user_id_length_idx;
-
-
---
--- Name: submissions_1701615600_1718895600_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_1701615600_1718895600_user_id_point_idx;
-
-
---
--- Name: submissions_1701615600_17188956_execution_time_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_epoch_second_index ATTACH PARTITION public.submissions_1701615600_17188956_execution_time_epoch_second_idx;
-
-
---
--- Name: submissions_1718895600_1736175600_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_1718895600_1736175600_contest_id_epoch_second_idx;
-
-
---
--- Name: submissions_1718895600_1736175600_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_1718895600_1736175600_contest_id_execution_time_idx;
-
-
---
--- Name: submissions_1718895600_1736175600_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_1718895600_1736175600_contest_id_length_idx;
-
-
---
--- Name: submissions_1718895600_1736175600_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_1718895600_1736175600_contest_id_point_idx;
-
-
---
--- Name: submissions_1718895600_1736175600_epoch_second_updated_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_updated_at_index ATTACH PARTITION public.submissions_1718895600_1736175600_epoch_second_updated_at_idx;
-
-
---
--- Name: submissions_1718895600_1736175600_execution_time_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_length_index ATTACH PARTITION public.submissions_1718895600_1736175600_execution_time_length_idx;
-
-
---
--- Name: submissions_1718895600_1736175600_execution_time_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_point_index ATTACH PARTITION public.submissions_1718895600_1736175600_execution_time_point_idx;
-
-
---
--- Name: submissions_1718895600_1736175600_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_id_epoch_second_unique ATTACH PARTITION public.submissions_1718895600_1736175600_id_epoch_second_idx;
-
-
---
--- Name: submissions_1718895600_1736175600_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_1718895600_1736175600_language_epoch_second_idx;
-
-
---
--- Name: submissions_1718895600_1736175600_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_1718895600_1736175600_language_execution_time_idx;
-
-
---
--- Name: submissions_1718895600_1736175600_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_1718895600_1736175600_language_length_idx;
-
-
---
--- Name: submissions_1718895600_1736175600_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_1718895600_1736175600_language_point_idx;
-
-
---
--- Name: submissions_1718895600_1736175600_length_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_epoch_second_index ATTACH PARTITION public.submissions_1718895600_1736175600_length_epoch_second_idx;
-
-
---
--- Name: submissions_1718895600_1736175600_length_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_execution_time_index ATTACH PARTITION public.submissions_1718895600_1736175600_length_execution_time_idx;
-
-
---
--- Name: submissions_1718895600_1736175600_length_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_point_index ATTACH PARTITION public.submissions_1718895600_1736175600_length_point_idx;
-
-
---
--- Name: submissions_1718895600_1736175600_point_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_epoch_second_index ATTACH PARTITION public.submissions_1718895600_1736175600_point_epoch_second_idx;
-
-
---
--- Name: submissions_1718895600_1736175600_point_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_execution_time_index ATTACH PARTITION public.submissions_1718895600_1736175600_point_execution_time_idx;
-
-
---
--- Name: submissions_1718895600_1736175600_point_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_length_index ATTACH PARTITION public.submissions_1718895600_1736175600_point_length_idx;
-
-
---
--- Name: submissions_1718895600_1736175600_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_1718895600_1736175600_problem_id_epoch_second_idx;
-
-
---
--- Name: submissions_1718895600_1736175600_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_1718895600_1736175600_problem_id_execution_time_idx;
-
-
---
--- Name: submissions_1718895600_1736175600_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_1718895600_1736175600_problem_id_length_idx;
-
-
---
--- Name: submissions_1718895600_1736175600_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_1718895600_1736175600_problem_id_point_idx;
-
-
---
--- Name: submissions_1718895600_1736175600_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_1718895600_1736175600_result_epoch_second_idx;
-
-
---
--- Name: submissions_1718895600_1736175600_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_1718895600_1736175600_result_execution_time_idx;
-
-
---
--- Name: submissions_1718895600_1736175600_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_1718895600_1736175600_result_length_idx;
-
-
---
--- Name: submissions_1718895600_1736175600_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_1718895600_1736175600_result_point_idx;
-
-
---
--- Name: submissions_1718895600_1736175600_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_1718895600_1736175600_user_id_epoch_second_idx;
-
-
---
--- Name: submissions_1718895600_1736175600_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_1718895600_1736175600_user_id_execution_time_idx;
-
-
---
--- Name: submissions_1718895600_1736175600_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_1718895600_1736175600_user_id_length_idx;
-
-
---
--- Name: submissions_1718895600_1736175600_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_1718895600_1736175600_user_id_point_idx;
-
-
---
--- Name: submissions_1718895600_17361756_execution_time_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_epoch_second_index ATTACH PARTITION public.submissions_1718895600_17361756_execution_time_epoch_second_idx;
-
-
---
--- Name: submissions_1736175600_1753455600_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_1736175600_1753455600_contest_id_epoch_second_idx;
-
-
---
--- Name: submissions_1736175600_1753455600_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_1736175600_1753455600_contest_id_execution_time_idx;
-
-
---
--- Name: submissions_1736175600_1753455600_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_1736175600_1753455600_contest_id_length_idx;
-
-
---
--- Name: submissions_1736175600_1753455600_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_1736175600_1753455600_contest_id_point_idx;
-
-
---
--- Name: submissions_1736175600_1753455600_epoch_second_updated_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_updated_at_index ATTACH PARTITION public.submissions_1736175600_1753455600_epoch_second_updated_at_idx;
-
-
---
--- Name: submissions_1736175600_1753455600_execution_time_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_length_index ATTACH PARTITION public.submissions_1736175600_1753455600_execution_time_length_idx;
-
-
---
--- Name: submissions_1736175600_1753455600_execution_time_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_point_index ATTACH PARTITION public.submissions_1736175600_1753455600_execution_time_point_idx;
-
-
---
--- Name: submissions_1736175600_1753455600_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_id_epoch_second_unique ATTACH PARTITION public.submissions_1736175600_1753455600_id_epoch_second_idx;
-
-
---
--- Name: submissions_1736175600_1753455600_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_1736175600_1753455600_language_epoch_second_idx;
-
-
---
--- Name: submissions_1736175600_1753455600_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_1736175600_1753455600_language_execution_time_idx;
-
-
---
--- Name: submissions_1736175600_1753455600_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_1736175600_1753455600_language_length_idx;
-
-
---
--- Name: submissions_1736175600_1753455600_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_1736175600_1753455600_language_point_idx;
-
-
---
--- Name: submissions_1736175600_1753455600_length_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_epoch_second_index ATTACH PARTITION public.submissions_1736175600_1753455600_length_epoch_second_idx;
-
-
---
--- Name: submissions_1736175600_1753455600_length_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_execution_time_index ATTACH PARTITION public.submissions_1736175600_1753455600_length_execution_time_idx;
-
-
---
--- Name: submissions_1736175600_1753455600_length_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_point_index ATTACH PARTITION public.submissions_1736175600_1753455600_length_point_idx;
-
-
---
--- Name: submissions_1736175600_1753455600_point_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_epoch_second_index ATTACH PARTITION public.submissions_1736175600_1753455600_point_epoch_second_idx;
-
-
---
--- Name: submissions_1736175600_1753455600_point_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_execution_time_index ATTACH PARTITION public.submissions_1736175600_1753455600_point_execution_time_idx;
-
-
---
--- Name: submissions_1736175600_1753455600_point_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_length_index ATTACH PARTITION public.submissions_1736175600_1753455600_point_length_idx;
-
-
---
--- Name: submissions_1736175600_1753455600_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_1736175600_1753455600_problem_id_epoch_second_idx;
-
-
---
--- Name: submissions_1736175600_1753455600_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_1736175600_1753455600_problem_id_execution_time_idx;
-
-
---
--- Name: submissions_1736175600_1753455600_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_1736175600_1753455600_problem_id_length_idx;
-
-
---
--- Name: submissions_1736175600_1753455600_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_1736175600_1753455600_problem_id_point_idx;
-
-
---
--- Name: submissions_1736175600_1753455600_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_1736175600_1753455600_result_epoch_second_idx;
-
-
---
--- Name: submissions_1736175600_1753455600_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_1736175600_1753455600_result_execution_time_idx;
-
-
---
--- Name: submissions_1736175600_1753455600_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_1736175600_1753455600_result_length_idx;
-
-
---
--- Name: submissions_1736175600_1753455600_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_1736175600_1753455600_result_point_idx;
-
-
---
--- Name: submissions_1736175600_1753455600_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_1736175600_1753455600_user_id_epoch_second_idx;
-
-
---
--- Name: submissions_1736175600_1753455600_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_1736175600_1753455600_user_id_execution_time_idx;
-
-
---
--- Name: submissions_1736175600_1753455600_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_1736175600_1753455600_user_id_length_idx;
-
-
---
--- Name: submissions_1736175600_1753455600_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_1736175600_1753455600_user_id_point_idx;
-
-
---
--- Name: submissions_1736175600_17534556_execution_time_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_epoch_second_index ATTACH PARTITION public.submissions_1736175600_17534556_execution_time_epoch_second_idx;
-
-
---
--- Name: submissions_1753455600_1770735600_contest_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_epoch_second_index ATTACH PARTITION public.submissions_1753455600_1770735600_contest_id_epoch_second_idx;
-
-
---
--- Name: submissions_1753455600_1770735600_contest_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_execution_time_index ATTACH PARTITION public.submissions_1753455600_1770735600_contest_id_execution_time_idx;
-
-
---
--- Name: submissions_1753455600_1770735600_contest_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_length_index ATTACH PARTITION public.submissions_1753455600_1770735600_contest_id_length_idx;
-
-
---
--- Name: submissions_1753455600_1770735600_contest_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_contest_id_point_index ATTACH PARTITION public.submissions_1753455600_1770735600_contest_id_point_idx;
-
-
---
--- Name: submissions_1753455600_1770735600_epoch_second_updated_at_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_updated_at_index ATTACH PARTITION public.submissions_1753455600_1770735600_epoch_second_updated_at_idx;
-
-
---
--- Name: submissions_1753455600_1770735600_execution_time_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_length_index ATTACH PARTITION public.submissions_1753455600_1770735600_execution_time_length_idx;
-
-
---
--- Name: submissions_1753455600_1770735600_execution_time_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_point_index ATTACH PARTITION public.submissions_1753455600_1770735600_execution_time_point_idx;
-
-
---
--- Name: submissions_1753455600_1770735600_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_id_epoch_second_unique ATTACH PARTITION public.submissions_1753455600_1770735600_id_epoch_second_idx;
-
-
---
--- Name: submissions_1753455600_1770735600_language_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_epoch_second_index ATTACH PARTITION public.submissions_1753455600_1770735600_language_epoch_second_idx;
-
-
---
--- Name: submissions_1753455600_1770735600_language_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_execution_time_index ATTACH PARTITION public.submissions_1753455600_1770735600_language_execution_time_idx;
-
-
---
--- Name: submissions_1753455600_1770735600_language_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_length_index ATTACH PARTITION public.submissions_1753455600_1770735600_language_length_idx;
-
-
---
--- Name: submissions_1753455600_1770735600_language_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_language_point_index ATTACH PARTITION public.submissions_1753455600_1770735600_language_point_idx;
-
-
---
--- Name: submissions_1753455600_1770735600_length_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_epoch_second_index ATTACH PARTITION public.submissions_1753455600_1770735600_length_epoch_second_idx;
-
-
---
--- Name: submissions_1753455600_1770735600_length_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_execution_time_index ATTACH PARTITION public.submissions_1753455600_1770735600_length_execution_time_idx;
-
-
---
--- Name: submissions_1753455600_1770735600_length_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_length_point_index ATTACH PARTITION public.submissions_1753455600_1770735600_length_point_idx;
-
-
---
--- Name: submissions_1753455600_1770735600_point_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_epoch_second_index ATTACH PARTITION public.submissions_1753455600_1770735600_point_epoch_second_idx;
-
-
---
--- Name: submissions_1753455600_1770735600_point_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_execution_time_index ATTACH PARTITION public.submissions_1753455600_1770735600_point_execution_time_idx;
-
-
---
--- Name: submissions_1753455600_1770735600_point_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_point_length_index ATTACH PARTITION public.submissions_1753455600_1770735600_point_length_idx;
-
-
---
--- Name: submissions_1753455600_1770735600_problem_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_epoch_second_index ATTACH PARTITION public.submissions_1753455600_1770735600_problem_id_epoch_second_idx;
-
-
---
--- Name: submissions_1753455600_1770735600_problem_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_execution_time_index ATTACH PARTITION public.submissions_1753455600_1770735600_problem_id_execution_time_idx;
-
-
---
--- Name: submissions_1753455600_1770735600_problem_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_length_index ATTACH PARTITION public.submissions_1753455600_1770735600_problem_id_length_idx;
-
-
---
--- Name: submissions_1753455600_1770735600_problem_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_problem_id_point_index ATTACH PARTITION public.submissions_1753455600_1770735600_problem_id_point_idx;
-
-
---
--- Name: submissions_1753455600_1770735600_result_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_epoch_second_index ATTACH PARTITION public.submissions_1753455600_1770735600_result_epoch_second_idx;
-
-
---
--- Name: submissions_1753455600_1770735600_result_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_execution_time_index ATTACH PARTITION public.submissions_1753455600_1770735600_result_execution_time_idx;
-
-
---
--- Name: submissions_1753455600_1770735600_result_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_length_index ATTACH PARTITION public.submissions_1753455600_1770735600_result_length_idx;
-
-
---
--- Name: submissions_1753455600_1770735600_result_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_result_point_index ATTACH PARTITION public.submissions_1753455600_1770735600_result_point_idx;
-
-
---
--- Name: submissions_1753455600_1770735600_user_id_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_epoch_second_index ATTACH PARTITION public.submissions_1753455600_1770735600_user_id_epoch_second_idx;
-
-
---
--- Name: submissions_1753455600_1770735600_user_id_execution_time_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_execution_time_index ATTACH PARTITION public.submissions_1753455600_1770735600_user_id_execution_time_idx;
-
-
---
--- Name: submissions_1753455600_1770735600_user_id_length_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_length_index ATTACH PARTITION public.submissions_1753455600_1770735600_user_id_length_idx;
-
-
---
--- Name: submissions_1753455600_1770735600_user_id_point_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_user_id_point_index ATTACH PARTITION public.submissions_1753455600_1770735600_user_id_point_idx;
-
-
---
--- Name: submissions_1753455600_17707356_execution_time_epoch_second_idx; Type: INDEX ATTACH; Schema: public; Owner: -
---
-
-ALTER INDEX public.submissions_execution_time_epoch_second_index ATTACH PARTITION public.submissions_1753455600_17707356_execution_time_epoch_second_idx;
+ALTER INDEX public.submissions_user_id_result_index ATTACH PARTITION public.submissions_2029_user_id_result_idx;
 
 
 --
@@ -13395,4 +7132,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20240824091517'),
     ('20240830102505'),
     ('20240831033102'),
-    ('20240831033424');
+    ('20240831033424'),
+    ('20241104132841');
