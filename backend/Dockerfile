@@ -9,18 +9,19 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
+
+COPY ./api /app/api
 COPY ./atcoder /app/atcoder
 COPY ./cmd /app/cmd
 COPY ./crawl /app/crawl
-COPY ./grpc /app/grpc
+COPY ./go.mod /app/go.mod
+COPY ./go.sum /app/go.sum
 COPY ./internal /app/internal
+COPY ./main.go /app/main.go
 COPY ./queries /app/queries
 COPY ./repository /app/repository
 COPY ./searchers /app/searchers
 COPY ./update /app/update
-COPY ./go.mod /app/go.mod
-COPY ./go.sum /app/go.sum
-COPY ./main.go /app/main.go
 
 RUN go build -o /app/atcodersearch
 
