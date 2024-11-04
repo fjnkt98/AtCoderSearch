@@ -1,21 +1,23 @@
 include .env
 
+.PHONY: build-frontend
+build-frontend:
+	$(MAKE) -C frontend build
+
 .PHONY: build-backend
 build-backend:
-	$(MAKE) -C backend ogen
-	$(MAKE) -C backend sqlc
 	$(MAKE) -C backend build
 
+.PHONY: build
+build: build-backend build-frontend
+
 .PHONY: test-backend
-test-backend:
-	$(MAKE) -C backend ogen
-	$(MAKE) -C backend sqlc
+test-backend: build-backend
 	$(MAKE) -C backend test
 
-.PHONY: build-image
-build-image:
-	$(MAKE) -C backend build-image
+.PHONY: test
+test: test-backend
 
-.PHONY: ogen
-ogen:
-	$(MAKE) -C backend ogen
+.PHONY: build-image
+build-image: build-backend
+	$(MAKE) -C backend build-image

@@ -1,20 +1,20 @@
-.PHONY: build
-build: ogen
-	@go build -o build/atcodersearch
-
 .PHONY: test
 test: ogen
-	@go test -cover ./... -coverprofile=cover.out
-	@go tool cover -html=cover.out -o cover.html
+	go test -cover ./... -coverprofile=cover.out
+	go tool cover -html=cover.out -o cover.html
 
 .PHONY: sqlc
 sqlc:
-	@sqlc generate
-
-.PHONY: build-image
-build-image:
-	@docker build -t atcodersearch-batch:latest .
+	sqlc generate
 
 .PHONY: ogen
 ogen:
-	@ogen -package api -target api -clean api/openapi.yaml
+	ogen -package api -target api -clean api/openapi.yaml
+
+.PHONY: build
+build: sqlc ogen
+	go build -o build/atcodersearch
+
+.PHONY: build-image
+build-image:
+	docker build -t atcodersearch-batch:latest .
