@@ -307,6 +307,8 @@ paths:
                 properties:
                   time:
                     type: integer
+                  index:
+                    type: integer
                   items:
                     type: array
                     items:

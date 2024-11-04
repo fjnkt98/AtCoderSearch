@@ -362,12 +362,18 @@ func (s *APIProblemPostReqSortItem) UnmarshalText(data []byte) error {
 
 type APISubmissionPostOK struct {
 	Time  int          `json:"time"`
+	Index int          `json:"index"`
 	Items []Submission `json:"items"`
 }
 
 // GetTime returns the value of Time.
 func (s *APISubmissionPostOK) GetTime() int {
 	return s.Time
+}
+
+// GetIndex returns the value of Index.
+func (s *APISubmissionPostOK) GetIndex() int {
+	return s.Index
 }
 
 // GetItems returns the value of Items.
@@ -378,6 +384,11 @@ func (s *APISubmissionPostOK) GetItems() []Submission {
 // SetTime sets the value of Time.
 func (s *APISubmissionPostOK) SetTime(val int) {
 	s.Time = val
+}
+
+// SetIndex sets the value of Index.
+func (s *APISubmissionPostOK) SetIndex(val int) {
+	s.Index = val
 }
 
 // SetItems sets the value of Items.

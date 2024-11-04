@@ -217,6 +217,7 @@ export interface paths {
                     content: {
                         "application/json": {
                             time: number;
+                            index: number;
                             items: components["schemas"]["Submission"][];
                         };
                     };

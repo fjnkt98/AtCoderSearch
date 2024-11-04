@@ -273,13 +273,19 @@ export default function UserPage() {
 
             <input type="hidden" name="page" value="1" />
 
-            <div className="flex flex-row items-center justify-end">
+            <div className="flex flex-row items-center justify-end gap-4">
               <button
                 type="submit"
                 className="px-3 py-2 rounded-lg bg-blue-600 text-gray-100"
               >
                 絞り込む
               </button>
+
+              <input
+                type="reset"
+                value="リセット"
+                className="block text-sm px-3 py-2 border border-gray-700 dark:border-gray-400 cursor-pointer select-none rounded-lg"
+              />
             </div>
           </Form>
         </div>

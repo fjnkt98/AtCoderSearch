@@ -688,6 +688,7 @@ func (s *Searcher) APISubmissionPost(ctx context.Context, req *api.APISubmission
 
 	return &api.APISubmissionPostOK{
 		Time:  int(time.Since(start) / time.Millisecond),
+		Index: req.Page.Or(1),
 		Items: items,
 	}, nil
 }

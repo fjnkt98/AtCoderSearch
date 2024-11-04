@@ -905,6 +905,10 @@ func (s *APISubmissionPostOK) encodeFields(e *jx.Encoder) {
 		e.Int(s.Time)
 	}
 	{
+		e.FieldStart("index")
+		e.Int(s.Index)
+	}
+	{
 		e.FieldStart("items")
 		e.ArrStart()
 		for _, elem := range s.Items {
@@ -914,9 +918,10 @@ func (s *APISubmissionPostOK) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfAPISubmissionPostOK = [2]string{
+var jsonFieldsNameOfAPISubmissionPostOK = [3]string{
 	0: "time",
-	1: "items",
+	1: "index",
+	2: "items",
 }
 
 // Decode decodes APISubmissionPostOK from json.
@@ -940,8 +945,20 @@ func (s *APISubmissionPostOK) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"time\"")
 			}
-		case "items":
+		case "index":
 			requiredBitSet[0] |= 1 << 1
+			if err := func() error {
+				v, err := d.Int()
+				s.Index = int(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"index\"")
+			}
+		case "items":
+			requiredBitSet[0] |= 1 << 2
 			if err := func() error {
 				s.Items = make([]Submission, 0)
 				if err := d.Arr(func(d *jx.Decoder) error {
@@ -968,7 +985,7 @@ func (s *APISubmissionPostOK) Decode(d *jx.Decoder) error {
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [1]uint8{
-		0b00000011,
+		0b00000111,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.

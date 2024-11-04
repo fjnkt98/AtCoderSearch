@@ -62,3 +62,19 @@ export const difficultyToTextColor = (
   }
   return "text-amber-500 dark:text-amber-300";
 };
+
+export const resultToTextColor = (result: string): string => {
+  switch (result) {
+    case "AC":
+      return "text-green-600 dark:text-green-500";
+    case "WA":
+    case "CE":
+    case "TLE":
+    case "MLE":
+      return "text-yellow-600 dark:text-yellow-400";
+    case "RE":
+      return "text-red-600 dark:text-red-500";
+    default:
+      return "";
+  }
+};
