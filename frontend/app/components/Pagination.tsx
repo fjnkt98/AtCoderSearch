@@ -20,7 +20,8 @@ export default function Pagination({ to, params, current, end, width }: Props) {
   for (let i = left; i <= right; i++) {
     if (i === 1) {
       containsBegin = true;
-    } else if (i === end) {
+    }
+    if (i === end) {
       containsEnd = true;
     }
     labels.push(i.toString());
