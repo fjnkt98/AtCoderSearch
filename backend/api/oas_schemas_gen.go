@@ -876,16 +876,20 @@ func (s *APIUserPostReqFacetItem) UnmarshalText(data []byte) error {
 type APIUserPostReqSortItem string
 
 const (
-	APIUserPostReqSortItemRatingAsc     APIUserPostReqSortItem = "rating:asc"
-	APIUserPostReqSortItemRatingDesc    APIUserPostReqSortItem = "rating:desc"
-	APIUserPostReqSortItemBirthYearAsc  APIUserPostReqSortItem = "birthYear:asc"
-	APIUserPostReqSortItemBirthYearDesc APIUserPostReqSortItem = "birthYear:desc"
-	APIUserPostReqSortItemJoinCountAsc  APIUserPostReqSortItem = "joinCount:asc"
-	APIUserPostReqSortItemJoinCountDesc APIUserPostReqSortItem = "joinCount:desc"
-	APIUserPostReqSortItemUserIdAsc     APIUserPostReqSortItem = "userId:asc"
-	APIUserPostReqSortItemUserIdDesc    APIUserPostReqSortItem = "userId:desc"
-	APIUserPostReqSortItemRankAsc       APIUserPostReqSortItem = "rank:asc"
-	APIUserPostReqSortItemRankDesc      APIUserPostReqSortItem = "rank:desc"
+	APIUserPostReqSortItemRatingAsc           APIUserPostReqSortItem = "rating:asc"
+	APIUserPostReqSortItemRatingDesc          APIUserPostReqSortItem = "rating:desc"
+	APIUserPostReqSortItemBirthYearAsc        APIUserPostReqSortItem = "birthYear:asc"
+	APIUserPostReqSortItemBirthYearDesc       APIUserPostReqSortItem = "birthYear:desc"
+	APIUserPostReqSortItemJoinCountAsc        APIUserPostReqSortItem = "joinCount:asc"
+	APIUserPostReqSortItemJoinCountDesc       APIUserPostReqSortItem = "joinCount:desc"
+	APIUserPostReqSortItemUserIdAsc           APIUserPostReqSortItem = "userId:asc"
+	APIUserPostReqSortItemUserIdDesc          APIUserPostReqSortItem = "userId:desc"
+	APIUserPostReqSortItemRankAsc             APIUserPostReqSortItem = "rank:asc"
+	APIUserPostReqSortItemRankDesc            APIUserPostReqSortItem = "rank:desc"
+	APIUserPostReqSortItemAcceptedAsc         APIUserPostReqSortItem = "accepted:asc"
+	APIUserPostReqSortItemAcceptedDesc        APIUserPostReqSortItem = "accepted:desc"
+	APIUserPostReqSortItemSubmissionCountAsc  APIUserPostReqSortItem = "submissionCount:asc"
+	APIUserPostReqSortItemSubmissionCountDesc APIUserPostReqSortItem = "submissionCount:desc"
 )
 
 // AllValues returns all APIUserPostReqSortItem values.
@@ -901,6 +905,10 @@ func (APIUserPostReqSortItem) AllValues() []APIUserPostReqSortItem {
 		APIUserPostReqSortItemUserIdDesc,
 		APIUserPostReqSortItemRankAsc,
 		APIUserPostReqSortItemRankDesc,
+		APIUserPostReqSortItemAcceptedAsc,
+		APIUserPostReqSortItemAcceptedDesc,
+		APIUserPostReqSortItemSubmissionCountAsc,
+		APIUserPostReqSortItemSubmissionCountDesc,
 	}
 }
 
@@ -926,6 +934,14 @@ func (s APIUserPostReqSortItem) MarshalText() ([]byte, error) {
 	case APIUserPostReqSortItemRankAsc:
 		return []byte(s), nil
 	case APIUserPostReqSortItemRankDesc:
+		return []byte(s), nil
+	case APIUserPostReqSortItemAcceptedAsc:
+		return []byte(s), nil
+	case APIUserPostReqSortItemAcceptedDesc:
+		return []byte(s), nil
+	case APIUserPostReqSortItemSubmissionCountAsc:
+		return []byte(s), nil
+	case APIUserPostReqSortItemSubmissionCountDesc:
 		return []byte(s), nil
 	default:
 		return nil, errors.Errorf("invalid value: %q", s)
@@ -964,6 +980,18 @@ func (s *APIUserPostReqSortItem) UnmarshalText(data []byte) error {
 		return nil
 	case APIUserPostReqSortItemRankDesc:
 		*s = APIUserPostReqSortItemRankDesc
+		return nil
+	case APIUserPostReqSortItemAcceptedAsc:
+		*s = APIUserPostReqSortItemAcceptedAsc
+		return nil
+	case APIUserPostReqSortItemAcceptedDesc:
+		*s = APIUserPostReqSortItemAcceptedDesc
+		return nil
+	case APIUserPostReqSortItemSubmissionCountAsc:
+		*s = APIUserPostReqSortItemSubmissionCountAsc
+		return nil
+	case APIUserPostReqSortItemSubmissionCountDesc:
+		*s = APIUserPostReqSortItemSubmissionCountDesc
 		return nil
 	default:
 		return errors.Errorf("invalid value: %q", data)

@@ -157,6 +157,10 @@ paths:
                       - "userId:desc"
                       - "rank:asc"
                       - "rank:desc"
+                      - "accepted:asc"
+                      - "accepted:desc"
+                      - "submissionCount:asc"
+                      - "submissionCount:desc"
                 facet:
                   type: array
                   items:

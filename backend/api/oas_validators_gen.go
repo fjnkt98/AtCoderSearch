@@ -593,6 +593,14 @@ func (s APIUserPostReqSortItem) Validate() error {
 		return nil
 	case "rank:desc":
 		return nil
+	case "accepted:asc":
+		return nil
+	case "accepted:desc":
+		return nil
+	case "submissionCount:asc":
+		return nil
+	case "submissionCount:desc":
+		return nil
 	default:
 		return errors.Errorf("invalid value: %v", s)
 	}
