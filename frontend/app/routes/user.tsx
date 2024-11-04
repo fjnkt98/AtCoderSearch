@@ -90,7 +90,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return json(data);
 };
 
-export default function ProblemPage() {
+export default function UserPage() {
   const data = useLoaderData<typeof loader>();
   const [searchParams] = useSearchParams();
   const [menuOpen, setMenuOpen] = useState(false);
