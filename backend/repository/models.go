@@ -78,7 +78,7 @@ type SubmissionCrawlHistory struct {
 	FinishedAt *time.Time `db:"finished_at"`
 }
 
-type Submissions01304175600 struct {
+type Submissions2010 struct {
 	ID            int64     `db:"id"`
 	EpochSecond   int64     `db:"epoch_second"`
 	ProblemID     string    `db:"problem_id"`
@@ -92,7 +92,7 @@ type Submissions01304175600 struct {
 	UpdatedAt     time.Time `db:"updated_at"`
 }
 
-type Submissions13041756001321455600 struct {
+type Submissions2011 struct {
 	ID            int64     `db:"id"`
 	EpochSecond   int64     `db:"epoch_second"`
 	ProblemID     string    `db:"problem_id"`
@@ -106,7 +106,7 @@ type Submissions13041756001321455600 struct {
 	UpdatedAt     time.Time `db:"updated_at"`
 }
 
-type Submissions13214556001338735600 struct {
+type Submissions2012 struct {
 	ID            int64     `db:"id"`
 	EpochSecond   int64     `db:"epoch_second"`
 	ProblemID     string    `db:"problem_id"`
@@ -120,7 +120,7 @@ type Submissions13214556001338735600 struct {
 	UpdatedAt     time.Time `db:"updated_at"`
 }
 
-type Submissions13387356001356015600 struct {
+type Submissions2013 struct {
 	ID            int64     `db:"id"`
 	EpochSecond   int64     `db:"epoch_second"`
 	ProblemID     string    `db:"problem_id"`
@@ -134,7 +134,7 @@ type Submissions13387356001356015600 struct {
 	UpdatedAt     time.Time `db:"updated_at"`
 }
 
-type Submissions13560156001373295600 struct {
+type Submissions2014 struct {
 	ID            int64     `db:"id"`
 	EpochSecond   int64     `db:"epoch_second"`
 	ProblemID     string    `db:"problem_id"`
@@ -148,7 +148,7 @@ type Submissions13560156001373295600 struct {
 	UpdatedAt     time.Time `db:"updated_at"`
 }
 
-type Submissions13732956001390575600 struct {
+type Submissions2015 struct {
 	ID            int64     `db:"id"`
 	EpochSecond   int64     `db:"epoch_second"`
 	ProblemID     string    `db:"problem_id"`
@@ -162,7 +162,7 @@ type Submissions13732956001390575600 struct {
 	UpdatedAt     time.Time `db:"updated_at"`
 }
 
-type Submissions13905756001407855600 struct {
+type Submissions2016 struct {
 	ID            int64     `db:"id"`
 	EpochSecond   int64     `db:"epoch_second"`
 	ProblemID     string    `db:"problem_id"`
@@ -176,7 +176,7 @@ type Submissions13905756001407855600 struct {
 	UpdatedAt     time.Time `db:"updated_at"`
 }
 
-type Submissions14078556001425135600 struct {
+type Submissions2017 struct {
 	ID            int64     `db:"id"`
 	EpochSecond   int64     `db:"epoch_second"`
 	ProblemID     string    `db:"problem_id"`
@@ -190,7 +190,7 @@ type Submissions14078556001425135600 struct {
 	UpdatedAt     time.Time `db:"updated_at"`
 }
 
-type Submissions14251356001442415600 struct {
+type Submissions2018 struct {
 	ID            int64     `db:"id"`
 	EpochSecond   int64     `db:"epoch_second"`
 	ProblemID     string    `db:"problem_id"`
@@ -204,7 +204,7 @@ type Submissions14251356001442415600 struct {
 	UpdatedAt     time.Time `db:"updated_at"`
 }
 
-type Submissions14424156001459695600 struct {
+type Submissions2019 struct {
 	ID            int64     `db:"id"`
 	EpochSecond   int64     `db:"epoch_second"`
 	ProblemID     string    `db:"problem_id"`
@@ -218,7 +218,7 @@ type Submissions14424156001459695600 struct {
 	UpdatedAt     time.Time `db:"updated_at"`
 }
 
-type Submissions14596956001476975600 struct {
+type Submissions2020 struct {
 	ID            int64     `db:"id"`
 	EpochSecond   int64     `db:"epoch_second"`
 	ProblemID     string    `db:"problem_id"`
@@ -232,7 +232,7 @@ type Submissions14596956001476975600 struct {
 	UpdatedAt     time.Time `db:"updated_at"`
 }
 
-type Submissions14769756001494255600 struct {
+type Submissions2021 struct {
 	ID            int64     `db:"id"`
 	EpochSecond   int64     `db:"epoch_second"`
 	ProblemID     string    `db:"problem_id"`
@@ -246,7 +246,7 @@ type Submissions14769756001494255600 struct {
 	UpdatedAt     time.Time `db:"updated_at"`
 }
 
-type Submissions14942556001511535600 struct {
+type Submissions2022 struct {
 	ID            int64     `db:"id"`
 	EpochSecond   int64     `db:"epoch_second"`
 	ProblemID     string    `db:"problem_id"`
@@ -260,7 +260,7 @@ type Submissions14942556001511535600 struct {
 	UpdatedAt     time.Time `db:"updated_at"`
 }
 
-type Submissions15115356001528815600 struct {
+type Submissions2023 struct {
 	ID            int64     `db:"id"`
 	EpochSecond   int64     `db:"epoch_second"`
 	ProblemID     string    `db:"problem_id"`
@@ -274,7 +274,7 @@ type Submissions15115356001528815600 struct {
 	UpdatedAt     time.Time `db:"updated_at"`
 }
 
-type Submissions15288156001546095600 struct {
+type Submissions2024 struct {
 	ID            int64     `db:"id"`
 	EpochSecond   int64     `db:"epoch_second"`
 	ProblemID     string    `db:"problem_id"`
@@ -288,7 +288,7 @@ type Submissions15288156001546095600 struct {
 	UpdatedAt     time.Time `db:"updated_at"`
 }
 
-type Submissions15460956001563375600 struct {
+type Submissions2025 struct {
 	ID            int64     `db:"id"`
 	EpochSecond   int64     `db:"epoch_second"`
 	ProblemID     string    `db:"problem_id"`
@@ -302,7 +302,7 @@ type Submissions15460956001563375600 struct {
 	UpdatedAt     time.Time `db:"updated_at"`
 }
 
-type Submissions15633756001580655600 struct {
+type Submissions2026 struct {
 	ID            int64     `db:"id"`
 	EpochSecond   int64     `db:"epoch_second"`
 	ProblemID     string    `db:"problem_id"`
@@ -316,7 +316,7 @@ type Submissions15633756001580655600 struct {
 	UpdatedAt     time.Time `db:"updated_at"`
 }
 
-type Submissions15806556001597935600 struct {
+type Submissions2027 struct {
 	ID            int64     `db:"id"`
 	EpochSecond   int64     `db:"epoch_second"`
 	ProblemID     string    `db:"problem_id"`
@@ -330,7 +330,7 @@ type Submissions15806556001597935600 struct {
 	UpdatedAt     time.Time `db:"updated_at"`
 }
 
-type Submissions15979356001615215600 struct {
+type Submissions2028 struct {
 	ID            int64     `db:"id"`
 	EpochSecond   int64     `db:"epoch_second"`
 	ProblemID     string    `db:"problem_id"`
@@ -344,119 +344,7 @@ type Submissions15979356001615215600 struct {
 	UpdatedAt     time.Time `db:"updated_at"`
 }
 
-type Submissions16152156001632495600 struct {
-	ID            int64     `db:"id"`
-	EpochSecond   int64     `db:"epoch_second"`
-	ProblemID     string    `db:"problem_id"`
-	ContestID     *string   `db:"contest_id"`
-	UserID        *string   `db:"user_id"`
-	Language      *string   `db:"language"`
-	Point         *float64  `db:"point"`
-	Length        *int32    `db:"length"`
-	Result        *string   `db:"result"`
-	ExecutionTime *int32    `db:"execution_time"`
-	UpdatedAt     time.Time `db:"updated_at"`
-}
-
-type Submissions16324956001649775600 struct {
-	ID            int64     `db:"id"`
-	EpochSecond   int64     `db:"epoch_second"`
-	ProblemID     string    `db:"problem_id"`
-	ContestID     *string   `db:"contest_id"`
-	UserID        *string   `db:"user_id"`
-	Language      *string   `db:"language"`
-	Point         *float64  `db:"point"`
-	Length        *int32    `db:"length"`
-	Result        *string   `db:"result"`
-	ExecutionTime *int32    `db:"execution_time"`
-	UpdatedAt     time.Time `db:"updated_at"`
-}
-
-type Submissions16497756001667055600 struct {
-	ID            int64     `db:"id"`
-	EpochSecond   int64     `db:"epoch_second"`
-	ProblemID     string    `db:"problem_id"`
-	ContestID     *string   `db:"contest_id"`
-	UserID        *string   `db:"user_id"`
-	Language      *string   `db:"language"`
-	Point         *float64  `db:"point"`
-	Length        *int32    `db:"length"`
-	Result        *string   `db:"result"`
-	ExecutionTime *int32    `db:"execution_time"`
-	UpdatedAt     time.Time `db:"updated_at"`
-}
-
-type Submissions16670556001684335600 struct {
-	ID            int64     `db:"id"`
-	EpochSecond   int64     `db:"epoch_second"`
-	ProblemID     string    `db:"problem_id"`
-	ContestID     *string   `db:"contest_id"`
-	UserID        *string   `db:"user_id"`
-	Language      *string   `db:"language"`
-	Point         *float64  `db:"point"`
-	Length        *int32    `db:"length"`
-	Result        *string   `db:"result"`
-	ExecutionTime *int32    `db:"execution_time"`
-	UpdatedAt     time.Time `db:"updated_at"`
-}
-
-type Submissions16843356001701615600 struct {
-	ID            int64     `db:"id"`
-	EpochSecond   int64     `db:"epoch_second"`
-	ProblemID     string    `db:"problem_id"`
-	ContestID     *string   `db:"contest_id"`
-	UserID        *string   `db:"user_id"`
-	Language      *string   `db:"language"`
-	Point         *float64  `db:"point"`
-	Length        *int32    `db:"length"`
-	Result        *string   `db:"result"`
-	ExecutionTime *int32    `db:"execution_time"`
-	UpdatedAt     time.Time `db:"updated_at"`
-}
-
-type Submissions17016156001718895600 struct {
-	ID            int64     `db:"id"`
-	EpochSecond   int64     `db:"epoch_second"`
-	ProblemID     string    `db:"problem_id"`
-	ContestID     *string   `db:"contest_id"`
-	UserID        *string   `db:"user_id"`
-	Language      *string   `db:"language"`
-	Point         *float64  `db:"point"`
-	Length        *int32    `db:"length"`
-	Result        *string   `db:"result"`
-	ExecutionTime *int32    `db:"execution_time"`
-	UpdatedAt     time.Time `db:"updated_at"`
-}
-
-type Submissions17188956001736175600 struct {
-	ID            int64     `db:"id"`
-	EpochSecond   int64     `db:"epoch_second"`
-	ProblemID     string    `db:"problem_id"`
-	ContestID     *string   `db:"contest_id"`
-	UserID        *string   `db:"user_id"`
-	Language      *string   `db:"language"`
-	Point         *float64  `db:"point"`
-	Length        *int32    `db:"length"`
-	Result        *string   `db:"result"`
-	ExecutionTime *int32    `db:"execution_time"`
-	UpdatedAt     time.Time `db:"updated_at"`
-}
-
-type Submissions17361756001753455600 struct {
-	ID            int64     `db:"id"`
-	EpochSecond   int64     `db:"epoch_second"`
-	ProblemID     string    `db:"problem_id"`
-	ContestID     *string   `db:"contest_id"`
-	UserID        *string   `db:"user_id"`
-	Language      *string   `db:"language"`
-	Point         *float64  `db:"point"`
-	Length        *int32    `db:"length"`
-	Result        *string   `db:"result"`
-	ExecutionTime *int32    `db:"execution_time"`
-	UpdatedAt     time.Time `db:"updated_at"`
-}
-
-type Submissions17534556001770735600 struct {
+type Submissions2029 struct {
 	ID            int64     `db:"id"`
 	EpochSecond   int64     `db:"epoch_second"`
 	ProblemID     string    `db:"problem_id"`
