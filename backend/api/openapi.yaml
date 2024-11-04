@@ -489,6 +489,10 @@ components:
           type: integer
         userUrl:
           type: string
+        accepted:
+          type: integer
+        submissionCount:
+          type: integer
       required:
         - userId
         - rating
@@ -497,6 +501,8 @@ components:
         - rank
         - wins
         - userUrl
+        - accepted
+        - submissionCount
     Submission:
       type: object
       properties:

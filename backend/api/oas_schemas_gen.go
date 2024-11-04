@@ -1731,18 +1731,20 @@ func (s *Submission) SetExecutionTime(val OptInt) {
 
 // Ref: #/components/schemas/User
 type User struct {
-	UserId        string    `json:"userId"`
-	Rating        int       `json:"rating"`
-	HighestRating int       `json:"highestRating"`
-	Affiliation   OptString `json:"affiliation"`
-	BirthYear     OptInt    `json:"birthYear"`
-	Country       OptString `json:"country"`
-	Crown         OptString `json:"crown"`
-	JoinCount     int       `json:"joinCount"`
-	Rank          int       `json:"rank"`
-	ActiveRank    OptInt    `json:"activeRank"`
-	Wins          int       `json:"wins"`
-	UserUrl       string    `json:"userUrl"`
+	UserId          string    `json:"userId"`
+	Rating          int       `json:"rating"`
+	HighestRating   int       `json:"highestRating"`
+	Affiliation     OptString `json:"affiliation"`
+	BirthYear       OptInt    `json:"birthYear"`
+	Country         OptString `json:"country"`
+	Crown           OptString `json:"crown"`
+	JoinCount       int       `json:"joinCount"`
+	Rank            int       `json:"rank"`
+	ActiveRank      OptInt    `json:"activeRank"`
+	Wins            int       `json:"wins"`
+	UserUrl         string    `json:"userUrl"`
+	Accepted        int       `json:"accepted"`
+	SubmissionCount int       `json:"submissionCount"`
 }
 
 // GetUserId returns the value of UserId.
@@ -1805,6 +1807,16 @@ func (s *User) GetUserUrl() string {
 	return s.UserUrl
 }
 
+// GetAccepted returns the value of Accepted.
+func (s *User) GetAccepted() int {
+	return s.Accepted
+}
+
+// GetSubmissionCount returns the value of SubmissionCount.
+func (s *User) GetSubmissionCount() int {
+	return s.SubmissionCount
+}
+
 // SetUserId sets the value of UserId.
 func (s *User) SetUserId(val string) {
 	s.UserId = val
@@ -1863,4 +1875,14 @@ func (s *User) SetWins(val int) {
 // SetUserUrl sets the value of UserUrl.
 func (s *User) SetUserUrl(val string) {
 	s.UserUrl = val
+}
+
+// SetAccepted sets the value of Accepted.
+func (s *User) SetAccepted(val int) {
+	s.Accepted = val
+}
+
+// SetSubmissionCount sets the value of SubmissionCount.
+func (s *User) SetSubmissionCount(val int) {
+	s.SubmissionCount = val
 }

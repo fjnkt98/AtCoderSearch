@@ -441,18 +441,20 @@ func (s *Searcher) createSearchProblemQuery(ctx context.Context, req *api.APIPro
 }
 
 type User struct {
-	UserID        string  `mapstructure:"userId" bun:"user_id"`
-	Rating        int     `mapstructure:"rating" bun:"rating"`
-	HighestRating int     `mapstructure:"highestRating" bun:"highest_rating"`
-	Affiliation   *string `mapstructure:"affiliation" bun:"affiliation"`
-	BirthYear     *int    `mapstructure:"birthYear" bun:"birth_year"`
-	Country       *string `mapstructure:"country" bun:"country"`
-	Crown         *string `mapstructure:"crown" bun:"crown"`
-	JoinCount     int     `mapstructure:"joinCount" bun:"join_count"`
-	Rank          int     `mapstructure:"rank" bun:"rank"`
-	ActiveRank    *int    `mapstructure:"activeRank" bun:"active_rank"`
-	Wins          int     `mapstructure:"wins" bun:"wins"`
-	UserURL       string  `mapstructure:"userUrl" bun:"user_url"`
+	UserID          string  `mapstructure:"userId" bun:"user_id"`
+	Rating          int     `mapstructure:"rating" bun:"rating"`
+	HighestRating   int     `mapstructure:"highestRating" bun:"highest_rating"`
+	Affiliation     *string `mapstructure:"affiliation" bun:"affiliation"`
+	BirthYear       *int    `mapstructure:"birthYear" bun:"birth_year"`
+	Country         *string `mapstructure:"country" bun:"country"`
+	Crown           *string `mapstructure:"crown" bun:"crown"`
+	JoinCount       int     `mapstructure:"joinCount" bun:"join_count"`
+	Rank            int     `mapstructure:"rank" bun:"rank"`
+	ActiveRank      *int    `mapstructure:"activeRank" bun:"active_rank"`
+	Wins            int     `mapstructure:"wins" bun:"wins"`
+	UserURL         string  `mapstructure:"userUrl" bun:"user_url"`
+	Accepted        int     `mapstructure:"accepted" bun:"accepted"`
+	SubmissionCount int     `mapstructure:"submissionCount" bun:"submission_count"`
 }
 
 func (u User) Into() api.User {
@@ -482,18 +484,20 @@ func (u User) Into() api.User {
 	}
 
 	return api.User{
-		UserId:        u.UserID,
-		Rating:        u.Rating,
-		HighestRating: u.HighestRating,
-		Affiliation:   affiliation,
-		BirthYear:     birthYear,
-		Country:       country,
-		Crown:         crown,
-		JoinCount:     u.JoinCount,
-		Rank:          u.Rank,
-		ActiveRank:    activeRank,
-		Wins:          u.Wins,
-		UserUrl:       u.UserURL,
+		UserId:          u.UserID,
+		Rating:          u.Rating,
+		HighestRating:   u.HighestRating,
+		Affiliation:     affiliation,
+		BirthYear:       birthYear,
+		Country:         country,
+		Crown:           crown,
+		JoinCount:       u.JoinCount,
+		Rank:            u.Rank,
+		ActiveRank:      activeRank,
+		Wins:            u.Wins,
+		UserUrl:         u.UserURL,
+		Accepted:        u.Accepted,
+		SubmissionCount: u.SubmissionCount,
 	}
 }
 

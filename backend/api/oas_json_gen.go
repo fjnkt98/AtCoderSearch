@@ -3510,9 +3510,17 @@ func (s *User) encodeFields(e *jx.Encoder) {
 		e.FieldStart("userUrl")
 		e.Str(s.UserUrl)
 	}
+	{
+		e.FieldStart("accepted")
+		e.Int(s.Accepted)
+	}
+	{
+		e.FieldStart("submissionCount")
+		e.Int(s.SubmissionCount)
+	}
 }
 
-var jsonFieldsNameOfUser = [12]string{
+var jsonFieldsNameOfUser = [14]string{
 	0:  "userId",
 	1:  "rating",
 	2:  "highestRating",
@@ -3525,6 +3533,8 @@ var jsonFieldsNameOfUser = [12]string{
 	9:  "activeRank",
 	10: "wins",
 	11: "userUrl",
+	12: "accepted",
+	13: "submissionCount",
 }
 
 // Decode decodes User from json.
@@ -3670,6 +3680,30 @@ func (s *User) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"userUrl\"")
 			}
+		case "accepted":
+			requiredBitSet[1] |= 1 << 4
+			if err := func() error {
+				v, err := d.Int()
+				s.Accepted = int(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"accepted\"")
+			}
+		case "submissionCount":
+			requiredBitSet[1] |= 1 << 5
+			if err := func() error {
+				v, err := d.Int()
+				s.SubmissionCount = int(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"submissionCount\"")
+			}
 		default:
 			return d.Skip()
 		}
@@ -3681,7 +3715,7 @@ func (s *User) Decode(d *jx.Decoder) error {
 	var failures []validate.FieldError
 	for i, mask := range [2]uint8{
 		0b10000111,
-		0b00001101,
+		0b00111101,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.

@@ -547,7 +547,7 @@ func TestAPIProblem(t *testing.T) {
 }
 
 func TestCreateSearchUserRequest(t *testing.T) {
-	fields := []string{"userId", "rating", "highestRating", "affiliation", "birthYear", "country", "crown", "joinCount", "rank", "activeRank", "wins", "userUrl"}
+	fields := []string{"userId", "rating", "highestRating", "affiliation", "birthYear", "country", "crown", "joinCount", "rank", "activeRank", "wins", "userUrl", "accepted", "submissionCount"}
 
 	{
 		cases := []struct {
