@@ -21,3 +21,4 @@ test: test-backend
 .PHONY: build-image
 build-image: build-backend
 	$(MAKE) -C backend build-image
+	$(MAKE) -C frontend build-image
