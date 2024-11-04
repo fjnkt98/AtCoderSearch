@@ -155,6 +155,8 @@ paths:
                       - "joinCount:desc"
                       - "userId:asc"
                       - "userId:desc"
+                      - "rank:asc"
+                      - "rank:desc"
                 facet:
                   type: array
                   items:

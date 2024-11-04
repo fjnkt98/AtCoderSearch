@@ -884,6 +884,8 @@ const (
 	APIUserPostReqSortItemJoinCountDesc APIUserPostReqSortItem = "joinCount:desc"
 	APIUserPostReqSortItemUserIdAsc     APIUserPostReqSortItem = "userId:asc"
 	APIUserPostReqSortItemUserIdDesc    APIUserPostReqSortItem = "userId:desc"
+	APIUserPostReqSortItemRankAsc       APIUserPostReqSortItem = "rank:asc"
+	APIUserPostReqSortItemRankDesc      APIUserPostReqSortItem = "rank:desc"
 )
 
 // AllValues returns all APIUserPostReqSortItem values.
@@ -897,6 +899,8 @@ func (APIUserPostReqSortItem) AllValues() []APIUserPostReqSortItem {
 		APIUserPostReqSortItemJoinCountDesc,
 		APIUserPostReqSortItemUserIdAsc,
 		APIUserPostReqSortItemUserIdDesc,
+		APIUserPostReqSortItemRankAsc,
+		APIUserPostReqSortItemRankDesc,
 	}
 }
 
@@ -918,6 +922,10 @@ func (s APIUserPostReqSortItem) MarshalText() ([]byte, error) {
 	case APIUserPostReqSortItemUserIdAsc:
 		return []byte(s), nil
 	case APIUserPostReqSortItemUserIdDesc:
+		return []byte(s), nil
+	case APIUserPostReqSortItemRankAsc:
+		return []byte(s), nil
+	case APIUserPostReqSortItemRankDesc:
 		return []byte(s), nil
 	default:
 		return nil, errors.Errorf("invalid value: %q", s)
@@ -950,6 +958,12 @@ func (s *APIUserPostReqSortItem) UnmarshalText(data []byte) error {
 		return nil
 	case APIUserPostReqSortItemUserIdDesc:
 		*s = APIUserPostReqSortItemUserIdDesc
+		return nil
+	case APIUserPostReqSortItemRankAsc:
+		*s = APIUserPostReqSortItemRankAsc
+		return nil
+	case APIUserPostReqSortItemRankDesc:
+		*s = APIUserPostReqSortItemRankDesc
 		return nil
 	default:
 		return errors.Errorf("invalid value: %q", data)

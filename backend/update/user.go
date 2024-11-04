@@ -55,6 +55,7 @@ func (ix *UserIndexer) Settings() *meilisearch.Settings {
 			"rating",
 			"birthYear",
 			"userId",
+			"rank",
 		},
 		Synonyms: map[string][]string{},
 	}

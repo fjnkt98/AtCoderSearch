@@ -2047,6 +2047,10 @@ func (s *APIUserPostReqSortItem) Decode(d *jx.Decoder) error {
 		*s = APIUserPostReqSortItemUserIdAsc
 	case APIUserPostReqSortItemUserIdDesc:
 		*s = APIUserPostReqSortItemUserIdDesc
+	case APIUserPostReqSortItemRankAsc:
+		*s = APIUserPostReqSortItemRankAsc
+	case APIUserPostReqSortItemRankDesc:
+		*s = APIUserPostReqSortItemRankDesc
 	default:
 		*s = APIUserPostReqSortItem(v)
 	}
