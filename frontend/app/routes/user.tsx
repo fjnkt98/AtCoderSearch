@@ -1,4 +1,11 @@
-import { useLoaderData, json, Form, useSearchParams } from "@remix-run/react";
+import {
+  useLoaderData,
+  json,
+  Form,
+  useSearchParams,
+  useRouteError,
+  isRouteErrorResponse,
+} from "@remix-run/react";
 import { useState } from "react";
 import { client } from "~/client";
 import { z } from "zod";
@@ -81,7 +88,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   });
 
   if (error != null) {
-    throw new Response("request failed", {
+    throw new Response(error.message, {
       status: 500,
       statusText: "INTERNAL SERVER ERROR",
     });
@@ -89,6 +96,35 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
   return json(data);
 };
+
+export function ErrorBoundary() {
+  const error = useRouteError();
+
+  if (isRouteErrorResponse(error)) {
+    return (
+      <div>
+        <h1>
+          {error.status} {error.statusText}
+        </h1>
+      </div>
+    );
+  }
+
+  if (error instanceof Error) {
+    <div>
+      <h1>Error</h1>
+      <p>{error.message}</p>
+      <p>The stack trace is:</p>
+      <pre>{error.stack}</pre>
+    </div>;
+  }
+
+  return (
+    <div>
+      <h1>Unknown error</h1>
+    </div>
+  );
+}
 
 export default function UserPage() {
   const data = useLoaderData<typeof loader>();
