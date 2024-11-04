@@ -11,6 +11,7 @@ import (
 	"slices"
 	"time"
 
+	mapset "github.com/deckarep/golang-set/v2"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jackc/pgx/v5/stdlib"
 	"github.com/uptrace/bun"
@@ -115,6 +116,7 @@ loop:
 		submissions = append(submissions, s...)
 		if s[0].EpochSecond < latest.StartedAt.Unix() {
 			slog.LogAttrs(ctx, slog.LevelInfo, "all submissions after here have been crawled", slog.String("contestID", contestID), slog.Int("page", page))
+			time.Sleep(c.duration)
 			break loop
 		}
 
@@ -169,11 +171,17 @@ type Submission struct {
 }
 
 func NewSubmissions(submissions []atcoder.Submission) []Submission {
-	result := make([]Submission, len(submissions))
+	result := make([]Submission, 0, len(submissions))
 
-	for i, s := range submissions {
+	set := mapset.NewSet[int64]()
+
+	for _, s := range submissions {
 		s := s
-		result[i] = Submission{
+		if set.Contains(s.ID) {
+			continue
+		}
+
+		result = append(result, Submission{
 			ID:            s.ID,
 			EpochSecond:   s.EpochSecond,
 			ProblemID:     s.ProblemID,
@@ -184,7 +192,9 @@ func NewSubmissions(submissions []atcoder.Submission) []Submission {
 			Length:        &s.Length,
 			Result:        &s.Result,
 			ExecutionTime: s.ExecutionTime,
-		}
+		})
+
+		set.Add(s.ID)
 	}
 
 	return result
@@ -206,7 +216,7 @@ func SaveSubmissions(ctx context.Context, pool *pgxpool.Pool, submissions []atco
 	for chunk := range slices.Chunk(NewSubmissions(submissions), 1000) {
 		res, err := tx.NewInsert().
 			Model(&chunk).
-			On("CONFLICT (id, epoch_second) DO UPDATE").
+			On("CONFLICT (epoch_second, id) DO UPDATE").
 			Set("id = EXCLUDED.id").
 			Set("epoch_second = EXCLUDED.epoch_second").
 			Set("problem_id = EXCLUDED.problem_id").

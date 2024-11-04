@@ -158,6 +158,45 @@ INSERT INTO "contests" ("contest_id", "start_epoch_second", "duration_second", "
 		}
 	})
 
+	t.Run("save duplicated submissions", func(t *testing.T) {
+		t.Parallel()
+
+		submissions := []atcoder.Submission{
+			{
+				ID:            48852107,
+				EpochSecond:   1703553569,
+				ProblemID:     "abc300_a",
+				UserID:        "Orkhon2010",
+				ContestID:     "abc300",
+				Language:      "C++ 20 (gcc 12.2)",
+				Point:         100.0,
+				Length:        259,
+				Result:        "AC",
+				ExecutionTime: ptr.To(int32(1)),
+			},
+			{
+				ID:            48852107,
+				EpochSecond:   1703553569,
+				ProblemID:     "abc300_a",
+				UserID:        "Orkhon2010",
+				ContestID:     "abc300",
+				Language:      "C++ 20 (gcc 12.2)",
+				Point:         100.0,
+				Length:        259,
+				Result:        "AC",
+				ExecutionTime: ptr.To(int32(1)),
+			},
+		}
+		count, err := SaveSubmissions(ctx, pool, submissions)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if count != 1 {
+			t.Errorf("count = %d, want 1", count)
+		}
+	})
+
 	t.Run("crawl submissions(success)", func(t *testing.T) {
 		t.Parallel()
 
