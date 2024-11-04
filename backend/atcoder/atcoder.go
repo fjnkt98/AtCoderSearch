@@ -47,6 +47,7 @@ func NewAtCoderClient() (*atCoderClient, error) {
 }
 
 var ErrLoginAuth = errors.New("login authentication failed")
+var ErrNotOK = errors.New("non-ok status returned")
 
 func (c *atCoderClient) Login(ctx context.Context, username, password string) error {
 	uri := "https://atcoder.jp/login"
@@ -127,6 +128,10 @@ func (c *atCoderClient) FetchProblemHTML(ctx context.Context, contestID, problem
 		return "", fmt.Errorf("read response body: %w", err)
 	}
 
+	if res.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("status code : %d: %w", res.StatusCode, ErrNotOK)
+	}
+
 	return buf.String(), nil
 }
 
@@ -152,6 +157,10 @@ func (c *atCoderClient) FetchUsers(ctx context.Context, page int) ([]User, error
 		return nil, fmt.Errorf("scrape users: %w", err)
 	}
 
+	if res.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("status code : %d: %w", res.StatusCode, ErrNotOK)
+	}
+
 	return users, nil
 }
 
@@ -175,6 +184,10 @@ func (c *atCoderClient) FetchSubmissions(ctx context.Context, contestID string, 
 	submissions, err := scrapeSubmissions(res.Body)
 	if err != nil {
 		return nil, fmt.Errorf("scrape submissions: %w", err)
+	}
+
+	if res.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("status code : %d: %w", res.StatusCode, ErrNotOK)
 	}
 
 	return submissions, err
