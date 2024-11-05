@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -66,7 +67,14 @@ func (c *atCoderProblemsClient) FetchContests(ctx context.Context) ([]Contest, e
 	if err != nil {
 		return nil, fmt.Errorf("do request: %w", err)
 	}
-	defer res.Body.Close()
+	defer func() {
+		io.Copy(io.Discard, res.Body)
+		res.Body.Close()
+	}()
+
+	if res.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("status code : %d: %w", res.StatusCode, ErrNotOK)
+	}
 
 	var contests []Contest
 	if err := json.NewDecoder(res.Body).Decode(&contests); err != nil {
@@ -88,7 +96,14 @@ func (c *atCoderProblemsClient) FetchProblems(ctx context.Context) ([]Problem, e
 	if err != nil {
 		return nil, fmt.Errorf("do request: %w", err)
 	}
-	defer res.Body.Close()
+	defer func() {
+		io.Copy(io.Discard, res.Body)
+		res.Body.Close()
+	}()
+
+	if res.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("status code : %d: %w", res.StatusCode, ErrNotOK)
+	}
 
 	var problems []Problem
 	if err := json.NewDecoder(res.Body).Decode(&problems); err != nil {
@@ -110,7 +125,14 @@ func (c *atCoderProblemsClient) FetchDifficulties(ctx context.Context) (map[stri
 	if err != nil {
 		return nil, fmt.Errorf("do request: %w", err)
 	}
-	defer res.Body.Close()
+	defer func() {
+		io.Copy(io.Discard, res.Body)
+		res.Body.Close()
+	}()
+
+	if res.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("status code : %d: %w", res.StatusCode, ErrNotOK)
+	}
 
 	var difficulties map[string]Difficulty
 	if err := json.NewDecoder(res.Body).Decode(&difficulties); err != nil {

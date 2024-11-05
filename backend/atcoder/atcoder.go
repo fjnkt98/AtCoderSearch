@@ -121,15 +121,18 @@ func (c *atCoderClient) FetchProblemHTML(ctx context.Context, contestID, problem
 	if err != nil {
 		return "", fmt.Errorf("do request: %w", err)
 	}
-	defer res.Body.Close()
+	defer func() {
+		io.Copy(io.Discard, res.Body)
+		res.Body.Close()
+	}()
+
+	if res.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("status code : %d: %w", res.StatusCode, ErrNotOK)
+	}
 
 	var buf bytes.Buffer
 	if _, err := buf.ReadFrom(res.Body); err != nil {
 		return "", fmt.Errorf("read response body: %w", err)
-	}
-
-	if res.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("status code : %d: %w", res.StatusCode, ErrNotOK)
 	}
 
 	return buf.String(), nil
@@ -150,15 +153,18 @@ func (c *atCoderClient) FetchUsers(ctx context.Context, page int) ([]User, error
 	if err != nil {
 		return nil, fmt.Errorf("do request: %w", err)
 	}
-	defer res.Body.Close()
+	defer func() {
+		io.Copy(io.Discard, res.Body)
+		res.Body.Close()
+	}()
+
+	if res.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("status code : %d: %w", res.StatusCode, ErrNotOK)
+	}
 
 	users, err := scrapeUsers(res.Body)
 	if err != nil {
 		return nil, fmt.Errorf("scrape users: %w", err)
-	}
-
-	if res.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("status code : %d: %w", res.StatusCode, ErrNotOK)
 	}
 
 	return users, nil
@@ -179,15 +185,18 @@ func (c *atCoderClient) FetchSubmissions(ctx context.Context, contestID string, 
 	if err != nil {
 		return nil, fmt.Errorf("do request: %w", err)
 	}
-	defer res.Body.Close()
+	defer func() {
+		io.Copy(io.Discard, res.Body)
+		res.Body.Close()
+	}()
+
+	if res.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("status code : %d: %w", res.StatusCode, ErrNotOK)
+	}
 
 	submissions, err := scrapeSubmissions(res.Body)
 	if err != nil {
 		return nil, fmt.Errorf("scrape submissions: %w", err)
-	}
-
-	if res.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("status code : %d: %w", res.StatusCode, ErrNotOK)
 	}
 
 	return submissions, err
