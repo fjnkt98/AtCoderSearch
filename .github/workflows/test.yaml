@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - develop
-    paths:
-      - backend/**
 jobs:
   build:
     runs-on: ubuntu-22.04
