@@ -1,0 +1,586 @@
+openapi: 3.0.0
+info:
+  title: AtCoder Search Backend API
+  description: AtCoder Search backend API
+  version: 0.4.0
+paths:
+  /api/problem:
+    get:
+      parameters:
+        - in: query
+          name: contestId
+          schema:
+            type: array
+            items:
+              type: string
+        - in: query
+          name: category
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        "200":
+          description: Get problems
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  problems:
+                    type: array
+                    items:
+                      type: string
+        default:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/ErrorResponse"
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                q:
+                  type: string
+                limit:
+                  type: integer
+                  minimum: 0
+                page:
+                  type: integer
+                  minimum: 1
+                sort:
+                  type: array
+                  items:
+                    type: string
+                    enum:
+                      - "startAt:asc"
+                      - "startAt:desc"
+                      - "difficulty:asc"
+                      - "difficulty:desc"
+                      - "problemId:asc"
+                      - "problemId:desc"
+                facet:
+                  type: array
+                  items:
+                    type: string
+                    enum:
+                      - "category"
+                      - "difficulty"
+                category:
+                  type: array
+                  items:
+                    type: string
+                difficulty:
+                  type: object
+                  $ref: "#/components/schemas/IntRange"
+                experimental:
+                  type: boolean
+                userId:
+                  type: string
+      responses:
+        "200":
+          description: Search problems
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  time:
+                    type: integer
+                  total:
+                    type: integer
+                  pages:
+                    type: integer
+                  index:
+                    type: integer
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      $ref: "#/components/schemas/Problem"
+                  facet:
+                    type: object
+                    additionalProperties:
+                      type: array
+                      items:
+                        type: object
+                        $ref: "#/components/schemas/Count"
+                required:
+                  - time
+                  - total
+                  - pages
+                  - index
+                  - items
+                  - facet
+        default:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/ErrorResponse"
+  /api/user:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                q:
+                  type: string
+                limit:
+                  type: integer
+                  minimum: 0
+                page:
+                  type: integer
+                  minimum: 1
+                sort:
+                  type: array
+                  items:
+                    type: string
+                    enum:
+                      - "rating:asc"
+                      - "rating:desc"
+                      - "birthYear:asc"
+                      - "birthYear:desc"
+                      - "joinCount:asc"
+                      - "joinCount:desc"
+                      - "userId:asc"
+                      - "userId:desc"
+                      - "rank:asc"
+                      - "rank:desc"
+                      - "accepted:asc"
+                      - "accepted:desc"
+                      - "submissionCount:asc"
+                      - "submissionCount:desc"
+                facet:
+                  type: array
+                  items:
+                    type: string
+                    enum:
+                      - "country"
+                      - "rating"
+                      - "birthYear"
+                      - "joinCount"
+                userId:
+                  type: array
+                  items:
+                    type: string
+                rating:
+                  type: object
+                  $ref: "#/components/schemas/IntRange"
+                birthYear:
+                  type: object
+                  $ref: "#/components/schemas/IntRange"
+                joinCount:
+                  type: object
+                  $ref: "#/components/schemas/IntRange"
+                country:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        "200":
+          description: Search users
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  time:
+                    type: integer
+                  total:
+                    type: integer
+                  pages:
+                    type: integer
+                  index:
+                    type: integer
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      $ref: "#/components/schemas/User"
+                  facet:
+                    type: object
+                    additionalProperties:
+                      type: array
+                      items:
+                        type: object
+                        $ref: "#/components/schemas/Count"
+                required:
+                  - time
+                  - total
+                  - pages
+                  - index
+                  - items
+                  - facet
+        default:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/ErrorResponse"
+  /api/submission:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                limit:
+                  type: integer
+                  minimum: 0
+                page:
+                  type: integer
+                  minimum: 1
+                sort:
+                  type: array
+                  items:
+                    type: string
+                    enum:
+                      - "executionTime:asc"
+                      - "executionTime:desc"
+                      - "epochSecond:asc"
+                      - "epochSecond:desc"
+                      - "point:asc"
+                      - "point:desc"
+                      - "length:asc"
+                      - "length:desc"
+                epochSecond:
+                  type: object
+                  $ref: "#/components/schemas/IntRange"
+                problemId:
+                  type: array
+                  items:
+                    type: string
+                contestId:
+                  type: array
+                  items:
+                    type: string
+                category:
+                  type: array
+                  items:
+                    type: string
+                userId:
+                  type: array
+                  items:
+                    type: string
+                language:
+                  type: array
+                  items:
+                    type: string
+                languageGroup:
+                  type: array
+                  items:
+                    type: string
+                point:
+                  type: object
+                  $ref: "#/components/schemas/FloatRange"
+                length:
+                  type: object
+                  $ref: "#/components/schemas/IntRange"
+                result:
+                  type: array
+                  items:
+                    type: string
+                executionTime:
+                  type: object
+                  $ref: "#/components/schemas/IntRange"
+      responses:
+        "200":
+          description: Search submissions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  time:
+                    type: integer
+                  index:
+                    type: integer
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      $ref: "#/components/schemas/Submission"
+                required:
+                  - time
+                  - index
+                  - items
+        default:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/ErrorResponse"
+  /api/category:
+    get:
+      responses:
+        "200":
+          description: Get categories
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  categories:
+                    type: array
+                    items:
+                      type: string
+        default:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/ErrorResponse"
+  /api/contest:
+    get:
+      parameters:
+        - in: query
+          name: category
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        "200":
+          description: Get contests
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  contests:
+                    type: array
+                    items:
+                      type: string
+        default:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/ErrorResponse"
+  /api/language:
+    get:
+      parameters:
+        - in: query
+          name: group
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        "200":
+          description: Get languages
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  languages:
+                    type: array
+                    items:
+                      type: object
+                      $ref: "#/components/schemas/Language"
+        default:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/ErrorResponse"
+components:
+  schemas:
+    Count:
+      type: object
+      properties:
+        label:
+          type: string
+        count:
+          type: integer
+      required:
+        - label
+        - count
+    IntRange:
+      type: object
+      properties:
+        from:
+          type: integer
+        to:
+          type: integer
+    FloatRange:
+      type: object
+      properties:
+        from:
+          type: number
+        to:
+          type: number
+    Problem:
+      type: object
+      properties:
+        problemId:
+          type: string
+        problemTitle:
+          type: string
+        problemUrl:
+          type: string
+        contestId:
+          type: string
+        contestTitle:
+          type: string
+        contestUrl:
+          type: string
+        difficulty:
+          type: integer
+        startAt:
+          type: integer
+        duration:
+          type: integer
+        rateChange:
+          type: string
+        category:
+          type: string
+        isExperimental:
+          type: boolean
+      required:
+        - problemId
+        - problemTitle
+        - problemUrl
+        - contestId
+        - contestTitle
+        - contestUrl
+        - startAt
+        - duration
+        - rateChange
+        - category
+        - isExperimental
+    User:
+      type: object
+      properties:
+        userId:
+          type: string
+        rating:
+          type: integer
+        highestRating:
+          type: integer
+        affiliation:
+          type: string
+        birthYear:
+          type: integer
+        country:
+          type: string
+        crown:
+          type: string
+        joinCount:
+          type: integer
+        rank:
+          type: integer
+        activeRank:
+          type: integer
+        wins:
+          type: integer
+        userUrl:
+          type: string
+        accepted:
+          type: integer
+        submissionCount:
+          type: integer
+      required:
+        - userId
+        - rating
+        - highestRating
+        - joinCount
+        - rank
+        - wins
+        - userUrl
+        - accepted
+        - submissionCount
+    Submission:
+      type: object
+      properties:
+        submissionId:
+          type: integer
+        submittedAt:
+          type: integer
+        submissionUrl:
+          type: string
+        problemId:
+          type: string
+        problemTitle:
+          type: string
+        problemUrl:
+          type: string
+        contestId:
+          type: string
+        contestTitle:
+          type: string
+        contestUrl:
+          type: string
+        category:
+          type: string
+        difficulty:
+          type: integer
+        userId:
+          type: string
+        language:
+          type: string
+        languageGroup:
+          type: string
+        point:
+          type: number
+        length:
+          type: integer
+        result:
+          type: string
+        executionTime:
+          type: integer
+      required:
+        - submissionId
+        - submittedAt
+        - submissionUrl
+        - problemId
+        - problemTitle
+        - problemUrl
+        - contestId
+        - contestTitle
+        - contestUrl
+        - category
+        - userId
+        - language
+        - languageGroup
+        - point
+        - length
+        - result
+    Language:
+      type: object
+      properties:
+        group:
+          type: string
+        languages:
+          type: array
+          items:
+            type: string
+      required:
+        - group
+        - language
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - message

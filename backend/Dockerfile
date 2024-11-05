@@ -1,4 +1,4 @@
-FROM golang:1.21-bullseye AS stage
+FROM golang:1.23-bullseye AS stage
 
 ARG TARGETARCH
 
@@ -9,17 +9,19 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-COPY ./batch /app/batch
+
+COPY ./api /app/api
+COPY ./atcoder /app/atcoder
 COPY ./cmd /app/cmd
-COPY ./pkg /app/pkg
-COPY ./repository /app/repository
-COPY ./server /app/server
-COPY ./settings /app/settings
+COPY ./crawl /app/crawl
 COPY ./go.mod /app/go.mod
 COPY ./go.sum /app/go.sum
+COPY ./internal /app/internal
 COPY ./main.go /app/main.go
-COPY ./partitions.sql /app/partitions.sql
-COPY ./schema.hcl /app/schema.hcl
+COPY ./queries /app/queries
+COPY ./repository /app/repository
+COPY ./searchers /app/searchers
+COPY ./update /app/update
 
 RUN go build -o /app/atcodersearch
 
@@ -40,17 +42,8 @@ ENV TZ="Asia/Tokyo"
 RUN groupadd --gid 1000 atcodersearch \
     && useradd --uid 1000 --gid atcodersearch --shell /bin/bash --create-home atcodersearch
 
-RUN curl -sSf https://atlasgo.sh | sh
-
 COPY --from=stage --chown=atcodersearch:atcodersearch /app/atcodersearch /usr/local/bin/atcodersearch
-COPY --from=stage --chown=atcodersearch:atcodersearch /app/schema.hcl /etc/schema.hcl
-COPY --from=stage --chown=atcodersearch:atcodersearch /app/partitions.sql /etc/partitions.sql
 
 USER atcodersearch
-
-RUN mkdir -p /var/tmp/atcoder/problem \
-    && mkdir -p /var/tmp/atcoder/user \
-    && mkdir -p /var/tmp/atcoder/solution
-ENV PROBLEM_SAVE_DIR=/var/tmp/atcoder/problem USER_SAVE_DIR=/var/tmp/atcoder/user SOLUTION_SAVE_DIR=/var/tmp/atcoder/solution
 
 CMD ["atcodersearch"]
