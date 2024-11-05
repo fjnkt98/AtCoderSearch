@@ -23,14 +23,15 @@ services:
     environment:
       - MEILI_MASTER_KEY=meili-master-key
       - MEILI_LOG_LEVEL=DEBUG
-    # volumes:
-    #   - type: volume
-    #     source: atcodersearch-meilisearch
-    #     target: /meili_data
+    volumes:
+      - type: volume
+        source: atcodersearch-meilisearch
+        target: /meili_data
     ports:
       - 7700:7700
     networks:
       atcodersearch-net:
+    command: /bin/meilisearch --experimental-logs-mode=json
 
 networks:
   atcodersearch-net:
