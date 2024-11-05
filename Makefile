@@ -1,5 +1,3 @@
-include .env
-
 .PHONY: build-frontend
 build-frontend:
 	$(MAKE) -C frontend build
@@ -12,7 +10,7 @@ build-backend:
 build: build-backend build-frontend
 
 .PHONY: test-backend
-test-backend: build-backend
+test-backend:
 	$(MAKE) -C backend test
 
 .PHONY: test
