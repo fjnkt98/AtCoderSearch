@@ -1,9 +1,9 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: crawl-submission
+  name: crawl-problem
 spec:
-  schedule: "0/30 0-20/1 * * *"
+  schedule: "0 2 * * 0,1"
   concurrencyPolicy: Forbid
   startingDeadlineSeconds: 30
   suspend: true
@@ -17,7 +17,7 @@ spec:
         spec:
           restartPolicy: Never
           containers:
-            - name: crawl-submission-batch
+            - name: crawl-problem-batch
               image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:develop
               imagePullPolicy: Always
               env:
@@ -29,16 +29,6 @@ spec:
                   value: engine-master-key
                 - name: PGSSLMODE
                   value: disable
-                - name: ATCODER_USERNAME
-                  valueFrom:
-                    secretKeyRef:
-                      name: atcoder-auth
-                      key: atcoder-username
-                - name: ATCODER_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: atcoder-auth
-                      key: atcoder-password
               resources:
                 requests:
                   memory: 64Mi
@@ -51,7 +41,6 @@ spec:
                 - atcodersearch
                 - crawl
                 - --duration=1s
-                - submission
-                - --retry=3
+                - problem
           imagePullSecrets:
             - name: regcred
