@@ -1,15 +1,20 @@
-name: test
-run-name: test
+name: test-backend
+run-name: test-backend
 on:
   push:
     branches:
       - develop
+    paths:
+      - backend/**
 jobs:
-  build:
+  test:
     runs-on: ubuntu-22.04
+    timeout-minutes: 10
     permissions:
-      id-token: write
       contents: read
+    defaults:
+      run:
+        working-directory: backend
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -17,7 +22,7 @@ jobs:
       - name: Setup go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.23"
+          go-version-file: go.mod
 
       - name: Install sqlc
         run: go install -v github.com/sqlc-dev/sqlc/cmd/sqlc@v1.27.0
