@@ -23,8 +23,10 @@ spec:
               env:
                 - name: DATABASE_URL
                   value: postgres://atcodersearch:atcodersearch@postgresql-0.postgresql-headless:5432/atcodersearch?sslmode=disable
-                - name: SOLR_HOST
-                  value: http://solr-0.solr-headless:8983
+                - name: ENGINE_URL
+                  value: http://meilisearch-0.meilisearch-headless:7700
+                - name: ENGINE_MASTER_KEY
+                  value: engine-master-key
                 - name: PGSSLMODE
                   value: disable
               resources:
