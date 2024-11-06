@@ -16,7 +16,7 @@ spec:
       terminationGracePeriodSeconds: 60
       containers:
         - name: postgresql
-          image: postgres:15-bullseye
+          image: postgres:16-bullseye
           env:
             - name: POSTGRES_PASSWORD
               value: atcodersearch
@@ -32,6 +32,13 @@ spec:
           volumeMounts:
             - name: postgresql-pvc
               mountPath: /var/lib/postgresql/data
+          resources:
+            requests:
+              cpu: 100m
+              memory: 500Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
           securityContext:
             runAsUser: 999
             runAsGroup: 999
