@@ -11,3 +11,11 @@ VERSION:=$(shell cat package.json | jq -r '.version')
 .PHONY: build-image
 build-image:
 	docker build -t atcodersearch-frontend:$(VERSION) .
+
+.PHONY: ncu
+ncu:
+	npx -p npm-check-updates -c 'ncu'
+
+.PHONY: ncu-upgrade
+ncu-upgrade:
+	npx -p npm-check-updates -c 'ncu -u'
