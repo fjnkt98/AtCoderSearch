@@ -20,11 +20,11 @@ spec:
           env:
             - name: DATABASE_URL
               value: postgres://atcodersearch:atcodersearch@postgresql:5432/atcodersearch?sslmode=disable
-            - name: SOLR_HOST
-              value: http://solr:8983
-            - name: ALLOW_ORIGIN
-              value: "*"
-            - name: PORT
+            - name: ENGINE_URL
+              value: http://meilisearch:7700
+            - name: ENGINE_MASTER_KEY
+              value: engine-master-key
+            - name: BACKEND_PORT
               value: "8000"
           resources:
             requests:
