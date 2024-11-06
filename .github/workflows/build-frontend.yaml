@@ -1,0 +1,31 @@
+name: build-frontend
+run-name: build-frontend
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - frontend/**
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: package.json
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
