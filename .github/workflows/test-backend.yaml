@@ -20,7 +20,7 @@ jobs:
       - name: Setup go
         uses: actions/setup-go@v5
         with:
-          go-version-file: go.mod
+          go-version-file: backend/go.mod
 
       - name: Install sqlc
         run: go install -v github.com/sqlc-dev/sqlc/cmd/sqlc@v1.27.0
