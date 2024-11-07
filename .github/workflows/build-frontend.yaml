@@ -1,9 +1,7 @@
 name: build-frontend
 run-name: build-frontend
 on:
-  push:
-    branches:
-      - develop
+  pull_request:
     paths:
       - frontend/**
 jobs:

@@ -1,9 +1,7 @@
 name: test-backend
 run-name: test-backend
 on:
-  push:
-    branches:
-      - develop
+  pull_request:
     paths:
       - backend/**
 jobs:
