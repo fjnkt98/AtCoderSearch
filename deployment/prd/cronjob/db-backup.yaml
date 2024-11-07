@@ -18,7 +18,7 @@ spec:
           restartPolicy: Never
           initContainers:
             - name: dump-db
-              image: postgres:15-bullseye
+              image: postgres:16-bullseye
               env:
                 - name: TZ
                   value: Asia/Tokyo

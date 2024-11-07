@@ -1,9 +1,9 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: update-user
+  name: crawl-user
 spec:
-  schedule: "0 9 * * 0,1"
+  schedule: "0 3 * * 0,1"
   concurrencyPolicy: Forbid
   startingDeadlineSeconds: 30
   suspend: false
@@ -17,7 +17,7 @@ spec:
         spec:
           restartPolicy: Never
           containers:
-            - name: update-user-batch
+            - name: crawl-user-batch
               image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.4.0
               imagePullPolicy: Always
               env:
@@ -45,9 +45,8 @@ spec:
                 runAsNonRoot: true
               args:
                 - atcodersearch
-                - update
+                - crawl
+                - --duration=1s
                 - user
-                - --chunk-size=1000
-                - --concurrent=2
           imagePullSecrets:
             - name: regcred

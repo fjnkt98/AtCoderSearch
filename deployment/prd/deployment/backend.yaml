@@ -15,7 +15,7 @@ spec:
       terminationGracePeriodSeconds: 60
       containers:
         - name: backend
-          image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.3.4
+          image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.4.0
           imagePullPolicy: Always
           env:
             - name: DATABASE_URL
@@ -23,11 +23,14 @@ spec:
                 secretKeyRef:
                   name: db-auth
                   key: database-url
-            - name: SOLR_HOST
-              value: http://solr:8983
-            - name: ALLOW_ORIGIN
-              value: "https://atcoder-search.fjnkt98.com"
-            - name: PORT
+            - name: ENGINE_URL
+              value: http://meilisearch-0.meilisearch-headless:7700
+            - name: ENGINE_MASTER_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: engine-auth
+                  key: engine-master-key
+            - name: BACKEND_PORT
               value: "8000"
           resources:
             requests:
