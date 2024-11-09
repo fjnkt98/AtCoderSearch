@@ -105,7 +105,7 @@ func CreateDBContainer(files ...string) (container testcontainers.Container, dsn
 	}
 
 	dsn = fmt.Sprintf(
-		"postgres://atcodersearch:atcodersearch@%s:%d/atcodersearch?sslmode=disable",
+		"postgres://atcodersearch:atcodersearch@%s:%d/atcodersearch?sslmode=disable&pool_max_conns=1",
 		host,
 		port.Int(),
 	)
