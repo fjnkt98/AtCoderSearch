@@ -37,7 +37,6 @@ INSERT INTO "contests" ("contest_id", "start_epoch_second", "duration_second", "
 	}
 
 	t.Run("fetch all contest id", func(t *testing.T) {
-		t.Parallel()
 
 		result, err := FetchContestIDs(ctx, pool, []string{})
 		if err != nil {
@@ -51,7 +50,6 @@ INSERT INTO "contests" ("contest_id", "start_epoch_second", "duration_second", "
 	})
 
 	t.Run("fetch ABC contest id", func(t *testing.T) {
-		t.Parallel()
 
 		result, err := FetchContestIDs(ctx, pool, []string{"ABC"})
 		if err != nil {
@@ -65,7 +63,6 @@ INSERT INTO "contests" ("contest_id", "start_epoch_second", "duration_second", "
 	})
 
 	t.Run("fetch ARC contest id", func(t *testing.T) {
-		t.Parallel()
 
 		result, err := FetchContestIDs(ctx, pool, []string{"ARC"})
 		if err != nil {
@@ -79,7 +76,6 @@ INSERT INTO "contests" ("contest_id", "start_epoch_second", "duration_second", "
 	})
 
 	t.Run("save empty submissions", func(t *testing.T) {
-		t.Parallel()
 
 		submissions := make([]atcoder.Submission, 0)
 		count, err := SaveSubmissions(ctx, pool, submissions)
@@ -93,7 +89,6 @@ INSERT INTO "contests" ("contest_id", "start_epoch_second", "duration_second", "
 	})
 
 	t.Run("save single submission", func(t *testing.T) {
-		t.Parallel()
 
 		submissions := []atcoder.Submission{
 			{
@@ -120,7 +115,6 @@ INSERT INTO "contests" ("contest_id", "start_epoch_second", "duration_second", "
 	})
 
 	t.Run("save multiple submissions", func(t *testing.T) {
-		t.Parallel()
 
 		submissions := []atcoder.Submission{
 			{
@@ -159,7 +153,6 @@ INSERT INTO "contests" ("contest_id", "start_epoch_second", "duration_second", "
 	})
 
 	t.Run("save duplicated submissions", func(t *testing.T) {
-		t.Parallel()
 
 		submissions := []atcoder.Submission{
 			{
@@ -198,7 +191,6 @@ INSERT INTO "contests" ("contest_id", "start_epoch_second", "duration_second", "
 	})
 
 	t.Run("crawl submissions(success)", func(t *testing.T) {
-		t.Parallel()
 
 		crawler := NewSubmissionCrawler(
 			&DummyAtCoderClientS{},
@@ -226,7 +218,6 @@ INSERT INTO "contests" ("contest_id", "start_epoch_second", "duration_second", "
 	})
 
 	t.Run("crawl submissions(fail)", func(t *testing.T) {
-		t.Parallel()
 
 		crawler := NewSubmissionCrawler(
 			&DummyAtCoderClientF{},
@@ -242,7 +233,6 @@ INSERT INTO "contests" ("contest_id", "start_epoch_second", "duration_second", "
 	})
 
 	t.Run("crawl submissions(retry success)", func(t *testing.T) {
-		t.Parallel()
 
 		crawler := NewSubmissionCrawler(
 			&RecoverableDummyAtCoderClient{
@@ -261,7 +251,6 @@ INSERT INTO "contests" ("contest_id", "start_epoch_second", "duration_second", "
 	})
 
 	t.Run("crawl submissions(retry fail)", func(t *testing.T) {
-		t.Parallel()
 
 		crawler := NewSubmissionCrawler(
 			&RecoverableDummyAtCoderClient{

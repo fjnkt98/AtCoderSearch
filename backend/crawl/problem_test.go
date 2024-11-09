@@ -28,7 +28,7 @@ func TestProblem(t *testing.T) {
 	}
 
 	t.Run("save empty problems", func(t *testing.T) {
-		t.Parallel()
+
 		contests := make([]atcoder.Contest, 0)
 		count, err := SaveContests(ctx, pool, contests)
 		if err != nil {
@@ -41,7 +41,7 @@ func TestProblem(t *testing.T) {
 	})
 
 	t.Run("save single problem", func(t *testing.T) {
-		t.Parallel()
+
 		contests := []atcoder.Contest{
 			{
 				ID:               "abc001",
@@ -62,7 +62,7 @@ func TestProblem(t *testing.T) {
 	})
 
 	t.Run("save multiple problems", func(t *testing.T) {
-		t.Parallel()
+
 		contests := []atcoder.Contest{
 			{
 				ID:               "abc001",
@@ -90,7 +90,7 @@ func TestProblem(t *testing.T) {
 	})
 
 	t.Run("save empty difficulties", func(t *testing.T) {
-		t.Parallel()
+
 		difficulties := make(map[string]atcoder.Difficulty)
 		count, err := SaveDifficulties(ctx, pool, difficulties)
 		if err != nil {
@@ -103,7 +103,7 @@ func TestProblem(t *testing.T) {
 	})
 
 	t.Run("save single difficulty", func(t *testing.T) {
-		t.Parallel()
+
 		difficulties := map[string]atcoder.Difficulty{
 			"abc118_d": {
 				Slope:            ptr.To(-0.0006619775680720775),
@@ -127,7 +127,7 @@ func TestProblem(t *testing.T) {
 	})
 
 	t.Run("save multiple difficulties", func(t *testing.T) {
-		t.Parallel()
+
 		difficulties := map[string]atcoder.Difficulty{
 			"abc118_d": {
 				Slope:            ptr.To(-0.0006619775680720775),
@@ -161,7 +161,7 @@ func TestProblem(t *testing.T) {
 	})
 
 	t.Run("detect diff", func(t *testing.T) {
-		t.Parallel()
+
 		sql := `
 INSERT INTO "problems" ("problem_id", "contest_id", "problem_index", "name", "title", "url", "html")
 VALUES
@@ -199,7 +199,7 @@ VALUES
 	})
 
 	t.Run("crawl problem(success, diff)", func(t *testing.T) {
-		t.Parallel()
+
 		crawler := NewProblemCrawler(
 			&DummyAtCoderClientS{},
 			&DummyAtCoderProblemsClientS{},
@@ -222,7 +222,7 @@ VALUES
 	})
 
 	t.Run("crawl problem(success, all)", func(t *testing.T) {
-		t.Parallel()
+
 		crawler := NewProblemCrawler(
 			&DummyAtCoderClientS{},
 			&DummyAtCoderProblemsClientS{},
@@ -236,7 +236,7 @@ VALUES
 	})
 
 	t.Run("crawl problem(fail atcoder)", func(t *testing.T) {
-		t.Parallel()
+
 		crawler := NewProblemCrawler(
 			&DummyAtCoderClientF{},
 			&DummyAtCoderProblemsClientS{},
@@ -251,7 +251,7 @@ VALUES
 	})
 
 	t.Run("crawl problem(fail atcoder problems)", func(t *testing.T) {
-		t.Parallel()
+
 		crawler := NewProblemCrawler(
 			&DummyAtCoderClientS{},
 			&DummyAtCoderProblemsClientF{},
@@ -274,7 +274,7 @@ VALUES
 	})
 
 	t.Run("crawl problem(fail)", func(t *testing.T) {
-		t.Parallel()
+
 		crawler := NewProblemCrawler(
 			&DummyAtCoderClientF{},
 			&DummyAtCoderProblemsClientF{},

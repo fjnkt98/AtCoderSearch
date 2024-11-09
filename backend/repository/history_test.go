@@ -23,7 +23,6 @@ func TestHistory(t *testing.T) {
 	}
 
 	t.Run("create batch history", func(t *testing.T) {
-		t.Parallel()
 
 		history, err := NewBatchHistory(ctx, pool, "test", nil)
 		if err != nil {
@@ -42,7 +41,6 @@ func TestHistory(t *testing.T) {
 	})
 
 	t.Run("complete batch history", func(t *testing.T) {
-		t.Parallel()
 
 		history, err := NewBatchHistory(ctx, pool, "test", nil)
 		if err != nil {
@@ -61,7 +59,6 @@ func TestHistory(t *testing.T) {
 	})
 
 	t.Run("abort batch history", func(t *testing.T) {
-		t.Parallel()
 
 		history, err := NewBatchHistory(ctx, pool, "test", nil)
 		if err != nil {
@@ -80,7 +77,6 @@ func TestHistory(t *testing.T) {
 	})
 
 	t.Run("abort completed batch history", func(t *testing.T) {
-		t.Parallel()
 
 		history, err := NewBatchHistory(ctx, pool, "test", nil)
 		if err != nil {
@@ -97,7 +93,6 @@ func TestHistory(t *testing.T) {
 	})
 
 	t.Run("create crawl history", func(t *testing.T) {
-		t.Parallel()
 
 		history, err := NewCrawlHistory(ctx, pool, "test001")
 		if err != nil {
@@ -116,7 +111,6 @@ func TestHistory(t *testing.T) {
 	})
 
 	t.Run("complete crawl history", func(t *testing.T) {
-		t.Parallel()
 
 		history, err := NewCrawlHistory(ctx, pool, "test002")
 		if err != nil {
@@ -135,7 +129,6 @@ func TestHistory(t *testing.T) {
 	})
 
 	t.Run("abort crawl history", func(t *testing.T) {
-		t.Parallel()
 
 		history, err := NewCrawlHistory(ctx, pool, "test003")
 		if err != nil {
@@ -154,7 +147,6 @@ func TestHistory(t *testing.T) {
 	})
 
 	t.Run("abort completed crawl history", func(t *testing.T) {
-		t.Parallel()
 
 		history, err := NewCrawlHistory(ctx, pool, "test004")
 		if err != nil {
@@ -171,7 +163,6 @@ func TestHistory(t *testing.T) {
 	})
 
 	t.Run("fetch latest crawl history", func(t *testing.T) {
-		t.Parallel()
 
 		history1, err := NewCrawlHistory(ctx, pool, "test005")
 		if err != nil {

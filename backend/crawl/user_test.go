@@ -27,7 +27,6 @@ func TestUser(t *testing.T) {
 	}
 
 	t.Run("save empty users", func(t *testing.T) {
-		t.Parallel()
 
 		users := make([]atcoder.User, 0)
 		count, err := SaveUsers(ctx, pool, users)
@@ -41,7 +40,6 @@ func TestUser(t *testing.T) {
 	})
 
 	t.Run("save single user", func(t *testing.T) {
-		t.Parallel()
 
 		users := []atcoder.User{
 			{
@@ -69,7 +67,6 @@ func TestUser(t *testing.T) {
 	})
 
 	t.Run("save multiple user", func(t *testing.T) {
-		t.Parallel()
 
 		users := []atcoder.User{
 			{
@@ -110,7 +107,6 @@ func TestUser(t *testing.T) {
 	})
 
 	t.Run("crawl users(success)", func(t *testing.T) {
-		t.Parallel()
 
 		crawler := NewUserCrawler(
 			&DummyAtCoderClientS{},
@@ -123,7 +119,6 @@ func TestUser(t *testing.T) {
 	})
 
 	t.Run("crawl users(fail)", func(t *testing.T) {
-		t.Parallel()
 
 		crawler := NewUserCrawler(
 			&DummyAtCoderClientF{},
