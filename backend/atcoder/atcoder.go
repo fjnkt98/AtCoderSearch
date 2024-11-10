@@ -48,6 +48,7 @@ func NewAtCoderClient() (*atCoderClient, error) {
 
 var ErrLoginAuth = errors.New("login authentication failed")
 var ErrNotOK = errors.New("non-ok status returned")
+var ErrNotFound = errors.New("page not found")
 
 func (c *atCoderClient) Login(ctx context.Context, username, password string) error {
 	uri := "https://atcoder.jp/login"
@@ -125,6 +126,10 @@ func (c *atCoderClient) FetchProblemHTML(ctx context.Context, contestID, problem
 		io.Copy(io.Discard, res.Body)
 		res.Body.Close()
 	}()
+
+	if res.StatusCode == http.StatusNotFound {
+		return "", ErrNotFound
+	}
 
 	if res.StatusCode != http.StatusOK {
 		return "", fmt.Errorf("status code : %d: %w", res.StatusCode, ErrNotOK)

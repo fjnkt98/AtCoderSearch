@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"database/sql"
+	"errors"
 	"fjnkt98/atcodersearch/atcoder"
 	"fjnkt98/atcodersearch/repository"
 	"fmt"
@@ -102,7 +103,12 @@ func (c *ProblemCrawler) CrawlProblems(ctx context.Context) error {
 	save := func(ctx context.Context, p atcoder.Problem) (int64, error) {
 		html, err := c.atcoderClient.FetchProblemHTML(ctx, p.ContestID, p.ID)
 		if err != nil {
-			return 0, fmt.Errorf("fetch problem html: %w", err)
+			if errors.Is(err, atcoder.ErrNotFound) {
+				slog.LogAttrs(ctx, slog.LevelWarn, "the problem page not found. skip it.", slog.String("problemID", p.ID))
+				return 0, nil
+			} else {
+				return 0, fmt.Errorf("fetch problem html: %w", err)
+			}
 		}
 
 		tx, err := c.pool.Begin(ctx)
