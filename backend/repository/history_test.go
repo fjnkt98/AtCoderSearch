@@ -2,75 +2,190 @@ package repository
 
 import (
 	"context"
-	"reflect"
+	"errors"
+	"fjnkt98/atcodersearch/internal/testutil"
 	"testing"
 	"time"
-
-	"github.com/goark/errs"
 )
 
-func TestOverwrite(t *testing.T) {
-	startedAt := time.Date(2024, 6, 1, 0, 0, 0, 0, time.Local)
-	finishedAt := time.Date(2024, 6, 1, 3, 0, 0, 0, time.Local)
+func TestHistory(t *testing.T) {
+	_, dsn, stop, err := testutil.CreateDBContainer()
+	t.Cleanup(func() { stop() })
 
-	h := &BatchHistory{
-		ID:         1,
-		Name:       "Test",
-		StartedAt:  startedAt,
-		FinishedAt: nil,
-		Status:     "working",
-		Options:    nil,
+	if err != nil {
+		t.Fatal(err)
 	}
 
-	r := BatchHistory{
-		ID:         1,
-		Name:       "Test",
-		StartedAt:  startedAt,
-		FinishedAt: &finishedAt,
-		Status:     "finish",
-		Options:    nil,
+	ctx := context.Background()
+	pool, err := NewPool(ctx, dsn)
+	if err != nil {
+		t.Fatal(err)
 	}
 
-	expected := &BatchHistory{
-		ID:         1,
-		Name:       "Test",
-		StartedAt:  startedAt,
-		FinishedAt: &finishedAt,
-		Status:     "finish",
-		Options:    nil,
-	}
+	t.Run("create batch history", func(t *testing.T) {
 
-	h.overwrite(r)
-	if !reflect.DeepEqual(h, expected) {
-		t.Errorf("expected \n%+v\n, but got \n%+v\n", expected, h)
-	}
-}
+		history, err := NewBatchHistory(ctx, pool, "test", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
 
-func TestFailShouldBeSkip(t *testing.T) {
-	startedAt := time.Date(2024, 6, 1, 0, 0, 0, 0, time.Local)
-	finishedAt := time.Date(2024, 6, 1, 3, 0, 0, 0, time.Local)
+		if history.Name != "test" {
+			t.Errorf("history.Name = %s, want test", history.Name)
+		}
+		if history.Status != HistoryStatusWorking {
+			t.Errorf("history.Status = %s, want %s", history.Status, HistoryStatusWorking)
+		}
+		if history.FinishedAt != nil {
+			t.Errorf("history.FinishedAt = %v, want nil", history.FinishedAt)
+		}
+	})
 
-	h := &BatchHistory{
-		ID:         1,
-		Name:       "Test",
-		StartedAt:  startedAt,
-		FinishedAt: &finishedAt,
-		Status:     "finish",
-		Options:    nil,
-	}
-	if err := h.Fail(context.Background(), nil); !errs.Is(err, ErrHistoryConfirmed) {
-		t.Fatalf("test failed: %s", err.Error())
-	}
+	t.Run("complete batch history", func(t *testing.T) {
 
-	h = &BatchHistory{
-		ID:         1,
-		Name:       "Test",
-		StartedAt:  startedAt,
-		FinishedAt: &finishedAt,
-		Status:     "canceled",
-		Options:    nil,
-	}
-	if err := h.Fail(context.Background(), nil); !errs.Is(err, ErrHistoryConfirmed) {
-		t.Fatalf("test failed: %s", err.Error())
-	}
+		history, err := NewBatchHistory(ctx, pool, "test", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if err := history.Complete(ctx, pool); err != nil {
+			t.Error(err)
+		}
+		if history.Status != HistoryStatusCompleted {
+			t.Errorf("history.Status = %s, want %s", history.Status, HistoryStatusCompleted)
+		}
+		if history.FinishedAt == nil {
+			t.Errorf("history.FinishedAt must be registered")
+		}
+	})
+
+	t.Run("abort batch history", func(t *testing.T) {
+
+		history, err := NewBatchHistory(ctx, pool, "test", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if err := history.Abort(ctx, pool); err != nil {
+			t.Error(err)
+		}
+		if history.Status != HistoryStatusAborted {
+			t.Errorf("history.Status = %s, want %s", history.Status, HistoryStatusAborted)
+		}
+		if history.FinishedAt == nil {
+			t.Errorf("history.FinishedAt must be registered")
+		}
+	})
+
+	t.Run("abort completed batch history", func(t *testing.T) {
+
+		history, err := NewBatchHistory(ctx, pool, "test", nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if err := history.Complete(ctx, pool); err != nil {
+			t.Error(err)
+		}
+
+		if err := history.Abort(ctx, pool); !errors.Is(err, ErrHistoryConfirmed) {
+			t.Errorf("err = %v, want ErrHistoryConfirmed", err)
+		}
+	})
+
+	t.Run("create crawl history", func(t *testing.T) {
+
+		history, err := NewCrawlHistory(ctx, pool, "test001")
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if history.ContestID != "test001" {
+			t.Errorf("history.ContestID = %s, want test001", history.ContestID)
+		}
+		if history.Status != HistoryStatusWorking {
+			t.Errorf("history.Status = %s, want %s", history.Status, HistoryStatusWorking)
+		}
+		if history.FinishedAt != nil {
+			t.Errorf("history.FinishedAt = %v, want nil", history.FinishedAt)
+		}
+	})
+
+	t.Run("complete crawl history", func(t *testing.T) {
+
+		history, err := NewCrawlHistory(ctx, pool, "test002")
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if err := history.Complete(ctx, pool); err != nil {
+			t.Error(err)
+		}
+		if history.Status != HistoryStatusCompleted {
+			t.Errorf("history.Status = %s, want %s", history.Status, HistoryStatusCompleted)
+		}
+		if history.FinishedAt == nil {
+			t.Errorf("history.FinishedAt must be registered")
+		}
+	})
+
+	t.Run("abort crawl history", func(t *testing.T) {
+
+		history, err := NewCrawlHistory(ctx, pool, "test003")
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if err := history.Abort(ctx, pool); err != nil {
+			t.Error(err)
+		}
+		if history.Status != HistoryStatusAborted {
+			t.Errorf("history.Status = %s, want %s", history.Status, HistoryStatusAborted)
+		}
+		if history.FinishedAt == nil {
+			t.Errorf("history.FinishedAt must be registered")
+		}
+	})
+
+	t.Run("abort completed crawl history", func(t *testing.T) {
+
+		history, err := NewCrawlHistory(ctx, pool, "test004")
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if err := history.Complete(ctx, pool); err != nil {
+			t.Error(err)
+		}
+
+		if err := history.Abort(ctx, pool); !errors.Is(err, ErrHistoryConfirmed) {
+			t.Errorf("err = %v, want ErrHistoryConfirmed", err)
+		}
+	})
+
+	t.Run("fetch latest crawl history", func(t *testing.T) {
+
+		history1, err := NewCrawlHistory(ctx, pool, "test005")
+		if err != nil {
+			t.Fatal(err)
+		}
+		time.Sleep(1 * time.Second)
+
+		_, err = NewCrawlHistory(ctx, pool, "test005")
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if err := history1.Complete(ctx, pool); err != nil {
+			t.Error(err)
+		}
+
+		latest, err := FetchLatestCrawlHistory(ctx, pool, "test005")
+		if err != nil {
+			t.Error(err)
+		}
+
+		if latest.ID != history1.ID {
+			t.Errorf("latest.ID = %d, want %d", latest.ID, history1.ID)
+		}
+	})
 }

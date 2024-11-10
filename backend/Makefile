@@ -1,19 +1,22 @@
-include .env
-
 .PHONY: test
-test:
-	@go test -cover ./... -coverprofile=cover.out
-	@go tool cover -html=cover.out -o cover.html
+test: build
+	go test -cover ./... -coverprofile=cover.out
+	go tool cover -html=cover.out -o cover.html
 
 .PHONY: sqlc
 sqlc:
-	@atlas schema inspect -u ${DATABASE_URL} --format '{{ sql . }}' > schema.sql
-	@sqlc generate
+	sqlc generate
 
-.PHONY: atlas-schema-inspect
-atlas-schema-inspect:
-	@atlas schema inspect -u ${DATABASE_URL}
+.PHONY: ogen
+ogen:
+	ogen -package api -target api -clean api/openapi.yaml
 
-.PHONY: atlas-schema-apply
-atlas-schema-apply:
-	@atlas schema apply -u ${DATABASE_URL} --to file://schema.hcl
+.PHONY: build
+build: sqlc ogen
+	go build -o build/atcodersearch
+
+VERSION:=$(shell cat VERSION)
+
+.PHONY: build-image
+build-image:
+	docker build -t atcodersearch-backend:$(VERSION) .

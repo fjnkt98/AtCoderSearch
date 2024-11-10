@@ -12,8 +12,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: db-migrate
-          image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.3.4
-          imagePullPolicy: Always
+          image: amacneil/dbmate:2.21
           env:
             - name: DATABASE_URL
               valueFrom:
@@ -25,13 +24,13 @@ spec:
             runAsGroup: 1000
             runAsNonRoot: true
           command:
-            - atlas
-            - schema
-            - apply
-            - --url
-            - $(DATABASE_URL)
-            - --to
-            - file:///etc/schema.hcl
-            - --auto-approve
-      imagePullSecrets:
-        - name: regcred
+            - dbmate
+            - migrate
+          volumeMounts:
+            - name: db-migrations
+              mountPath: /db/migrations
+              readOnly: true
+      volumes:
+        - name: db-migrations
+          configMap:
+            name: db-migrations

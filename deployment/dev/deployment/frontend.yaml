@@ -18,9 +18,7 @@ spec:
           image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-frontend:develop
           imagePullPolicy: Always
           env:
-            - name: PUBLIC_EXTERNAL_API_HOST
-              value: http://dev-atcoder-search.fjnkt98.com
-            - name: PUBLIC_INTERNAL_API_HOST
+            - name: BACKEND_URL
               value: http://backend:8000
           resources:
             requests:

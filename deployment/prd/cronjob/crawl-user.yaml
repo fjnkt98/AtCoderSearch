@@ -1,0 +1,52 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: crawl-user
+spec:
+  schedule: "0 3 * * 0,1"
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 30
+  suspend: false
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      parallelism: 1
+      completions: 1
+      ttlSecondsAfterFinished: 3600
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: crawl-user-batch
+              image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.4.0
+              imagePullPolicy: Always
+              env:
+                - name: DATABASE_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: db-auth
+                      key: database-url-master
+                - name: ENGINE_URL
+                  value: http://meilisearch-0.meilisearch-headless:7700
+                - name: ENGINE_MASTER_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: engine-auth
+                      key: engine-master-key
+                - name: PGSSLMODE
+                  value: disable
+              resources:
+                requests:
+                  memory: 64Mi
+                  cpu: 50m
+              securityContext:
+                runAsUser: 1000
+                runAsGroup: 1000
+                runAsNonRoot: true
+              args:
+                - atcodersearch
+                - crawl
+                - --duration=1s
+                - user
+          imagePullSecrets:
+            - name: regcred

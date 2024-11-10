@@ -1,0 +1,36 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-migrate
+spec:
+  backoffLimit: 0
+  parallelism: 1
+  completions: 1
+  ttlSecondsAfterFinished: 3600
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: db-migrate
+          image: amacneil/dbmate:2.21
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: db-auth
+                  key: database-url-master
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            runAsNonRoot: true
+          command:
+            - dbmate
+            - rollback
+          volumeMounts:
+            - name: db-migrations
+              mountPath: /db/migrations
+              readOnly: true
+      volumes:
+        - name: db-migrations
+          configMap:
+            name: db-migrations

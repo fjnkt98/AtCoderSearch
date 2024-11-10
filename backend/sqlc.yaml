@@ -1,8 +1,11 @@
 version: "2"
 sql:
   - engine: "postgresql"
-    queries: "query.sql"
-    schema: "schema.sql"
+    queries:
+      - "queries/problem.sql"
+      - "queries/history.sql"
+      - "queries/language.sql"
+    schema: "../db/migrations"
     gen:
       go:
         package: "repository"
@@ -31,13 +34,3 @@ sql:
               import: time
               type: Time
               pointer: true
-          - column: contests.contest_id
-            go_struct_tag: bulk:"unique"
-          - column: problems.problem_id
-            go_struct_tag: bulk:"unique"
-          - column: difficulties.problem_id
-            go_struct_tag: bulk:"unique"
-          - column: users.user_id
-            go_struct_tag: bulk:"unique"
-          - column: submissions.id
-            go_struct_tag: bulk:"unique"

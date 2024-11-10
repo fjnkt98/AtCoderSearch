@@ -5,19 +5,40 @@ import (
 	"fjnkt98/atcodersearch/cmd"
 	"log/slog"
 	"os"
-	"os/signal"
+
+	"github.com/urfave/cli/v2"
 )
 
 func main() {
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 	slog.SetDefault(logger)
 
-	app := cmd.NewApp()
+	app := cli.NewApp()
+	app.Name = "atcodersearch"
+	app.Flags = []cli.Flag{
+		&cli.StringFlag{
+			Name:    "database-url",
+			Hidden:  true,
+			EnvVars: []string{"DATABASE_URL"},
+		},
+		&cli.StringFlag{
+			Name:    "engine-url",
+			Hidden:  true,
+			EnvVars: []string{"ENGINE_URL"},
+		},
+		&cli.StringFlag{
+			Name:    "engine-master-key",
+			Hidden:  true,
+			EnvVars: []string{"ENGINE_MASTER_KEY"},
+		},
+	}
+	app.Commands = []*cli.Command{
+		cmd.NewCrawlCmd(),
+		cmd.NewUpdateCmd(),
+		cmd.NewServeCmd(),
+	}
 
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
-	defer stop()
-
-	if err := app.RunContext(ctx, os.Args); err != nil {
+	if err := app.RunContext(context.Background(), os.Args); err != nil {
 		slog.Error("command failed", slog.Any("error", err))
 		os.Exit(1)
 	}
