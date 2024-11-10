@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   name: update-user
 spec:
-  schedule: "0 9 * * 0,1"
+  schedule: "0 9 * * *"
   concurrencyPolicy: Forbid
   startingDeadlineSeconds: 30
   suspend: false
