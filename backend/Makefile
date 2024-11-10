@@ -20,3 +20,7 @@ VERSION:=$(shell cat VERSION)
 .PHONY: build-image
 build-image:
 	docker build -t atcodersearch-backend:$(VERSION) .
+
+.PHONY: upgrade
+upgrade:
+	go get -u all
