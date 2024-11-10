@@ -47,7 +47,7 @@ spec:
                 - atcodersearch
                 - update
                 - user
-                - --chunk-size=1000
-                - --concurrent=2
+                - --chunk-size=500
+                - --concurrent=1
           imagePullSecrets:
             - name: regcred
