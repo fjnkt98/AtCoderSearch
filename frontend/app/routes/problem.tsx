@@ -51,7 +51,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       case "difficulty":
         return ["difficulty:asc"];
       default:
-        return [];
+        return ["startAt:desc"];
     }
   };
 
