@@ -141,6 +141,7 @@ func (c *ProblemCrawler) CrawlProblems(ctx context.Context) error {
 			return 0, fmt.Errorf("commit transaction: %w", err)
 		}
 
+		slog.LogAttrs(ctx, slog.LevelInfo, "save problem", slog.String("problemID", p.ID))
 		return res.RowsAffected(), nil
 	}
 
@@ -151,7 +152,6 @@ func (c *ProblemCrawler) CrawlProblems(ctx context.Context) error {
 		} else {
 			count += c
 		}
-		slog.LogAttrs(ctx, slog.LevelInfo, "save problem", slog.String("problemID", p.ID))
 		time.Sleep(c.duration)
 	}
 
