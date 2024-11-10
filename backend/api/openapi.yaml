@@ -4,6 +4,28 @@ info:
   description: AtCoder Search backend API
   version: 0.4.1
 paths:
+  /api/health:
+    get:
+      responses:
+        "200":
+          description: "health check"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    default: "ok"
+                required:
+                  - message
+        default:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: "#/components/schemas/ErrorResponse"
   /api/problem:
     get:
       parameters:

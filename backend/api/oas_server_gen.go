@@ -16,6 +16,10 @@ type Handler interface {
 	//
 	// GET /api/contest
 	APIContestGet(ctx context.Context, params APIContestGetParams) (*APIContestGetOK, error)
+	// APIHealthGet implements GET /api/health operation.
+	//
+	// GET /api/health
+	APIHealthGet(ctx context.Context) (*APIHealthGetOK, error)
 	// APILanguageGet implements GET /api/language operation.
 	//
 	// GET /api/language

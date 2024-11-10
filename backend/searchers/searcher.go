@@ -167,6 +167,20 @@ func NewSearcher(client meilisearch.ServiceManager, pool *pgxpool.Pool) *Searche
 	}
 }
 
+func (s *Searcher) APIHealthGet(ctx context.Context) (*api.APIHealthGetOK, error) {
+	if err := s.pool.Ping(ctx); err != nil {
+		return nil, fmt.Errorf("ping %w", err)
+	}
+
+	if _, err := s.client.HealthWithContext(ctx); err != nil {
+		return nil, fmt.Errorf("health: %w", err)
+	}
+
+	return &api.APIHealthGetOK{
+		Message: "ok",
+	}, nil
+}
+
 func (s *Searcher) APICategoryGet(ctx context.Context) (*api.APICategoryGetOK, error) {
 	db := bun.NewDB(stdlib.OpenDBFromPool(s.pool), pgdialect.New())
 

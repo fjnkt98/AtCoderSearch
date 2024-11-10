@@ -40,6 +40,20 @@ func (s *APIContestGetOK) SetContests(val []string) {
 	s.Contests = val
 }
 
+type APIHealthGetOK struct {
+	Message string `json:"message"`
+}
+
+// GetMessage returns the value of Message.
+func (s *APIHealthGetOK) GetMessage() string {
+	return s.Message
+}
+
+// SetMessage sets the value of Message.
+func (s *APIHealthGetOK) SetMessage(val string) {
+	s.Message = val
+}
+
 type APILanguageGetOK struct {
 	Languages []Language `json:"languages"`
 }
