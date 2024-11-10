@@ -27,6 +27,13 @@ func (UnimplementedHandler) APIContestGet(ctx context.Context, params APIContest
 	return r, ht.ErrNotImplemented
 }
 
+// APIHealthGet implements GET /api/health operation.
+//
+// GET /api/health
+func (UnimplementedHandler) APIHealthGet(ctx context.Context) (r *APIHealthGetOK, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // APILanguageGet implements GET /api/language operation.
 //
 // GET /api/language

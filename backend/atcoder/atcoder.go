@@ -195,6 +195,10 @@ func (c *atCoderClient) FetchSubmissions(ctx context.Context, contestID string, 
 		res.Body.Close()
 	}()
 
+	if res.StatusCode == http.StatusNotFound {
+		return nil, ErrNotFound
+	}
+
 	if res.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("status code : %d: %w", res.StatusCode, ErrNotOK)
 	}

@@ -344,6 +344,17 @@ func TestAPIProblem(t *testing.T) {
 
 	searcher := NewSearcher(client, pool)
 
+	t.Run("test health", func(t *testing.T) {
+		res, err := searcher.APIHealthGet(ctx)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if res.Message != "ok" {
+			t.Fatalf("unexpected message: %s", res.Message)
+		}
+	})
+
 	t.Run("search problem empty", func(t *testing.T) {
 		res, err := searcher.APIProblemPost(ctx, &api.APIProblemPostReq{})
 		if err != nil {
