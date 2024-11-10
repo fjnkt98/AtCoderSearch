@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-migrate
+spec:
+  backoffLimit: 0
+  parallelism: 1
+  completions: 1
+  ttlSecondsAfterFinished: 3600
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: db-migrate
+          image: amacneil/dbmate:2.21
+          env:
+            - name: DATABASE_URL
+              value: postgres://atcodersearch:atcodersearch@postgresql-0.postgresql-headless:5432/atcodersearch?sslmode=disable
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            runAsNonRoot: true
+          command:
+            - dbmate
+            - rollback
+          volumeMounts:
+            - name: db-migrations
+              mountPath: /db/migrations
+              readOnly: true
+      volumes:
+        - name: db-migrations
+          configMap:
+            name: db-migrations
