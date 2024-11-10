@@ -58,6 +58,6 @@ spec:
                 - crawl
                 - --duration=1s
                 - submission
-                - --retry=3
+                - --retry=10
           imagePullSecrets:
             - name: regcred
