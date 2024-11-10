@@ -15,7 +15,7 @@ spec:
       terminationGracePeriodSeconds: 60
       containers:
         - name: frontend
-          image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-frontend:0.3.0
+          image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-frontend:0.3.1
           imagePullPolicy: Always
           env:
             - name: BACKEND_URL
