@@ -97,6 +97,10 @@ loop:
 		slog.LogAttrs(ctx, slog.LevelInfo, "fetch submissions", slog.String("contestID", contestID), slog.Int("page", page))
 		s, err := c.client.FetchSubmissions(ctx, contestID, page)
 		if err != nil {
+			if errors.Is(err, atcoder.ErrNotFound) {
+				slog.LogAttrs(ctx, slog.LevelWarn, "the submission page of the contest not found. break crawling.", slog.String("contestID", contestID))
+				break loop
+			}
 			if remain <= 0 {
 				return fmt.Errorf("fetch submissions: %w", err)
 			}
