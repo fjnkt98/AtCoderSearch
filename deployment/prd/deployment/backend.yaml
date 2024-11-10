@@ -15,7 +15,7 @@ spec:
       terminationGracePeriodSeconds: 60
       containers:
         - name: backend
-          image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.4.1
+          image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.4.2
           imagePullPolicy: Always
           env:
             - name: DATABASE_URL
@@ -32,6 +32,20 @@ spec:
                   key: engine-master-key
             - name: BACKEND_PORT
               value: "8000"
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 8000
+            failureThreshold: 1
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 8000
+            failureThreshold: 1
+            initialDelaySeconds: 10
+            periodSeconds: 10
           resources:
             requests:
               memory: 32Mi

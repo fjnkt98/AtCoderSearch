@@ -15,11 +15,25 @@ spec:
       terminationGracePeriodSeconds: 60
       containers:
         - name: frontend
-          image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-frontend:0.3.1
+          image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-frontend:0.3.2
           imagePullPolicy: Always
           env:
             - name: BACKEND_URL
               value: http://backend:8000
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            failureThreshold: 1
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            failureThreshold: 1
+            initialDelaySeconds: 10
+            periodSeconds: 10
           resources:
             requests:
               memory: 32Mi
