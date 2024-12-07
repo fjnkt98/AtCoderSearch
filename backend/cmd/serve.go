@@ -28,7 +28,7 @@ func LoggerMiddleware() middleware.Middleware {
 			r := req.Raw
 			slog.LogAttrs(
 				req.Context,
-				slog.LevelInfo,
+				slog.LevelError,
 				"request failed",
 				slog.String("method", r.Method),
 				slog.String("path", r.URL.String()),
