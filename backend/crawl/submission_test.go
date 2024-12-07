@@ -6,6 +6,7 @@ import (
 	"fjnkt98/atcodersearch/atcoder"
 	"fjnkt98/atcodersearch/internal/testutil"
 	"fjnkt98/atcodersearch/repository"
+	"path/filepath"
 	"reflect"
 	"testing"
 	"time"
@@ -14,7 +15,12 @@ import (
 )
 
 func TestSubmission(t *testing.T) {
-	_, dsn, stop, err := testutil.CreateDBContainer()
+	file, err := filepath.Abs("./testdata/contests.sql")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, dsn, stop, err := testutil.CreateDBContainer(file)
 	t.Cleanup(func() { stop() })
 
 	if err != nil {
@@ -27,17 +33,7 @@ func TestSubmission(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	sql := `
-INSERT INTO "contests" ("contest_id", "start_epoch_second", "duration_second", "title", "rate_change", "category") VALUES
-('abc001', 0, 0, '', '-', 'ABC'),
-('abc002', 0, 0, '', '-', 'ABC'),
-('arc001', 0, 0, '', '-', 'ARC');`
-	if _, err := pool.Exec(ctx, sql); err != nil {
-		t.Fatal(err)
-	}
-
 	t.Run("fetch all contest id", func(t *testing.T) {
-
 		result, err := FetchContestIDs(ctx, pool, []string{})
 		if err != nil {
 			t.Fatal(err)
@@ -50,7 +46,6 @@ INSERT INTO "contests" ("contest_id", "start_epoch_second", "duration_second", "
 	})
 
 	t.Run("fetch ABC contest id", func(t *testing.T) {
-
 		result, err := FetchContestIDs(ctx, pool, []string{"ABC"})
 		if err != nil {
 			t.Fatal(err)
@@ -63,7 +58,6 @@ INSERT INTO "contests" ("contest_id", "start_epoch_second", "duration_second", "
 	})
 
 	t.Run("fetch ARC contest id", func(t *testing.T) {
-
 		result, err := FetchContestIDs(ctx, pool, []string{"ARC"})
 		if err != nil {
 			t.Fatal(err)
@@ -76,9 +70,19 @@ INSERT INTO "contests" ("contest_id", "start_epoch_second", "duration_second", "
 	})
 
 	t.Run("save empty submissions", func(t *testing.T) {
-
 		submissions := make([]atcoder.Submission, 0)
-		count, err := SaveSubmissions(ctx, pool, submissions)
+
+		saver, err := NewSubmissionSaver(ctx, pool)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer saver.Close()
+
+		if err := saver.Append(ctx, submissions); err != nil {
+			t.Fatal(err)
+		}
+
+		count, err := saver.Save(ctx)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -89,7 +93,6 @@ INSERT INTO "contests" ("contest_id", "start_epoch_second", "duration_second", "
 	})
 
 	t.Run("save single submission", func(t *testing.T) {
-
 		submissions := []atcoder.Submission{
 			{
 				ID:            48852107,
@@ -104,7 +107,18 @@ INSERT INTO "contests" ("contest_id", "start_epoch_second", "duration_second", "
 				ExecutionTime: ptr.To(int32(1)),
 			},
 		}
-		count, err := SaveSubmissions(ctx, pool, submissions)
+
+		saver, err := NewSubmissionSaver(ctx, pool)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer saver.Close()
+
+		if err := saver.Append(ctx, submissions); err != nil {
+			t.Fatal(err)
+		}
+
+		count, err := saver.Save(ctx)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -115,7 +129,6 @@ INSERT INTO "contests" ("contest_id", "start_epoch_second", "duration_second", "
 	})
 
 	t.Run("save multiple submissions", func(t *testing.T) {
-
 		submissions := []atcoder.Submission{
 			{
 				ID:            48852107,
@@ -142,7 +155,18 @@ INSERT INTO "contests" ("contest_id", "start_epoch_second", "duration_second", "
 				ExecutionTime: ptr.To(int32(11)),
 			},
 		}
-		count, err := SaveSubmissions(ctx, pool, submissions)
+
+		saver, err := NewSubmissionSaver(ctx, pool)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer saver.Close()
+
+		if err := saver.Append(ctx, submissions); err != nil {
+			t.Fatal(err)
+		}
+
+		count, err := saver.Save(ctx)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -153,7 +177,6 @@ INSERT INTO "contests" ("contest_id", "start_epoch_second", "duration_second", "
 	})
 
 	t.Run("save duplicated submissions", func(t *testing.T) {
-
 		submissions := []atcoder.Submission{
 			{
 				ID:            48852107,
@@ -180,7 +203,18 @@ INSERT INTO "contests" ("contest_id", "start_epoch_second", "duration_second", "
 				ExecutionTime: ptr.To(int32(1)),
 			},
 		}
-		count, err := SaveSubmissions(ctx, pool, submissions)
+
+		saver, err := NewSubmissionSaver(ctx, pool)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer saver.Close()
+
+		if err := saver.Append(ctx, submissions); err != nil {
+			t.Fatal(err)
+		}
+
+		count, err := saver.Save(ctx)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -279,9 +313,11 @@ var _ atcoder.AtCoderClient = new(RecoverableDummyAtCoderClient)
 func (c *RecoverableDummyAtCoderClient) Login(ctx context.Context, username, password string) error {
 	return nil
 }
+
 func (c *RecoverableDummyAtCoderClient) FetchProblemHTML(ctx context.Context, contestID, problemID string) (string, error) {
 	return "", nil
 }
+
 func (c *RecoverableDummyAtCoderClient) FetchSubmissions(ctx context.Context, contestID string, page int) ([]atcoder.Submission, error) {
 	if page >= 2 {
 		return []atcoder.Submission{}, nil
@@ -319,6 +355,7 @@ func (c *RecoverableDummyAtCoderClient) FetchSubmissions(ctx context.Context, co
 		}, nil
 	}
 }
+
 func (c *RecoverableDummyAtCoderClient) FetchUsers(ctx context.Context, page int) ([]atcoder.User, error) {
 	return nil, nil
 }
