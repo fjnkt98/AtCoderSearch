@@ -118,7 +118,7 @@ loop:
 		}
 
 		submissions = append(submissions, s...)
-		if s[0].EpochSecond < latest.StartedAt.Unix() {
+		if s[0].EpochSecond < latest.StartedAt.Unix()-86400 {
 			slog.LogAttrs(ctx, slog.LevelInfo, "all submissions after here have been crawled", slog.String("contestID", contestID), slog.Int("page", page))
 			time.Sleep(c.duration)
 			break loop
