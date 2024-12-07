@@ -85,7 +85,12 @@ func (c *SubmissionCrawler) crawlContest(ctx context.Context, contestID string) 
 		}
 	}()
 
-	submissions := make([]atcoder.Submission, 0)
+	saver, err := NewSubmissionSaver(ctx, c.pool)
+	if err != nil {
+		return fmt.Errorf("new submission saver: %w", err)
+	}
+	defer saver.Close()
+
 	queue := []int{1}
 	remain := c.retry
 
@@ -95,7 +100,7 @@ loop:
 		queue = queue[1:]
 
 		slog.LogAttrs(ctx, slog.LevelInfo, "fetch submissions", slog.String("contestID", contestID), slog.Int("page", page))
-		s, err := c.client.FetchSubmissions(ctx, contestID, page)
+		submissions, err := c.client.FetchSubmissions(ctx, contestID, page)
 		if err != nil {
 			if errors.Is(err, atcoder.ErrNotFound) {
 				slog.LogAttrs(ctx, slog.LevelWarn, "the submission page of the contest not found. break crawling.", slog.String("contestID", contestID))
@@ -112,13 +117,16 @@ loop:
 			continue loop
 		}
 
-		if len(s) == 0 {
+		if len(submissions) == 0 {
 			slog.LogAttrs(ctx, slog.LevelInfo, "there is no submissions", slog.String("contestID", contestID), slog.Int("page", page))
 			break loop
 		}
 
-		submissions = append(submissions, s...)
-		if s[0].EpochSecond < latest.StartedAt.Unix() {
+		if err := saver.Append(ctx, submissions); err != nil {
+			return fmt.Errorf("append submissions: %w", err)
+		}
+
+		if submissions[0].EpochSecond < latest.StartedAt.Unix()-86400 {
 			slog.LogAttrs(ctx, slog.LevelInfo, "all submissions after here have been crawled", slog.String("contestID", contestID), slog.Int("page", page))
 			time.Sleep(c.duration)
 			break loop
@@ -130,7 +138,7 @@ loop:
 		time.Sleep(c.duration)
 	}
 
-	count, err := SaveSubmissions(ctx, c.pool, submissions)
+	count, err := saver.Save(ctx)
 	if err != nil {
 		return fmt.Errorf("save submissions: %w", err)
 	}
@@ -204,21 +212,53 @@ func NewSubmissions(submissions []atcoder.Submission) []Submission {
 	return result
 }
 
-func SaveSubmissions(ctx context.Context, pool *pgxpool.Pool, submissions []atcoder.Submission) (int64, error) {
-	if len(submissions) == 0 {
-		return 0, nil
+func NewSubmission(s atcoder.Submission) Submission {
+	return Submission{
+		ID:            s.ID,
+		EpochSecond:   s.EpochSecond,
+		ProblemID:     s.ProblemID,
+		ContestID:     &s.ContestID,
+		UserID:        &s.UserID,
+		Language:      &s.Language,
+		Point:         &s.Point,
+		Length:        &s.Length,
+		Result:        &s.Result,
+		ExecutionTime: s.ExecutionTime,
 	}
+}
 
+type SubmissionSaver struct {
+	tx    bun.Tx
+	set   mapset.Set[int64]
+	count int64
+}
+
+func NewSubmissionSaver(ctx context.Context, pool *pgxpool.Pool) (*SubmissionSaver, error) {
 	tx, err := bun.NewDB(stdlib.OpenDBFromPool(pool), pgdialect.New()).BeginTx(ctx, &sql.TxOptions{})
 	if err != nil {
-		return 0, fmt.Errorf("begin transaction: %w", err)
+		return nil, fmt.Errorf("begin transaction: %w", err)
 	}
-	defer tx.Rollback()
 
-	var count int64 = 0
+	return &SubmissionSaver{
+		tx:    tx,
+		set:   mapset.NewSet[int64](),
+		count: 0,
+	}, nil
+}
 
-	for chunk := range slices.Chunk(NewSubmissions(submissions), 1000) {
-		res, err := tx.NewInsert().
+func (s *SubmissionSaver) Append(ctx context.Context, submissions []atcoder.Submission) error {
+	data := make([]Submission, 0, len(submissions))
+	for _, submission := range submissions {
+		if s.set.Contains(submission.ID) {
+			continue
+		}
+
+		data = append(data, NewSubmission(submission))
+		s.set.Add(submission.ID)
+	}
+
+	for chunk := range slices.Chunk(data, 1000) {
+		res, err := s.tx.NewInsert().
 			Model(&chunk).
 			On("CONFLICT (epoch_second, id) DO UPDATE").
 			Set("id = EXCLUDED.id").
@@ -234,19 +274,26 @@ func SaveSubmissions(ctx context.Context, pool *pgxpool.Pool, submissions []atco
 			Set("updated_at = NOW()").
 			Exec(ctx)
 		if err != nil {
-			return 0, fmt.Errorf("insert: %w", err)
+			return fmt.Errorf("insert: %w", err)
 		}
 
 		if c, err := res.RowsAffected(); err != nil {
-			return 0, fmt.Errorf("rows affected: %w", err)
+			return fmt.Errorf("get affected rows count: %w", err)
 		} else {
-			count += c
+			s.count += c
 		}
 	}
 
-	if err := tx.Commit(); err != nil {
+	return nil
+}
+
+func (s *SubmissionSaver) Save(ctx context.Context) (int64, error) {
+	if err := s.tx.Commit(); err != nil {
 		return 0, fmt.Errorf("commit transaction: %w", err)
 	}
+	return s.count, nil
+}
 
-	return count, nil
+func (s *SubmissionSaver) Close() error {
+	return s.tx.Rollback()
 }
