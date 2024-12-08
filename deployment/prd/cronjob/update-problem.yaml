@@ -5,7 +5,7 @@ metadata:
 spec:
   schedule: "0 8 * * 0,1"
   concurrencyPolicy: Forbid
-  startingDeadlineSeconds: 30
+  startingDeadlineSeconds: 1209600
   suspend: false
   jobTemplate:
     spec:
