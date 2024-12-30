@@ -53,6 +53,8 @@ spec:
                 - name: dump-volume
                   mountPath: /var/tmp/dump
               command:
+                - /bin/bash
+                - -c
                 - echo "${POSTGRES_HOST}:${POSTGRES_PORT}:${POSTGRES_DB}:${POSTGRES_USER}:${POSTGRES_PASSWORD}" > ~/.pgpass && chmod 600 ~/.pgpass && pg_dump --clean --if-exists --no-owner --no-password --load-via-partition-root -U ${POSTGRES_USER} ${POSTGRES_DB} --port=${POSTGRES_PORT} --host=${POSTGRES_HOST} | gzip > /var/tmp/dump/atcodersearch.$(date '+%Y-%m-%d').dump.gz
           containers:
             - name: dump-upload
@@ -84,6 +86,8 @@ spec:
                 - name: dump-volume
                   mountPath: /var/tmp/dump
               command:
+                - /bin/bash
+                - -c
                 - aws s3 cp /var/tmp/dump/atcodersearch.$(date '+%Y-%m-%d').dump.gz s3://atcoder-search-dump/
           volumes:
             - name: dump-volume
