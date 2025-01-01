@@ -233,6 +233,7 @@ func TestSubmission(t *testing.T) {
 			0,
 			0,
 			nil,
+			false,
 		)
 		if err := crawler.Crawl(ctx); err != nil {
 			t.Errorf("expected no error, but got %v", err)
@@ -245,6 +246,7 @@ func TestSubmission(t *testing.T) {
 			0,
 			0,
 			[]string{"ABC", "ARC"},
+			false,
 		)
 		if err := crawler.Crawl(ctx); err != nil {
 			t.Errorf("expected no error, but got %v", err)
@@ -260,6 +262,7 @@ func TestSubmission(t *testing.T) {
 			0,
 			0,
 			nil,
+			false,
 		)
 		if err := crawler.Crawl(ctx); !errors.Is(err, ErrDummy) {
 			t.Errorf("expected ErrDummy, but got %#v", err)
@@ -277,6 +280,7 @@ func TestSubmission(t *testing.T) {
 			1,
 			100*time.Millisecond,
 			nil,
+			false,
 		)
 
 		if err := crawler.Crawl(ctx); err != nil {
@@ -295,6 +299,7 @@ func TestSubmission(t *testing.T) {
 			1,
 			100*time.Millisecond,
 			nil,
+			false,
 		)
 
 		if err := crawler.Crawl(ctx); !errors.Is(err, ErrDummy) {

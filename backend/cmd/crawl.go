@@ -92,6 +92,9 @@ func NewCrawlCmd() *cli.Command {
 					&cli.StringFlag{
 						Name: "target",
 					},
+					&cli.BoolFlag{
+						Name: "endless",
+					},
 					&cli.StringFlag{
 						Name:    "atcoder-username",
 						Hidden:  true,
@@ -133,6 +136,7 @@ func NewCrawlCmd() *cli.Command {
 						ctx.Int("retry"),
 						1*time.Minute,
 						targets,
+						ctx.Bool("endless"),
 					)
 
 					if err := crawler.Crawl(ctx.Context); err != nil {
