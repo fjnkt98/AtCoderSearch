@@ -127,7 +127,15 @@ loop:
 		}
 
 		if submissions[0].EpochSecond < latest.StartedAt.Unix()-86400 {
-			slog.LogAttrs(ctx, slog.LevelInfo, "all submissions after here have been crawled", slog.String("contestID", contestID), slog.Int("page", page))
+			slog.LogAttrs(
+				ctx,
+				slog.LevelInfo,
+				"all submissions after here have been crawled",
+				slog.String("contestID", contestID),
+				slog.Int("page", page),
+				slog.Int64("id", submissions[0].ID),
+				slog.Time("epochSecond", time.Unix(submissions[0].EpochSecond, 0)),
+			)
 			time.Sleep(c.duration)
 			break loop
 		}
