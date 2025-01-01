@@ -24,16 +24,20 @@ spec:
             httpGet:
               path: /
               port: 3000
-            failureThreshold: 1
+            failureThreshold: 3
             initialDelaySeconds: 10
             periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
           readinessProbe:
             httpGet:
               path: /
               port: 3000
-            failureThreshold: 1
+            failureThreshold: 3
             initialDelaySeconds: 10
             periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
           resources:
             requests:
               memory: 32Mi
