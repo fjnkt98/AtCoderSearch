@@ -25,6 +25,7 @@ type SubmissionCrawler struct {
 	retry         int
 	retryInterval time.Duration
 	targets       []string
+	endless       bool
 }
 
 func NewSubmissionCrawler(
@@ -34,6 +35,7 @@ func NewSubmissionCrawler(
 	retry int,
 	retryInterval time.Duration,
 	targets []string,
+	endless bool,
 ) *SubmissionCrawler {
 	return &SubmissionCrawler{
 		client:        client,
@@ -42,10 +44,26 @@ func NewSubmissionCrawler(
 		retry:         retry,
 		retryInterval: retryInterval,
 		targets:       targets,
+		endless:       endless,
 	}
 }
 
 func (c *SubmissionCrawler) Crawl(ctx context.Context) error {
+	if c.endless {
+		for {
+			if err := c.crawl(ctx); err != nil {
+				return err
+			}
+		}
+	} else {
+		if err := c.crawl(ctx); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *SubmissionCrawler) crawl(ctx context.Context) error {
 	contests, err := FetchContestIDs(ctx, c.pool, c.targets)
 	if err != nil {
 		return fmt.Errorf("fetch contest ids: %w", err)
@@ -127,7 +145,15 @@ loop:
 		}
 
 		if submissions[0].EpochSecond < latest.StartedAt.Unix()-86400 {
-			slog.LogAttrs(ctx, slog.LevelInfo, "all submissions after here have been crawled", slog.String("contestID", contestID), slog.Int("page", page))
+			slog.LogAttrs(
+				ctx,
+				slog.LevelInfo,
+				"all submissions after here have been crawled",
+				slog.String("contestID", contestID),
+				slog.Int("page", page),
+				slog.Int64("id", submissions[0].ID),
+				slog.Time("epochSecond", time.Unix(submissions[0].EpochSecond, 0)),
+			)
 			time.Sleep(c.duration)
 			break loop
 		}
