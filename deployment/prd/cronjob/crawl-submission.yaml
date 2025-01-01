@@ -59,5 +59,6 @@ spec:
                 - --duration=1s
                 - submission
                 - --retry=10
+                - --endless
           imagePullSecrets:
             - name: regcred
