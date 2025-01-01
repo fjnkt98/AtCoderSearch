@@ -76,8 +76,8 @@ data:
     no-autoupdate: true
     ingress:
       - hostname: atcoder-search.fjnkt98.com
-        service: http://frontend:3000
-      - hostname: atcoder-search.fjnkt98.com
         path: ^/api
         service: http://backend:8000
+      - hostname: atcoder-search.fjnkt98.com
+        service: http://frontend:3000
       - service: http_status:404

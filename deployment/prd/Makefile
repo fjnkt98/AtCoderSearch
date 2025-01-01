@@ -1,3 +1,11 @@
+.PHONY: conform
+conform:
+	@kubeconform -strict -summary -verbose .
+
+.PHONY: lint
+lint:
+	@kube-linter lint .
+
 .PHONY: create-configmap
 create-configmap:
 	@kubectl create configmap db-migrations --from-file=../../db/migrations --dry-run=client -o=yaml | kubectl apply -f -

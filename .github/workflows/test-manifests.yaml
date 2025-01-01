@@ -1,0 +1,30 @@
+name: test-manifests
+run-name: test-manifests
+on:
+  pull_request:
+    paths:
+      - deployment/prd/**/*.yaml
+jobs:
+  test:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: deployment/prd
+        shell: bash
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: backend/go.mod
+
+      - name: Install kubeconform
+        run: go install -v github.com/yannh/kubeconform/cmd/kubeconform@latest
+
+      - name: Run test
+        run: make conform
