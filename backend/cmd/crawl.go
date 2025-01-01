@@ -37,24 +37,24 @@ func NewCrawlCmd() *cli.Command {
 				Action: func(ctx *cli.Context) error {
 					atcoderClient, err := atcoder.NewAtCoderClient()
 					if err != nil {
-						return err
+						return fmt.Errorf("crawl problem: %w", err)
 					}
 					problemsClient := atcoder.NewAtCoderProblemsClient()
 
 					pool, err := repository.NewPool(ctx.Context, ctx.String("database-url"))
 					if err != nil {
-						return err
+						return fmt.Errorf("crawl problem: %w", err)
 					}
 
 					crawler := crawl.NewProblemCrawler(atcoderClient, problemsClient, pool, ctx.Duration("duration"), ctx.Bool("all"))
 					if err := crawler.CrawlContests(ctx.Context); err != nil {
-						return err
+						return fmt.Errorf("crawl problem: %w", err)
 					}
 					if err := crawler.CrawlDifficulties(ctx.Context); err != nil {
-						return err
+						return fmt.Errorf("crawl problem: %w", err)
 					}
 					if err := crawler.CrawlProblems(ctx.Context); err != nil {
-						return err
+						return fmt.Errorf("crawl problem: %w", err)
 					}
 
 					return nil
@@ -65,17 +65,17 @@ func NewCrawlCmd() *cli.Command {
 				Action: func(ctx *cli.Context) error {
 					atcoderClient, err := atcoder.NewAtCoderClient()
 					if err != nil {
-						return err
+						return fmt.Errorf("crawl user: %w", err)
 					}
 
 					pool, err := repository.NewPool(ctx.Context, ctx.String("database-url"))
 					if err != nil {
-						return err
+						return fmt.Errorf("crawl user: %w", err)
 					}
 
 					crawler := crawl.NewUserCrawler(atcoderClient, pool, ctx.Duration("duration"))
 					if err := crawler.Crawl(ctx.Context); err != nil {
-						return err
+						return fmt.Errorf("crawl user: %w", err)
 					}
 
 					return nil
@@ -109,7 +109,7 @@ func NewCrawlCmd() *cli.Command {
 				Action: func(ctx *cli.Context) error {
 					atcoderClient, err := atcoder.NewAtCoderClient()
 					if err != nil {
-						return err
+						return fmt.Errorf("crawl submission: %w", err)
 					}
 					username := ctx.String("atcoder-username")
 					password := ctx.String("atcoder-password")
@@ -121,7 +121,7 @@ func NewCrawlCmd() *cli.Command {
 					}
 					pool, err := repository.NewPool(ctx.Context, ctx.String("database-url"))
 					if err != nil {
-						return err
+						return fmt.Errorf("crawl submission: %w", err)
 					}
 
 					var targets []string
@@ -140,7 +140,7 @@ func NewCrawlCmd() *cli.Command {
 					)
 
 					if err := crawler.Crawl(ctx.Context); err != nil {
-						return err
+						return fmt.Errorf("crawl submission: %w", err)
 					}
 					return nil
 				},

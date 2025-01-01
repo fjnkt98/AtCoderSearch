@@ -28,7 +28,7 @@ func NewUpdateCmd() *cli.Command {
 				Action: func(ctx *cli.Context) error {
 					pool, err := repository.NewPool(ctx.Context, ctx.String("database-url"))
 					if err != nil {
-						return fmt.Errorf("new pool: %w", err)
+						return fmt.Errorf("update problem: %w", err)
 					}
 					client := meilisearch.New(ctx.String("engine-url"), meilisearch.WithAPIKey(ctx.String("engine-master-key")))
 					indexer := update.NewProblemIndexer(client)
@@ -42,7 +42,7 @@ func NewUpdateCmd() *cli.Command {
 						ctx.Int("chunk-size"),
 						ctx.Int("concurrent"),
 					); err != nil {
-						return fmt.Errorf("update index: %w", err)
+						return fmt.Errorf("update problem: %w", err)
 					}
 
 					return nil
@@ -63,7 +63,7 @@ func NewUpdateCmd() *cli.Command {
 				Action: func(ctx *cli.Context) error {
 					pool, err := repository.NewPool(ctx.Context, ctx.String("database-url"))
 					if err != nil {
-						return fmt.Errorf("new pool: %w", err)
+						return fmt.Errorf("update user: %w", err)
 					}
 					client := meilisearch.New(ctx.String("engine-url"), meilisearch.WithAPIKey(ctx.String("engine-master-key")))
 					indexer := update.NewUserIndexer(client)
@@ -77,7 +77,7 @@ func NewUpdateCmd() *cli.Command {
 						ctx.Int("chunk-size"),
 						ctx.Int("concurrent"),
 					); err != nil {
-						return fmt.Errorf("update index: %w", err)
+						return fmt.Errorf("update user: %w", err)
 					}
 
 					return nil
@@ -89,7 +89,7 @@ func NewUpdateCmd() *cli.Command {
 				Action: func(ctx *cli.Context) error {
 					pool, err := repository.NewPool(ctx.Context, ctx.String("database-url"))
 					if err != nil {
-						return fmt.Errorf("new pool: %w", err)
+						return fmt.Errorf("update language: %w", err)
 					}
 
 					if err := update.UpdateLanguage(ctx.Context, pool); err != nil {
