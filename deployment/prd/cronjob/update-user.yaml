@@ -18,7 +18,7 @@ spec:
           restartPolicy: Never
           containers:
             - name: update-user-batch
-              image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.4.2
+              image: 999441754240.dkr.ecr.ap-northeast-1.amazonaws.com/atcodersearch-backend:0.4.6
               imagePullPolicy: Always
               env:
                 - name: DATABASE_URL
