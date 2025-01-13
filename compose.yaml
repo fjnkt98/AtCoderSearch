@@ -12,6 +12,7 @@ services:
       - type: volume
         source: atcodersearch-postgresql
         target: /var/lib/postgresql/data
+    command: -c shared_buffers=512MB -c checkpoint_timeout=30min -c checkpoint_completion_target=0.9 -c max_wal_size=20GB -c log_timezone=Asia/Tokyo -c timezone=Asia/Tokyo -c statement_timeout=36000000 -c max_locks_per_transaction=256 -c maintenance_work_mem=256MB -c work_mem=256MB
     ports:
       - 5432:5432
     networks:
