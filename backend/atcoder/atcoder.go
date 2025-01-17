@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
@@ -332,7 +333,8 @@ func scrapeSubmissions(html io.Reader) ([]Submission, error) {
 	})
 
 	if len(errs) > 0 {
-		return nil, errors.Join(errs...)
+		slog.LogAttrs(context.Background(), slog.LevelWarn, "some error occurred when scrape submissions", slog.Any("errors", errors.Join(errs...)))
+		return submissions, nil
 	}
 
 	return submissions, nil
