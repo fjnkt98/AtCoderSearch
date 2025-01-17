@@ -77,7 +77,50 @@ func TestScrapeSubmissions(t *testing.T) {
 		},
 	}
 	if !reflect.DeepEqual(result[:2], want) {
-		t.Errorf("expected \n%+v\n , but got \n%+v\n", want, result)
+		t.Errorf("expected \n%+v\n , but got \n%+v\n", want, result[:2])
+	}
+}
+
+func TestScrapeSubmissionsARC027(t *testing.T) {
+	file, err := os.Open("./testdata/submissions.arc027.html")
+	if err != nil {
+		t.Fatalf("failed to open file `submissions.arc027.html`: %s", err.Error())
+	}
+	defer file.Close()
+
+	result, err := scrapeSubmissions(file)
+	if err != nil {
+		t.Fatalf("failed to scrape submissions: %s", err.Error())
+	}
+
+	want := []Submission{
+		{
+			ID:            208118,
+			EpochSecond:   1407106143,
+			ProblemID:     "arc027_2",
+			UserID:        "iab",
+			ContestID:     "arc027",
+			Language:      "OCaml (3.12.1)",
+			Point:         100.0,
+			Length:        1972,
+			Result:        "AC",
+			ExecutionTime: ptr.To(int32(36)),
+		},
+		{
+			ID:            208117,
+			EpochSecond:   1407102628,
+			ProblemID:     "arc027_3",
+			UserID:        "ne240214",
+			ContestID:     "arc027",
+			Language:      "Java (OpenJDK 1.7.0)",
+			Point:         0.0,
+			Length:        1628,
+			Result:        "WA",
+			ExecutionTime: ptr.To(int32(2106)),
+		},
+	}
+	if !reflect.DeepEqual(result[:2], want) {
+		t.Errorf("expected \n%+v\n , but got \n%+v\n", want, result[:2])
 	}
 }
 
